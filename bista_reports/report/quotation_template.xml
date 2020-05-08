@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="sale.report_saleorder_document">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <style>
+                    th{
+                    background-color: #0f0a47;
+                    color:#FFFFFF;
+                    }
+                </style>
+                <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)" />
+                <t t-set="i" t-value="1" />
+                <div style="float:right;">
+                    <p>
+                        <strong>
+                            <span t-if="doc.state not in ['draft','sent']">Order</span>
+                            <span t-if="doc.state in ['draft','sent']">Quote ID</span>
+                            :
+                        </strong>
+                        <span t-field="doc.name" />
+                        <br />
+                        <strong>Sales Rep:</strong>
+                        <span t-field="doc.user_id" />
+                        <br />
+                        <strong>Date:</strong>
+                        <span t-field="doc.date_order" />
+                    </p>
+                </div>
+                <div style="margin-bottom: 100px;">
+                    <table style="margin-top: 90px; width: 45%; float:left;border: 1px solid black;">
+                        <tr class="bg-primary" style="border: 1px solid black;">
+                            <th colspan="2">Customer Information:</th>
+                        </tr>
+                        <tr>
+                            <td class="text-left">
+                                <strong>Name</strong>
+                            </td>
+                            <td class="text-left">
+                                <span t-field="doc.partner_id.name" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">
+                                <strong>Company Name</strong>
+                            </td>
+                            <td class="text-left">
+                                <span t-field="doc.partner_id.name" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">
+                                <strong>Email</strong>
+                            </td>
+                            <td class="text-left">
+                                <span t-field="doc.partner_id.email" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">
+                                <strong>Phone Number</strong>
+                            </td>
+                            <td class="text-left">
+                                <span t-field="doc.partner_id.phone" />
+                            </td>
+                        </tr>
+                    </table>
+                    <table style="width: 50%; float:right;border: 1px solid black;">
+                        <tr class="bg-primary" style="border: 1px solid black;">
+                            <th colspan="2">Shipping Address:</th>
+                        </tr>
+                        <tr>
+                            <td class="text-left">
+                                <div t-field="doc.partner_shipping_id" style="border-right: 1px solid black;"
+                                    t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <table class="mt32" style="width: 100%; float:right;border: 1px solid black;">
+                    <thead>
+                        <tr>
+                            <th name="th_description" class="text-center" style="border: 1px solid black;width: 10%;">#</th>
+                            <th name="th_quantity" class="text-center" style="border: 1px solid black;width: 10%;">Qty</th>
+                            <th name="th_product" class="text-center" style="border: 1px solid black;width: 20%;">Product Code</th>
+                            <th name="th_description_note" class="text-center"
+                                style="border: 1px solid black;width: 20%;">Notes</th>
+                            <th name="th_priceunit" class="text-center" style="border: 1px solid black;width: 15%;">Unit Price</th>
+                            <th name="th_subtotal" class="text-center" style="border: 1px solid black;width: 15%;">
+                                <t groups="account.group_show_line_subtotals_tax_excluded">Line Total</t>
+                                <t groups="account.group_show_line_subtotals_tax_included">Line Total</t>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="sale_tbody">
+                        <t t-foreach="doc.order_line" t-as="line">
+                            <tr style="page-break-inside: avoid;"
+                                t-att-class="'bg-200 font-weight-bold o_line_section' if line.display_type == 'line_section' else 'font-italic o_line_note' if line.display_type == 'line_note' else ''">
+                                <t t-if="not line.display_type">
+                                    <td name="sq" class="text-center" style="border: 1px solid black;width: 10%;">
+                                        <span t-esc="i" />
+                                        <t t-set="i" t-value="i+1" />
+                                    </td>
+                                    <td name="td_quantity" class="text-center"
+                                        style="border: 1px solid black;width: 10%;">
+                                        <span t-field="line.product_uom_qty" />
+                                        <span t-field="line.product_uom" groups="uom.group_uom" />
+                                    </td>
+                                    <td name="td_name" class="text-center"
+                                        style="border: 1px solid black;width: 20%;">
+                                        <span t-field="line.name" />
+                                    </td>
+                                    <td name="td_description_note" class="text-center"
+                                        style="border: 1px solid black;width: 20%;">
+                                        <span t-field="line.name" />
+                                    </td>
+                                    <td name="td_priceunit" class="text-right"
+                                        style="border: 1px solid black;width: 15%;">
+                                        <span t-field="line.price_unit" />
+                                    </td>
+                                    <td name="td_subtotal" class="text-right o_price_total"
+                                        style="border: 1px solid black;width: 15%;">
+                                        <span t-field="line.price_subtotal"
+                                            groups="account.group_show_line_subtotals_tax_excluded" />
+                                        <span t-field="line.price_total"
+                                            groups="account.group_show_line_subtotals_tax_included" />
+                                    </td>
+                                </t>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+                <div>
+                    <table class="mt32"
+                        style="page-break-inside: avoid; width: 55%; height:100px; float:left;border: 1px solid black;">
+                        <thead>
+                            <tr class="bg-primary">
+                                <th name="th_sale_note" class="text-left">Notes:</th>
+                            </tr>
+                        </thead>
+                        <tbody class="sale_note_tbody">
+                            <tr>
+                                <td>
+                                    <p t-field="doc.note" />
+                                    <p t-if="doc.payment_term_id.note">
+                                        <span t-field="doc.payment_term_id.note" />
+                                    </p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="mt32"
+                        style="page-break-inside: avoid; width: 40%;height:100px; float:right;border: 1px solid black;">
+                        <thead>
+                            <tr class="bg-primary">
+                                <th colspan="2" name="th_summary" class="text-left">Summary:</th>
+                            </tr>
+                        </thead>
+                        <tbody class="sale_summary">
+                            <tr class="text-right">
+                                <td name="td_amount_total" class="text-right">
+                                    <span>
+                                        Subtotal
+                                    </span>
+                                </td>
+                                <td>
+                                    <span t-field="doc.amount_total" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td name="td_amount_total" class="text-right">
+                                    <span>Shipping &amp; Handling</span>
+                                </td>
+                                <td> -- </td>
+                            </tr>
+                            <tr>
+                                <td name="td_amount_total" class="text-right">
+                                    <span>
+                                        <strong>Grand Total</strong>
+                                    </span>
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="doc.amount_total" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div t-if="doc.signature" class="mt32 ml64 mr4" name="signature">
+                </div>
+                <div name="expiration_date">
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
