@@ -2,7 +2,7 @@
 <odoo>
     <data>
         <template id="web.external_layout_standard">
-            <div class="header o_background_header">
+            <div class="header border: none !important;">
                 <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % to_text(company.logo)"
                     class="pull-left" style="max-height: 130px;" />
                 <div class="pull-left company_address">
@@ -12,7 +12,41 @@
                             t-options='{"widget": "contact", "fields": ["address", "phone","email"], "no_marker": True, "phone_icons": True}' />
                     </div>
                 </div>
-                <div class="clearfix mb8" />
+                <t t-if="o._name == 'sale.order'">
+                    <div  class="pull-right" style="margin-right:18px">
+                        <p>
+                            <h2>Quote</h2>
+                            <strong>
+                                <span t-if="doc.state not in ['draft','sent']">Order</span>
+                                <span t-if="doc.state in ['draft','sent']">Quote ID</span>
+                                :
+                            </strong>
+                            <span t-field="doc.name" />
+                            <br />
+                            <strong>Sales Rep:</strong>
+                            <span t-field="doc.user_id" />
+                            <br />
+                            <strong>Date:</strong>
+                            <span t-field="doc.date_order" />
+                        </p>
+                    </div>
+                </t>
+                <t t-if="o._name == 'purchase.order'">
+                    <div class="pull-right" style="margin-right:18px">
+                        <p>
+                            <span>
+                                <h2>Purchase Order</h2>
+                            </span>
+                            <strong>
+                                PO#
+                            </strong>
+                            <span t-field="o.name" />
+                            <br />
+                            <strong>Date:</strong>
+                            <span t-field="o.date_order" />
+                        </p>
+                    </div>
+                </t>
             </div>
             <div class="article o_report_layout_standard">
                 <t t-raw="0" />
