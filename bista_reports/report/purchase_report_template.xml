@@ -68,7 +68,7 @@
                             <span class="tr_td" t-field="o.payment_term_id.name" />
                         </td>
                         <td class="text-center"
-                            style="border: 1px solid black; border-top: 0;height: 20px; width: 50%;padding-left: 5px;padding-top: 5px;">
+                            style="border: 1px solid black; border-top: 0;height: 20px; width: 50%;">
                             <span class="tr_td">Destination</span>
                         </td>
                     </tr>
@@ -133,16 +133,16 @@
                                         <span class="tr_td" t-field="order_line.product_id.default_code" />
                                     </td>
                                     <td id="product_desc" style="border: 1px solid black;width: 25%;">
-                                        <span class="tr_td" t-field="order_line.name" />
+                                        <span class="tr_td mx-1" t-field="order_line.name" />
                                     </td>
                                     <td class="text-right" style="border: 1px solid black;width: 10%;">
-                                        <span class="tr_td" t-field="order_line.price_unit" />
+                                        <span class="tr_td mx-1" t-field="order_line.price_unit" />
                                     </td>
                                     <td name="td_subtotal" class="text-right o_price_total"
                                         style="border: 1px solid black;width: 10%;">
-                                        <span class="tr_td" t-field="order_line.price_subtotal"
+                                        <span class="tr_td mx-1" t-field="order_line.price_subtotal"
                                               groups="account.group_show_line_subtotals_tax_excluded" />
-                                        <span class="tr_td" t-field="order_line.price_total"
+                                        <span class="tr_td mx-1" t-field="order_line.price_total"
                                               groups="account.group_show_line_subtotals_tax_included" />
                                     </td>
                                 </t>
@@ -172,11 +172,59 @@
                             </tr>
                         </tbody>
                     </table>
+<!--                    <table class="mt32"-->
+<!--                        style="page-break-inside: avoid; width: 40%;height:100px; float:right;border: 1px solid black;">-->
+<!--                        <thead>-->
+<!--                            <tr>-->
+<!--                                <th colspan="2" name="th_summary" class="text-left tr_td"><span class="mx-2">Order Summary:</span></th>-->
+<!--                            </tr>-->
+<!--                        </thead>-->
+<!--                        <tbody class="sale_summary">-->
+<!--                            <tr class="text-right">-->
+<!--                                <td name="td_amount_total" class="text-right">-->
+<!--                                    <span class="tr_td">-->
+<!--                                        Subtotal-->
+<!--                                    </span>-->
+<!--                                </td>-->
+<!--                                <td>-->
+<!--                                    <span class="pull-right tr_td mx-2" style="width: 80%; display:block;border-bottom: 1px solid #808080;" t-field="o.amount_total" />-->
+<!--                                </td>-->
+<!--                            </tr>-->
+<!--                            <tr>-->
+<!--                                <td name="td_amount_total" class="text-right">-->
+<!--                                    <span class="tr_td">Fees / Adjustments</span>-->
+<!--                                </td>-->
+<!--                                <td><span class="pull-right tr_td mx-2" style="width: 80%; display:block;border-bottom: 1px solid #808080;"> &#45;&#45; </span></td>-->
+<!--                            </tr>-->
+<!--                            <tr>-->
+<!--                                <td name="td_amount_total" class="text-right">-->
+<!--                                    <span>-->
+<!--                                        <strong class="tr_td">Grand Total</strong>-->
+<!--                                    </span>-->
+<!--                                </td>-->
+<!--                                <td class="text-right">-->
+<!--                                    <strong class="pull-right tr_td mx-2" style="width: 80%; display:block;border-bottom: 1px solid #808080;" t-field="o.amount_total" />-->
+<!--                                </td>-->
+<!--                            </tr>-->
+<!--                        </tbody>-->
+<!--                    </table>-->
+
+
+
+
+
+
+
+
+
+
+
+
                     <table class="mt32"
-                        style="page-break-inside: avoid; width: 40%;height:100px; float:right;border: 1px solid black;">
+                           style="page-break-inside: avoid; width: 40%;height:100px; float:right;border: 1px solid black;">
                         <thead>
                             <tr>
-                                <th colspan="2" name="th_summary" class="text-left tr_td"><span class="mx-2">Order Summary:</span></th>
+                                <th colspan="2" name="th_summary" class="text-left tr_td"><lable class="mx-2">Summary:</lable></th>
                             </tr>
                         </thead>
                         <tbody class="sale_summary">
@@ -187,23 +235,24 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="tr_td" t-field="o.amount_total" />
+<!--                                    <span t-field="doc.amount_total" />-->
+                                    <span class="tr_td mx-1" t-field="o.amount_total"  style="width: 90%; display:block;border-bottom: 1px solid #808080;" />
                                 </td>
                             </tr>
                             <tr>
                                 <td name="td_amount_total" class="text-right">
                                     <span class="tr_td">Fees / Adjustments</span>
                                 </td>
-                                <td> -- </td>
+                                <td class="text-right"><span class="tr_td mx-1" style="width: 90%; display:block;border-bottom: 1px solid #808080;"  /></td>
                             </tr>
-                            <tr>
+                            <tr style="height:35px">
                                 <td name="td_amount_total" class="text-right">
                                     <span>
                                         <strong class="tr_td">Grand Total</strong>
                                     </span>
                                 </td>
                                 <td class="text-right">
-                                    <strong class="tr_td" t-field="o.amount_total" />
+                                    <strong class="tr_td mx-1" style="width: 90%; display:block;border-bottom: 1px solid #808080;" t-field="o.amount_total" />
                                 </td>
                             </tr>
                         </tbody>
