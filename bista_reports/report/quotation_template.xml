@@ -102,13 +102,13 @@
                                     </td>
                                     <td name="td_priceunit" class="text-right"
                                         style="border: 1px solid black;width: 10%;">
-                                        <span class="tr_td" t-field="line.price_unit" />
+                                        <span class="tr_td mx-1" t-field="line.price_unit" />
                                     </td>
                                     <td name="td_subtotal" class="text-right o_price_total"
                                         style="border: 1px solid black;width: 10%;">
-                                        <span t-field="line.price_subtotal" class="font-weight-bold tr_td"
+                                        <span t-field="line.price_subtotal" class="font-weight-bold tr_td mx-1"
                                               groups="account.group_show_line_subtotals_tax_excluded" />
-                                        <span t-field="line.price_total" class="font-weight-bold tr_td"
+                                        <span t-field="line.price_total" class="font-weight-bold tr_td mx-1"
                                               groups="account.group_show_line_subtotals_tax_included" />
                                     </td>
                                 </t>
@@ -123,11 +123,11 @@
                            style="page-break-inside: avoid; width: 55%; height:100px; float:left;border: 1px solid black;">
                         <thead>
                             <tr>
-                                <th name="th_sale_note" class="text-left"><lable class="mx-2 tr_td">Notes:</lable></th>
+                                <th name="th_sale_note" class="text-left tr_td"><span class="mx-2">Notes:</span></th>
                             </tr>
                         </thead>
                         <tbody class="sale_note_tbody">
-                            <tr>
+                            <tr style="height:83px">
                                 <td>
                                     <p t-field="doc.note" class="mx-2 tr_td" />
                                     <p t-if="doc.payment_term_id.note" class="mx-2 tr_td">
@@ -141,7 +141,7 @@
                            style="page-break-inside: avoid; width: 40%;height:100px; float:right;border: 1px solid black;">
                         <thead>
                             <tr>
-                                <th colspan="2" name="th_summary" class="text-left"><lable class="mx-2 tr_td">Summary:</lable></th>
+                                <th colspan="2" name="th_summary" class="text-left tr_td"><lable class="mx-2">Summary:</lable></th>
                             </tr>
                         </thead>
                         <tbody class="sale_summary">
@@ -153,23 +153,23 @@
                                 </td>
                                 <td>
 <!--                                    <span t-field="doc.amount_total" />-->
-                                    <span class="tr_td" t-esc="sum([opt.price_subtotal for opt in doc.order_line if opt.is_delivery == false])" t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}' />
+                                    <span class="tr_td mx-1" t-esc="sum([opt.price_subtotal for opt in doc.order_line if opt.is_delivery == false])" style="width: 90%; display:block;border-bottom: 1px solid #808080;" t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}' />
                                 </td>
                             </tr>
                             <tr>
                                 <td name="td_amount_total" class="text-right">
                                     <span class="tr_td">Shipping &amp; Handling</span>
                                 </td>
-                                <td class="text-right"><span class="tr_td" t-esc="sum([opt.price_subtotal for opt in doc.order_line if opt.is_delivery == true])" t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/></td>
+                                <td class="text-right"><span class="tr_td mx-1" style="width: 90%; display:block;border-bottom: 1px solid #808080;" t-esc="sum([opt.price_subtotal for opt in doc.order_line if opt.is_delivery == true])" t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/></td>
                             </tr>
-                            <tr>
+                            <tr style="height:35px">
                                 <td name="td_amount_total" class="text-right">
                                     <span>
                                         <strong class="tr_td">Grand Total</strong>
                                     </span>
                                 </td>
                                 <td class="text-right">
-                                    <strong class="tr_td" t-field="doc.amount_total" />
+                                    <strong class="tr_td mx-1" style="width: 90%; display:block;border-bottom: 1px solid #808080;" t-field="doc.amount_total" />
                                 </td>
                             </tr>
                         </tbody>
