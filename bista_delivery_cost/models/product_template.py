@@ -16,3 +16,4 @@ class ProductTemplate(models.Model):
                                   help='Define the Product Multiple used in delivery')
     free_shipping = fields.Boolean(string='Free Shipping Item')
     product_manufacturer = fields.Char(string='Product Manufacturer')
+

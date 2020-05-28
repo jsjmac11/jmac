@@ -10,6 +10,7 @@
                 <field name="multiple_price" />
                 <field name="free_shipping" />
                 <field name="product_manufacturer" />
+
             </field>
         </field>
     </record>
