@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Inherit to add get rate button in list view -->
+        <record id="vpicktree_view_tree_inherit" model="ir.ui.view">
+            <field name="name">stock.picking.delivery.tree.inherit.delivery</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.vpicktree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='carrier_id']" position="replace">
+                    <field name="carrier_id" options="{'no_open': True, 'no_create': True}"/>
+                    <field name="delivery_type" invisible="1"/>
+                    <button name="get_shipping_rates" type="object" string="Get rate" attrs="{'invisible': ['|',('delivery_type','in', ('fixed', 'base_on_rule')),('carrier_id','=', False)]}">
+                        </button>
+                    <field name="carrier_price" readonly="1" force_save="1"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_picking_withcarrier_out_form_inherit" model="ir.ui.view">
+            <field name="name">stock.picking.form.inherit.po.qty</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="delivery.view_picking_withcarrier_out_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='carrier_data']" position="inside">
+                    <label for="carrier_price"/>
+                    <div class="o_row" attrs="{'invisible': [('carrier_id','=', False)]}">
+                        <field name="carrier_price" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1" force_save="1"/>
+                        <button name="get_shipping_rates" type="object" attrs="{'invisible': [('delivery_type','in', ('fixed', 'base_on_rule'))]}">
+                            <i class="fa fa-arrow-right mr-1"/>Get rate
+                        </button>
+                    </div>
+                 </xpath>
+
+            </field>
+        </record>
+
+
+    </data>
+</odoo>
+
+                        

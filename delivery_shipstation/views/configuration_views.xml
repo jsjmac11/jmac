@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data>
+
+    <!-- Top menu item -->
+
+    <menuitem name="Shipstation Configurations" id="shipstation_config_menu" parent="delivery.menu_delivery"/>
+    <!-- explicit list view definition -->
+
+    <record model="ir.ui.view" id="shipstation_config_form_view">
+        <field name="name">shipstation.config.form</field>
+        <field name="model">shipstation.config</field>
+        <field name="arch" type="xml">
+            <form string="Shipstation Configuration">
+                <header>
+                    <button name="get_carriers" type="object" string="Get Carrier and Services" />
+                </header>
+                <sheet>
+                    <group>
+                        <field name="server_url"/>
+                        <field name="test_production"/>
+                        <field name="api_key"/>
+                        <field name="api_secret"/>
+                        <field name="active"/>
+                    </group>
+              </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="shipstation_config_tree_view" model="ir.ui.view">
+        <field name="name">shipstation.config.tree</field>
+        <field name="model">shipstation.config</field>
+        <field name="arch" type="xml">
+            <tree string="ShipStation Configuration">
+                <field name="server_url"/>
+                <field name="api_key"/>
+                <field name="api_secret"/>
+                <field name="test_production"/>
+            </tree>
+        </field>
+    </record>
+
+
+
+    <!-- actions opening views on models -->
+    <record id="action_shipstation_config_form" model="ir.actions.act_window">
+        <field name="name">Shipstation Configuration</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">shipstation.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Click to create a new API connection.
+          </p><p>
+            Use API connetion to connect with the Shipstation account for shippings.
+          </p>
+        </field>
+    </record>
+
+    
+
+    <!-- actions -->
+
+    <menuitem name="API Credential" id="shipstation_config_submenu" parent="shipstation_config_menu"
+              action="action_shipstation_config_form"/>
+
+    <record id="shipstation_carrier_tree_view" model="ir.ui.view">
+        <field name="name">shipstation.carrier.tree</field>
+        <field name="model">shipstation.carrier</field>
+        <field name="arch" type="xml">
+            <tree string="ShipStation Carrier" editable="top">
+                <field name="name"/>
+                <field name="code"/>
+            </tree>
+        </field>
+    </record>
+
+
+
+    <!-- actions opening views on models -->
+    <record id="action_shipstation_carrier_form" model="ir.actions.act_window">
+        <field name="name">Shipstation Carrier</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">shipstation.carrier</field>
+        <field name="view_mode">tree</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Click to create a new API connection.
+          </p><p>
+            Use API connetion to connect with the Shipstation account for shippings.
+          </p>
+        </field>
+    </record>
+
+    <!-- actions -->
+
+    <menuitem name="Carriers" id="shipstation_carrier_submenu" parent="shipstation_config_menu"
+              action="action_shipstation_carrier_form"/>
+
+    <record id="shipstation_package_tree_view" model="ir.ui.view">
+        <field name="name">shipstation.package.tree</field>
+        <field name="model">shipstation.package</field>
+        <field name="arch" type="xml">
+            <tree string="ShipStation Package" editable="top">
+                <field name="name"/>
+                <field name="code"/>
+            </tree>
+        </field>
+    </record>
+
+
+
+    <!-- actions opening views on models -->
+    <record id="action_shipstation_package_form" model="ir.actions.act_window">
+        <field name="name">Shipstation Package</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">shipstation.package</field>
+        <field name="view_mode">tree</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Click to create a new Package.
+          </p>
+        </field>
+    </record>
+
+    <!-- actions -->
+
+    <menuitem name="Packages" id="shipstation_package_submenu" parent="shipstation_config_menu"
+              action="action_shipstation_package_form"/>
+
+  </data>
+</odoo>

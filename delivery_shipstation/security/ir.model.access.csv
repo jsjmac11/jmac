@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_shipstation_config,access_shipstation_config,model_shipstation_config,base.group_user,1,1,1,1
+access_shipstation_carrier,access_shipstation_carrier,model_shipstation_carrier,base.group_user,1,1,1,1
+access_shipstation_package,access_shipstation_package,model_shipstation_package,base.group_user,1,1,1,1
+access_automation_rule,access_automation_rule,model_automation_rule,base.group_user,1,1,1,1
+access_automation_rule_line,access_automation_rule_line,model_automation_rule_line,base.group_user,1,1,1,1
