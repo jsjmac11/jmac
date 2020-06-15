@@ -202,7 +202,7 @@ class ShippingQuoteLine(models.Model):
 
     def set_carrier_rate(self):
         self.ensure_one()
-        self.picking_id.write({'carrier_id':self.service_id.id,
+        self.picking_id.with_context(api_call=True).write({'carrier_id':self.service_id.id,
                                 'carrier_price':self.rate,
                                 # 'transit_days':self.transit_days
                                 })
