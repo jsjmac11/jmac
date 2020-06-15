@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- explicit list view definition -->
+
+    <record model="ir.ui.view" id="automation_rule_form_view">
+        <field name="name">automation.rule.form</field>
+        <field name="model">automation.rule</field>
+        <field name="arch" type="xml">
+            <form string="Automation Rule">
+                <sheet>
+                    <group>
+                        
+                        <field name="name"/>
+                        <field name="service_id" options="{'no_open': True, 'no_create': True}" />
+                        <field name="package_id" options="{'no_open': True, 'no_create': True}"/>
+                        <field name="rule_type" widget="radio"/>
+                        <field name="rule_line" attrs="{'invisible':[('rule_type','!=','match')]}">
+                            <tree editable="top">
+                                <field name="fields_option_id"  domain="[('is_selection','=', True)]" options="{'no_open': True, 'no_create': True}"/>
+                                <field name="operator_type_id" options="{'no_open': True, 'no_create': True}"/>
+                                <field name="value"/>
+                            </tree>
+                        </field>
+                    </group>
+                     <div name="options">
+                        <label for="active" string="Is Active? (inactive rules will not process on orders)"/>
+                        <field name="active"/>
+                    </div>
+              </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="automation_rule_tree_view" model="ir.ui.view">
+        <field name="name">automation.rule.tree</field>
+        <field name="model">automation.rule</field>
+        <field name="arch" type="xml">
+            <tree string="Automation Rule">
+                <field name="name"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+
+
+    <!-- actions opening views on models -->
+    <record id="action_automation_rule_form" model="ir.actions.act_window">
+        <field name="name">Automation Rule</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">automation.rule</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Click to create a new Rule.
+          </p><p>
+            Use Automation Rule to set automatic carrier and package into delivery orders.
+          </p>
+        </field>
+    </record>
+
+    <!-- actions -->
+
+    <menuitem name="Automation Rule" id="automation_rule_submenu" parent="shipstation_config_menu"
+              action="action_automation_rule_form" sequence="4"/>
+
+
+    <record id="operator_type_tree_view" model="ir.ui.view">
+        <field name="name">operator.type.tree</field>
+        <field name="model">operator.type</field>
+        <field name="arch" type="xml">
+            <tree string="Operator Type">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="operator"/>
+                <field name="sequence"/>
+                <field name="field_id" widget="many2many_tags"/>
+            </tree>
+        </field>
+    </record>
+
+
+
+    <!-- actions opening views on models -->
+    <record id="action_operator_type_form" model="ir.actions.act_window">
+        <field name="name">Operator Type</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">operator.type</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Click to create a new Operator.
+          </p>
+        </field>
+    </record>
+
+    <!-- actions -->
+
+    <menuitem name="Operator Type" id="operator_type_submenu" parent="shipstation_config_menu"
+              action="action_operator_type_form" sequence="5"/>
+
+    </data>
+</odoo>
+
+                        
