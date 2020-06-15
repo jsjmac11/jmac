@@ -164,14 +164,14 @@ class StockPicking(models.Model):
 		
 	def write(self, vals):
 		pickings = self
-		# logger.error("\n\n\nWRITE CALL!!!!!! %s" % self._context)
-		if 'carrier_id' in vals and 'params' in self._context and self._context.get('params').get('view_type') == 'list':
+		logger.error("\n\n\nWRITE CALL!!!!!! %s %s" % (self._context,vals))
+		if 'carrier_id' in vals and vals.get('carrier_id'):
 				service_id = self.env['delivery.carrier'].search(
 					[('id', '=', vals.get('carrier_id'))])
 				vals['shipstation_carrier_id'] = service_id.shipstation_carrier_id.id if service_id.delivery_type == 'shipstation' else False
 		
 		res = super(StockPicking, pickings).write(vals)
-		if not self._context.get('api_call') and ('params' in self._context and self._context.get('params').get('view_type') == 'list'):
+		if not self._context.get('api_call'):
 			for pick in pickings:
 				if ('carrier_id' in vals and vals.get('carrier_id')) or (pick.carrier_id and\
 					('ship_package_id' in vals or \
@@ -202,7 +202,7 @@ class ShippingQuoteLine(models.Model):
 
     def set_carrier_rate(self):
         self.ensure_one()
-        self.picking_id.write({'carrier_id':self.service_id.id,
+        self.picking_id.with_context(api_call=True).write({'carrier_id':self.service_id.id,
                                 'carrier_price':self.rate,
                                 # 'transit_days':self.transit_days
                                 })
