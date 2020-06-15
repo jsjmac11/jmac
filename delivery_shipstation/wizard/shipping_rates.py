@@ -14,4 +14,4 @@ class StockPickingGetRate(models.TransientModel):
         # use active_ids to add picking line to the selected batch
         self.ensure_one()
         picking_ids = self.env.context.get('active_ids')
-        return self.env['stock.picking'].browse(picking_ids).get_shipping_rates()
+        return self.env['stock.picking'].browse(picking_ids).with_context(api_call=True).get_shipping_rates()
