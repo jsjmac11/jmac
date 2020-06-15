@@ -10,6 +10,9 @@ import requests
 from requests.auth import HTTPBasicAuth
 import base64
 import json
+import logging
+logger = logging.getLogger('Shipstation Log')
+
 
 class ShipstationConfig(models.Model):
 	_name = 'shipstation.config'
@@ -53,6 +56,7 @@ class ShipstationConfig(models.Model):
 					}
 		api_call = requests.request("GET", url, headers=headers, data = payload)
 		response_data = json.loads(api_call.text)
+		logger.error("Carrier Response!!!!!! %s" % response_data)
 		for carrier in response_data:
 			shipstation_carrier_id = shipstation_carrier_obj.search([('code', '=', carrier.get('code'))])
 			if not shipstation_carrier_id:
@@ -65,7 +69,7 @@ class ShipstationConfig(models.Model):
 		return True
 
 	def get_packages(self, shipstation_carrier_id):
-		shipstation_carrier_obj = self.env['shipstation.package']
+		shipstation_package_obj = self.env['shipstation.package']
 		url = self.server_url + "/carriers/listpackages?carrierCode=%s" % shipstation_carrier_id.code
 		payload = {}
 		headers = {
@@ -75,15 +79,17 @@ class ShipstationConfig(models.Model):
 					}
 		api_call = requests.request("GET", url, headers=headers, data = payload)
 		response_data = json.loads(api_call.text)
+		logger.error("Packgae Response!!!!!! %s" % response_data)
 		for carrier in response_data:
-			shipstation_carrier_id = shipstation_carrier_obj.search([('code', '=', carrier.get('code'))])
-			if not shipstation_carrier_id:
-				shipstation_carrier_id = shipstation_carrier_obj.create({
+			package_id = shipstation_package_obj.search([('code', '=', carrier.get('code'))])
+			if not package_id:
+				package_id = shipstation_package_obj.create({
 										'name': carrier.get('name'),
 										'code': carrier.get('code'),
 										'carrierCode': carrier.get('carrierCode'),
 										'domestic': carrier.get('domestic'),
 										'international': carrier.get('international'),
+										'shipstation_carrier_id': shipstation_carrier_id.id
 										})
 		return True
 
@@ -98,6 +104,7 @@ class ShipstationConfig(models.Model):
 					}
 		api_call = requests.request("GET", url, headers=headers, data = payload)
 		response_data = json.loads(api_call.text)
+		logger.error("Services Response!!!!!! %s" % response_data)
 		shipstation_product = self.sudo().env.ref(
             'delivery_shipstation.product_product_delivery_shipstation')
 		shipstation_default_packaging= self.sudo().env.ref(
@@ -105,7 +112,7 @@ class ShipstationConfig(models.Model):
 		for result in response_data:
 			service_id = delivery_obj.search([('shipstation_service_code', '=', result.get('code'))])
 			if not service_id:
-				service_id = delivery_obj.sudo().create({'name': 'Shipstation -> '+ shipstation_carrier_id.name + ' - ' + result.get('name'),
+				service_id = delivery_obj.sudo().create({'name': result.get('name'),
 							                         'product_id': shipstation_product.id,
 							                         'shipstation_service_code': result.get('code'),
 							                         'shipstation_carrier_code': result.get('carrierCode'),

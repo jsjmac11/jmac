@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- add picking to batch  -->
+    <record id="stock_picking_get_rate_form" model="ir.ui.view">
+        <field name="name">stock.picking.get.rate.form</field>
+        <field name="model">stock.picking.get.rate</field>
+        <field name="arch" type="xml">
+            <form string="Get Rates">
+                <separator string="Are you sure to get rates for all selected Orders"/>
+                <footer>
+                    <button name="get_rates" type="object" string="Get Rates" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!--  add picking to batch action -->
+    <record id="stock_picking_get_rate_action" model="ir.actions.act_window">
+        <field name="name">Get Rates</field>
+        <field name="res_model">stock.picking.get.rate</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="stock_picking_get_rate_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <act_window id="stock_picking_get_rate_action_stock_picking"
+        name="Get Rates"
+        res_model="stock.picking.get.rate"
+        binding_model="stock.picking"
+        binding_views="list"
+        view_mode="form" target="new"
+    />
+
+</odoo>

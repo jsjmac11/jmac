@@ -45,3 +45,4 @@ class ShipstationPackage(models.Model):
     name = fields.Char("Name")
     international = fields.Boolean("International")
     domestic = fields.Boolean("Domestic")
+    shipstation_carrier_id = fields.Many2one("shipstation.carrier", 'Shipstation Carrier')

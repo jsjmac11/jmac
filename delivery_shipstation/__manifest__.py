@@ -35,7 +35,8 @@
         'data/shipstation_data.xml',
         'views/configuration_views.xml',
         'views/picking_view.xml',
-        'views/automation_rule_view.xml',
+        # 'views/automation_rule_view.xml',
+        'wizard/shipping_rates.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

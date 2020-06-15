@@ -63,7 +63,7 @@
     <!-- actions -->
 
     <menuitem name="API Credential" id="shipstation_config_submenu" parent="shipstation_config_menu"
-              action="action_shipstation_config_form"/>
+              action="action_shipstation_config_form" sequence="1"/>
 
     <record id="shipstation_carrier_tree_view" model="ir.ui.view">
         <field name="name">shipstation.carrier.tree</field>
@@ -96,7 +96,7 @@
     <!-- actions -->
 
     <menuitem name="Carriers" id="shipstation_carrier_submenu" parent="shipstation_config_menu"
-              action="action_shipstation_carrier_form"/>
+              action="action_shipstation_carrier_form" sequence="2"/>
 
     <record id="shipstation_package_tree_view" model="ir.ui.view">
         <field name="name">shipstation.package.tree</field>
@@ -127,7 +127,7 @@
     <!-- actions -->
 
     <menuitem name="Packages" id="shipstation_package_submenu" parent="shipstation_config_menu"
-              action="action_shipstation_package_form"/>
+              action="action_shipstation_package_form" sequence="3"/>
 
   </data>
 </odoo>
