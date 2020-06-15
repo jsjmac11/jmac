@@ -164,7 +164,7 @@ class StockPicking(models.Model):
 		
 	def write(self, vals):
 		pickings = self
-		logger.error("\n\n\nWRITE CALL!!!!!! %s" % self._context)
+		# logger.error("\n\n\nWRITE CALL!!!!!! %s" % self._context)
 		if 'carrier_id' in vals and 'params' in self._context and self._context.get('params').get('view_type') == 'list':
 				service_id = self.env['delivery.carrier'].search(
 					[('id', '=', vals.get('carrier_id'))])
