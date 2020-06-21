@@ -3,3 +3,7 @@ access_shipstation_config,access_shipstation_config,model_shipstation_config,bas
 access_shipstation_carrier,access_shipstation_carrier,model_shipstation_carrier,base.group_user,1,1,1,1
 access_shipstation_package,access_shipstation_package,model_shipstation_package,base.group_user,1,1,1,1
 access_shipping_quote_line,access_shipping_quote_line,model_shipping_quote_line,base.group_user,1,1,1,1
+access_operator_type,access_operator_type,model_operator_type,base.group_user,1,1,1,1
+access_automation_rule_line,access_automation_rule_line,model_automation_rule_line,base.group_user,1,1,1,1
+access_automation_rule,access_automation_rule,model_automation_rule,base.group_user,1,1,1,1
+access_automation_rule_action,access_automation_rule_action,model_automation_rule_action,base.group_user,1,1,1,1

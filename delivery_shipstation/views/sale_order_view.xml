@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="sale_view_form_rule_apply" model="ir.ui.view">
+            <field name="name">sale.order.form.rule</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <!-- <xpath expr="//field[@name='state']" position="before">
+                    <button string="Apply Rule" type="object" name="apply_automation_rule" class="oe_highlight"/>
+                </xpath> -->
+                <xpath expr="//field[@name='client_order_ref']" position="after">
+                     <field name="rule_id" invisible="1"/>
+                     <field name="order_weight" string="Total Weight" invisible="1"/>
+                     <field name="order_quantity" string="Total Quantity" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

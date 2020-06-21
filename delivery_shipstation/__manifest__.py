@@ -25,9 +25,9 @@
     # for the full list
     'category': 'Inventory',
     'version': '0.1',
-
+    'application': True,
     # any module necessary for this one to work correctly
-    'depends': ['base','delivery','stock'],
+    'depends': ['base', 'delivery', 'stock', 'sale', 'stock_picking_batch'],
 
     # always loaded
     'data': [
@@ -35,8 +35,10 @@
         'data/shipstation_data.xml',
         'views/configuration_views.xml',
         'views/picking_view.xml',
-        # 'views/automation_rule_view.xml',
+        'views/automation_rule_view.xml',
         'wizard/shipping_rates.xml',
+        'views/sale_order_view.xml',
+        'views/picking_batch_view.xml'
     ],
     # only loaded in demonstration mode
     'demo': [

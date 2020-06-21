@@ -7,16 +7,24 @@
             <field name="model">stock.picking</field>
             <field name="inherit_id" ref="stock.vpicktree"/>
             <field name="arch" type="xml">
+                <xpath expr="//field[@name='shipping_weight']" position="replace">
+                </xpath>
                 <xpath expr="//field[@name='carrier_id']" position="replace">
                     <field name="shipstation_carrier_id" optional="hide"/>
                     <field name="carrier_id" options="{'no_open': True, 'no_create': True}"/>
-                    <field name="ship_package_id" domain="[('shipstation_carrier_id', 'in', (shipstation_carrier_id,False))]" options="{'no_open': True, 'no_create': True}"/>
+                    <field name="ship_package_id"
+                           domain="[('shipstation_carrier_id', 'in', (shipstation_carrier_id,False))]"
+                           options="{'no_open': True, 'no_create': True}"/>
                     <field name="length"/>
                     <field name="width"/>
                     <field name="height"/>
+                    <field name="shipping_weight"/>
+                    <field name="insure_package_type"/>
+                    <field name="shipping_weight_oz"/>
                     <field name="delivery_type" invisible="1"/>
-                    <button name="get_shipping_rates" type="object" string="Get rate" attrs="{'invisible': ['|',('delivery_type','in', ('fixed', 'base_on_rule')),('carrier_id','=', False)]}">
-                        </button>
+                    <button name="get_shipping_rates" type="object" string="Get rate"
+                            attrs="{'invisible': ['|',('delivery_type','in', ('fixed', 'base_on_rule')),('carrier_id','=', False)]}">
+                    </button>
                     <field name="carrier_price" readonly="1" force_save="1"/>
                 </xpath>
             </field>
@@ -31,26 +39,32 @@
                     <attribute name="dmain">[(('shipstation_carrier_id', 'in', (shipstation_carrier_id)))]</attribute>
                 </xpath>
                 <xpath expr="//field[@name='carrier_id']" position="before">
-                    <field name="shipstation_carrier_id" />
+                    <field name="shipstation_carrier_id" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
                 </xpath>
                 <xpath expr="//field[@name='carrier_id']" position="after">
-                    <field name="ship_package_id" domain="[('shipstation_carrier_id', 'in', (shipstation_carrier_id,False))]" options="{'no_open': True, 'no_create': True}"/>
-                    <label for="length" string="Size (in)"/>
+                    <field name="ship_package_id" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"
+                           domain="[('shipstation_carrier_id', 'in', (shipstation_carrier_id,False))]"
+                           options="{'no_open': True, 'no_create': True}"/>
+                    <label for="length" string="Size (in)" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
                     <div class="o_row">
-                        <field name="length"/>
+                        <field name="length" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
                         <label for="length" string="L"/>
-                        <field name="width"/>
+                        <field name="width" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
                         <label for="width" string="W"/>
-                        <field name="height"/>
+                        <field name="height" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
                         <label for="height" string="H"/>
                     </div>
+
                 </xpath>
                 <xpath expr="//group[@name='carrier_data']" position="inside">
+                    <field name="confirmation" invisible="1"/>
+                    <field name="shipmentId" invisible="1"/>
                     <label for="carrier_price"/>
-                    <div class="o_row" >
-                        <field name="carrier_price" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1" force_save="1"/>
+                    <div class="o_row">
+                        <field name="carrier_price" widget="monetary" options="{'currency_field': 'currency_id'}"
+                               readonly="1" force_save="1"/>
                     </div>
-                 </xpath>
+                </xpath>
             </field>
         </record>
 
@@ -62,13 +76,15 @@
                 <data>
                     <xpath expr="//group[@name='other_infos']" position="after">
                         <group colspan="1">
-                            <button name="get_shipping_rates" context="{'api_call':True}" colspan="1" type="object" attrs="{'invisible': ['|',('delivery_type','in', ('fixed', 'base_on_rule')),('shipstation_carrier_id', '=', False)]}" class="oe_highlight">
+                            <button name="get_shipping_rates" context="{'api_call':True}" colspan="1" type="object"
+                                    attrs="{'invisible': ['|',('delivery_type','in', ('fixed', 'base_on_rule')),('shipstation_carrier_id', '=', False)]}"
+                                    class="oe_highlight">
                                 <i class="fa fa-arrow-right mr-1"/>Get rate
                             </button>
                         </group>
                         <group colspan="4" string="Service Rates">
-                        <field name="quote_lines" nolabel="1" readonly="1">
-                                <tree>
+                            <field name="quote_lines" nolabel="1" readonly="1">
+                                <tree editable="top">
                                     <field name="shipstation_carrier_id"/>
                                     <field name="service_id" invisible="1"/>
                                     <field name="service_name"/>
@@ -76,7 +92,7 @@
                                     <field name="shipping_cost"/>
                                     <field name="rate"/>
                                     <field name="transit_days" invisible="1"/>
-                                    <button type="object" name="set_carrier_rate" string="Select" icon="fa-check" />
+                                    <button type="object" name="set_carrier_rate" string="Select" icon="fa-check"/>
                                 </tree>
                             </field>
                         </group>
