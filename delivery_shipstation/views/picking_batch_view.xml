@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="stock_picking_batch_form_label" model="ir.ui.view">
+        <field name="name">stock.picking.batch.form.label.inherit</field>
+        <field name="model">stock.picking.batch</field>
+        <field name="inherit_id" ref="stock_picking_batch.stock_picking_batch_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[last()]" position="after">
+                <field name="label_generated" invisible="1"/>
+                <button string="Generate Label" name="generate_label" type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|',('label_generated','=',True),('state', '!=', 'in_progress')]}"/>
+                <button string="Generate Batch Label" name="get_attachment_pdf" type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': [
+                            ('state', '!=', 'in_progress')]}" invisible="1"/>
+                <button string="Void Label" name="cancel_tracking" type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|',('label_generated','=',False),
+                            ('state', '!=', 'in_progress')]}"/>
+
+            </xpath>
+        </field>
+    </record>
+</odoo>
