@@ -40,6 +40,7 @@ class ShipstationConfig(models.Model):
     default_uom = fields.Selection([
         ('imperial', 'Imperial - LBS & Inch'),
         ('metric', 'Metric - Kgs & Cm')], default='imperial')
+    default_carrier_id = fields.Many2one("shipstation.carrier", 'Default Carrier')
 
     def auth_token(self):
         key_secret = self.api_key + ':' + self.api_secret

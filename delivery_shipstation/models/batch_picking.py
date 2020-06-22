@@ -18,7 +18,8 @@ class StockPickingBatch(models.Model):
     def generate_label(self):
         """Generate picking labels individually and combined.
         """
-        for pick in self.picking_ids:
+        # status = self.picking_ids.mapped('state')
+        for pick in self.picking_ids.filtered(lambda p: p.state == 'assigned'):
             pick.send_to_shipper()
         attachment_id, batch_file_name = self.get_attachment_pdf()
         self.label_generated = True
@@ -87,7 +88,6 @@ class StockPickingBatch(models.Model):
         for f_name in f2_name_list:
             os.remove(os.path.join(tempfile.gettempdir(), f_name))
         return [attachment_id, batch_file_name]
-
 
     def cancel_tracking(self):
         """Cancel shipment tracking.

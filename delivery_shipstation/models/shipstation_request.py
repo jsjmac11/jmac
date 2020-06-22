@@ -17,6 +17,9 @@ import json
 from datetime import datetime
 import binascii
 from odoo.exceptions import ValidationError
+import logging
+
+logger = logging.getLogger('Shipstation Request-Response Log')
 
 # This re should match postcodes like 12345 and 12345-6789
 ZIP_ZIP4 = re.compile('^[0-9]{5}(-[0-9]{4})?$')
@@ -31,11 +34,6 @@ def split_zip(zipcode):
         return [zipcode, '']
 
 
-import logging
-
-logger = logging.getLogger('Shipstation Request-Response Log')
-
-
 class ShipstationRequest():
 
     def __init__(self, debug_logger, prod_environment, url, token):
@@ -45,22 +43,8 @@ class ShipstationRequest():
             self.url = url
         else:
             self.url = url
-
         # Basic detail require to authenticate
         self.token = token
-
-    # def GenerateHeaders(self):
-    # 	"""
-    #     To generate Header for Connection Request
-    #     :param length: length of Request Data
-    #     :return: Header Dictionary
-    #     """
-    # 	headers = {
-    # 				'Host': 'ssapi.shipstation.com',
-    # 				'Content-Type': 'application/json',
-    # 				'Authorization' : 'Basic %s' % self.token
-    # 				}
-    # 	return headers
 
     def _convert_phone_number(self, phone):
         phone_pattern = re.compile(r'''
@@ -215,6 +199,10 @@ class ShipstationRequest():
         else:
             gross_weight = carrier._shipstation_convert_weight(picking.weight)
             weight_in_ounces = picking.weight * 35.274
+        if not picking.ship_package_id:
+            raise ValidationError(_("Please select package on order %s!" % picking.name))
+        if not carrier:
+            raise ValidationError(_("Please select carrier on order %s!" % picking.name))
         shipping_detail = {
             "carrierCode": carrier.shipstation_carrier_code,
             "serviceCode": carrier.shipstation_service_code,
@@ -249,7 +237,7 @@ class ShipstationRequest():
         ship_detail = self._shipstation_shipping_data(picking, is_return)
         # request_text = picking.env['ir.qweb'].render('delivery_usps.usps_shipping_common', ship_detail)
         # api = self._api_url(delivery_nature, service)
-        dict_response = {'tracking_number': 0.0, 'price':'0.0', 'currency': "USD", 'shipmentId':''}
+        dict_response = {'tracking_number': 0.0, 'price': '0.0', 'currency': "USD", 'shipmentId': ''}
         headers = {
             'Host': 'ssapi.shipstation.com',
             'Content-Type': 'application/json',
@@ -308,4 +296,3 @@ class ShipstationRequest():
             dict_response['error_message'] = response_text.get('ExceptionMessage')
             return dict_response
         return dict_response
-
