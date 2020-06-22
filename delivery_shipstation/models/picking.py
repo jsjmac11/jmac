@@ -179,22 +179,28 @@ class StockPicking(models.Model):
                 service_id = delivery_obj.search([('shipstation_service_code', '=', data.get('serviceCode'))])
                 if not service_id:
                     service_id = api_config_obj.get_services(ship_carrier_id)
+                pack_name = data.get('serviceName', '').split(' - ')
+                pack_id = False
+                if pack_name:
+                    pack_id = self.env['shipstation.package'].search([('name', '=', pack_name[1])])
                 values = {
                     'shipstation_carrier_id': ship_carrier_id.id,
                     'service_id': service_id.id,
-                    'service_name': data.get('serviceName', 0),
-                    'service_code': data.get('serviceCode', 0),
+                    'service_name': data.get('serviceName', ''),
+                    'service_code': data.get('serviceCode', ''),
                     'shipping_cost': data.get('shipmentCost', 0),
                     'other_cost': data.get('otherCost', 0),
                     'rate': data.get('shipmentCost', 0) + data.get('otherCost', 0),
                     # 'transit_days': result.get('transitdays', 0),
+                    'package_id': pack_id.id if pack_id else False,
                 }
                 service_rate_lst.append(values)
                 line_ids.append((0, 0, values))
             min_service = min(service_rate_lst, key=lambda x: x['rate'])
             picking.with_context(api_call=True).write({'quote_lines': line_ids,
                                                        'carrier_id': min_service.get('service_id', False),
-                                                       'carrier_price': min_service.get('rate', 0)
+                                                       'carrier_price': min_service.get('rate', 0),
+                                                       'ship_package_id': min_service.get('package_id', False),
                                                        })
         return False
 
@@ -239,6 +245,7 @@ class ShippingQuoteLine(models.Model):
         self.ensure_one()
         self.picking_id.with_context(api_call=True).write({'carrier_id': self.service_id.id,
                                                            'carrier_price': self.rate,
-                                                           # 'transit_days':self.transit_days
+                                                           # 'transit_days':self.transit_days,
+                                                           'ship_package_id': self.package_id.id,
                                                            })
         return True

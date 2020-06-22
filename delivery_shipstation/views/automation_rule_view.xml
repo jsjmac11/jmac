@@ -18,9 +18,9 @@
                     <separator string="Criteria" attrs="{'invisible':[('rule_type','!=','match')]}"/>
                         <field name="rule_line" nolabel="1" mode="tree,kanban,form" attrs="{'invisible':[('rule_type','!=','match')]}">
                             <tree editable="bottom">
-                                <field name="category_type" options="{'no_open': True, 'no_create': True}"/>
-                                <field name="operator_type_id" options="{'no_open': True, 'no_create': True}"/>
-                                <field name="value"/>
+                                <field name="category_type" required="1" options="{'no_open': True, 'no_create': True}"/>
+                                <field name="operator_type_id" required="1" options="{'no_open': True, 'no_create': True}"/>
+                                <field name="value" required="1"/>
                             </tree>
                             <kanban class="o_kanban_mobile">
                                 <field name="category_type"/>
@@ -61,14 +61,14 @@
                         <field name="rule_action_line" nolabel="1" mode="tree,kanban,form">
                             <tree editable="bottom">
                                 <field name="action_type" options="{'no_open': True, 'no_create': True}"/>
-                                <field name="service_id" attrs="{'invisible':[('action_type','!=','carrier')]}" options="{'no_open': True, 'no_create': True}"/>
-                                <field name="package_id" attrs="{'invisible':[('action_type','!=','carrier')]}" options="{'no_open': True, 'no_create': True}"/>
-                                <field name="insure_package_type" attrs="{'invisible':[('action_type','!=','insure')]}"/>
-                                <field name="length" attrs="{'invisible':[('action_type','!=','dimension')]}"/>
-                                <field name="width" attrs="{'invisible':[('action_type','!=','dimension')]}"/>
-                                <field name="height" attrs="{'invisible':[('action_type','!=','dimension')]}"/>
-                                <field name="shipping_weight_lb" attrs="{'invisible':[('action_type','!=','weight')]}"/>
-                                <field name="shipping_weight_oz" attrs="{'invisible':[('action_type','!=','weight')]}"/>
+                                <field name="service_id" attrs="{'required':[('action_type','=','carrier')],'invisible':[('action_type','!=','carrier')]}" options="{'no_open': True, 'no_create': True}"/>
+                                <field name="package_id" attrs="{'required':[('action_type','=','carrier')],'invisible':[('action_type','!=','carrier')]}" options="{'no_open': True, 'no_create': True}"/>
+                                <field name="insure_package_type" attrs="{'required':[('action_type','=','insure')],'invisible':[('action_type','!=','insure')]}"/>
+                                <field name="length" attrs="{'required':[('action_type','=','dimension')],'invisible':[('action_type','!=','dimension')]}"/>
+                                <field name="width" attrs="{'required':[('action_type','=','dimension')],'invisible':[('action_type','!=','dimension')]}"/>
+                                <field name="height" attrs="{'required':[('action_type','=','dimension')],'invisible':[('action_type','!=','dimension')]}"/>
+                                <field name="shipping_weight_lb" attrs="{'required':[('action_type','=','weight')],'invisible':[('action_type','!=','weight')]}"/>
+                                <field name="shipping_weight_oz" attrs="{'required':[('action_type','=','weight')],'invisible':[('action_type','!=','weight')]}"/>
                             </tree>
                             <kanban class="o_kanban_mobile">
                                 <field name="action_type" options="{'no_open': True, 'no_create': True}"/>

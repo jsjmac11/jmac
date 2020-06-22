@@ -5,7 +5,8 @@
 # Copyright (C) 2020 (https://www.bistasolutions.com)
 #
 ##############################################################################
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 
 class AutomationRule(models.Model):
@@ -36,6 +37,12 @@ class AutomationRule(models.Model):
     rule_line = fields.One2many("automation.rule.line", 'rule_id', string="Criteria")
     sequence = fields.Integer("Sequence")
     rule_action_line = fields.One2many("automation.rule.action", 'rule_id', string="Action")
+
+    @api.constrains('rule_type', 'active')
+    def _validate_rule_type(self):
+        rule_id = self.env['automation.rule'].search([('rule_type', '=', 'all')])
+        if len(rule_id) > 1:
+            raise ValidationError(_("For rule type 'every order' already exists please inactive old rule first!"))
 
 
 class AutomationRuleLine(models.Model):

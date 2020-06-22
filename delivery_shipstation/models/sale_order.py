@@ -6,8 +6,8 @@
 #
 ##############################################################################
 from odoo import models, fields, api, _
-import operator
-
+import logging
+logger = logging.getLogger('Order Log')
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -26,10 +26,12 @@ class SaleOrder(models.Model):
     order_quantity = fields.Integer(compute='_compute_order_weight', string='Order Quantity')
 
     def apply_automation_rule(self):
-        automation_rule_ids = self.env['automation.rule'].search([])
+        automation_rule_ids = self.env['automation.rule'].search([], order="sequence")
         val_dict = {}
-        for rule in automation_rule_ids:
-            matched_rule = True
+        matched_rule_id = False
+        for rule in automation_rule_ids.filtered(lambda r: r.rule_type == 'match'):
+            matched_rule_id = rule
+            str_c = ''
             for line in rule.rule_line:
                 if line.category_type in ('qty', 'wgt', 'val'):
                     opr_val = str(line.operator_type_id.operator) + ' ' + str(line.value)
@@ -40,39 +42,43 @@ class SaleOrder(models.Model):
                 elif line.category_type == 'val':
                     str_c = str(self.amount_untaxed) + ' ' + opr_val
                 if not eval(str_c):
-                    matched_rule = False
+                    matched_rule_id = False
                     break
-            if matched_rule:
-                val_dict.update({
-                    'rule_id': rule.id,
-                })
-                for action in rule.rule_action_line:
-                    if action.action_type == 'tag':
-                        pass
-                    if action.action_type == 'dimension':
-                        val_dict.update({
-                            'length': action.length,
-                            'width': action.width,
-                            'height': action.height,
-                        })
-                    if action.action_type == 'carrier':
-                        val_dict.update({
-                            'carrier_id': action.service_id and action.service_id.id or False,
-                            'ship_package_id': action.package_id and action.package_id.id or False,
-                        })
-                    if action.action_type == 'insure':
-                        val_dict.update({
-                            'insure_package_type': action.insure_package_type,
-                        })
-                    if action.action_type == 'weight':
-                        val_dict.update({
-                            'shipping_weight': action.shipping_weight_lb,
-                            'shipping_weight_oz': action.shipping_weight_oz,
-                        })
-                self.rule_id = rule.id
+            if matched_rule_id:
                 break
-            else:
-                self.rule_id = False
+        if not matched_rule_id:
+            matched_rule_id = automation_rule_ids.filtered(lambda r: r.rule_type == 'all')
+        if matched_rule_id:
+            val_dict.update({
+                'rule_id': matched_rule_id.id,
+            })
+            for action in matched_rule_id.rule_action_line:
+                if action.action_type == 'tag':
+                    pass
+                if action.action_type == 'dimension':
+                    val_dict.update({
+                        'length': action.length,
+                        'width': action.width,
+                        'height': action.height,
+                    })
+                if action.action_type == 'carrier':
+                    val_dict.update({
+                        'carrier_id': action.service_id and action.service_id.id or False,
+                        'ship_package_id': action.package_id and action.package_id.id or False,
+                    })
+                if action.action_type == 'insure':
+                    val_dict.update({
+                        'insure_package_type': action.insure_package_type,
+                    })
+                if action.action_type == 'weight':
+                    val_dict.update({
+                        'shipping_weight': action.shipping_weight_lb,
+                        'shipping_weight_oz': action.shipping_weight_oz,
+                    })
+            self.rule_id = matched_rule_id.id
+        else:
+            self.rule_id = False
+        logger.info("Rule!!!!!! %s" % val_dict)
         return val_dict
 
     def action_confirm(self):
@@ -84,7 +90,9 @@ class SaleOrder(models.Model):
             if rule_dict:
                 pickings.with_context(api_call=True).write(rule_dict)
             else:
-                default_carrier_id = self.env['shipstation.carrier'].search([('code', '=', 'stamps_com')])
+                api_config_obj = self.env['shipstation.config'].search(
+                    [('active', '=', True)])
+                default_carrier_id = api_config_obj.default_carrier_id
                 pickings.write({'shipstation_carrier_id': default_carrier_id.id,
                                 'carrier_id': False, })
             pickings.with_context(api_call=True).get_shipping_rates()
