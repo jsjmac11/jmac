@@ -239,7 +239,7 @@ class ShippingQuoteLine(models.Model):
     other_cost = fields.Float(string='Other Cost')
     shipping_cost = fields.Float(string="Shipment Cost")
     transit_days = fields.Float(string="Transit Days")
-    package_id = fields.Many2one('shipstation.package', 'Package', is_selection=True)
+    package_id = fields.Many2one('shipstation.package', 'Package')
 
     def set_carrier_rate(self):
         self.ensure_one()
