@@ -6,7 +6,7 @@
 #
 ##############################################################################
 from odoo import api, fields, models, _
-from PyPDF2 import PdfFileMerger
+from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
 import base64, os, tempfile
 
 
@@ -30,20 +30,43 @@ class StockPickingBatch(models.Model):
             'target': 'new',
         }
 
-    def merge_pdfs(self, input_pdfs, output_pdf):
-        """Combine multiple pdfs to single pdf.
-        Args:
-            input_pdfs (list): List of path files.
-            output_pdf (str): Output file.
+    def pdf_page_merge(self, input_files, output_stream):
+        input_streams = []
+        try:
+            # First open all the files, then produce the output file, and
+            # finally close the input files. This is necessary because
+            # the data isn't read from the input files until the write
+            # operation.
+            for input_file in input_files:
+                input_streams.append(open(input_file, 'rb'))
+            pdf_writer = PdfFileWriter()
+            for reader in map(PdfFileReader, input_streams):
+                # reader.getNumPages()
+                for n in range(1):
+                    pdf_writer.addPage(reader.getPage(n))
+            with open(output_stream, 'wb') as fileobj:
+                pdf_writer.write(fileobj)
+                pdf_writer.close()
+        finally:
+            for f in input_streams:
+                f.close()
+            return output_stream
 
-        """
-        pdf_merger = PdfFileMerger()
-        for path in input_pdfs:
-            pdf_merger.append(path)
-        with open(output_pdf, 'wb') as fileobj:
-            pdf_merger.write(fileobj)
-            pdf_merger.close()
-        return output_pdf
+    # This is used for merged multiple files completly.
+    # def merge_pdfs(self, input_pdfs, output_pdf):
+    #     """Combine multiple pdfs to single pdf.
+    #     Args:
+    #         input_pdfs (list): List of path files.
+    #         output_pdf (str): Output file.
+    #
+    #     """
+    #     pdf_merger = PdfFileMerger()
+    #     for path in input_pdfs:
+    #         pdf_merger.append(path)
+    #     with open(output_pdf, 'wb') as fileobj:
+    #         pdf_merger.write(fileobj)
+    #         pdf_merger.close()
+    #     return output_pdf
 
     def get_attachment_pdf(self):
         """
@@ -72,7 +95,8 @@ class StockPickingBatch(models.Model):
         with open(f1_name, 'wb') as f:
             f.write(b'')
             f.close()
-        output_pdf = self.merge_pdfs(f2_name_list, f1_name)
+        # output_pdf = self.merge_pdfs(f2_name_list, f1_name)
+        output_pdf = self.pdf_page_merge(f2_name_list, f1_name)
         cf = open(output_pdf, 'rb')
         attachment_dict = {
             'name': batch_file_name,
