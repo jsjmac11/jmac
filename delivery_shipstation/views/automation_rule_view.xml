@@ -3,192 +3,172 @@
     <data>
         <!-- explicit list view definition -->
 
-    <record model="ir.ui.view" id="automation_rule_form_view">
-        <field name="name">automation.rule.form</field>
-        <field name="model">automation.rule</field>
-        <field name="arch" type="xml">
-            <form string="Automation Rule">
-                <sheet>
-                    <group>
-                        <field name="name"/>
-                        <field name="rule_type" widget="radio"/>
-                        <field name="sequence"/>
-                        
-                    </group>
-                    <separator string="Criteria" attrs="{'invisible':[('rule_type','!=','match')]}"/>
-                        <field name="rule_line" nolabel="1" mode="tree,kanban,form" attrs="{'invisible':[('rule_type','!=','match')]}">
+        <record model="ir.ui.view" id="automation_rule_form_view">
+            <field name="name">automation.rule.form</field>
+            <field name="model">automation.rule</field>
+            <field name="arch" type="xml">
+                <form string="Automation Rule">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="rule_type" widget="radio"/>
+                            <field name="sequence"/>
+
+                        </group>
+                        <separator string="Criteria" attrs="{'invisible':[('rule_type','!=','match')]}"/>
+                        <field name="rule_line" nolabel="1" mode="tree,kanban,form"
+                               attrs="{'invisible':[('rule_type','!=','match')]}">
                             <tree editable="bottom">
-                                <field name="category_type" required="1" options="{'no_open': True, 'no_create': True}"/>
-                                <field name="operator_type_id" required="1" options="{'no_open': True, 'no_create': True}"/>
-                                <field name="value" required="1"/>
+                                <field name="category_type" required="1"/>
+                                <field name="operator_type_id" required="1"
+                                       context="{'category_type':category_type}"
+                                       options="{'no_open': True, 'no_create': True}"/>
+                                <field name="value"
+                                       attrs="{'invisible':[('category_type','in',('product','country','req_service','tag'))], 'required':[('category_type','not in',('product','country','req_service','tag'))]}"/>
+                                <field name="weight_lb"
+                                       attrs="{'invisible':[('category_type','!=','wgt')], 'required':[('category_type','=','wgt')]}"/>
+                                <field name="product_ids" widget="many2many_tags"
+                                       domain="[('type','=','product')]"
+                                       options="{'no_open': True, 'no_create': True}"
+                                       attrs="{'invisible':[('category_type','!=','product')], 'required':[('category_type','=','product')]}"/>
+                                <field name="country_ids" widget="many2many_tags"
+                                       options="{'no_open': True, 'no_create': True}"
+                                       attrs="{'invisible':[('category_type','!=','country')], 'required':[('category_type','=','country')]}"/>
+                                <field name="requested_service_id"
+                                       options="{'no_open': True, 'no_create': True}"
+                                       attrs="{'invisible':[('category_type','!=','req_service')], 'required':[('category_type','=','req_service')]}"/>
+                                <field name="tag_ids" widget="many2many_tags"
+                                       options="{'no_open': True, 'no_create': True}"
+                                       attrs="{'invisible':[('category_type','!=','tag')], 'required':[('category_type','=','tag')]}"/>
+
                             </tree>
-                            <kanban class="o_kanban_mobile">
-                                <field name="category_type"/>
-                                <field name="operator_type_id"/>
-                                <templates>
-                                    <t t-name="kanban-box">
-                                        <div class="oe_kanban_card oe_kanban_global_click">
-                                            <div class="o_kanban_content">
-                                                <t t-esc="record.category_type.value"/>
-                                                <t t-esc="record.operator_type_id.value"/>
-                                                <t t-esc="record.value.value"/>
-                                            </div>
-                                        </div>
-                                    </t>
-                                </templates>
-                            </kanban>
                             <form>
                                 <div>
-                                    <field name="category_type" nolabel="1" options="{'no_open': True, 'no_create': True}"/>
-                                    <field name="operator_type_id" nolabel="1" options="{'no_open': True, 'no_create': True}"/>
-                                    <field name="value" nolabel="1"/>
+                                    <field name="category_type" nolabel="1"
+                                           options="{'no_open': True, 'no_create': True}"/>
+                                    <field name="operator_type_id" nolabel="1"
+                                           options="{'no_open': True, 'no_create': True}"/>
+                                    <field name="value" attrs="{'invisible':[('category_type','=','sku')]}"/>
+                                    <field name="weight_lb" attrs="{'invisible':[('category_type','!=','wgt')]}"/>
+                                    <field name="product_ids" attrs="{'invisible':[('category_type','!=','product')]}"/>
                                 </div>
-<!-- 
-                                <group>
-                                <group>
-                                    <field name="category_type"/>
-                                </group>
-                                <group>
-                                    <field name="operator_type_id"/>
-                                </group>
-                                <group>
-                                    <field name="value"/>
-                                </group>
-                                </group> -->
                             </form>
                         </field>
                         <separator string="Apply Action"/>
                         <field name="rule_action_line" nolabel="1" mode="tree,kanban,form">
                             <tree editable="bottom">
-                                <field name="action_type" options="{'no_open': True, 'no_create': True}"/>
-                                <field name="service_id" attrs="{'required':[('action_type','=','carrier')],'invisible':[('action_type','!=','carrier')]}" options="{'no_open': True, 'no_create': True}"/>
-                                <field name="package_id" attrs="{'required':[('action_type','=','carrier')],'invisible':[('action_type','!=','carrier')]}" options="{'no_open': True, 'no_create': True}"/>
-                                <field name="insure_package_type" attrs="{'required':[('action_type','=','insure')],'invisible':[('action_type','!=','insure')]}"/>
-                                <field name="length" attrs="{'required':[('action_type','=','dimension')],'invisible':[('action_type','!=','dimension')]}"/>
-                                <field name="width" attrs="{'required':[('action_type','=','dimension')],'invisible':[('action_type','!=','dimension')]}"/>
-                                <field name="height" attrs="{'required':[('action_type','=','dimension')],'invisible':[('action_type','!=','dimension')]}"/>
-                                <field name="shipping_weight_lb" attrs="{'required':[('action_type','=','weight')],'invisible':[('action_type','!=','weight')]}"/>
-                                <field name="shipping_weight_oz" attrs="{'required':[('action_type','=','weight')],'invisible':[('action_type','!=','weight')]}"/>
+                                <field name="action_type" required="1"/>
+                                <field name="service_id"
+                                       attrs="{'required':[('action_type','=','carrier')],'invisible':[('action_type','!=','carrier')]}"
+                                       options="{'no_open': True, 'no_create': True}"/>
+                                <field name="package_id"
+                                       attrs="{'required':[('action_type','=','carrier')],'invisible':[('action_type','!=','carrier')]}"
+                                       options="{'no_open': True, 'no_create': True}"/>
+                                <field name="insure_package_type"
+                                       attrs="{'required':[('action_type','=','insure')],'invisible':[('action_type','!=','insure')]}"/>
+                                <field name="length"
+                                       attrs="{'required':[('action_type','=','dimension')],'invisible':[('action_type','!=','dimension')]}"/>
+                                <field name="width"
+                                       attrs="{'required':[('action_type','=','dimension')],'invisible':[('action_type','!=','dimension')]}"/>
+                                <field name="height"
+                                       attrs="{'required':[('action_type','=','dimension')],'invisible':[('action_type','!=','dimension')]}"/>
+                                <field name="shipping_weight_lb"
+                                       attrs="{'required':[('action_type','=','weight')],'invisible':[('action_type','!=','weight')]}"/>
+                                <field name="shipping_weight_oz"
+                                       attrs="{'required':[('action_type','=','weight')],'invisible':[('action_type','!=','weight')]}"/>
+                                <field name="tag_id"
+                                       attrs="{'required':[('action_type','=','tag')],'invisible':[('action_type','!=','tag')]}"
+                                       options="{'no_open': True, 'no_create': True}"/>
+                                <field name="msg"
+                                       attrs="{'required':[('action_type','=','activity')],'invisible':[('action_type','!=','activity')]}"
+                                       options="{'no_open': True, 'no_create': True}"/>
                             </tree>
-                            <kanban class="o_kanban_mobile">
-                                <field name="action_type" options="{'no_open': True, 'no_create': True}"/>
-                                <field name="service_id" options="{'no_open': True, 'no_create': True}"/>
-                                <field name="package_id"/>
-                                <field name="insure_package_type"/>
-                                <field name="length"/>
-                                <field name="width"/>
-                                <field name="height"/>
-                                <field name="shipping_weight_lb"/>
-                                <field name="shipping_weight_oz"/>
-                                <templates>
-                                    <t t-name="kanban-box">
-                                        <div class="oe_kanban_card oe_kanban_global_click">
-                                            <div class="o_kanban_content">
-                                                <t t-esc="record.action_type.value"/>
-                                                <t t-esc="record.service_id.value"/>
-                                                <t t-esc="record.package_id.value"/>
-                                            </div>
-                                        </div>
-                                    </t>
-                                </templates>
-                            </kanban>
                             <form>
                                 <div>
-                                    <field name="action_type" nolabel="1" options="{'no_open': True, 'no_create': True}"/>
-                                    <field name="service_id" nolabel="1" options="{'no_open': True, 'no_create': True}"/>
+                                    <field name="action_type" nolabel="1"
+                                           options="{'no_open': True, 'no_create': True}"/>
+                                    <field name="service_id" nolabel="1"
+                                           options="{'no_open': True, 'no_create': True}"/>
                                     <field name="package_id" nolabel="1"/>
                                 </div>
-<!-- 
-                                <group>
-                                <group>
-                                    <field name="category_type"/>
-                                </group>
-                                <group>
-                                    <field name="operator_type_id"/>
-                                </group>
-                                <group>
-                                    <field name="value"/>
-                                </group>
-                                </group> -->
                             </form>
                         </field>
-                    
-                     <div name="options">
-                        <label for="active" string="Is Active? (inactive rules will not process on orders)"/>
-                        <field name="active"/>
-                    </div>
-              </sheet>
-            </form>
-        </field>
-    </record>
 
-    <record id="automation_rule_tree_view" model="ir.ui.view">
-        <field name="name">automation.rule.tree</field>
-        <field name="model">automation.rule</field>
-        <field name="arch" type="xml">
-            <tree string="Automation Rule">
-                <field name="sequence" widget="handle"/>
-                <field name="name"/>
-                <field name="active"/>
-            </tree>
-        </field>
-    </record>
+                        <div name="options">
+                            <label for="active" string="Is Active? (inactive rules will not process on orders)"/>
+                            <field name="active"/>
+                        </div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
 
-
-
-    <!-- actions opening views on models -->
-    <record id="action_automation_rule_form" model="ir.actions.act_window">
-        <field name="name">Automation Rule</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">automation.rule</field>
-        <field name="view_mode">tree,form</field>
-        <field name="help" type="html">
-          <p class="o_view_nocontent_smiling_face">
-            Click to create a new Rule.
-          </p><p>
-            Use Automation Rule to set automatic carrier and package into delivery orders.
-          </p>
-        </field>
-    </record>
-
-    <!-- actions -->
-
-    <menuitem name="Automation Rule" id="automation_rule_submenu" parent="shipstation_config_menu"
-              action="action_automation_rule_form" sequence="4"/>
+        <record id="automation_rule_tree_view" model="ir.ui.view">
+            <field name="name">automation.rule.tree</field>
+            <field name="model">automation.rule</field>
+            <field name="arch" type="xml">
+                <tree string="Automation Rule">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
 
 
-    <record id="operator_type_tree_view" model="ir.ui.view">
-        <field name="name">operator.type.tree</field>
-        <field name="model">operator.type</field>
-        <field name="arch" type="xml">
-            <tree string="Operator Type" create="0" edit="0" delete="0">
-                <field name="name"/>
-                <field name="operator"/>
-                <field name="sequence"/>
-                <field name="category_type"/>
-            </tree>
-        </field>
-    </record>
+        <!-- actions opening views on models -->
+        <record id="action_automation_rule_form" model="ir.actions.act_window">
+            <field name="name">Automation Rule</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">automation.rule</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Click to create a new Rule.
+                </p>
+                <p>
+                    Use Automation Rule to set automatic carrier and package into delivery orders.
+                </p>
+            </field>
+        </record>
+
+        <!-- actions -->
+
+        <menuitem name="Automation Rule" id="automation_rule_submenu" parent="shipstation_config_menu"
+                  action="action_automation_rule_form" sequence="4"/>
 
 
+        <record id="operator_type_tree_view" model="ir.ui.view">
+            <field name="name">operator.type.tree</field>
+            <field name="model">operator.type</field>
+            <field name="arch" type="xml">
+                <tree string="Operator Type">
+                    <field name="name"/>
+                    <field name="operator"/>
+                    <field name="sequence"/>
+                    <field name="category_type"/>
+                </tree>
+            </field>
+        </record>
 
-    <!-- actions opening views on models -->
-    <record id="action_operator_type_form" model="ir.actions.act_window">
-        <field name="name">Operator Type</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">operator.type</field>
-        <field name="view_mode">tree,form</field>
-        <field name="help" type="html">
-          <p class="o_view_nocontent_smiling_face">
-            Click to create a new Operator.
-          </p>
-        </field>
-    </record>
 
-    <!-- actions -->
+        <!-- actions opening views on models -->
+        <record id="action_operator_type_form" model="ir.actions.act_window">
+            <field name="name">Operator Type</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">operator.type</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Click to create a new Operator.
+                </p>
+            </field>
+        </record>
 
-    <menuitem name="Operator Type" id="operator_type_submenu" parent="shipstation_config_menu"
-              action="action_operator_type_form" sequence="5"/>
+        <!-- actions -->
+
+        <menuitem name="Operator Type" id="operator_type_submenu" parent="shipstation_config_menu"
+                  action="action_operator_type_form" sequence="5" active="False"/>
 
     </data>
 </odoo>

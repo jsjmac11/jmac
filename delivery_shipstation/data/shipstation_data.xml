@@ -28,41 +28,107 @@
         <!-- Operator Type data -->
 
         <record id="operator_type_eq" model="operator.type">
-            <field name="name">Is Equal To...</field>
+            <field name="name">Is Equal To</field>
             <field name="operator">==</field>
             <field name="sequence">1</field>
-            <!-- <field name="field_id"></field> -->
         </record>
-
         <record id="operator_type_uneq" model="operator.type">
-            <field name="name">Is Not Equal To...</field>
+            <field name="name">Is Not Equal To</field>
             <field name="operator">!=</field>
             <field name="sequence">2</field>
-            <!-- <field name="field_id"></field> -->
         </record>
         <record id="operator_type_gt" model="operator.type">
-            <field name="name">Is Greater Than...</field>
+            <field name="name">Is Greater Than</field>
             <field name="operator">&gt;</field>
             <field name="sequence">3</field>
-            <!-- <field name="field_id"></field> -->
         </record>
         <record id="operator_type_gteq" model="operator.type">
-            <field name="name">Is Greater Than or Equal To...</field>
+            <field name="name">Is Greater Than or Equal To</field>
             <field name="operator">&gt;=</field>
             <field name="sequence">4</field>
-            <!-- <field name="field_id"></field> -->
         </record>
         <record id="operator_type_lt" model="operator.type">
-            <field name="name">Is Less Than...</field>
+            <field name="name">Is Less Than</field>
             <field name="operator">&lt;</field>
             <field name="sequence">5</field>
-            <!-- <field name="field_id"></field> -->
         </record>
         <record id="operator_type_lteq" model="operator.type">
-            <field name="name">Is Less Than or Equal To...</field>
+            <field name="name">Is Less Than or Equal To</field>
             <field name="operator">&lt;=</field>
             <field name="sequence">6</field>
-            <!-- <field name="field_id"></field> -->
+        </record>
+
+        <record id="operator_type_product_eq" model="operator.type">
+            <field name="name">Is Equal To</field>
+            <field name="operator">in</field>
+            <field name="sequence">1</field>
+            <field name="category_type">product</field>
+        </record>
+        <record id="operator_type_product_uneq" model="operator.type">
+            <field name="name">Is Not Equal To</field>
+            <field name="operator">not in</field>
+            <field name="sequence">2</field>
+            <field name="category_type">product</field>
+        </record>
+
+        <record id="operator_type_country_eq" model="operator.type">
+            <field name="name">Is Equal To</field>
+            <field name="operator">in</field>
+            <field name="sequence">1</field>
+            <field name="category_type">country</field>
+        </record>
+        <record id="operator_type_country_uneq" model="operator.type">
+            <field name="name">Is Not Equal To</field>
+            <field name="operator">not in</field>
+            <field name="sequence">2</field>
+            <field name="category_type">country</field>
+        </record>
+
+        <record id="operator_type_tag_eq" model="operator.type">
+            <field name="name">Include</field>
+            <field name="operator">in</field>
+            <field name="sequence">1</field>
+            <field name="category_type">tag</field>
+        </record>
+        <record id="operator_type_tag_uneq" model="operator.type">
+            <field name="name">Do Not Include</field>
+            <field name="operator">not in</field>
+            <field name="sequence">2</field>
+            <field name="category_type">tag</field>
+        </record>
+        <record id="operator_type_tag_uneq" model="operator.type">
+            <field name="name">Empty</field>
+            <field name="operator">==</field>
+            <field name="sequence">3</field>
+            <field name="category_type">tag</field>
+        </record>
+
+        <record id="operator_type_service_eq" model="operator.type">
+            <field name="name">Equals</field>
+            <field name="operator">in</field>
+            <field name="sequence">1</field>
+            <field name="category_type">req_service</field>
+        </record>
+        <record id="operator_type_service_uneq" model="operator.type">
+            <field name="name">Is Not Equal To</field>
+            <field name="operator">not in</field>
+            <field name="sequence">2</field>
+            <field name="category_type">req_service</field>
+        </record>
+
+<!--        Order Services Data-->
+
+        <record id="order_service_free" model="order.service">
+            <field name="name">Free Shipping</field>
+        </record>
+        <record id="order_service_standard" model="order.service">
+            <field name="name">Standard Shipping</field>
+        </record>
+        <record id="order_service_expedited" model="order.service">
+            <field name="name">Expedited Shipping</field>
+        </record>
+        <record id="order_service_fast" model="order.service">
+            <field name="name">Need It Fast</field>
         </record>
 
     </data>

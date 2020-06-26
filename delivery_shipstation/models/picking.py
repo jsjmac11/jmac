@@ -72,6 +72,7 @@ class StockPicking(models.Model):
          ('direct_signature', 'Direct Signature')],
         copy=False, string="Confirmation", default='none')
     shipmentId = fields.Char('Label Shipment ID')
+    tag_id = fields.Many2one("order.tag", string="Tags")
 
     @api.onchange('carrier_id')
     def onchange_carrier_id(self):

@@ -59,6 +59,7 @@
                 <xpath expr="//group[@name='carrier_data']" position="inside">
                     <field name="confirmation" invisible="1"/>
                     <field name="shipmentId" invisible="1"/>
+                    <field name="tag_id" readonly="1"/>
                     <label for="carrier_price"/>
                     <div class="o_row">
                         <field name="carrier_price" widget="monetary" options="{'currency_field': 'currency_id'}"

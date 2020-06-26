@@ -38,7 +38,8 @@
         'views/automation_rule_view.xml',
         'wizard/shipping_rates.xml',
         'views/sale_order_view.xml',
-        'views/picking_batch_view.xml'
+        'views/picking_batch_view.xml',
+        'views/product_template_view.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
