@@ -7,7 +7,9 @@
 ##############################################################################
 from odoo import models, fields, api, _
 import logging
+
 logger = logging.getLogger('Order Log')
+
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -24,58 +26,107 @@ class SaleOrder(models.Model):
     rule_id = fields.Many2one("automation.rule", string="Rule", copy=False)
     order_weight = fields.Float(compute='_compute_order_weight', string='Order Weight')
     order_quantity = fields.Integer(compute='_compute_order_weight', string='Order Quantity')
+    rule_message = fields.Text(readonly=True, copy=False)
+    # service_type = fields.Selection([('free', 'Free Shipping'),
+    #                                  ('standard', 'Standard Shipping'),
+    #                                  ('expedited', 'Expedited Shipping'),
+    #                                  ('fast', 'Need It Fast')], string="Service")
+    requested_service_id = fields.Many2one("order.service", string="Service")
+    tag_id = fields.Many2one("order.tag", string="Tags")
 
     def apply_automation_rule(self):
         automation_rule_ids = self.env['automation.rule'].search([], order="sequence")
         val_dict = {}
         matched_rule_id = False
+        rule_matched = []
+        product_id = self.order_line.filtered(lambda l: l.product_id.type != 'service').mapped('product_id')
         for rule in automation_rule_ids.filtered(lambda r: r.rule_type == 'match'):
-            matched_rule_id = rule
-            str_c = ''
+            if not matched_rule_id:
+                matched_rule_id = rule
             for line in rule.rule_line:
-                if line.category_type in ('qty', 'wgt', 'val'):
-                    opr_val = str(line.operator_type_id.operator) + ' ' + str(line.value)
+                str_c = ''
+                operator = str(line.operator_type_id.operator) + ' '
                 if line.category_type == 'qty':
-                    str_c = str(self.order_quantity) + ' ' + opr_val
+                    str_c = str(self.order_quantity)
+                    operator += str(line.value)
                 elif line.category_type == 'wgt':
-                    str_c = str(self.order_weight) + ' ' + opr_val
+                    str_c = str(self.order_weight)
+                    operator += str(line.value)
                 elif line.category_type == 'val':
-                    str_c = str(self.amount_untaxed) + ' ' + opr_val
-                if not eval(str_c):
-                    matched_rule_id = False
-                    break
+                    str_c = str(self.amount_untaxed)
+                    operator += str(line.value)
+                elif line.category_type == 'product':
+                    str_c = str(product_id.id)
+                    operator += str(line.product_ids.ids)
+                elif line.category_type == 'req_service':
+                    str_c = str(self.requested_service_id.id)
+                    operator += str(line.requested_service_id.ids)
+                elif line.category_type == 'tag':
+                    str_c = str(self.tag_id.id)
+                    operator += str(line.tag_ids.ids)
+                elif line.category_type == 'country':
+                    str_c = str(self.partner_id.country_id.id)
+                    operator += str(line.country_ids.ids)
+                elif line.category_type == 'inventory':
+                    str_c = str(product_id.qty_available)
+                    operator += str(line.value)
+                elif line.category_type == 'length':
+                    str_c = str(product_id.length)
+                    operator += str(line.value)
+                elif line.category_type == 'width':
+                    str_c = str(product_id.width)
+                    operator += str(line.value)
+                elif line.category_type == 'height':
+                    str_c = str(product_id.height)
+                    operator += str(line.value)
+                if str_c:
+                    str_c += ' ' + operator
+                    if not eval(str_c):
+                        matched_rule_id = False
+                        break
             if matched_rule_id:
-                break
-        if not matched_rule_id:
-            matched_rule_id = automation_rule_ids.filtered(lambda r: r.rule_type == 'all')
+                rule_matched.append(rule.name)
+                # break
+        global_rule = automation_rule_ids.filtered(lambda r: r.rule_type == 'all')
+        if global_rule:
+            rule_matched.append(global_rule.name)
+            if not matched_rule_id:
+                matched_rule_id = global_rule
         if matched_rule_id:
             val_dict.update({
                 'rule_id': matched_rule_id.id,
             })
             for action in matched_rule_id.rule_action_line:
                 if action.action_type == 'tag':
-                    pass
-                if action.action_type == 'dimension':
+                    val_dict.update({
+                        'tag_id': action.tag_id
+                    })
+                elif action.action_type == 'dimension':
                     val_dict.update({
                         'length': action.length,
                         'width': action.width,
                         'height': action.height,
                     })
-                if action.action_type == 'carrier':
+                elif action.action_type == 'carrier':
                     val_dict.update({
                         'carrier_id': action.service_id and action.service_id.id or False,
                         'ship_package_id': action.package_id and action.package_id.id or False,
                     })
-                if action.action_type == 'insure':
+                elif action.action_type == 'insure':
                     val_dict.update({
                         'insure_package_type': action.insure_package_type,
                     })
-                if action.action_type == 'weight':
+                elif action.action_type == 'weight':
                     val_dict.update({
                         'shipping_weight': action.shipping_weight_lb,
                         'shipping_weight_oz': action.shipping_weight_oz,
                     })
-            self.rule_id = matched_rule_id.id
+                elif action.action_type == 'activity':
+                    pass
+            self.write({'rule_id': matched_rule_id.id,
+                        'rule_message': "Rules Matched are:\n%s \nApplied Rule is: %s" % (", ".join(
+                            rule_matched), matched_rule_id.name) if len(rule_matched) > 1 else False
+                        })
         else:
             self.rule_id = False
         logger.info("Rule!!!!!! %s" % val_dict)
@@ -83,7 +134,7 @@ class SaleOrder(models.Model):
 
     def action_confirm(self):
         res = super(SaleOrder, self).action_confirm()
-        if self.picking_ids:
+        if self.picking_ids and len(self.order_line.filtered(lambda l: l.product_id.type != 'service')) == 1:
             pickings = self.picking_ids.filtered(
                 lambda x: x.state == 'confirmed' or (x.state in ['waiting', 'assigned']))
             rule_dict = self.apply_automation_rule()
@@ -97,3 +148,22 @@ class SaleOrder(models.Model):
                                 'carrier_id': False, })
             pickings.with_context(api_call=True).get_shipping_rates()
         return res
+
+
+class OrderTag(models.Model):
+    _name = "order.tag"
+    _description = "Order Tags"
+
+    name = fields.Char("Name")
+
+    _sql_constraints = [('name_uniq', 'unique(name)', 'Tag name must be unique !')]
+
+
+class OrderService(models.Model):
+    _name = "order.service"
+    _description = "Order Service"
+
+    name = fields.Char("Name")
+    price = fields.Float("Price")
+
+    _sql_constraints = [('name_uniq', 'unique(name)', 'Service name must be unique !')]

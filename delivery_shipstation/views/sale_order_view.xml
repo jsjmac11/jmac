@@ -7,16 +7,87 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
-                <!-- <xpath expr="//field[@name='state']" position="before">
-                    <button string="Apply Rule" type="object" name="apply_automation_rule" class="oe_highlight"/>
-                </xpath> -->
+<!--                <xpath expr="//field[@name='state']" position="before">-->
+<!--                    <button string="Apply Rule" type="object" name="apply_automation_rule" class="oe_highlight"/>-->
+<!--                </xpath>-->
                 <xpath expr="//field[@name='client_order_ref']" position="after">
-                     <field name="rule_id" invisible="1"/>
-                     <field name="order_weight" string="Total Weight" invisible="1"/>
-                     <field name="order_quantity" string="Total Quantity" invisible="1"/>
+                    <label for="rule_id"/>
+                    <div class="o_row">
+                        <field name="rule_id" nolabel="1" readonly="1"/><br/>
+                        <div role="alert" class="alert alert-info"
+                             attrs="{'invisible': [('rule_message', '=', False)]}">
+                            <field name="rule_message" nolabel="1"/>
+                        </div>
+                    </div>
+                    <field name="order_weight" string="Total Weight"/>
+                    <field name="order_quantity" string="Total Quantity"/>
+                </xpath>
+                <xpath expr="//field[@name='payment_term_id']" position="after">
+                    <field name="requested_service_id" string="Requested Service"/>
+                    <field name="tag_id" string="Tag"/>
                 </xpath>
             </field>
         </record>
+
+
+        <record id="order_tag_tree_view" model="ir.ui.view">
+            <field name="name">order.tag.tree</field>
+            <field name="model">order.tag</field>
+            <field name="arch" type="xml">
+                <tree string="Order Tags" editable="top">
+                    <field name="name" required="1"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <!-- actions opening views on models -->
+        <record id="action_order_tag_form" model="ir.actions.act_window">
+            <field name="name">Order Tags</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">order.tag</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Click to create a new Operator.
+                </p>
+            </field>
+        </record>
+
+        <!-- actions -->
+
+        <menuitem name="Order Tags" id="order_tag_submenu" parent="sale.menu_sales_config"
+                  action="action_order_tag_form" sequence="6"/>
+
+
+        <record id="order_service_tree_view" model="ir.ui.view">
+            <field name="name">order.service.tree</field>
+            <field name="model">order.service</field>
+            <field name="arch" type="xml">
+                <tree string="Order Services" editable="top">
+                    <field name="name" required="1"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <!-- actions opening views on models -->
+        <record id="action_order_service_form" model="ir.actions.act_window">
+            <field name="name">Order Services</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">order.service</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Click to create a new Operator.
+                </p>
+            </field>
+        </record>
+
+        <!-- actions -->
+
+        <menuitem name="Order Services" id="order_service_submenu" parent="sale.menu_sales_config"
+                  action="action_order_service_form" sequence="7"/>
 
     </data>
 </odoo>

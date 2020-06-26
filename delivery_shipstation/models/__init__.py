@@ -8,3 +8,4 @@ from . import automation_rule
 from . import sale_order
 from . import shipstation_request
 from . import batch_picking
+from . import product_template
