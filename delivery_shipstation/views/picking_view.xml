@@ -36,7 +36,7 @@
             <field name="inherit_id" ref="delivery.view_picking_withcarrier_out_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='carrier_id']" position="attributes">
-                    <attribute name="dmain">[(('shipstation_carrier_id', 'in', (shipstation_carrier_id)))]</attribute>
+                    <attribute name="domain">[('shipstation_carrier_id', 'in', (shipstation_carrier_id,False))]</attribute>
                 </xpath>
                 <xpath expr="//field[@name='carrier_id']" position="before">
                     <field name="shipstation_carrier_id" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
@@ -82,6 +82,7 @@
                                     class="oe_highlight">
                                 <i class="fa fa-arrow-right mr-1"/>Get rate
                             </button>
+<!--                            <button name="print_packing_slip" invisible="1" type="object" string="Print Slip"/>-->
                         </group>
                         <group colspan="4" string="Service Rates">
                             <field name="quote_lines" nolabel="1" readonly="1">

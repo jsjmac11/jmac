@@ -31,6 +31,7 @@ class ShipstationConfig(models.Model):
             else:
                 self.server_url = 'https://ssapi.shipstation.com'
 
+    name = fields.Char('Name', default='Shipstation Account')
     api_key = fields.Char('Username')
     api_secret = fields.Char('Password')
     server_url = fields.Char('Host')
