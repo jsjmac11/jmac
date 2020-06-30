@@ -225,6 +225,17 @@ class StockPicking(models.Model):
                     pick.get_shipping_rates()
         return res
 
+    def print_packing_slip(self):
+        # Add report in attachments
+        pdf_content = self.env.ref('stock.action_report_delivery').sudo().render_qweb_pdf([self.id])[0]
+        self.env['ir.attachment'].create({
+            'name': _("Packing Slip - %s" % self.name),
+            'type': 'binary',
+            'datas': base64.encodestring(pdf_content),
+            'res_model': self._name,
+            'res_id': self.id
+        })
+
 
 class ShippingQuoteLine(models.Model):
     _name = "shipping.quote.line"
