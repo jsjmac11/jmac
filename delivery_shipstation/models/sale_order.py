@@ -44,13 +44,22 @@ class SaleOrder(models.Model):
                 operator = str(line.operator_type_id.operator) + ' '
                 if line.category_type == 'qty':
                     str_c = str(self.order_quantity)
-                    operator += str(line.value)
+                    if line.operator_type_id.operator in ('in', 'not in'):
+                        operator += str([line.value])
+                    else:
+                        operator += str(line.value)
                 elif line.category_type == 'wgt':
                     str_c = str(self.order_weight)
-                    operator += str(line.total_weight)
+                    if line.operator_type_id.operator in ('in', 'not in'):
+                        operator += str([line.total_weight])
+                    else:
+                        operator += str(line.total_weight)
                 elif line.category_type == 'val':
                     str_c = str(self.amount_untaxed)
-                    operator += str(line.value)
+                    if line.operator_type_id.operator in ('in', 'not in'):
+                        operator += str([line.value])
+                    else:
+                        operator += str(line.value)
                 elif line.category_type == 'product':
                     str_c = str(product_id.id)
                     operator += str(line.product_ids.ids)
@@ -65,16 +74,28 @@ class SaleOrder(models.Model):
                     operator += str(line.country_ids.ids)
                 elif line.category_type == 'inventory':
                     str_c = str(product_id.qty_available)
-                    operator += str(line.value)
+                    if line.operator_type_id.operator in ('in', 'not in'):
+                        operator += str([line.value])
+                    else:
+                        operator += str(line.value)
                 elif line.category_type == 'length':
                     str_c = str(product_id.length)
-                    operator += str(line.value)
+                    if line.operator_type_id.operator in ('in', 'not in'):
+                        operator += str([line.value])
+                    else:
+                        operator += str(line.value)
                 elif line.category_type == 'width':
                     str_c = str(product_id.width)
-                    operator += str(line.value)
+                    if line.operator_type_id.operator in ('in', 'not in'):
+                        operator += str([line.value])
+                    else:
+                        operator += str(line.value)
                 elif line.category_type == 'height':
                     str_c = str(product_id.height)
-                    operator += str(line.value)
+                    if line.operator_type_id.operator in ('in', 'not in'):
+                        operator += str([line.value])
+                    else:
+                        operator += str(line.value)
                 if str_c:
                     str_c += ' ' + operator
                     if not eval(str_c):
