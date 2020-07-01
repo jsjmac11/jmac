@@ -85,15 +85,16 @@ class OperatorType(models.Model):
     @api.model
     def _name_search(self, name, args=None, operator='ilike', limit=100,
                      name_get_uid=None):
+        args = args or []
         ctx = self._context.copy()
+        res = super(OperatorType, self)._name_search(
+            name, args, operator=operator, limit=limit,
+            name_get_uid=name_get_uid)
         if ctx.get('category_type', False) in ('product', 'country', 'tag', 'req_service'):
             domain = [('name', 'in', ('Is Equal To', 'Is Not Equal To'))]
-        else:
-            domain = [('category_type', '=', False)]
-        if args:
-            domain = domain + args
-        res = self.search(domain, limit=limit)
-        return res.name_get()
+            res = self.search(domain + args, limit=limit)
+            return res.name_get()
+        return res
 
 
 class AutomationRuleAction(models.Model):
