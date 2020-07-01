@@ -24,9 +24,14 @@
                                        context="{'category_type':category_type}"
                                        options="{'no_open': True, 'no_create': True}"/>
                                 <field name="value"
-                                       attrs="{'invisible':[('category_type','in',('product','country','req_service','tag'))], 'required':[('category_type','not in',('product','country','req_service','tag'))]}"/>
+                                       attrs="{'invisible':[('category_type','in',('product','country','req_service','tag','wgt'))], 'required':[('category_type','not in',('product','country','req_service','tag','wgt'))]}"/>
                                 <field name="weight_lb"
                                        attrs="{'invisible':[('category_type','!=','wgt')], 'required':[('category_type','=','wgt')]}"/>
+                                <field name="weight_oz"
+                                       attrs="{'invisible':[('category_type','!=','wgt')], 'required':[('category_type','=','wgt')]}"/>
+                                <field name="total_weight" readonly="1" force_save="1"
+                                       attrs="{'invisible':[('category_type','!=','wgt')]}"/>
+
                                 <field name="product_ids" widget="many2many_tags"
                                        domain="[('type','=','product')]"
                                        options="{'no_open': True, 'no_create': True}"

@@ -27,21 +27,17 @@ class SaleOrder(models.Model):
     order_weight = fields.Float(compute='_compute_order_weight', string='Order Weight')
     order_quantity = fields.Integer(compute='_compute_order_weight', string='Order Quantity')
     rule_message = fields.Text(readonly=True, copy=False)
-    # service_type = fields.Selection([('free', 'Free Shipping'),
-    #                                  ('standard', 'Standard Shipping'),
-    #                                  ('expedited', 'Expedited Shipping'),
-    #                                  ('fast', 'Need It Fast')], string="Service")
     requested_service_id = fields.Many2one("order.service", string="Service")
     tag_id = fields.Many2one("order.tag", string="Tags")
 
-    def apply_automation_rule(self):
+    def apply_automation_rule(self, picking=None):
         automation_rule_ids = self.env['automation.rule'].search([], order="sequence")
         val_dict = {}
         matched_rule_id = False
         rule_matched = []
         product_id = self.order_line.filtered(lambda l: l.product_id.type != 'service').mapped('product_id')
         for rule in automation_rule_ids.filtered(lambda r: r.rule_type == 'match'):
-            if not matched_rule_id:
+            if not rule_matched:
                 matched_rule_id = rule
             for line in rule.rule_line:
                 str_c = ''
@@ -51,7 +47,7 @@ class SaleOrder(models.Model):
                     operator += str(line.value)
                 elif line.category_type == 'wgt':
                     str_c = str(self.order_weight)
-                    operator += str(line.value)
+                    operator += str(line.total_weight)
                 elif line.category_type == 'val':
                     str_c = str(self.amount_untaxed)
                     operator += str(line.value)
@@ -84,12 +80,15 @@ class SaleOrder(models.Model):
                     if not eval(str_c):
                         matched_rule_id = False
                         break
+
             if matched_rule_id:
-                rule_matched.append(rule.name)
+                rule_matched.append(rule)
                 # break
+        if rule_matched:
+            matched_rule_id = rule_matched[0]
         global_rule = automation_rule_ids.filtered(lambda r: r.rule_type == 'all')
         if global_rule:
-            rule_matched.append(global_rule.name)
+            rule_matched.append(global_rule)
             if not matched_rule_id:
                 matched_rule_id = global_rule
         if matched_rule_id:
@@ -99,7 +98,7 @@ class SaleOrder(models.Model):
             for action in matched_rule_id.rule_action_line:
                 if action.action_type == 'tag':
                     val_dict.update({
-                        'tag_id': action.tag_id
+                        'tag_id': action.tag_id.id
                     })
                 elif action.action_type == 'dimension':
                     val_dict.update({
@@ -121,11 +120,22 @@ class SaleOrder(models.Model):
                         'shipping_weight': action.shipping_weight_lb,
                         'shipping_weight_oz': action.shipping_weight_oz,
                     })
-                elif action.action_type == 'activity':
-                    pass
+                elif action.action_type == 'activity' and picking:
+                    activity_type_id = self.env.ref('mail.mail_activity_data_todo').id
+                    activity = self.env['mail.activity'].create({
+                        'res_id': picking.id,
+                        'res_model_id': self.env['ir.model']._get(picking._name).id,
+                        'summary': action.msg,
+                        'note': action.msg,
+                        'date_deadline': fields.Datetime.now(),
+                        'activity_type_id': activity_type_id,
+                        'user_id': self.env.user.id,
+                    })
+                    # activity._onchange_activity_type_id()
+                    # pass
             self.write({'rule_id': matched_rule_id.id,
                         'rule_message': "Rules Matched are:\n%s \nApplied Rule is: %s" % (", ".join(
-                            rule_matched), matched_rule_id.name) if len(rule_matched) > 1 else False
+                            [r.name for r in rule_matched]), matched_rule_id.name) if len(rule_matched) > 1 else False
                         })
         else:
             self.rule_id = False
@@ -137,15 +147,19 @@ class SaleOrder(models.Model):
         if self.picking_ids and len(self.order_line.filtered(lambda l: l.product_id.type != 'service')) == 1:
             pickings = self.picking_ids.filtered(
                 lambda x: x.state == 'confirmed' or (x.state in ['waiting', 'assigned']))
-            rule_dict = self.apply_automation_rule()
-            if rule_dict:
-                pickings.with_context(api_call=True).write(rule_dict)
-            else:
+            rule_dict = self.apply_automation_rule(picking=pickings)
+            if 'carrier_id' not in rule_dict:
                 api_config_obj = self.env['shipstation.config'].search(
                     [('active', '=', True)])
                 default_carrier_id = api_config_obj.default_carrier_id
-                pickings.write({'shipstation_carrier_id': default_carrier_id.id,
-                                'carrier_id': False, })
+                rule_dict.update({'shipstation_carrier_id': default_carrier_id.id,
+                                  'carrier_id': False, })
+            if rule_dict:
+                pickings.with_context(api_call=True).write(rule_dict)
+
+            # else:
+            #     pickings.write({'shipstation_carrier_id': default_carrier_id.id,
+            #                     'carrier_id': False, })
             pickings.with_context(api_call=True).get_shipping_rates()
         return res
 

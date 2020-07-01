@@ -51,15 +51,25 @@ class AutomationRuleLine(models.Model):
     category_type = fields.Selection(categ_type, default='qty', copy=False, string="Type")
     operator_type_id = fields.Many2one('operator.type', string='Operator')
     value = fields.Float(string="Value")
-    weight_lb = fields.Float("Weight(lb)")
+    weight_oz = fields.Float(string="Weight(oz)")
+    weight_lb = fields.Integer("Weight(lb)")
+    total_weight = fields.Float("Total Weight")
     product_ids = fields.Many2many("product.product", string="Item SKU")
     country_ids = fields.Many2many("res.country", string="Country")
-    # service_type = fields.Selection([('free', 'Free Shipping'),
-    #                                  ('standard', 'Standard Shipping'),
-    #                                  ('expedited', 'Expedited Shipping'),
-    #                                  ('fast', 'Need It Fast')], string="Service")
     requested_service_id = fields.Many2one("order.service", string="Service")
     tag_ids = fields.Many2many("order.tag", string="Tags")
+
+    @api.onchange('weight_oz', 'weight_lb')
+    def onchange_weight(self):
+        """
+        Get total weight and validation.
+        :return:
+        """
+        if self.weight_oz >= 1 or self.weight_oz < 0:
+            raise ValidationError(_("Please enter Weight(oz) between 0 and 1!"))
+        if self.weight_lb < 0:
+            raise ValidationError(_("Weight(lb) should not be negative!"))
+        self.total_weight = self.weight_lb + self.weight_oz
 
 
 class OperatorType(models.Model):
@@ -75,9 +85,6 @@ class OperatorType(models.Model):
     @api.model
     def _name_search(self, name, args=None, operator='ilike', limit=100,
                      name_get_uid=None):
-        # operator = super(OperatorType, self)._name_search(
-        #     name, args, operator=operator, limit=limit,
-        #     name_get_uid=name_get_uid)
         ctx = self._context.copy()
         if ctx.get('category_type', False) in ('product', 'country', 'tag', 'req_service'):
             domain = [('category_type', '=', ctx.get('category_type'))]
