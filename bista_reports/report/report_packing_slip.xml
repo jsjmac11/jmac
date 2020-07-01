@@ -1,127 +1,138 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
+    <data>
+        <report
+            string="Packing Slip"
+            id="stock.action_report_delivery"
+            model="stock.picking"
+            report_type="qweb-pdf"
+            name="stock.report_deliveryslip"
+            file="stock.report_deliveryslip"
+            print_report_name="'Packing Slip - %s - %s' % (object.partner_id.name or '', object.name)"
+        />
 
-    <template id="stock.report_delivery_document">
-        <t t-call="web.html_container">
-            <t t-call="web.external_layout">
-                <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)"/>
-                <t t-set="partner" t-value="o.partner_id or (o.move_lines and o.move_lines[0].partner_id) or False"/>
-                <t t-if="partner" name="partner_header">
-                    <t t-set="address">
-                        <div t-esc="partner"
-                             t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True}'/>
+        <template id="stock.report_delivery_document">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)"/>
+                    <t t-set="partner"
+                       t-value="o.partner_id or (o.move_lines and o.move_lines[0].partner_id) or False"/>
+                    <t t-if="partner" name="partner_header">
+                        <t t-set="address">
+                            <div t-esc="partner"
+                                 t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True}'/>
+                        </t>
                     </t>
-                </t>
 
-                <div class="page">
-                    <!--                    <div style="font-family:Arial;font-size: 11px;">-->
-                    <table class="table-sm" style="font-family:Arial;font-size: 11px;">
-                        <tr style="line-height: 10px;">
-                            <td style="width: 10%;">
-                                <strong>Ship To:</strong>
-                            </td>
-                            <td style="width: 40%;">
-                                <span t-if="o.partner_id.parent_id" t-field="o.partner_id.parent_id.name"/>
-                                <span t-field="o.partner_id.name"/>
-                            </td>
-                            <td class="text-right" style="width: 15%;border-right: 1px solid black;">
-                                <strong>Order#</strong>
-                            </td>
-                            <td style="width: 35%;">
-                                <span t-field="o.name"/>
-                            </td>
-                        </tr>
-                        <tr style="line-height: 10px;">
-                            <td style="width: 15%;">
-                            </td>
-                            <td style="width: 40%;">
-                                <span t-field="o.partner_id.street"/>
-                                <span t-field="o.partner_id.street2"/>
-                            </td>
-                            <td class="text-right" style="width: 15%;border-right: 1px solid black;">
-                                <strong>Date</strong>
-                            </td>
-                            <td style="width: 30%;">
-                                <span t-field="o.scheduled_date" t-options='{"widget": "date"}'/>
-                            </td>
-                        </tr>
-                        <tr style="line-height: 10px;">
-                            <td style="width: 15%;">
-                            </td>
-                            <td style="width: 40%;">
-                                <span t-field="o.partner_id.city"/>
-                                <span t-field="o.partner_id.state_id.code"/>
-                                <span t-field="o.partner_id.zip"/>
-                                <span t-field="o.partner_id.country_id.code"/>
-                            </td>
-                            <td class="text-right" style="width: 15%;border-right: 1px solid black;">
-                                <strong>Buyer</strong>
-                            </td>
-                            <td style="width: 30%;">
-                                <span t-field="o.partner_id.name"/>
-                            </td>
-                        </tr>
-                        <tr style="line-height: 10px;">
-                            <td style="width: 15%;">
-                            </td>
-                            <td style="width: 40%;">
-                                <span t-field="o.partner_id.phone"/>
-                            </td>
-                            <td class="text-right" style="width: 15%;border-right: 1px solid black;">
-                                <strong>Service</strong>
-                            </td>
-                            <td style="width: 30%;">
-                                <t t-if="o.sale_id.requested_service_id">
-                                    <span t-if="o.sale_id.requested_service_id"
-                                          t-field="o.sale_id.requested_service_id.name"/>
-                                </t>
-                                <t t-if="not o.sale_id.requested_service_id">
-                                    <span/>
-                                </t>
-                            </td>
-                        </tr>
-
-                    </table>
-                    <!--                    </div>-->
-                    <br/>
-                    <table class="table-sm" style="font-family:Arial;font-size: 11px;width: 100%;"
-                           name="stock_move_table">
-                        <thead>
-                            <tr style="border: 1px solid black;">
-                                <th name="th_sm_quantity" style="width: 10%;border-right: 1px solid black;">
-                                    <strong>QTY</strong>
-                                </th>
-                                <th name="th_sm_product" style="width: 35%;border-right: 1px solid black;">
-                                    <strong>Item</strong>
-                                </th>
-                                <th name="th_sm_product_desc" style="width: 55%;">
-                                    <strong>Description</strong>
-                                </th>
-
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-set="lines" t-value="o.move_lines.filtered(lambda x: x.product_uom_qty)"/>
-                            <tr t-foreach="lines" t-as="move" style="border-bottom: 1px solid black;">
+                    <div class="page">
+                        <!--                    <div style="font-family:Arial;font-size: 11px;">-->
+                        <table class="table-sm" style="font-family:Arial;font-size: 11px;">
+                            <tr style="line-height: 10px;">
                                 <td style="width: 10%;">
-                                    <span t-field="move.product_uom_qty"/>
+                                    <strong>Ship To:</strong>
+                                </td>
+                                <td style="width: 40%;">
+                                    <span t-if="o.partner_id.parent_id" t-field="o.partner_id.parent_id.name"/>
+                                    <span t-field="o.partner_id.name"/>
+                                </td>
+                                <td class="text-right" style="width: 15%;border-right: 1px solid black;">
+                                    <strong>Order#</strong>
                                 </td>
                                 <td style="width: 35%;">
-                                    <span t-field="move.product_id.name"/>
-                                </td>
-                                <td style="width: 55%;">
-                                    <span t-field="move.product_id.description"/>
+                                    <span t-field="o.name"/>
                                 </td>
                             </tr>
-                        </tbody>
-                    </table>
-                </div>
+                            <tr style="line-height: 10px;">
+                                <td style="width: 15%;">
+                                </td>
+                                <td style="width: 40%;">
+                                    <span t-field="o.partner_id.street"/>
+                                    <span t-field="o.partner_id.street2"/>
+                                </td>
+                                <td class="text-right" style="width: 15%;border-right: 1px solid black;">
+                                    <strong>Date</strong>
+                                </td>
+                                <td style="width: 30%;">
+                                    <span t-field="o.scheduled_date" t-options='{"widget": "date"}'/>
+                                </td>
+                            </tr>
+                            <tr style="line-height: 10px;">
+                                <td style="width: 15%;">
+                                </td>
+                                <td style="width: 40%;">
+                                    <span t-field="o.partner_id.city"/>
+                                    <span t-field="o.partner_id.state_id.code"/>
+                                    <span t-field="o.partner_id.zip"/>
+                                    <span t-field="o.partner_id.country_id.code"/>
+                                </td>
+                                <td class="text-right" style="width: 15%;border-right: 1px solid black;">
+                                    <strong>Buyer</strong>
+                                </td>
+                                <td style="width: 30%;">
+                                    <span t-field="o.partner_id.name"/>
+                                </td>
+                            </tr>
+                            <tr style="line-height: 10px;">
+                                <td style="width: 15%;">
+                                </td>
+                                <td style="width: 40%;">
+                                    <span t-field="o.partner_id.phone"/>
+                                </td>
+                                <td class="text-right" style="width: 15%;border-right: 1px solid black;">
+                                    <strong>Service</strong>
+                                </td>
+                                <td style="width: 30%;">
+                                    <t t-if="o.sale_id.requested_service_id">
+                                        <span t-if="o.sale_id.requested_service_id"
+                                              t-field="o.sale_id.requested_service_id.name"/>
+                                    </t>
+                                    <t t-if="not o.sale_id.requested_service_id">
+                                        <span/>
+                                    </t>
+                                </td>
+                            </tr>
+
+                        </table>
+                        <!--                    </div>-->
+                        <br/>
+                        <table class="table-sm" style="font-family:Arial;font-size: 11px;width: 100%;"
+                               name="stock_move_table">
+                            <thead>
+                                <tr style="border: 1px solid black;">
+                                    <th name="th_sm_quantity" style="width: 10%;border-right: 1px solid black;">
+                                        <strong>QTY</strong>
+                                    </th>
+                                    <th name="th_sm_product" style="width: 35%;border-right: 1px solid black;">
+                                        <strong>Item</strong>
+                                    </th>
+                                    <th name="th_sm_product_desc" style="width: 55%;">
+                                        <strong>Description</strong>
+                                    </th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="lines" t-value="o.move_lines.filtered(lambda x: x.product_uom_qty)"/>
+                                <tr t-foreach="lines" t-as="move" style="border-bottom: 1px solid black;">
+                                    <td style="width: 10%;">
+                                        <span t-esc="round(move.product_uom_qty)"/>
+                                    </td>
+                                    <td style="width: 35%;">
+                                        <span t-field="move.product_id.name"/>
+                                    </td>
+                                    <td style="width: 55%;">
+                                        <span t-field="move.product_id.description"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
             </t>
-        </t>
-    </template>
+        </template>
 
-    <record id="stock.action_report_delivery" model="ir.actions.report">
-        <field name="paperformat_id" ref="bista_reports.paperformat_packing_slip"/>
-    </record>
-
+        <record id="stock.action_report_delivery" model="ir.actions.report">
+            <field name="paperformat_id" ref="bista_reports.paperformat_packing_slip"/>
+        </record>
+    </data>
 </odoo>
