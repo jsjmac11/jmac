@@ -80,17 +80,19 @@ class OperatorType(models.Model):
     operator = fields.Char('operator')
     sequence = fields.Char("Sequence")
     field_id = fields.Many2many('ir.model.fields', string='Field')
-    category_type = fields.Selection(categ_type, default='qty', copy=False, string="Type")
+    category_type = fields.Selection(categ_type, copy=False, string="Type")
 
     @api.model
     def _name_search(self, name, args=None, operator='ilike', limit=100,
                      name_get_uid=None):
         ctx = self._context.copy()
         if ctx.get('category_type', False) in ('product', 'country', 'tag', 'req_service'):
-            domain = [('category_type', '=', ctx.get('category_type'))]
+            domain = [('name', 'in', ('Is Equal To', 'Is Not Equal To'))]
         else:
             domain = [('category_type', '=', False)]
-        res = self.search(domain + args, limit=limit)
+        if args:
+            domain = domain + args
+        res = self.search(domain, limit=limit)
         return res.name_get()
 
 

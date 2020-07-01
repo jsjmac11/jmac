@@ -147,11 +147,11 @@
             <field name="name">operator.type.tree</field>
             <field name="model">operator.type</field>
             <field name="arch" type="xml">
-                <tree string="Operator Type">
-                    <field name="name"/>
-                    <field name="operator"/>
-                    <field name="sequence"/>
-                    <field name="category_type"/>
+                <tree string="Operator Type" editable="top" create="0" delete="0">
+                    <field name="name" readonly="1"/>
+                    <field name="operator" readonly="1"/>
+                    <field name="sequence" invisible="1"/>
+                    <field name="category_type" invisible="1"/>
                 </tree>
             </field>
         </record>
@@ -173,7 +173,7 @@
         <!-- actions -->
 
         <menuitem name="Operator Type" id="operator_type_submenu" parent="shipstation_config_menu"
-                  action="action_operator_type_form" sequence="5" active="False"/>
+                  action="action_operator_type_form" sequence="5" groups="base.group_no_one"/>
 
     </data>
 </odoo>
