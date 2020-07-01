@@ -2,39 +2,57 @@
 <odoo>
     <data>
         <template id="web.external_layout_standard">
-
             <div class="header border: none !important;">
-                <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % to_text(company.logo)"
-                    class="pull-left" style="max-height: 130px;" />
-                <div class="pull-left mx-3 company_address" style="font-family:Arial;font-size: 12px;">
-                    <div>
-                        <strong t-field="company.partner_id.name" />
-                        <span t-field="company.partner_id"
-                            t-options='{"widget": "contact", "fields": ["address", "phone","email"], "no_marker": True, "phone_icons": True}' />
+                <t t-if="o._name not in ('stock.picking')">
+                    <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % to_text(company.logo)"
+                         class="pull-left" style="max-height: 130px;"/>
+                    <div class="pull-left mx-3 company_address" style="font-family:Arial;font-size: 12px;">
+                        <div>
+                            <strong t-field="company.partner_id.name"/>
+                            <span t-field="company.partner_id"
+                                  t-options='{"widget": "contact", "fields": ["address", "phone","email"], "no_marker": True, "phone_icons": True}'/>
+                        </div>
                     </div>
-                </div>
+                </t>
+                <t t-if="o._name in ('stock.picking')">
+
+                    <div class="pull-left company_address" style="font-family:Arial;font-size: 12px;">
+                        <div>
+                            <strong t-field="company.partner_id.name"/>
+                            <span t-field="company.partner_id"
+                                  t-options='{"widget": "contact", "fields": ["address", "phone"], "no_marker": True}'/>
+                        </div>
+                    </div>
+                    <div class="pull-right">
+                        <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % to_text(company.logo)"
+                             class="pull-right" style="max-height: 80px;"/>
+                    </div>
+                </t>
                 <t t-if="o._name == 'sale.order'">
                     <style>
-                    .tr_td{
-                    font-family:Arial;font-size: 12px;
-                    }
-<!--                        table, td, th {-->
-<!--  border: 1px solid black;-->
-<!--}-->
-                </style>
-                    <div  class="pull-right">
+                        .tr_td{
+                        font-family:Arial;font-size: 12px;
+                        }
+                    </style>
+                    <div class="pull-right">
                         <div>
                             <table style="width:260px">
-                                <th colspan="2" class="text-right" style="font-family:Arial;font-size: 25px;font-weight: bold;">Quote</th>
+                                <th colspan="2" class="text-right"
+                                    style="font-family:Arial;font-size: 25px;font-weight: bold;">Quote
+                                </th>
                                 <tr>
                                     <td class="text-right">
                                         <strong style="font-family:Arial;font-size: 15px;font-weight: bold;">
-                                            <span  t-if="doc.state not in ['draft','sent']" class="tr_td">Order</span>
-                                            <span style="font-family:Arial;font-size: 14px;font-weight: bold;" t-if="doc.state in ['draft','sent']" class="tr_td">Quote ID</span>
+                                            <span t-if="doc.state not in ['draft','sent']" class="tr_td">Order</span>
+                                            <span style="font-family:Arial;font-size: 14px;font-weight: bold;"
+                                                  t-if="doc.state in ['draft','sent']" class="tr_td">Quote ID
+                                            </span>
                                         </strong>
                                     </td>
                                     <td class="text-right">
-                                        <strong class="pull-right tr_td" style="width: 90%;display:block;border-bottom: 1px solid #808080;" t-field="doc.name" />
+                                        <strong class="pull-right tr_td"
+                                                style="width: 90%;display:block;border-bottom: 1px solid #808080;"
+                                                t-field="doc.name"/>
                                     </td>
                                 </tr>
 
@@ -42,8 +60,9 @@
                                     <td class="text-right">
                                         <span class="tr_td">Sales Rep</span>
                                     </td>
-                                    <td class="text-right" >
-                                        <span class="pull-right tr_td" t-field="doc.user_id" style="width: 90%;display:block;border-bottom: 1px solid #808080;"/>
+                                    <td class="text-right">
+                                        <span class="pull-right tr_td" t-field="doc.user_id"
+                                              style="width: 90%;display:block;border-bottom: 1px solid #808080;"/>
                                     </td>
                                 </tr>
 
@@ -52,85 +71,94 @@
                                         <span class="tr_td">Date</span>
                                     </td>
                                     <td class="text-right">
-                                        <span class="pull-right tr_td" t-field="doc.date_order" style="width: 90%;display:block;border-bottom: 1px solid #808080;"/>
+                                        <span class="pull-right tr_td" t-field="doc.date_order"
+                                              style="width: 90%;display:block;border-bottom: 1px solid #808080;"/>
                                     </td>
                                 </tr>
                             </table>
-
-
-<!--                            <h2 class="text-right" style="font-family:Arial;font-size: 25px;font-weight: bold;">Quote</h2>-->
-<!--                            <strong style="font-family:Arial;font-size: 15px;font-weight: bold;">-->
-<!--                                <span t-if="doc.state not in ['draft','sent']">Order</span>-->
-<!--                                <span style="font-family:Arial;font-size: 15px;font-weight: bold;" t-if="doc.state in ['draft','sent']">Quote ID</span>-->
-<!--                                :-->
-<!--                            </strong>-->
-<!--                            <span t-field="doc.name" />-->
-<!--                            <br />-->
-<!--                            <span class="tr_td">Sales Rep:</span>-->
-<!--                            <span class="tr_td" t-field="doc.user_id" />-->
-<!--                            <br />-->
-<!--                            <span class="tr_td">Date:</span>-->
-<!--                            <span class="tr_td" t-field="doc.date_order" />-->
                         </div>
                     </div>
                 </t>
                 <t t-if="o._name == 'purchase.order'">
                     <style>
-                    .tr_td{
-                    font-family:Arial;font-size: 12px;
-                    }
-                </style>
+                        .tr_td{
+                        font-family:Arial;font-size: 12px;
+                        }
+                    </style>
                     <div class="pull-right" style="margin-right:18px">
-                         <table style="width:200px">
-                                <th colspan="2" class="text-right" style="font-family:Arial;font-size: 25px;font-weight: bold;">Purchase Order</th>
-                                <tr>
-                                    <td class="text-right">
-                                        <strong class="tr_td">PO#</strong>
-                                    </td>
-                                    <td class="text-right" >
-                                        <strong class="pull-right tr_td" t-field="o.name" style="width: 90%;display:block;border-bottom: 1px solid #808080;"/>
-                                    </td>
-                                </tr>
+                        <table style="width:200px">
+                            <th colspan="2" class="text-right"
+                                style="font-family:Arial;font-size: 25px;font-weight: bold;">Purchase Order
+                            </th>
+                            <tr>
+                                <td class="text-right">
+                                    <strong class="tr_td">PO#</strong>
+                                </td>
+                                <td class="text-right">
+                                    <strong class="pull-right tr_td" t-field="o.name"
+                                            style="width: 90%;display:block;border-bottom: 1px solid #808080;"/>
+                                </td>
+                            </tr>
 
-                                <tr>
-                                    <td class="text-right">
-                                        <span class="tr_td">Date</span>
-                                    </td>
-                                    <td class="text-right">
-                                        <span class="pull-right tr_td" t-field="o.date_order" style="width: 90%;display:block;border-bottom: 1px solid #808080;"/>
-                                    </td>
-                                </tr>
-                            </table>
+                            <tr>
+                                <td class="text-right">
+                                    <span class="tr_td">Date</span>
+                                </td>
+                                <td class="text-right">
+                                    <span class="pull-right tr_td" t-field="o.date_order"
+                                          style="width: 90%;display:block;border-bottom: 1px solid #808080;"/>
+                                </td>
+                            </tr>
+                        </table>
 
-<!--                        <p>-->
-<!--                            <span>-->
-<!--                                <h2 class="font-weight-bold">Purchase Order</h2>-->
-<!--                            </span>-->
-<!--                            <strong>-->
-<!--                                PO#-->
-<!--                            </strong>-->
-<!--                            <span t-field="o.name" />-->
-<!--                            <br />-->
-<!--                            <strong>Date:</strong>-->
-<!--                            <span t-field="o.date_order" />-->
-<!--                        </p>-->
+                        <!--                        <p>-->
+                        <!--                            <span>-->
+                        <!--                                <h2 class="font-weight-bold">Purchase Order</h2>-->
+                        <!--                            </span>-->
+                        <!--                            <strong>-->
+                        <!--                                PO#-->
+                        <!--                            </strong>-->
+                        <!--                            <span t-field="o.name" />-->
+                        <!--                            <br />-->
+                        <!--                            <strong>Date:</strong>-->
+                        <!--                            <span t-field="o.date_order" />-->
+                        <!--                        </p>-->
                     </div>
                 </t>
             </div>
             <div class="article o_report_layout_standard">
-                <t t-raw="0" />
+                <t t-raw="0"/>
             </div>
 
             <div class="footer">
-                <div class="text-center" style="border-top: 1px solid black;">
-                    <div class="text-muted">
-                        Page:
-                        <span class="page" />
-                        /
-                        <span class="topage" />
+                <t t-if="o._name not in ('stock.picking')">
+                    <div class="text-center" style="border-top: 1px solid black;">
+                        <div class="text-muted">
+                            Page:
+                            <span class="page"/>
+                            /
+                            <span class="topage"/>
+                        </div>
                     </div>
-                </div>
+                </t>
+                <t t-if="o._name in ('stock.picking')">
+                    <div style="font-family:Arial;font-size: 11px;">
+                        <table class="table-sm" style="width: 100%;">
+                            <tr>
+                                <td class="text-right" style="width: 66%;">
+                                    Thank you for your order!
+                                </td>
+                                <td class="text-right" style="width: 34%;">
+                                    <t t-if="o.batch_id">
+                                        <span t-field="o.batch_id.name"/>
+                                    </t>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
             </div>
         </template>
+
     </data>
 </odoo>
