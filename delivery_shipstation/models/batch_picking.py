@@ -24,6 +24,7 @@ class StockPickingBatch(models.Model):
         logger.info("Label Generation Start!!!!!! %s" % fields.Datetime.now())
         for pick in self.picking_ids.filtered(lambda p: p.state == 'assigned'):
             pick.send_to_shipper()
+            pick.print_packing_slip()
         attachment_id, batch_file_name = self.get_attachment_pdf()
         self.label_generated = True
         logger.info("Label Generation END!!!!!! %s" % fields.Datetime.now())
