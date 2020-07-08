@@ -22,15 +22,15 @@
                         <div>
                             <strong style="font-size: 14px;" t-field="company.partner_id.name"/>
                             <br/>
-                            <span t-field="o.partner_id.street"/>
-                            <span t-field="o.partner_id.street2"/>
+                            <span t-field="company.partner_id.street"/>
+                            <span t-field="company.partner_id.street2"/>
                             <br/>
-                            <span t-field="o.partner_id.city"/>
-                            <span t-field="o.partner_id.state_id.code"/>
-                            <span t-field="o.partner_id.zip"/>
-                            <span t-field="o.partner_id.country_id.code"/>
+                            <span t-field="company.partner_id.city"/>
+                            <span t-field="company.partner_id.state_id.code"/>
+                            <span t-field="company.partner_id.zip"/>
+                            <span t-field="company.partner_id.country_id.code"/>
                             <br/>
-                            <span t-field="o.partner_id.phone"/>
+                            <span t-field="company.partner_id.phone"/>
                         </div>
                     </div>
                     <div class="pull-right" style="width: 40%;">
