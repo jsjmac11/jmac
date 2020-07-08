@@ -28,8 +28,6 @@ class SaleOrder(models.Model):
             order.weight_oz = weight_oz
             order.order_weight = order_weight
 
-
-
     rule_id = fields.Many2one("automation.rule", string="Rule", copy=False)
     order_weight = fields.Float(compute='_compute_order_weight', string='Order Weight')
     order_quantity = fields.Integer(compute='_compute_order_weight', string='Order Quantity')

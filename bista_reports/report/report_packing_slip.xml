@@ -132,7 +132,6 @@
                                             <span>-</span>
                                             <span t-field="move.product_id.description"/>
                                         </t>
-
                                     </td>
                                 </tr>
                             </tbody>
