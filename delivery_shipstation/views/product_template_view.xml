@@ -16,6 +16,12 @@
                     <label for="height" string="H"/>
                 </div>
             </div>
+            <div name="weight" position="inside">
+                <field name="weight_oz"/>
+                <span>
+                    <field name="weight_oz_uom_name" readonly="1" force_save="1"/>
+                </span>
+            </div>
         </field>
     </record>
 </odoo>

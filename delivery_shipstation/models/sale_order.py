@@ -6,6 +6,7 @@
 #
 ##############################################################################
 from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 import logging
 
 logger = logging.getLogger('Order Log')
@@ -20,8 +21,14 @@ class SaleOrder(models.Model):
             order.order_quantity = int(
                 sum(order.order_line.filtered(lambda l: not l.is_delivery).mapped('product_uom_qty')))
             line_with_weight = order.order_line.filtered(lambda line: line.product_id.weight > 0.00)
-            order.order_weight = sum([(line.product_qty * line.product_id.weight) for line in line_with_weight])
-            # order.order_weight = sum(line.product_id.weight for line in order.order_line)
+            weight_oz = order_weight = 0.0
+            for line in line_with_weight:
+                weight_oz += line.product_qty * line.product_id.weight_oz
+                order_weight += line.product_qty * line.product_id.weight
+            order.weight_oz = weight_oz
+            order.order_weight = order_weight
+
+
 
     rule_id = fields.Many2one("automation.rule", string="Rule", copy=False)
     order_weight = fields.Float(compute='_compute_order_weight', string='Order Weight')
@@ -29,6 +36,7 @@ class SaleOrder(models.Model):
     rule_message = fields.Text(readonly=True, copy=False)
     requested_service_id = fields.Many2one("order.service", string="Service")
     tag_id = fields.Many2one("order.tag", string="Tags")
+    weight_oz = fields.Float(compute='_compute_order_weight', string='Order Weight(oz)')
 
     def apply_automation_rule(self, picking=None):
         automation_rule_ids = self.env['automation.rule'].search([], order="sequence")
@@ -49,11 +57,18 @@ class SaleOrder(models.Model):
                     else:
                         operator += str(line.value)
                 elif line.category_type == 'wgt':
-                    str_c = str(self.order_weight)
-                    if line.operator_type_id.operator in ('in', 'not in'):
-                        operator += str([line.total_weight])
+                    if line.weight_lb:
+                        str_c = str(self.order_weight)
+                        if line.operator_type_id.operator in ('in', 'not in'):
+                            operator += str([line.weight_lb])
+                        else:
+                            operator += str(line.weight_lb)
                     else:
-                        operator += str(line.total_weight)
+                        str_c = str(self.weight_oz)
+                        if line.operator_type_id.operator in ('in', 'not in'):
+                            operator += str([line.weight_oz])
+                        else:
+                            operator += str(line.weight_oz)
                 elif line.category_type == 'val':
                     str_c = str(self.amount_untaxed)
                     if line.operator_type_id.operator in ('in', 'not in'):

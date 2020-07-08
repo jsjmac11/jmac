@@ -29,7 +29,7 @@
                                        attrs="{'invisible':[('category_type','!=','wgt')], 'required':[('category_type','=','wgt')]}"/>
                                 <field name="weight_oz"
                                        attrs="{'invisible':[('category_type','!=','wgt')], 'required':[('category_type','=','wgt')]}"/>
-                                <field name="total_weight" readonly="1" force_save="1"
+                                <field name="total_weight" invisible="1" force_save="1"
                                        attrs="{'invisible':[('category_type','!=','wgt')]}"/>
 
                                 <field name="product_ids" widget="many2many_tags"

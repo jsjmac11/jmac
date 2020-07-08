@@ -2,13 +2,13 @@
 <odoo>
     <data>
         <report
-            string="Packing Slip"
-            id="stock.action_report_delivery"
-            model="stock.picking"
-            report_type="qweb-pdf"
-            name="stock.report_deliveryslip"
-            file="stock.report_deliveryslip"
-            print_report_name="'Packing Slip - %s - %s' % (object.partner_id.name or '', object.name)"
+                string="Packing Slip"
+                id="stock.action_report_delivery"
+                model="stock.picking"
+                report_type="qweb-pdf"
+                name="stock.report_deliveryslip"
+                file="stock.report_deliveryslip"
+                print_report_name="'Packing Slip - %s - %s' % (object.partner_id.name or '', object.name)"
         />
 
         <template id="stock.report_delivery_document">
@@ -118,10 +118,21 @@
                                         <span t-esc="round(move.product_uom_qty)"/>
                                     </td>
                                     <td style="width: 35%;">
-                                        <span t-field="move.product_id.name"/>
+                                        <span t-esc="move.product_id.default_code"/>
+                                        <br/>
+                                        <span t-esc="move.location_id.display_name"/>
                                     </td>
                                     <td style="width: 55%;">
-                                        <span t-field="move.product_id.description"/>
+                                        <t t-if="move.product_id.product_manufacturer_id">
+                                            <span t-esc="move.product_id.product_manufacturer"/>
+                                            <span>-</span>
+                                            <span t-esc="move.product_id.product_manufacturer_id.name"/>
+                                        </t>
+                                        <t t-if="move.product_id.description">
+                                            <span>-</span>
+                                            <span t-field="move.product_id.description"/>
+                                        </t>
+
                                     </td>
                                 </tr>
                             </tbody>

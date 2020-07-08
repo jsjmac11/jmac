@@ -52,7 +52,7 @@ class AutomationRuleLine(models.Model):
     operator_type_id = fields.Many2one('operator.type', string='Operator')
     value = fields.Float(string="Value")
     weight_oz = fields.Float(string="Weight(oz)")
-    weight_lb = fields.Integer("Weight(lb)")
+    weight_lb = fields.Float("Weight(lb)")
     total_weight = fields.Float("Total Weight")
     product_ids = fields.Many2many("product.product", string="Item SKU")
     country_ids = fields.Many2many("res.country", string="Country")
@@ -65,11 +65,11 @@ class AutomationRuleLine(models.Model):
         Get total weight and validation.
         :return:
         """
-        if self.weight_oz >= 1 or self.weight_oz < 0:
-            raise ValidationError(_("Please enter Weight(oz) between 0 and 1!"))
+        if self.weight_oz >= 16 or self.weight_oz < 0:
+            raise ValidationError(_("Please enter Weight(oz) between 0 and 15.99!"))
         if self.weight_lb < 0:
             raise ValidationError(_("Weight(lb) should not be negative!"))
-        self.total_weight = self.weight_lb + self.weight_oz
+        # self.total_weight = self.weight_lb + self.weight_oz
 
 
 class OperatorType(models.Model):
