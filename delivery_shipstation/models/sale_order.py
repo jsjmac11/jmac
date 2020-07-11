@@ -6,7 +6,10 @@
 #
 ##############################################################################
 from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
+from .shipstation_request import ShipstationRequest
+import requests
+import json
 import logging
 
 logger = logging.getLogger('Order Log')
@@ -154,19 +157,16 @@ class SaleOrder(models.Model):
                         'shipping_weight': action.shipping_weight_lb,
                         'shipping_weight_oz': action.shipping_weight_oz,
                     })
-                elif action.action_type == 'activity' and picking:
-                    activity_type_id = self.env.ref('mail.mail_activity_data_todo').id
-                    activity = self.env['mail.activity'].create({
-                        'res_id': picking.id,
-                        'res_model_id': self.env['ir.model']._get(picking._name).id,
-                        'summary': action.msg,
-                        'note': action.msg,
-                        'date_deadline': fields.Datetime.now(),
-                        'activity_type_id': activity_type_id,
-                        'user_id': self.env.user.id,
+                elif action.action_type == 'activity':
+                    val_dict.update({
+                        'activity': {
+                            'summary': action.msg,
+                            'note': action.msg,
+                            'user_id': action.responsible_id.id,
+                            'date_deadline': fields.Datetime.now(),
+                            'activity_type_id': self.env.ref('mail.mail_activity_data_todo').id,
+                        }
                     })
-                    # activity._onchange_activity_type_id()
-                    # pass
             self.write({'rule_id': matched_rule_id.id,
                         'rule_message': "Rules Matched are:\n%s \nApplied Rule is: %s" % (", ".join(
                             [r.name for r in rule_matched]), matched_rule_id.name) if len(rule_matched) > 1 else False
@@ -176,25 +176,130 @@ class SaleOrder(models.Model):
         logger.info("Rule!!!!!! %s" % val_dict)
         return val_dict
 
+    def get_shipping_rates(self, rule_val):
+        api_config_obj = self.env['shipstation.config'].search(
+            [('active', '=', True)])
+        delivery_obj = self.env['delivery.carrier']
+        if not api_config_obj:
+            return False
+        url = api_config_obj.server_url + '/shipments/getrates'
+        token = api_config_obj.auth_token()
+        headers = {
+            'Host': 'ssapi.shipstation.com',
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic %s' % token
+        }
+        # Check for required fields for all pickings
+        for sale_id in self:
+            partner_id = sale_id.warehouse_id.partner_id
+            to_partner_id = sale_id.partner_shipping_id
+            log_xml = prod_environment = False
+            delivery_nature = 'domestic'
+            service_id = False
+            if rule_val.get('carrier_id'):
+                service_id = delivery_obj.browse(rule_val.get('carrier_id'))
+                if service_id.international:
+                    delivery_nature = 'international'
+                log_xml = service_id.log_xml
+                prod_environment = service_id.prod_environment
+            srm = ShipstationRequest(log_xml, prod_environment, url, token)
+            check_result = srm.check_required_value(to_partner_id, delivery_nature,
+                                                    partner_id,order=sale_id)
+            if check_result:
+                raise UserError(check_result)
+
+            if rule_val.get('shipping_weight'):
+                shipping_weight = rule_val.get('shipping_weight')
+                units = "pounds"
+            elif rule_val.get('shipping_weight_oz'):
+                shipping_weight = rule_val.get('shipping_weight_ozs')
+                units = "ounces"
+            else:
+                shipping_weight = sale_id.order_weight or sale_id.weight_oz
+                units = "pounds" if sale_id.order_weight else "ounces"
+            payload = {
+                "fromPostalCode": partner_id.zip.replace(" ", "") if partner_id.zip else '',
+                "toState": to_partner_id.state_id.code or '',
+                "toCountry": to_partner_id.country_id.code or '',
+                "toPostalCode": to_partner_id.zip.replace(" ", "") if to_partner_id.zip else '',
+                "toCity": to_partner_id.city or '',
+                "weight": {
+                    "value": shipping_weight,
+                    "units": units
+                },
+                "dimensions": {
+                    "units": "inches",
+                    "length": rule_val.get('length', 0),
+                    "width": rule_val.get('width', 0),
+                    "height": rule_val.get('height', 0)
+                },
+                "confirmation": 'none',
+                "residential": False
+            }
+            if service_id:
+                ship_carrier_id = service_id.shipstation_carrier_id
+            else:
+                ship_carrier_id = self.env['shipstation.carrier'].browse(rule_val.get('shipstation_carrier_id'))
+            payload.update({"carrierCode": ship_carrier_id.code})
+            if service_id:
+                payload.update({"serviceCode": service_id.shipstation_service_code})
+
+            if rule_val.get('ship_package_id'):
+                ship_package_id = self.env['shipstation.package'].browse(rule_val.get('ship_package_id'))
+                payload.update({"packageCode": ship_package_id.code})
+            try:
+                logger.info("payload!!!!!! %s" % payload)
+                api_call = requests.request("POST", url, headers=headers, data=json.dumps(payload))
+                logger.info("api_call!!!!!! %s" % api_call)
+                response_data = json.loads(api_call.text)
+            except requests.exceptions.ConnectionError as e:
+                logger.info("Connection ERROR!!!!!! %s" % e)
+                raise ValidationError(_("Failed to establish a connection. Please check internet connection"))
+            except ValidationError as e:
+                logger.info("API ERROR::::::: %s" % e)
+                raise
+            except Exception as e:
+                logger.info("ERROR!!!!!! %s" % e)
+                raise ValidationError(_(e))
+
+            if not response_data:
+                raise ValidationError(_("Service is Unavailable for partner %s!" % to_partner_id.name))
+            logger.info("Response!!!!!! %s" % response_data)
+            if api_call.status_code not in (200, 201):
+                raise ValidationError(_(response_data.get('ExceptionMessage')))
+            data = srm.rate_response_data(response_data, api_config_obj, ship_carrier_id)
+            return {'quote_lines': data.get('line_ids'),
+                    'carrier_id': data.get('min_service').get('service_id', False),
+                    'carrier_price': data.get('min_service').get('rate', 0),
+                    'ship_package_id': data.get('min_service').get('package_id', False),
+                    }
+        return False
+
     def action_confirm(self):
-        res = super(SaleOrder, self).action_confirm()
-        if self.picking_ids and len(self.order_line.filtered(lambda l: l.product_id.type != 'service')) == 1:
-            pickings = self.picking_ids.filtered(
-                lambda x: x.state == 'confirmed' or (x.state in ['waiting', 'assigned']))
-            rule_dict = self.apply_automation_rule(picking=pickings)
+        if len(self.order_line.filtered(lambda l: l.product_id.type != 'service')) == 1:
+            rule_dict = self.apply_automation_rule()
             if 'carrier_id' not in rule_dict:
                 api_config_obj = self.env['shipstation.config'].search(
                     [('active', '=', True)])
                 default_carrier_id = api_config_obj.default_carrier_id
                 rule_dict.update({'shipstation_carrier_id': default_carrier_id.id,
                                   'carrier_id': False, })
+            rates_dict = self.with_context(api_call=True).get_shipping_rates(rule_dict)
+            if rates_dict:
+                rule_dict.update(rates_dict)
+        res = super(SaleOrder, self).action_confirm()
+        if self.picking_ids and len(self.order_line.filtered(lambda l: l.product_id.type != 'service')) == 1:
+            pickings = self.picking_ids.filtered(
+                lambda x: x.state == 'confirmed' or (x.state in ['waiting', 'assigned']))
             if rule_dict:
+                if rule_dict.get('activity'):
+                    print("rule_dict", rule_dict)
+                    rule_dict.get('activity').update({
+                        'res_id': pickings.id,
+                        'res_model_id': self.env['ir.model']._get(pickings._name).id
+                    })
+                    self.env['mail.activity'].sudo().create(rule_dict.pop('activity'))
                 pickings.with_context(api_call=True).write(rule_dict)
-
-            # else:
-            #     pickings.write({'shipstation_carrier_id': default_carrier_id.id,
-            #                     'carrier_id': False, })
-            pickings.with_context(api_call=True).get_shipping_rates()
         return res
 
 

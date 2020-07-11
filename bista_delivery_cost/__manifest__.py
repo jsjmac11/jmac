@@ -8,7 +8,7 @@
 
 {
     'name': 'JMAC Delivery Cost',
-    'version': "13.0.1.0.1",
+    'version': "13.0.1.0.2",
     'author': 'Bista Solutions Pvt. Ltd.',
     'website': "https://www.bistasolutions.com",
     'category': 'Base',
@@ -20,6 +20,7 @@
     """,
     'depends': ['delivery','product'],
     'data': [
+        'view/res_partner.xml',
         'view/product_views.xml',
     ],
     'auto_install': False

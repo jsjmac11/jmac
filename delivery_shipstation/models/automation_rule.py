@@ -124,3 +124,4 @@ class AutomationRuleAction(models.Model):
     shipping_weight_oz = fields.Float("Weight(oz)")
     tag_id = fields.Many2one("order.tag", string="Tag")
     msg = fields.Char("Activity")
+    responsible_id = fields.Many2one('res.users', 'Responsible')
