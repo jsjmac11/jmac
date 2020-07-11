@@ -19,7 +19,13 @@
                             <field name="rule_message" nolabel="1"/>
                         </div>
                     </div>
-                    <field name="order_weight" string="Total Weight"/>
+                    <label for="order_weight" string="Total Weight"/>
+                    <div class="o_row" name="order_weight">
+                        <field name="order_weight"/>
+                        <span>lbs</span>
+                        <field name="weight_oz"/>
+                        <span>ozs</span>
+                    </div>
                     <field name="order_quantity" string="Total Quantity"/>
                 </xpath>
                 <xpath expr="//field[@name='payment_term_id']" position="after">

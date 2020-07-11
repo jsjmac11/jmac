@@ -174,34 +174,12 @@ class StockPicking(models.Model):
             if api_call.status_code not in (200, 201):
                 raise ValidationError(_(response_data.get('ExceptionMessage')))
             picking.quote_lines.unlink()
-            line_ids = []
-            service_rate_lst = []
-            for data in response_data:
-                service_id = delivery_obj.search([('shipstation_service_code', '=', data.get('serviceCode'))])
-                if not service_id:
-                    service_id = api_config_obj.get_services(ship_carrier_id)
-                pack_name = data.get('serviceName', '').split(' - ')
-                pack_id = False
-                if pack_name:
-                    pack_id = self.env['shipstation.package'].search([('name', '=', pack_name[1])])
-                values = {
-                    'shipstation_carrier_id': ship_carrier_id.id,
-                    'service_id': service_id.id,
-                    'service_name': data.get('serviceName', ''),
-                    'service_code': data.get('serviceCode', ''),
-                    'shipping_cost': data.get('shipmentCost', 0),
-                    'other_cost': data.get('otherCost', 0),
-                    'rate': data.get('shipmentCost', 0) + data.get('otherCost', 0),
-                    # 'transit_days': result.get('transitdays', 0),
-                    'package_id': pack_id.id if pack_id else False,
-                }
-                service_rate_lst.append(values)
-                line_ids.append((0, 0, values))
-            min_service = min(service_rate_lst, key=lambda x: x['rate'])
-            picking.with_context(api_call=True).write({'quote_lines': line_ids,
-                                                       'carrier_id': min_service.get('service_id', False),
-                                                       'carrier_price': min_service.get('rate', 0),
-                                                       'ship_package_id': min_service.get('package_id', False),
+            data = srm.rate_response_data(response_data, api_config_obj, ship_carrier_id)
+            picking.with_context(api_call=True).write({'quote_lines': data.get('line_ids'),
+                                                       'carrier_id': data.get('min_service').get('service_id', False),
+                                                       'carrier_price': data.get('min_service').get('rate', 0),
+                                                       'ship_package_id': data.get('min_service').get('package_id',
+                                                                                                      False),
                                                        })
         return False
 

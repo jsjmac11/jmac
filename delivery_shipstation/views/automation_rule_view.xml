@@ -29,7 +29,7 @@
                                        attrs="{'invisible':[('category_type','!=','wgt')], 'required':[('category_type','=','wgt')]}"/>
                                 <field name="weight_oz"
                                        attrs="{'invisible':[('category_type','!=','wgt')], 'required':[('category_type','=','wgt')]}"/>
-                                <field name="total_weight" readonly="1" force_save="1"
+                                <field name="total_weight" invisible="1" force_save="1"
                                        attrs="{'invisible':[('category_type','!=','wgt')]}"/>
 
                                 <field name="product_ids" widget="many2many_tags"
@@ -84,9 +84,12 @@
                                 <field name="tag_id"
                                        attrs="{'required':[('action_type','=','tag')],'invisible':[('action_type','!=','tag')]}"
                                        options="{'no_open': True, 'no_create': True}"/>
-                                <field name="msg"
+                                <field name="responsible_id"
                                        attrs="{'required':[('action_type','=','activity')],'invisible':[('action_type','!=','activity')]}"
-                                       options="{'no_open': True, 'no_create': True}"/>
+                                       options="{'no_open': True, 'no_create': True}"
+                                       domain="[('share','=',False)]"/>
+                                <field name="msg"
+                                       attrs="{'required':[('action_type','=','activity')],'invisible':[('action_type','!=','activity')]}"/>
                             </tree>
                             <form>
                                 <div>
