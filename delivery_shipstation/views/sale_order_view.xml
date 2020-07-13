@@ -64,7 +64,7 @@
 
         <menuitem name="Order Tags" id="order_tag_submenu" parent="sale.menu_sales_config"
                   action="action_order_tag_form" sequence="6"/>
-        <menuitem name="Order Tags" id="order_tag_submenu" parent="delivery_shipstation.shipstation_config_menu"
+        <menuitem name="Order Tags" id="order_tag_submenu_inv" parent="delivery_shipstation.shipstation_config_menu"
                   action="action_order_tag_form" sequence="6"/>
 
 
@@ -98,7 +98,7 @@
 
         <menuitem name="Order Services" id="order_service_submenu" parent="sale.menu_sales_config"
                   action="action_order_service_form" sequence="7"/>
-        <menuitem name="Order Services" id="order_service_submenu" parent="delivery_shipstation.shipstation_config_menu"
+        <menuitem name="Order Services" id="order_service_submenu_inv" parent="delivery_shipstation.shipstation_config_menu"
                   action="action_order_service_form" sequence="7"/>
 
     </data>
