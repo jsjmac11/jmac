@@ -5,17 +5,17 @@
 # Copyright (C) 2020 (https://www.bistasolutions.com)
 #
 #############################################################################
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
 
 
-class sale_discount(models.Model):
+class SaleDiscount(models.Model):
     _inherit = 'sale.order'
 
-    state = fields.Selection(selection_add=[('waiting', 'Waiting Approval'),('approved', 'Quotation Approved')],
-        string='Status', readonly=True, copy=False, index=True, 
-        track_visibility='onchange', default='draft')
+    state = fields.Selection(selection_add=[('waiting', 'Waiting Approval'), ('approved', 'Quotation Approved')],
+                             string='Status', readonly=True, copy=False, index=True,
+                             track_visibility='onchange', default='draft')
     is_approved = fields.Boolean('Approved', copy=False, help="Indicate manager approved the order.")
-
 
     def action_confirm(self):
         discnt = 0.0
@@ -25,13 +25,16 @@ class sale_discount(models.Model):
             if self.company_id.so_double_validation_limit and discnt > self.company_id.so_double_validation_limit:
                 self.state = 'waiting'
                 return True
-        super(sale_discount, self).action_confirm()
-
+        super(SaleDiscount, self).action_confirm()
 
     def action_approve(self):
         self.update({'is_approved': True, 'state': 'draft'})
         return True
 
+    def action_cancel(self):
+        if self.is_approved:
+            self.write({'is_approved': False})
+        return super(SaleDiscount, self).action_cancel()
 
 
 class Company(models.Model):
@@ -44,18 +47,29 @@ class Company(models.Model):
         help="Provide a double validation mechanism for sales discount")
 
     so_double_validation_limit = fields.Float(string="Percentage of Discount that requires double validation'",
-                                  help="Minimum discount percentage for which a double validation is required")
+                                              help="Minimum discount percentage for which a double validation is required")
 
 
 class ResDiscountSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
-    so_order_approval = fields.Boolean("Sale Discount Approval", default=lambda self: self.env.user.company_id.so_double_validation == 'two_step')
+    so_order_approval = fields.Boolean("Sale Discount Approval",
+                                       default=lambda self: self.env.user.company_id.so_double_validation == 'two_step')
 
-    so_double_validation = fields.Selection(related='company_id.so_double_validation',string="Sale Levels of Approvals *", readonly=False)
+    so_double_validation = fields.Selection(related='company_id.so_double_validation',
+                                            string="Sale Levels of Approvals *", readonly=False)
     so_double_validation_limit = fields.Float(string="Discount limit requires approval in %",
                                               related='company_id.so_double_validation_limit', readonly=False)
 
     def set_values(self):
         super(ResDiscountSettings, self).set_values()
         self.so_double_validation = 'two_step' if self.so_order_approval else 'one_step'
+
+    @api.onchange('so_double_validation_limit')
+    def onchange_so_double_validation_limit(self):
+        """
+        Discount % validation.
+        :return: raise
+        """
+        if not (0 <= self.so_double_validation_limit <= 100):
+            raise ValidationError(_("Discount Limit is invalid!"))

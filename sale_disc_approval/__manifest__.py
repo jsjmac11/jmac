@@ -8,7 +8,7 @@
 
 {
     'name': 'Sale Discount Approval',
-    'version': '13.0.1.0.1',
+    'version': '13.0.1.0.2',
     'category': 'Sales Management',
     'summary': "Discount on Total in Sale and Invoice With Discount Limit and Approval",
     'author': 'Bista Solutions',
@@ -27,7 +27,7 @@ Module to manage discount on total amount in Sale.
     'data': [
         'views/sale_view.xml',
         'views/res_config_view.xml',
-
+        # 'security/sale_security.xml',
     ],
     'demo': [
     ],

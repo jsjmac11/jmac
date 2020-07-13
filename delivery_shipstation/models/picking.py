@@ -169,7 +169,8 @@ class StockPicking(models.Model):
                 raise ValidationError(_(e))
 
             if not response_data:
-                raise ValidationError(_("Service Unavailable for order %s!" % picking.name))
+                raise ValidationError(
+                    _("No applicable services were available for the configured Order %s!" % picking.name))
             logger.info("Response!!!!!! %s" % response_data)
             if api_call.status_code not in (200, 201):
                 raise ValidationError(_(response_data.get('ExceptionMessage')))

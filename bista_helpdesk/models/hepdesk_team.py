@@ -9,11 +9,10 @@ from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError, ValidationError
 
 
-
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    ticket_id = fields.Many2one("helpdesk.ticket",string="Ticket")
+    ticket_id = fields.Many2one("helpdesk.ticket", string="Ticket")
 
     @api.model
     def create(self, vals):
@@ -37,11 +36,12 @@ class SaleOrder(models.Model):
     def action_draft(self):
         ticket = self.filtered(lambda s: s.state in ['cancel', 'sent']).mapped('ticket_id')
         if ticket:
-            quot_ids = self.search([('ticket_id', '=', ticket.id),('state', '!=', 'cancel')])
+            quot_ids = self.search([('ticket_id', '=', ticket.id), ('state', '!=', 'cancel')])
             if quot_ids:
                 raise UserError(_('Quotation already exists for the ticket!'))
-            ticket.is_quotation = True        
+            ticket.is_quotation = True
         return super(SaleOrder, self).action_draft()
+
 
 class HelpdeskTicket(models.Model):
     _inherit = 'helpdesk.ticket'
@@ -60,12 +60,12 @@ class HelpdeskTicket(models.Model):
         return {
             'name': ('Sale Order'),
             'view_mode': 'tree',
-            'views': [(list_view_id, "list"),(False, "form")],
+            'views': [(list_view_id, "list"), (False, "form")],
             'view_type': 'form',
             'res_model': 'sale.order',
-            'domain': [['ticket_id.id', '=',self.id]],
+            'domain': [['ticket_id.id', '=', self.id]],
             'type': 'ir.actions.act_window',
-            'context': {"create": False,'export':False}
+            'context': {"create": False, 'export': False}
         }
 
     def create_new_quotation(self):
@@ -77,8 +77,9 @@ class HelpdeskTicket(models.Model):
             'res_model': 'sale.order',
             'view_id': form_view_id,
             'type': 'ir.actions.act_window',
-            'context': {'default_ticket_id': self.id,'default_partner_id':self.partner_id.id}
+            'context': {'default_ticket_id': self.id, 'default_partner_id': self.partner_id.id}
         }
+
 
 class HelpdeskTeam(models.Model):
     _inherit = 'helpdesk.team'

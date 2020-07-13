@@ -64,14 +64,18 @@
 
         <menuitem name="Order Tags" id="order_tag_submenu" parent="sale.menu_sales_config"
                   action="action_order_tag_form" sequence="6"/>
+        <menuitem name="Order Tags" id="order_tag_submenu" parent="delivery_shipstation.shipstation_config_menu"
+                  action="action_order_tag_form" sequence="6"/>
 
 
         <record id="order_service_tree_view" model="ir.ui.view">
             <field name="name">order.service.tree</field>
             <field name="model">order.service</field>
             <field name="arch" type="xml">
-                <tree string="Order Services" editable="top">
+                <tree string="Order Services" editable="top" delete="0">
                     <field name="name" required="1"/>
+                    <field name="price"/>
+                    <field name="active"/>
                 </tree>
             </field>
         </record>
@@ -93,6 +97,8 @@
         <!-- actions -->
 
         <menuitem name="Order Services" id="order_service_submenu" parent="sale.menu_sales_config"
+                  action="action_order_service_form" sequence="7"/>
+        <menuitem name="Order Services" id="order_service_submenu" parent="delivery_shipstation.shipstation_config_menu"
                   action="action_order_service_form" sequence="7"/>
 
     </data>
