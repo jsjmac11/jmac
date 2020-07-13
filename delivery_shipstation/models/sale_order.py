@@ -204,7 +204,7 @@ class SaleOrder(models.Model):
                 prod_environment = service_id.prod_environment
             srm = ShipstationRequest(log_xml, prod_environment, url, token)
             check_result = srm.check_required_value(to_partner_id, delivery_nature,
-                                                    partner_id,order=sale_id)
+                                                    partner_id, order=sale_id)
             if check_result:
                 raise UserError(check_result)
 
@@ -263,7 +263,8 @@ class SaleOrder(models.Model):
                 raise ValidationError(_(e))
 
             if not response_data:
-                raise ValidationError(_("Service is Unavailable for partner %s!" % to_partner_id.name))
+                raise ValidationError(
+                    _("No applicable services were available for the configured Order %s!" % sale_id.name))
             logger.info("Response!!!!!! %s" % response_data)
             if api_call.status_code not in (200, 201):
                 raise ValidationError(_(response_data.get('ExceptionMessage')))
@@ -318,5 +319,6 @@ class OrderService(models.Model):
 
     name = fields.Char("Name")
     price = fields.Float("Price")
+    active = fields.Boolean("Active", default=True)
 
     _sql_constraints = [('name_uniq', 'unique(name)', 'Service name must be unique !')]
