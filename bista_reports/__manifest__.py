@@ -17,7 +17,7 @@
     JMAC custom header and footer layout with custom reports of sales 
     and purchase.
     """,
-    'depends': ['base', 'sale', 'purchase', 'stock', 'web'],
+    'depends': ['base', 'sale', 'purchase', 'stock', 'web', 'sale_stock', 'delivery'],
     'data': [
         'report/base_report_header.xml',
         'report/quotation_template.xml',
