@@ -36,7 +36,7 @@ class SaleOrder(models.Model):
     order_quantity = fields.Integer(compute='_compute_order_weight', string='Order Quantity')
     rule_message = fields.Text(readonly=True, copy=False)
     requested_service_id = fields.Many2one("order.service", string="Service")
-    tag_id = fields.Many2one("order.tag", string="Tags")
+    tag_id = fields.Many2one("order.tag", string="Order Tag")
     weight_oz = fields.Float(compute='_compute_order_weight', string='Order Weight(oz)')
 
     def apply_automation_rule(self, picking=None):
