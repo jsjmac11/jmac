@@ -8,7 +8,7 @@
 
 {
     'name': 'JMAC Reports',
-    'version': "13.0.1.0.1",
+    'version': "13.0.1.0.2",
     'author': 'Bista Solutions Pvt. Ltd.',
     'website': "https://www.bistasolutions.com",
     'category': 'Base',
