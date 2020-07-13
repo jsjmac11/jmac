@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <data>
+
+        <template id="sale_stock.report_delivery_document_inherit_sale_stock" inherit_id="stock.report_delivery_document">
+        </template>
+        <template id="delivery.report_delivery_document2" inherit_id="stock.report_delivery_document">
+
+        </template>
+
         <report
                 string="Packing Slip"
                 id="stock.action_report_delivery"
