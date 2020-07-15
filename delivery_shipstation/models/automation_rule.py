@@ -59,7 +59,7 @@ class AutomationRuleLine(models.Model):
     requested_service_id = fields.Many2one("order.service", string="Service")
     tag_ids = fields.Many2many("order.tag", string="Tags")
 
-    @api.onchange('weight_oz', 'weight_lb')
+    @api.onchange('weight_oz', 'weight_lb', 'value')
     def onchange_weight(self):
         """
         Get total weight and validation.
@@ -69,6 +69,9 @@ class AutomationRuleLine(models.Model):
             raise ValidationError(_("Please enter Weight(oz) between 0 and 15.99!"))
         if self.weight_lb < 0:
             raise ValidationError(_("Weight(lb) should not be negative!"))
+        if self.value < 0:
+            raise ValidationError(_("Value should not be negative!"))
+
 
     @api.onchange('category_type')
     def onchange_category_type(self):
@@ -142,6 +145,23 @@ class AutomationRuleAction(models.Model):
     tag_id = fields.Many2one("order.tag", string="Tag")
     msg = fields.Char("Activity")
     responsible_id = fields.Many2one('res.users', 'Responsible')
+
+    @api.onchange('length', 'width', 'height', 'shipping_weight_lb', 'shipping_weight_oz')
+    def onchange_values(self):
+        """
+        Get total weight and validation.
+        :return:
+        """
+        if self.shipping_weight_oz >= 16 or self.shipping_weight_oz < 0:
+            raise ValidationError(_("Please enter Weight(oz) between 0 and 15.99!"))
+        if self.shipping_weight_lb < 0:
+            raise ValidationError(_("Weight(lb) should not be negative!"))
+        if self.length < 0:
+            raise ValidationError(_("Length should not be negative!"))
+        if self.width < 0:
+            raise ValidationError(_("Width should not be negative!"))
+        if self.height < 0:
+            raise ValidationError(_("Height should not be negative!"))
 
     @api.onchange('action_type')
     def onchange_action_type(self):
