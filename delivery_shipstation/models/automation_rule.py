@@ -48,7 +48,7 @@ class AutomationRuleLine(models.Model):
     _description = "Automation Rule Line for Carrier"
 
     rule_id = fields.Many2one("automation.rule", string="Rule")
-    category_type = fields.Selection(categ_type, default='qty', copy=False, string="Type")
+    category_type = fields.Selection(categ_type, copy=False, string="Type")
     operator_type_id = fields.Many2one('operator.type', string='Operator')
     value = fields.Float(string="Value")
     weight_oz = fields.Float(string="Weight(oz)")
@@ -70,6 +70,24 @@ class AutomationRuleLine(models.Model):
         if self.weight_lb < 0:
             raise ValidationError(_("Weight(lb) should not be negative!"))
         # self.total_weight = self.weight_lb + self.weight_oz
+
+    @api.onchange('category_type')
+    def onchange_category_type(self):
+        """
+        Get total weight and validation.
+        :return:
+        """
+        if self.category_type:
+            return {'value': {'operator_type_id': False,
+                              'value': 0.0,
+                              'weight_oz': 0.0,
+                              'weight_lb': 0.0,
+                              'total_weight': 0.0,
+                              'product_ids': [],
+                              'country_ids': [],
+                              'requested_service_id': False,
+                              'tag_ids': []
+                              }}
 
 
 class OperatorType(models.Model):
@@ -125,3 +143,23 @@ class AutomationRuleAction(models.Model):
     tag_id = fields.Many2one("order.tag", string="Tag")
     msg = fields.Char("Activity")
     responsible_id = fields.Many2one('res.users', 'Responsible')
+
+    @api.onchange('action_type')
+    def onchange_action_type(self):
+        """
+        Get total weight and validation.
+        :return:
+        """
+        if self.action_type:
+            return {'value': {'service_id': False,
+                              'package_id': False,
+                              'insure_package_type': False,
+                              'length': 0,
+                              'width': 0,
+                              'height': 0,
+                              'shipping_weight_lb': 0.0,
+                              'shipping_weight_oz': 0.0,
+                              'tag_id': False,
+                              'msg': '',
+                              'responsible_id': False,
+                              }}
