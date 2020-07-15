@@ -23,7 +23,7 @@
                     <field name="shipping_weight_oz"/>
                     <field name="delivery_type" invisible="1"/>
                     <button name="get_shipping_rates" type="object" string="Get rate"
-                            attrs="{'invisible': ['|',('delivery_type','in', ('fixed', 'base_on_rule')),('carrier_id','=', False)]}">
+                            attrs="{'invisible': ['|','|',('state','not in',('assigned')),('delivery_type','in', ('fixed', 'base_on_rule')),('carrier_id','=', False)]}">
                     </button>
                     <field name="carrier_price" readonly="1" force_save="1"/>
                 </xpath>
@@ -36,7 +36,8 @@
             <field name="inherit_id" ref="delivery.view_picking_withcarrier_out_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='carrier_id']" position="attributes">
-                    <attribute name="domain">[('shipstation_carrier_id', 'in', (shipstation_carrier_id,False))]</attribute>
+                    <attribute name="domain">[('shipstation_carrier_id', 'in', (shipstation_carrier_id,False))]
+                    </attribute>
                 </xpath>
                 <xpath expr="//field[@name='carrier_id']" position="before">
                     <field name="shipstation_carrier_id" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
@@ -78,11 +79,11 @@
                     <xpath expr="//group[@name='other_infos']" position="after">
                         <group colspan="1">
                             <button name="get_shipping_rates" context="{'api_call':True}" colspan="1" type="object"
-                                    attrs="{'invisible': ['|',('delivery_type','in', ('fixed', 'base_on_rule')),('shipstation_carrier_id', '=', False)]}"
+                                    attrs="{'invisible': ['|','|',('state','not in',('assigned')),('delivery_type','in', ('fixed', 'base_on_rule')),('carrier_id','=', False)]}"
                                     class="oe_highlight">
                                 <i class="fa fa-arrow-right mr-1"/>Get rate
                             </button>
-<!--                            <button name="print_packing_slip" invisible="1" type="object" string="Print Slip"/>-->
+                            <!--                            <button name="print_packing_slip" invisible="1" type="object" string="Print Slip"/>-->
                         </group>
                         <group colspan="4" string="Service Rates">
                             <field name="quote_lines" nolabel="1" readonly="1">

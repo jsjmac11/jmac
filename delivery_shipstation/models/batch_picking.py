@@ -6,6 +6,7 @@
 #
 ##############################################################################
 from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
 from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
 import base64, os, tempfile
 import logging
@@ -22,6 +23,11 @@ class StockPickingBatch(models.Model):
         """Generate picking labels individually and combined.
         """
         logger.info("Label Generation Start!!!!!! %s" % fields.Datetime.now())
+        pick = self.picking_ids.filtered(lambda p: p.state != 'assigned')
+        if pick:
+            raise ValidationError(_(
+                "Label is generate only for 'Ready' delivery orders!\n"
+                "Either process delivery order or remove from the list."))
         for pick in self.picking_ids.filtered(lambda p: p.state == 'assigned'):
             pick.send_to_shipper()
             pick.print_packing_slip()
