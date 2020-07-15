@@ -285,6 +285,10 @@ class SaleOrder(models.Model):
                 default_carrier_id = api_config_obj.default_carrier_id
                 rule_dict.update({'shipstation_carrier_id': default_carrier_id.id,
                                   'carrier_id': False, })
+            if not rule_dict.get('shipping_weight'):
+                rule_dict.update({'shipping_weight': self.order_weight})
+            if not rule_dict.get('shipping_weight_oz'):
+                rule_dict.update({'shipping_weight_oz': self.weight_oz})
             rates_dict = self.with_context(api_call=True).get_shipping_rates(rule_dict)
             if rates_dict:
                 rule_dict.update(rates_dict)

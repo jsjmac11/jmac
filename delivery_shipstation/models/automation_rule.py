@@ -69,7 +69,6 @@ class AutomationRuleLine(models.Model):
             raise ValidationError(_("Please enter Weight(oz) between 0 and 15.99!"))
         if self.weight_lb < 0:
             raise ValidationError(_("Weight(lb) should not be negative!"))
-        # self.total_weight = self.weight_lb + self.weight_oz
 
     @api.onchange('category_type')
     def onchange_category_type(self):

@@ -18,10 +18,10 @@
                     <field name="length"/>
                     <field name="width"/>
                     <field name="height"/>
-                    <field name="shipping_weight"/>
-                    <field name="insure_package_type"/>
-                    <field name="shipping_weight_oz"/>
+                    <field name="shipping_weight" string="Weight(lbs)"/>
+                    <field name="shipping_weight_oz" string="Weight(ozs)"/>
                     <field name="delivery_type" invisible="1"/>
+                    <field name="insure_package_type"/>
                     <button name="get_shipping_rates" type="object" string="Get rate"
                             attrs="{'invisible': ['|','|',('state','not in',('assigned')),('delivery_type','in', ('fixed', 'base_on_rule')),('carrier_id','=', False)]}">
                     </button>
@@ -56,6 +56,17 @@
                         <label for="height" string="H"/>
                     </div>
 
+                </xpath>
+                <xpath expr="//group[@name='carrier_data']/div[4]" position="replace">
+                    <div class="o_row" name="shipping_weight">
+                        <field name="shipping_weight"/>
+                        <span><field name="weight_uom_name" nolabel="1" /></span>
+                        <field name="shipping_weight_oz" />
+                        <span><field name="weight_uom_name_oz" nolabel="1" readonly="1" force_save="1"/></span>
+                    </div>
+                </xpath>
+                <xpath expr="//label[@for='weight']" position="attributes">
+                    <attribute name="string">Order Weight</attribute>
                 </xpath>
                 <xpath expr="//group[@name='carrier_data']" position="inside">
                     <field name="confirmation" invisible="1"/>

@@ -40,6 +40,11 @@ class StockPicking(models.Model):
     def _inverse_shipping_weight(self):
         pass
 
+    def _get_default_weight_oz_uom(self):
+        uom_id = self.env.ref('uom.product_uom_oz', False) or self.env['uom.uom'].search(
+            [('measure_type', '=', 'weight'), ('uom_type', '=', 'reference')], limit=1)
+        return uom_id.display_name
+
     shipstation_carrier_id = fields.Many2one('shipstation.carrier', 'Shipstation Carrier')
     shipping_provider_id = fields.Selection([('shipstation', 'Shipstation')], default='shipstation')
     shipping_rate = fields.Float('Shipping Rate', copy=False)
@@ -73,6 +78,18 @@ class StockPicking(models.Model):
         copy=False, string="Confirmation", default='none')
     shipmentId = fields.Char('Label Shipment ID')
     tag_id = fields.Many2one("order.tag", string="Tags")
+    weight_uom_name_oz = fields.Char(string='Weight oz unit of measure', default=_get_default_weight_oz_uom)
+
+    @api.onchange('weight_oz', 'weight_lb')
+    def onchange_shipping_weights(self):
+        """
+        Get total weight and validation.
+        :return:
+        """
+        if self.shipping_weight_oz >= 16 or self.shipping_weight_oz < 0:
+            raise ValidationError(_("Please enter shipping weight(oz) between 0 and 15.99!"))
+        if self.shipping_weight < 0:
+            raise ValidationError(_("shipping weight(lb) should not be negative!"))
 
     @api.onchange('carrier_id')
     def onchange_carrier_id(self):
