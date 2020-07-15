@@ -18,5 +18,6 @@ class StockPickingGetRate(models.TransientModel):
         picking_objs = self.env['stock.picking'].browse(picking_ids)
         pick_ids = picking_objs.filtered(lambda p: p.state != 'assigned')
         if pick_ids:
-            raise ValidationError(_("Please select only 'Ready' delivery orders!"))
+
+            raise ValidationError(_("Please uncheck the delivery orders which are not in Ready State."))
         return picking_objs.with_context(api_call=True).get_shipping_rates()

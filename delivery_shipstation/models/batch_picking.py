@@ -26,8 +26,8 @@ class StockPickingBatch(models.Model):
         pick = self.picking_ids.filtered(lambda p: p.state != 'assigned')
         if pick:
             raise ValidationError(_(
-                "Label is generate only for 'Ready' delivery orders!\n"
-                "Either process delivery order or remove from the list."))
+                "Label is generated only for 'Ready' delivery orders!\n"
+                "Please process or remove the delivery orders which are not in Ready State."))
         for pick in self.picking_ids.filtered(lambda p: p.state == 'assigned'):
             pick.send_to_shipper()
             pick.print_packing_slip()
