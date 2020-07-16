@@ -36,8 +36,17 @@ class SaleOrder(models.Model):
     order_quantity = fields.Integer(compute='_compute_order_weight', string='Order Quantity')
     rule_message = fields.Text(readonly=True, copy=False)
     requested_service_id = fields.Many2one("order.service", string="Service")
+    service_price = fields.Float("Service Price")
     tag_id = fields.Many2one("order.tag", string="Order Tag")
     weight_oz = fields.Float(compute='_compute_order_weight', string='Order Weight(oz)')
+
+    @api.onchange('requested_service_id')
+    def onchange_requested_service_id(self):
+        """
+        Get service price.
+        :return:  service_price
+        """
+        self.service_price = self.requested_service_id and self.requested_service_id.price or 0.0
 
     def apply_automation_rule(self, picking=None):
         automation_rule_ids = self.env['automation.rule'].search([], order="sequence")
@@ -307,6 +316,25 @@ class SaleOrder(models.Model):
                 pickings.with_context(api_call=True).write(rule_dict)
         return res
 
+    def _remove_service_line(self):
+        self.env['sale.order.line'].search(
+            [('order_id', 'in', self.ids), ('is_delivery', '=', True), ('is_service', '=', True)]).unlink()
+
+    def set_price(self):
+        # Remove delivery products from the sales order
+        self._remove_service_line()
+        line_ids = self.env['sale.order.line']
+        for order in self:
+            line_id = order._create_delivery_line(order.requested_service_id, order.service_price)
+            self._cr.execute("UPDATE sale_order_line SET is_service = True WHERE id = %s" % line_id.id)
+        return True
+
+
+class SaleOrderLine(models.Model):
+    _inherit = "sale.order.line"
+
+    is_service = fields.Boolean('Is Service')
+
 
 class OrderTag(models.Model):
     _name = "order.tag"
@@ -321,8 +349,19 @@ class OrderService(models.Model):
     _name = "order.service"
     _description = "Order Service"
 
+    def _get_product_id(self):
+        return self.env.ref('delivery_shipstation.product_product_sale_requested_service').id
+
     name = fields.Char("Name")
     price = fields.Float("Price")
     active = fields.Boolean("Active", default=True)
+    product_id = fields.Many2one("product.product", string="Product", default=_get_product_id)
+    invoice_policy = fields.Selection([('estimated', 'Estimated cost'),
+                                       ('real', 'Real cost')
+                                       ], string='Invoicing Policy', default='estimated', required=True,
+                                      help="Estimated Cost: the customer will be invoiced the estimated cost of the shipping.\nReal Cost: the customer will be invoiced the real cost of the shipping, the cost of the shipping will be updated on the SO after the delivery.")
+    free_over = fields.Boolean('Free if order amount is above',
+                               help="If the order total amount (shipping excluded) is above or equal to this value, the customer benefits from a free shipping",
+                               default=False)
 
     _sql_constraints = [('name_uniq', 'unique(name)', 'Service name must be unique !')]

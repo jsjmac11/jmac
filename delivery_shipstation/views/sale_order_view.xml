@@ -7,13 +7,14 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
-<!--                <xpath expr="//field[@name='state']" position="before">-->
-<!--                    <button string="Apply Rule" type="object" name="apply_automation_rule" class="oe_highlight"/>-->
-<!--                </xpath>-->
+                <!--                <xpath expr="//field[@name='state']" position="before">-->
+                <!--                    <button string="Apply Rule" type="object" name="apply_automation_rule" class="oe_highlight"/>-->
+                <!--                </xpath>-->
                 <xpath expr="//field[@name='client_order_ref']" position="after">
                     <label for="rule_id"/>
                     <div class="o_row">
-                        <field name="rule_id" nolabel="1" readonly="1"/><br/>
+                        <field name="rule_id" nolabel="1" readonly="1"/>
+                        <br/>
                         <div role="alert" class="alert alert-info"
                              attrs="{'invisible': [('rule_message', '=', False)]}">
                             <field name="rule_message" nolabel="1"/>
@@ -29,8 +30,19 @@
                     <field name="order_quantity" string="Total Quantity"/>
                 </xpath>
                 <xpath expr="//field[@name='payment_term_id']" position="after">
-                    <field name="requested_service_id" string="Requested Service"/>
-                    <field name="tag_id" string="Tag"/>
+                    <label for="requested_service_id" string="Requested Service"/>
+                    <div>
+                        <field name="requested_service_id" string="Requested Service"
+                               options="{'no_open': True, 'no_create': True}"/>
+                        <br/>
+                        <field name="service_price" readonly="1" force_save="1"/>
+                        <button name="set_price" colspan="1" type="object"
+                                attrs="{'invisible': ['|',('requested_service_id', '=', False),('state', 'not in', ('draft','sent'))]}"
+                                class="fa fa-arrow-right oe_link">Set Price
+                        </button>
+                    </div>
+                    <field name="tag_id" string="Tag"
+                           options="{'no_open': True, 'no_create': True}"/>
                 </xpath>
             </field>
         </record>
@@ -74,6 +86,7 @@
             <field name="arch" type="xml">
                 <tree string="Order Services" editable="top" delete="0">
                     <field name="name" required="1"/>
+                    <field name="product_id"/>
                     <field name="price"/>
                     <field name="active"/>
                 </tree>
@@ -98,7 +111,8 @@
 
         <menuitem name="Order Services" id="order_service_submenu" parent="sale.menu_sales_config"
                   action="action_order_service_form" sequence="7"/>
-        <menuitem name="Order Services" id="order_service_submenu_inv" parent="delivery_shipstation.shipstation_config_menu"
+        <menuitem name="Order Services" id="order_service_submenu_inv"
+                  parent="delivery_shipstation.shipstation_config_menu"
                   action="action_order_service_form" sequence="7"/>
 
     </data>

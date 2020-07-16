@@ -80,7 +80,7 @@ class StockPicking(models.Model):
     tag_id = fields.Many2one("order.tag", string="Tags")
     weight_uom_name_oz = fields.Char(string='Weight oz unit of measure', default=_get_default_weight_oz_uom)
 
-    @api.onchange('weight_oz', 'weight_lb')
+    @api.onchange('shipping_weight_oz', 'shipping_weight')
     def onchange_shipping_weights(self):
         """
         Get total weight and validation.
