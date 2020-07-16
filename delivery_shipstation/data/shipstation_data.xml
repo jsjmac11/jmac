@@ -19,7 +19,7 @@
             <field name="type">service</field>
             <field name="invoice_policy">order</field>
             <field name="categ_id" ref="product.product_category_all"/>
-            <field name="sale_ok" eval="True"/>
+            <field name="sale_ok" eval="False"/>
             <field name="purchase_ok" eval="False"/>
             <field name="list_price">0.0</field>
         </record>
@@ -118,17 +118,32 @@
 
 <!--        Order Services Data-->
 
+        <record id="product_product_sale_requested_service" model="product.product">
+            <field name="name">Requested Service Charge</field>
+            <field name="default_code">SERVICE</field>
+            <field name="type">service</field>
+            <field name="invoice_policy">order</field>
+            <field name="categ_id" ref="product.product_category_all"/>
+            <field name="sale_ok" eval="False"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="list_price">0.0</field>
+        </record>
+
         <record id="order_service_free" model="order.service">
             <field name="name">Free Shipping</field>
+            <field name="product_id" ref="delivery_shipstation.product_product_sale_requested_service"/>
         </record>
         <record id="order_service_standard" model="order.service">
             <field name="name">Standard Shipping</field>
+            <field name="product_id" ref="delivery_shipstation.product_product_sale_requested_service"/>
         </record>
         <record id="order_service_expedited" model="order.service">
             <field name="name">Expedited Shipping</field>
+            <field name="product_id" ref="delivery_shipstation.product_product_sale_requested_service"/>
         </record>
         <record id="order_service_fast" model="order.service">
             <field name="name">Need It Fast</field>
+            <field name="product_id" ref="delivery_shipstation.product_product_sale_requested_service"/>
         </record>
 
     </data>
