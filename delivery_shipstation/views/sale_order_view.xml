@@ -28,6 +28,7 @@
                         <span>ozs</span>
                     </div>
                     <field name="order_quantity" string="Total Quantity"/>
+                    <field name="payment_received" readonly="1"/>
                 </xpath>
                 <xpath expr="//field[@name='payment_term_id']" position="after">
                     <label for="requested_service_id" string="Requested Service"/>

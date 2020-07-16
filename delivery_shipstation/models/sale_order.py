@@ -39,6 +39,7 @@ class SaleOrder(models.Model):
     service_price = fields.Float("Service Price")
     tag_id = fields.Many2one("order.tag", string="Order Tag")
     weight_oz = fields.Float(compute='_compute_order_weight', string='Order Weight(oz)')
+    payment_received = fields.Float("Total Payment Received")
 
     @api.onchange('requested_service_id')
     def onchange_requested_service_id(self):
@@ -53,7 +54,9 @@ class SaleOrder(models.Model):
         val_dict = {}
         matched_rule_id = False
         rule_matched = []
-        product_id = self.order_line.filtered(lambda l: l.product_id.type != 'service').mapped('product_id')
+        product_id = False
+        if len(self.order_line.filtered(lambda l: l.product_id.type != 'service')) == 1:
+            product_id = self.order_line.filtered(lambda l: l.product_id.type != 'service').mapped('product_id')
         for rule in automation_rule_ids.filtered(lambda r: r.rule_type == 'match'):
             if not rule_matched:
                 matched_rule_id = rule
@@ -80,14 +83,11 @@ class SaleOrder(models.Model):
                         else:
                             operator += str(line.weight_oz)
                 elif line.category_type == 'val':
-                    str_c = str(self.amount_untaxed)
+                    str_c = str(self.amount_total)
                     if line.operator_type_id.operator in ('in', 'not in'):
                         operator += str([line.value])
                     else:
                         operator += str(line.value)
-                elif line.category_type == 'product':
-                    str_c = str(product_id.id)
-                    operator += str(line.product_ids.ids)
                 elif line.category_type == 'req_service':
                     str_c = str(self.requested_service_id.id)
                     operator += str(line.requested_service_id.ids)
@@ -97,30 +97,38 @@ class SaleOrder(models.Model):
                 elif line.category_type == 'country':
                     str_c = str(self.partner_id.country_id.id)
                     operator += str(line.country_ids.ids)
-                elif line.category_type == 'inventory':
-                    str_c = str(product_id.qty_available)
-                    if line.operator_type_id.operator in ('in', 'not in'):
-                        operator += str([line.value])
-                    else:
-                        operator += str(line.value)
-                elif line.category_type == 'length':
-                    str_c = str(product_id.length)
-                    if line.operator_type_id.operator in ('in', 'not in'):
-                        operator += str([line.value])
-                    else:
-                        operator += str(line.value)
-                elif line.category_type == 'width':
-                    str_c = str(product_id.width)
-                    if line.operator_type_id.operator in ('in', 'not in'):
-                        operator += str([line.value])
-                    else:
-                        operator += str(line.value)
-                elif line.category_type == 'height':
-                    str_c = str(product_id.height)
-                    if line.operator_type_id.operator in ('in', 'not in'):
-                        operator += str([line.value])
-                    else:
-                        operator += str(line.value)
+                # Product specific type match
+                if product_id:
+                    if line.category_type == 'product':
+                        str_c = str(product_id.id)
+                        operator += str(line.product_ids.ids)
+                    elif line.category_type == 'inventory':
+                        str_c = str(product_id.qty_available)
+                        if line.operator_type_id.operator in ('in', 'not in'):
+                            operator += str([line.value])
+                        else:
+                            operator += str(line.value)
+                    elif line.category_type == 'length':
+                        str_c = str(product_id.length)
+                        if line.operator_type_id.operator in ('in', 'not in'):
+                            operator += str([line.value])
+                        else:
+                            operator += str(line.value)
+                    elif line.category_type == 'width':
+                        str_c = str(product_id.width)
+                        if line.operator_type_id.operator in ('in', 'not in'):
+                            operator += str([line.value])
+                        else:
+                            operator += str(line.value)
+                    elif line.category_type == 'height':
+                        str_c = str(product_id.height)
+                        if line.operator_type_id.operator in ('in', 'not in'):
+                            operator += str([line.value])
+                        else:
+                            operator += str(line.value)
+                elif not product_id and not str_c:
+                    matched_rule_id = False
+                    break
                 if str_c:
                     str_c += ' ' + operator
                     if not eval(str_c):
@@ -286,23 +294,23 @@ class SaleOrder(models.Model):
         return False
 
     def action_confirm(self):
-        if len(self.order_line.filtered(lambda l: l.product_id.type != 'service')) == 1:
-            rule_dict = self.apply_automation_rule()
-            if 'carrier_id' not in rule_dict:
-                api_config_obj = self.env['shipstation.config'].search(
-                    [('active', '=', True)])
-                default_carrier_id = api_config_obj.default_carrier_id
-                rule_dict.update({'shipstation_carrier_id': default_carrier_id.id,
-                                  'carrier_id': False, })
-            if not rule_dict.get('shipping_weight'):
-                rule_dict.update({'shipping_weight': self.order_weight})
-            if not rule_dict.get('shipping_weight_oz'):
-                rule_dict.update({'shipping_weight_oz': self.weight_oz})
-            rates_dict = self.with_context(api_call=True).get_shipping_rates(rule_dict)
-            if rates_dict:
-                rule_dict.update(rates_dict)
+        # if len(self.order_line.filtered(lambda l: l.product_id.type != 'service')) == 1:
+        rule_dict = self.apply_automation_rule()
+        if 'carrier_id' not in rule_dict:
+            api_config_obj = self.env['shipstation.config'].search(
+                [('active', '=', True)])
+            default_carrier_id = api_config_obj.default_carrier_id
+            rule_dict.update({'shipstation_carrier_id': default_carrier_id.id,
+                              'carrier_id': False, })
+        if not rule_dict.get('shipping_weight'):
+            rule_dict.update({'shipping_weight': self.order_weight})
+        if not rule_dict.get('shipping_weight_oz'):
+            rule_dict.update({'shipping_weight_oz': self.weight_oz})
+        rates_dict = self.with_context(api_call=True).get_shipping_rates(rule_dict)
+        if rates_dict:
+            rule_dict.update(rates_dict)
         res = super(SaleOrder, self).action_confirm()
-        if self.picking_ids and len(self.order_line.filtered(lambda l: l.product_id.type != 'service')) == 1:
+        if self.picking_ids:
             pickings = self.picking_ids.filtered(
                 lambda x: x.state == 'confirmed' or (x.state in ['waiting', 'assigned']))
             if rule_dict:
