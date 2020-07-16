@@ -30,11 +30,11 @@ class AutomationRule(models.Model):
     rule_type = fields.Selection(
         [('all', 'Apply these actions to EVERY order that is imported'),
          ('match', 'Only apply these actions to orders that match specific criteria')],
-        default='all', copy=False)
+        default='match', copy=False)
     active = fields.Boolean(string="Active", default=True)
-    rule_line = fields.One2many("automation.rule.line", 'rule_id', string="Criteria")
+    rule_line = fields.One2many("automation.rule.line", 'rule_id', string="Criteria", copy="True")
     sequence = fields.Integer("Sequence")
-    rule_action_line = fields.One2many("automation.rule.action", 'rule_id', string="Action")
+    rule_action_line = fields.One2many("automation.rule.action", 'rule_id', string="Action", copy="True")
 
     @api.constrains('rule_type', 'active')
     def _validate_rule_type(self):
@@ -48,7 +48,7 @@ class AutomationRuleLine(models.Model):
     _description = "Automation Rule Line for Carrier"
 
     rule_id = fields.Many2one("automation.rule", string="Rule")
-    category_type = fields.Selection(categ_type, copy=False, string="Type")
+    category_type = fields.Selection(categ_type, string="Type")
     operator_type_id = fields.Many2one('operator.type', string='Operator')
     value = fields.Float(string="Value")
     weight_oz = fields.Float(string="Weight(oz)")
@@ -72,7 +72,6 @@ class AutomationRuleLine(models.Model):
         if self.value < 0:
             raise ValidationError(_("Value should not be negative!"))
 
-
     @api.onchange('category_type')
     def onchange_category_type(self):
         """
@@ -80,6 +79,11 @@ class AutomationRuleLine(models.Model):
         :return:
         """
         if self.category_type:
+            categ_lines = self.rule_id.rule_line.filtered(lambda x: x.category_type == self.category_type)
+            if len(categ_lines) > 2:
+                warning = {'title': _("Warning"),
+                           'message': "Cannot Use one type twice!\nPlease, select a different type."}
+                return {'warning': warning,'value':{'category_type': False}}
             return {'value': {'operator_type_id': False,
                               'value': 0.0,
                               'weight_oz': 0.0,
@@ -100,7 +104,7 @@ class OperatorType(models.Model):
     operator = fields.Char('operator')
     sequence = fields.Char("Sequence")
     field_id = fields.Many2many('ir.model.fields', string='Field')
-    category_type = fields.Selection(categ_type, copy=False, string="Type")
+    category_type = fields.Selection(categ_type, string="Type")
 
     @api.model
     def _name_search(self, name, args=None, operator='ilike', limit=100,
@@ -129,7 +133,7 @@ class AutomationRuleAction(models.Model):
          ('insure', 'Insure the Package...'),
          ('weight', 'Set the Total Order Weight...'),
          ('activity', 'Schedule activity')],
-        copy=False, string="Action")
+        string="Action")
     service_id = fields.Many2one("delivery.carrier", string="Service")
     package_id = fields.Many2one("shipstation.package", string="Package")
     insure_package_type = fields.Selection(
@@ -137,9 +141,9 @@ class AutomationRuleAction(models.Model):
          ('carrier', 'Carrier'),
          ('provider', 'Other/External')],
         copy=False, string="Insure Type")
-    length = fields.Integer('L (in)', copy=False)
-    width = fields.Integer('W (in)', copy=False)
-    height = fields.Integer('H (in)', copy=False)
+    length = fields.Integer('L (in)')
+    width = fields.Integer('W (in)')
+    height = fields.Integer('H (in)')
     shipping_weight_lb = fields.Float("Weight(lb)")
     shipping_weight_oz = fields.Float("Weight(oz)")
     tag_id = fields.Many2one("order.tag", string="Tag")
@@ -170,6 +174,11 @@ class AutomationRuleAction(models.Model):
         :return:
         """
         if self.action_type:
+            action_lines = self.rule_id.rule_action_line.filtered(lambda x: x.action_type == self.action_type)
+            if len(action_lines) > 2:
+                warning = {'title': _("Warning"),
+                           'message': "Cannot Use one action twice!\nPlease, select a different action."}
+                return {'warning': warning, 'value': {'action_type': False}}
             return {'value': {'service_id': False,
                               'package_id': False,
                               'insure_package_type': False,
