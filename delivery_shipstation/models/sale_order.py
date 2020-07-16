@@ -23,8 +23,10 @@ class SaleOrder(models.Model):
         for order in self:
             order.order_quantity = int(
                 sum(order.order_line.filtered(lambda l: not l.is_delivery).mapped('product_uom_qty')))
-            line_with_weight = order.order_line.filtered(lambda line: line.product_id.weight > 0.00)
-            weight_oz = order_weight = 0.0
+            line_with_weight = order.order_line.filtered(
+                lambda line: line.product_id.weight > 0.00 or line.product_id.weight_oz > 0.00)
+            weight_oz = 0.0
+            order_weight = 0.0
             for line in line_with_weight:
                 weight_oz += line.product_qty * line.product_id.weight_oz
                 order_weight += line.product_qty * line.product_id.weight
