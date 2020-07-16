@@ -11,9 +11,8 @@
                     <sheet>
                         <group>
                             <field name="name"/>
-                            <field name="rule_type" widget="radio"/>
+                            <field name="rule_type" widget="radio" invisible="1"/>
                             <field name="sequence"/>
-
                         </group>
                         <separator string="Criteria" attrs="{'invisible':[('rule_type','!=','match')]}"/>
                         <field name="rule_line" nolabel="1" mode="tree,kanban,form"
