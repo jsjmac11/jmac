@@ -226,12 +226,11 @@ class SaleOrder(models.Model):
                                                     partner_id, order=sale_id)
             if check_result:
                 raise UserError(check_result)
-
             if rule_val.get('shipping_weight'):
                 shipping_weight = rule_val.get('shipping_weight')
                 units = "pounds"
             elif rule_val.get('shipping_weight_oz'):
-                shipping_weight = rule_val.get('shipping_weight_ozs')
+                shipping_weight = rule_val.get('shipping_weight_oz')
                 units = "ounces"
             else:
                 shipping_weight = sale_id.order_weight or sale_id.weight_oz
@@ -308,6 +307,7 @@ class SaleOrder(models.Model):
             rule_dict.update({'shipping_weight': self.order_weight})
         if not rule_dict.get('shipping_weight_oz'):
             rule_dict.update({'shipping_weight_oz': self.weight_oz})
+        logger.info("Rule values!!!!!! %s" % rule_dict)
         rates_dict = self.with_context(api_call=True).get_shipping_rates(rule_dict)
         if rates_dict:
             rule_dict.update(rates_dict)
