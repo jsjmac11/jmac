@@ -10,9 +10,16 @@
                 <form string="Automation Rule">
                     <sheet>
                         <group>
-                            <field name="name"/>
-                            <field name="rule_type" widget="radio" invisible="1"/>
-                            <field name="sequence"/>
+                            <group colspan="2">
+                                <field name="name"/>
+                                <field name="is_global_rule"/>
+                                <field name="global_rule_id"
+                                       domain="[('is_global_rule','=',True)]"
+                                       options="{'no_open': True, 'no_create': True}"
+                                       attrs="{'invisible':[('is_global_rule','=',True)]}"/>
+                                <field name="sequence"/>
+                                <field name="rule_type" widget="radio" invisible="1"/>
+                            </group>
                         </group>
                         <separator string="Criteria" attrs="{'invisible':[('rule_type','!=','match')]}"/>
                         <field name="rule_line" nolabel="1" mode="tree,kanban,form"
@@ -23,27 +30,37 @@
                                        context="{'category_type':category_type}"
                                        options="{'no_open': True, 'no_create': True}"/>
                                 <field name="value"
-                                       attrs="{'invisible':[('category_type','in',('product','country','req_service','tag','wgt'))], 'required':[('category_type','not in',('product','country','req_service','tag','wgt'))]}"/>
+                                       attrs="{'invisible':[('category_type','in',('product','country','req_service','tag','wgt'))],
+                                               'required':[('category_type','not in',('product','country','req_service','tag','wgt'))]}"/>
                                 <field name="weight_lb"
-                                       attrs="{'invisible':[('category_type','!=','wgt')], 'required':[('category_type','=','wgt')]}"/>
+                                       attrs="{'invisible':[('category_type','!=','wgt')],
+                                               'required':[('category_type','=','wgt')]}"/>
                                 <field name="weight_oz"
-                                       attrs="{'invisible':[('category_type','!=','wgt')], 'required':[('category_type','=','wgt')]}"/>
+                                       attrs="{'invisible':[('category_type','!=','wgt')],
+                                               'required':[('category_type','=','wgt')]}"/>
                                 <field name="total_weight" invisible="1" force_save="1"
                                        attrs="{'invisible':[('category_type','!=','wgt')]}"/>
 
-                                <field name="product_ids" widget="many2many_tags"
+                                <field name="product_ids"
+                                       widget="many2many_tags"
                                        domain="[('type','=','product')]"
                                        options="{'no_open': True, 'no_create': True}"
-                                       attrs="{'invisible':[('category_type','!=','product')], 'required':[('category_type','=','product')]}"/>
-                                <field name="country_ids" widget="many2many_tags"
+                                       attrs="{'invisible':[('category_type','!=','product')],
+                                               'required':[('category_type','=','product')]}"/>
+                                <field name="country_ids"
+                                       widget="many2many_tags"
                                        options="{'no_open': True, 'no_create': True}"
-                                       attrs="{'invisible':[('category_type','!=','country')], 'required':[('category_type','=','country')]}"/>
+                                       attrs="{'invisible':[('category_type','!=','country')],
+                                               'required':[('category_type','=','country')]}"/>
                                 <field name="requested_service_id"
                                        options="{'no_open': True, 'no_create': True}"
-                                       attrs="{'invisible':[('category_type','!=','req_service')], 'required':[('category_type','=','req_service')]}"/>
+                                       widget="many2many_tags"
+                                       attrs="{'invisible':[('category_type','!=','req_service')],
+                                               'required':[('category_type','=','req_service')]}"/>
                                 <field name="tag_ids" widget="many2many_tags"
                                        options="{'no_open': True, 'no_create': True}"
-                                       attrs="{'invisible':[('category_type','!=','tag')], 'required':[('category_type','=','tag')]}"/>
+                                       attrs="{'invisible':[('category_type','!=','tag')],
+                                               'required':[('category_type','=','tag')]}"/>
 
                             </tree>
                             <form>
@@ -54,52 +71,70 @@
                                                context="{'category_type':category_type}"
                                                options="{'no_open': True, 'no_create': True}"/>
                                         <field name="value"
-                                               attrs="{'invisible':[('category_type','in',('product','country','req_service','tag','wgt'))], 'required':[('category_type','not in',('product','country','req_service','tag','wgt'))]}"/>
+                                               attrs="{'invisible':[('category_type','in',('product','country','req_service','tag','wgt'))],
+                                                       'required':[('category_type','not in',('product','country','req_service','tag','wgt'))]}"/>
                                         <field name="weight_lb"
-                                               attrs="{'invisible':[('category_type','!=','wgt')], 'required':[('category_type','=','wgt')]}"/>
+                                               attrs="{'invisible':[('category_type','!=','wgt')],
+                                                       'required':[('category_type','=','wgt')]}"/>
                                         <field name="weight_oz"
-                                               attrs="{'invisible':[('category_type','!=','wgt')], 'required':[('category_type','=','wgt')]}"/>
+                                               attrs="{'invisible':[('category_type','!=','wgt')],
+                                                       'required':[('category_type','=','wgt')]}"/>
                                         <field name="total_weight" invisible="1" force_save="1"
                                                attrs="{'invisible':[('category_type','!=','wgt')]}"/>
                                         <field name="product_ids" widget="many2many_tags"
                                                domain="[('type','=','product')]"
                                                options="{'no_open': True, 'no_create': True}"
-                                               attrs="{'invisible':[('category_type','!=','product')], 'required':[('category_type','=','product')]}"/>
+                                               attrs="{'invisible':[('category_type','!=','product')],
+                                                       'required':[('category_type','=','product')]}"/>
                                         <field name="country_ids" widget="many2many_tags"
                                                options="{'no_open': True, 'no_create': True}"
-                                               attrs="{'invisible':[('category_type','!=','country')], 'required':[('category_type','=','country')]}"/>
+                                               attrs="{'invisible':[('category_type','!=','country')],
+                                                       'required':[('category_type','=','country')]}"/>
                                         <field name="requested_service_id"
+                                               widget="many2many_tags"
                                                options="{'no_open': True, 'no_create': True}"
-                                               attrs="{'invisible':[('category_type','!=','req_service')], 'required':[('category_type','=','req_service')]}"/>
+                                               attrs="{'invisible':[('category_type','!=','req_service')],
+                                                       'required':[('category_type','=','req_service')]}"/>
                                         <field name="tag_ids" widget="many2many_tags"
                                                options="{'no_open': True, 'no_create': True}"
-                                               attrs="{'invisible':[('category_type','!=','tag')], 'required':[('category_type','=','tag')]}"/>
+                                               attrs="{'invisible':[('category_type','!=','tag')],
+                                                       'required':[('category_type','=','tag')]}"/>
                                     </group>
                                 </div>
                             </form>
                         </field>
-                        <separator string="Apply Action"/>
-                        <field name="rule_action_line" nolabel="1" mode="tree,kanban,form">
+                        <separator string="Apply Action" attrs="{'invisible':[('is_global_rule','=',True)]}"/>
+                        <field name="rule_action_line"
+                               nolabel="1" mode="tree,kanban,form"
+                               attrs="{'invisible':[('is_global_rule','=',True)]}">
                             <tree editable="bottom">
                                 <field name="action_type" required="1"/>
                                 <field name="service_id"
-                                       attrs="{'required':[('action_type','=','carrier')],'invisible':[('action_type','!=','carrier')]}"
+                                       attrs="{'required':[('action_type','=','carrier')],
+                                               'invisible':[('action_type','!=','carrier')]}"
                                        options="{'no_open': True, 'no_create': True}"/>
                                 <field name="package_id"
-                                       attrs="{'required':[('action_type','=','carrier')],'invisible':[('action_type','!=','carrier')]}"
+                                       attrs="{'required':[('action_type','=','carrier')],
+                                               'invisible':[('action_type','!=','carrier')]}"
                                        options="{'no_open': True, 'no_create': True}"/>
                                 <field name="insure_package_type"
-                                       attrs="{'required':[('action_type','=','insure')],'invisible':[('action_type','!=','insure')]}"/>
+                                       attrs="{'required':[('action_type','=','insure')],
+                                               'invisible':[('action_type','!=','insure')]}"/>
                                 <field name="length"
-                                       attrs="{'required':[('action_type','=','dimension')],'invisible':[('action_type','!=','dimension')]}"/>
+                                       attrs="{'required':[('action_type','=','dimension')],
+                                               'invisible':[('action_type','!=','dimension')]}"/>
                                 <field name="width"
-                                       attrs="{'required':[('action_type','=','dimension')],'invisible':[('action_type','!=','dimension')]}"/>
+                                       attrs="{'required':[('action_type','=','dimension')],
+                                               'invisible':[('action_type','!=','dimension')]}"/>
                                 <field name="height"
-                                       attrs="{'required':[('action_type','=','dimension')],'invisible':[('action_type','!=','dimension')]}"/>
+                                       attrs="{'required':[('action_type','=','dimension')],
+                                               'invisible':[('action_type','!=','dimension')]}"/>
                                 <field name="shipping_weight_lb"
-                                       attrs="{'required':[('action_type','=','weight')],'invisible':[('action_type','!=','weight')]}"/>
+                                       attrs="{'required':[('action_type','=','weight')],
+                                               'invisible':[('action_type','!=','weight')]}"/>
                                 <field name="shipping_weight_oz"
-                                       attrs="{'required':[('action_type','=','weight')],'invisible':[('action_type','!=','weight')]}"/>
+                                       attrs="{'required':[('action_type','=','weight')],
+                                               'invisible':[('action_type','!=','weight')]}"/>
                                 <field name="tag_id"
                                        attrs="{'required':[('action_type','=','tag')],'invisible':[('action_type','!=','tag')]}"
                                        options="{'no_open': True, 'no_create': True}"/>

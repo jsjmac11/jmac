@@ -51,17 +51,10 @@ class SaleOrder(models.Model):
         """
         self.service_price = self.requested_service_id and self.requested_service_id.price or 0.0
 
-    def apply_automation_rule(self, picking=None):
-        automation_rule_ids = self.env['automation.rule'].search([], order="sequence")
-        val_dict = {}
-        matched_rule_id = False
+    def check_rule_matched(self, rules_ids, product_id):
         rule_matched = []
-        product_id = False
-        if len(self.order_line.filtered(lambda l: l.product_id.type != 'service')) == 1:
-            product_id = self.order_line.filtered(lambda l: l.product_id.type != 'service').mapped('product_id')
-        for rule in automation_rule_ids.filtered(lambda r: r.rule_type == 'match'):
-            if not rule_matched:
-                matched_rule_id = rule
+        for rule in rules_ids:
+            matched_rule_id = rule
             for line in rule.rule_line:
                 str_c = ''
                 operator = str(line.operator_type_id.operator) + ' '
@@ -131,6 +124,7 @@ class SaleOrder(models.Model):
                 elif not product_id and not str_c:
                     matched_rule_id = False
                     break
+
                 if str_c:
                     str_c += ' ' + operator
                     if not eval(str_c):
@@ -139,10 +133,35 @@ class SaleOrder(models.Model):
 
             if matched_rule_id:
                 rule_matched.append(rule)
-                # break
+        return rule_matched
+
+    def apply_automation_rule(self, picking=None):
+        automation_rule_ids = self.env['automation.rule'].search([], order="sequence")
+        val_dict = {}
+        matched_rule_id = False
+        product_id = False
+        grule_matched = []
+        if len(self.order_line.filtered(lambda l: l.product_id.type != 'service')) == 1:
+            product_id = self.order_line.mapped('product_id')
+        rule_ids = automation_rule_ids.filtered(
+            lambda r: r.rule_type == 'match' and not r.is_global_rule
+                      and not r.global_rule_id)
+        global_rule_ids = automation_rule_ids.filtered(lambda r: r.is_global_rule)
+        if global_rule_ids:
+            grule_matched = self.check_rule_matched(global_rule_ids, product_id)
+        if grule_matched:
+            matched_global_rule_ids = [r.id for r in grule_matched]
+            auto_rule_ids = automation_rule_ids.filtered(
+                lambda r: r.rule_type == 'match' and not r.is_global_rule
+                          and r.global_rule_id.id in matched_global_rule_ids)
+            if auto_rule_ids:
+                rule_ids += auto_rule_ids
+
+        rule_ids = self.env['automation.rule'].search([('id', 'in', rule_ids.ids)], order="sequence")
+        rule_matched = self.check_rule_matched(rule_ids, product_id)
         if rule_matched:
             matched_rule_id = rule_matched[0]
-        global_rule = automation_rule_ids.filtered(lambda r: r.rule_type == 'all')
+        global_rule = automation_rule_ids.filtered(lambda r: r.rule_type == 'all' and not r.is_global_rule)
         if global_rule:
             rule_matched.append(global_rule)
             if not matched_rule_id:
@@ -186,12 +205,11 @@ class SaleOrder(models.Model):
                             'activity_type_id': self.env.ref('mail.mail_activity_data_todo').id,
                         }
                     })
-            self.write({'rule_id': matched_rule_id.id,
-                        'rule_message': "Rules Matched are:\n%s \nApplied Rule is: %s" % (", ".join(
-                            [r.name for r in rule_matched]), matched_rule_id.name) if len(rule_matched) > 1 else False
-                        })
-        else:
-            self.rule_id = False
+
+        self.write({'rule_id': matched_rule_id and matched_rule_id.id or False,
+                    'rule_message': "Rules Matched are:\n%s \nApplied Rule is: %s" % (", ".join(
+                        [r.name for r in rule_matched]), matched_rule_id.name) if len(rule_matched) > 1 else False
+                    })
         logger.info("Rule!!!!!! %s" % val_dict)
         return val_dict
 
