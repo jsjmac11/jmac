@@ -26,6 +26,10 @@ class AutomationRule(models.Model):
     _description = "Automation Rule for Carrier"
     _order = "sequence"
 
+    def _get_default_rule(self):
+        rule_id = self.search([('is_global_rule', '=', True), ('active', '=', True)], limit=1)
+        return rule_id
+
     name = fields.Char("Rule Name")
     rule_type = fields.Selection(
         [('all', 'Apply these actions to EVERY order that is imported'),
@@ -35,9 +39,15 @@ class AutomationRule(models.Model):
     rule_line = fields.One2many("automation.rule.line", 'rule_id', string="Criteria", copy="True")
     sequence = fields.Integer("Sequence")
     rule_action_line = fields.One2many("automation.rule.action", 'rule_id', string="Action", copy="True")
+    is_global_rule = fields.Boolean('Is Global Rule')
+    global_rule_id = fields.Many2one('automation.rule', string='Global Rule', default=_get_default_rule)
 
-    @api.constrains('rule_type', 'active')
+    @api.constrains('rule_type', 'is_global_rule')
     def _validate_rule_type(self):
+        # global_rule_id = self.env['automation.rule'].search(
+        #     [('is_global_rule', '=', True), ('id', '!=', self.id), ('active', '=', True)])
+        # if global_rule_id:
+        #     raise ValidationError(_("Global Rule already exists!"))
         rule_id = self.env['automation.rule'].search([('rule_type', '=', 'all')])
         if len(rule_id) > 1:
             raise ValidationError(_("For rule type 'every order' already exists please inactive old rule first!"))
@@ -56,7 +66,7 @@ class AutomationRuleLine(models.Model):
     total_weight = fields.Float("Total Weight")
     product_ids = fields.Many2many("product.product", string="Item SKU")
     country_ids = fields.Many2many("res.country", string="Country")
-    requested_service_id = fields.Many2one("order.service", string="Service")
+    requested_service_id = fields.Many2many("order.service", string="Service")
     tag_ids = fields.Many2many("order.tag", string="Tags")
 
     @api.onchange('weight_oz', 'weight_lb', 'value')
@@ -83,7 +93,7 @@ class AutomationRuleLine(models.Model):
             if len(categ_lines) > 2:
                 warning = {'title': _("Warning"),
                            'message': "Cannot Use one type twice!\nPlease, select a different type."}
-                return {'warning': warning,'value':{'category_type': False}}
+                return {'warning': warning, 'value': {'category_type': False}}
             return {'value': {'operator_type_id': False,
                               'value': 0.0,
                               'weight_oz': 0.0,
