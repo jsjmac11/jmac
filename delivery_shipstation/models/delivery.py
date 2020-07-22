@@ -96,7 +96,7 @@ class ProviderShipstation(models.Model):
         return res
 
     def shipstation_get_tracking_link(self, picking):
-        return 'https: // www.stamps.com/shipstatus/?confirmation=%s' % picking.carrier_tracking_ref
+        return False
 
     def shipstation_cancel_shipment(self, picking):
         result = {}
