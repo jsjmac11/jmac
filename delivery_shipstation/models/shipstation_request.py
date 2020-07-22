@@ -231,7 +231,7 @@ class ShipstationRequest():
             },
             "shipFrom": self.prepare_address(picking.picking_type_id.warehouse_id.partner_id),
             "shipTo": self.prepare_address(picking.picking_type_id.warehouse_id.partner_id, type='To'),
-            "insuranceOptions": picking.insure_package_type if picking.insure_package_type else '',
+            "insuranceOptions": {"provider":picking.insure_package_type if picking.insure_package_type else ''},
             "internationalOptions": '',
             "advancedOptions": '',
             "testLabel": True if not carrier.prod_environment else False
@@ -256,6 +256,7 @@ class ShipstationRequest():
         try:
             self.debug_logger(ship_detail, 'shipstation_request')
             url = self.url + '/shipments/createlabel'
+            logger.info("ship_detail!!!!!! %s" % ship_detail)
             req = requests.request('POST', url, headers=headers, data=json.dumps(ship_detail))
             response_text = json.loads(req.text)
             self.debug_logger(response_text, 'shipstation_response')
@@ -268,6 +269,7 @@ class ShipstationRequest():
         except:
             logger.info("ERROR!!!!!!")
             raise
+        logger.info("response_text!!!!!! %s" % response_text)
         if response_text.get('ExceptionMessage'):
             dict_response['error_message'] = response_text.get('ExceptionMessage')
             return dict_response
