@@ -4,10 +4,11 @@
         <record model="ir.ui.view" id="view_sale_order_field_inherited">
             <field name="name">sale.order.field.inherited</field>
             <field name="model">sale.order</field>
-            <field name="inherit_id" ref="sale.view_order_form" />
+            <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                 <field name="date_order" position="after">
-                    <field name="ticket_id" invisible="0"/>
+                    <field name="ticket_id" invisible="0"
+                           options="{'no_open': True, 'no_create': True}"/>
                 </field>
             </field>
         </record>

@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <field name="default_code" position="after">
                 <field name="multiple_price"/>
-                <field name="free_shipping"/>
+                <field name="free_shipping" invisible="1"/>
                 <field name="product_manufacturer_id" required="1" domain="[('is_manufacturer','=',True)]"
                        options="{'no_open': True, 'no_create': True}"/>
                 <field name="product_manufacturer" readonly="1" force_save="1"/>
