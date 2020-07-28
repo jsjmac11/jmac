@@ -37,7 +37,7 @@ class SaleOrder(models.Model):
     order_weight = fields.Float(compute='_compute_order_weight', string='Order Weight')
     order_quantity = fields.Integer(compute='_compute_order_weight', string='Order Quantity')
     rule_message = fields.Text(readonly=True, copy=False)
-    requested_service_id = fields.Many2one("order.service", string="Service")
+    requested_service_id = fields.Many2one("order.service", string="Requested Shipping")
     service_price = fields.Float("Service Price")
     tag_id = fields.Many2one("order.tag", string="Order Tag")
     weight_oz = fields.Float(compute='_compute_order_weight', string='Order Weight(oz)')
@@ -351,11 +351,20 @@ class SaleOrder(models.Model):
     def set_price(self):
         # Remove delivery products from the sales order
         self._remove_service_line()
-        line_ids = self.env['sale.order.line']
         for order in self:
-            line_id = order._create_delivery_line(order.requested_service_id, order.service_price)
-            self._cr.execute("UPDATE sale_order_line SET is_service = True WHERE id = %s" % line_id.id)
+            order_lines = order.order_line.filtered(
+                lambda l: not l.is_delivery and l.display_type not in [
+                    'line_section', 'line_note'])
+            shipping_price = order_lines and sum(
+                [line.product_id.multiple_price
+                 * line.product_uom_qty for line in order_lines]) + order.service_price or 0
+            line_id = order._create_delivery_line(order.requested_service_id, shipping_price)
+            line_id.update({'is_service': True})
         return True
+
+    def _remove_delivery_line(self):
+        self.env['sale.order.line'].search(
+            [('order_id', 'in', self.ids), ('is_delivery', '=', True), ('is_service', '=', False)]).unlink()
 
 
 class SaleOrderLine(models.Model):

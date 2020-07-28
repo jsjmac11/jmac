@@ -33,7 +33,7 @@
                 <xpath expr="//field[@name='payment_term_id']" position="after">
                     <label for="requested_service_id" string="Requested Service"/>
                     <div>
-                        <field name="requested_service_id" string="Requested Service"
+                        <field name="requested_service_id"
                                options="{'no_open': True, 'no_create': True}"/>
                         <br/>
                         <field name="service_price" readonly="1" force_save="1"/>
