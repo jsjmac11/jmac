@@ -301,13 +301,19 @@ class SaleOrderLine(models.Model):
                 self.jmac_onhand = self.product_id.qty_available
                 self.jmac_available = self.product_id.qty_available
                 self.jmac_stock_ids = [(6,0,jmac_stock_ids.ids)]
+            params = {'order_id': self.order_id}
             if self.adi_partner_id:
                 stock_master_line_id = self.env["vendor.stock.master.line"].search(
                     [('res_partner_id', '=', self.adi_partner_id.id),
                      ('product_id', '=', self.product_id.id)])
                 if stock_master_line_id:
                     self.adi_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
-                pricelist_id = self.product_id.seller_ids.search([('name' ,'=', self.adi_partner_id.id)], limit=1)
+                pricelist_id = self.product_id._select_seller(
+                                                partner_id=self.adi_partner_id,
+                                                quantity=self.product_uom_qty,
+                                                date=self.order_id.date_order and self.order_id.date_order.date(),
+                                                uom_id=self.product_uom,
+                                                params=params)
                 if pricelist_id:
                     actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
                     self.adi_part_number = pricelist_id.product_code or ''
@@ -318,8 +324,8 @@ class SaleOrderLine(models.Model):
                     actual_cost = self.product_id.standard_price 
                     # self.adi_part_number = adi_pricelist_id.product_code or ''
                     # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
-                    self.adi_actual_cost = actual_cost or 0.0
-                    self.adi_standard_cost = actual_cost or 0.0
+                    self.adi_actual_cost = 0.0
+                    self.adi_standard_cost = 0.0
 
             if self.nv_partner_id:
                 stock_master_line_id = self.env["vendor.stock.master.line"].search(
@@ -327,7 +333,12 @@ class SaleOrderLine(models.Model):
                      ('product_id', '=', self.product_id.id)])
                 if stock_master_line_id:
                     self.nv_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
-                pricelist_id = self.product_id.seller_ids.search([('name' ,'=', self.nv_partner_id.id)], limit=1)
+                pricelist_id = self.product_id._select_seller(
+                                            partner_id=self.nv_partner_id,
+                                            quantity=self.product_uom_qty,
+                                            date=self.order_id.date_order and self.order_id.date_order.date(),
+                                            uom_id=self.product_uom,
+                                            params=params)
                 if pricelist_id:
                     actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
                     self.nv_part_number = pricelist_id.product_code or ''
@@ -338,7 +349,7 @@ class SaleOrderLine(models.Model):
                     actual_cost = self.product_id.standard_price 
                     # self.adi_part_number = adi_pricelist_id.product_code or ''
                     # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
-                    self.nv_actual_cost = actual_cost or 0.0
+                    self.nv_actual_cost = 0.0
                     self.nv_standard_cost = actual_cost or 0.0
 
             if self.sl_partner_id:
@@ -347,7 +358,12 @@ class SaleOrderLine(models.Model):
                      ('product_id', '=', self.product_id.id)])
                 if stock_master_line_id:
                     self.sl_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
-                pricelist_id = self.product_id.seller_ids.search([('name' ,'=', self.sl_partner_id.id)], limit=1)
+                pricelist_id = self.product_id._select_seller(
+                                                partner_id=self.sl_partner_id,
+                                                quantity=self.product_uom_qty,
+                                                date=self.order_id.date_order and self.order_id.date_order.date(),
+                                                uom_id=self.product_uom,
+                                                params=params)
                 if pricelist_id:
                     actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
                     self.sl_part_number = pricelist_id.product_code or ''
@@ -358,15 +374,20 @@ class SaleOrderLine(models.Model):
                     actual_cost = self.product_id.standard_price 
                     # self.adi_part_number = adi_pricelist_id.product_code or ''
                     # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
-                    self.sl_actual_cost = actual_cost or 0.0
-                    self.sl_standard_cost = actual_cost or 0.0
+                    self.sl_actual_cost = 0.0
+                    self.sl_standard_cost = 0.0
             if self.ss_partner_id:
                 stock_master_line_id = self.env["vendor.stock.master.line"].search(
                     [('res_partner_id', '=', self.ss_partner_id.id),
                      ('product_id', '=', self.product_id.id)])
                 if stock_master_line_id:
                     self.ss_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
-                pricelist_id = self.product_id.seller_ids.search([('name' ,'=', self.ss_partner_id.id)], limit=1)
+                pricelist_id = self.product_id._select_seller(
+                                                partner_id=self.ss_partner_id,
+                                                quantity=self.product_uom_qty,
+                                                date=self.order_id.date_order and self.order_id.date_order.date(),
+                                                uom_id=self.product_uom,
+                                                params=params)
                 if pricelist_id:
                     actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
                     self.ss_part_number = pricelist_id.product_code or ''
@@ -377,15 +398,20 @@ class SaleOrderLine(models.Model):
                     actual_cost = self.product_id.standard_price 
                     # self.adi_part_number = adi_pricelist_id.product_code or ''
                     # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
-                    self.ss_actual_cost = actual_cost or 0.0
-                    self.ss_standard_cost = actual_cost or 0.0
+                    self.ss_actual_cost = 0.0
+                    self.ss_standard_cost = 0.0
             if self.jne_partner_id:
                 stock_master_line_id = self.env["vendor.stock.master.line"].search(
                     [('res_partner_id', '=', self.jne_partner_id.id),
                      ('product_id', '=', self.product_id.id)])
                 if stock_master_line_id:
                     self.jne_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
-                pricelist_id = self.product_id.seller_ids.search([('name' ,'=', self.jne_partner_id.id)], limit=1)
+                pricelist_id = self.product_id._select_seller(
+                                                partner_id=self.jne_partner_id,
+                                                quantity=self.product_uom_qty,
+                                                date=self.order_id.date_order and self.order_id.date_order.date(),
+                                                uom_id=self.product_uom,
+                                                params=params)
                 if pricelist_id:
                     actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
                     self.jne_part_number = pricelist_id.product_code or ''
@@ -396,8 +422,8 @@ class SaleOrderLine(models.Model):
                     actual_cost = self.product_id.standard_price 
                     # self.adi_part_number = adi_pricelist_id.product_code or ''
                     # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
-                    self.jne_actual_cost = actual_cost or 0.0
-                    self.jne_standard_cost = actual_cost or 0.0
+                    self.jne_actual_cost = 0.0
+                    self.jne_standard_cost = 0.0
 
             if self.bnr_partner_id:
                 stock_master_line_id = self.env["vendor.stock.master.line"].search(
@@ -405,7 +431,12 @@ class SaleOrderLine(models.Model):
                      ('product_id', '=', self.product_id.id)])
                 if stock_master_line_id:
                     self.bnr_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
-                pricelist_id = self.product_id.seller_ids.search([('name' ,'=', self.bnr_partner_id.id)], limit=1)
+                pricelist_id = self.product_id._select_seller(
+                                                partner_id=self.bnr_partner_id,
+                                                quantity=self.product_uom_qty,
+                                                date=self.order_id.date_order and self.order_id.date_order.date(),
+                                                uom_id=self.product_uom,
+                                                params=params)
                 if pricelist_id:
                     actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
                     self.bnr_part_number = pricelist_id.product_code or ''
@@ -416,8 +447,8 @@ class SaleOrderLine(models.Model):
                     actual_cost = self.product_id.standard_price 
                     # self.adi_part_number = adi_pricelist_id.product_code or ''
                     # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
-                    self.bnr_actual_cost = actual_cost or 0.0
-                    self.bnr_standard_cost = actual_cost or 0.0
+                    self.bnr_actual_cost = 0.0
+                    self.bnr_standard_cost = 0.0
 
             if self.wr_partner_id:
                 stock_master_line_id = self.env["vendor.stock.master.line"].search(
@@ -425,7 +456,12 @@ class SaleOrderLine(models.Model):
                      ('product_id', '=', self.product_id.id)])
                 if stock_master_line_id:
                     self.wr_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
-                pricelist_id = self.product_id.seller_ids.search([('name' ,'=', self.wr_partner_id.id)], limit=1)
+                pricelist_id = self.product_id._select_seller(
+                                                partner_id=self.wr_partner_id,
+                                                quantity=self.product_uom_qty,
+                                                date=self.order_id.date_order and self.order_id.date_order.date(),
+                                                uom_id=self.product_uom,
+                                                params=params)
                 if pricelist_id:
                     actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
                     self.wr_part_number = pricelist_id.product_code or ''
@@ -436,15 +472,20 @@ class SaleOrderLine(models.Model):
                     actual_cost = self.product_id.standard_price 
                     # self.adi_part_number = adi_pricelist_id.product_code or ''
                     # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
-                    self.wr_actual_cost = actual_cost or 0.0
-                    self.wr_standard_cost = actual_cost or 0.0
+                    self.wr_actual_cost = 0.0
+                    self.wr_standard_cost = 0.0
             if self.dfm_partner_id:
                 stock_master_line_id = self.env["vendor.stock.master.line"].search(
                     [('res_partner_id', '=', self.dfm_partner_id.id),
                      ('product_id', '=', self.product_id.id)])
                 if stock_master_line_id:
                     self.dfm_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
-                pricelist_id = self.product_id.seller_ids.search([('name' ,'=', self.dfm_partner_id.id)], limit=1)
+                pricelist_id = self.product_id._select_seller(
+                                                partner_id=self.dfm_partner_id,
+                                                quantity=self.product_uom_qty,
+                                                date=self.order_id.date_order and self.order_id.date_order.date(),
+                                                uom_id=self.product_uom,
+                                                params=params)
                 if pricelist_id:
                     actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
                     self.dfm_part_number = pricelist_id.product_code or ''
@@ -455,15 +496,20 @@ class SaleOrderLine(models.Model):
                     actual_cost = self.product_id.standard_price 
                     # self.adi_part_number = adi_pricelist_id.product_code or ''
                     # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
-                    self.dfm_actual_cost = actual_cost or 0.0
-                    self.dfm_standard_cost = actual_cost or 0.0
+                    self.dfm_actual_cost = 0.0
+                    self.dfm_standard_cost = 0.0
             if self.bks_partner_id:
                 stock_master_line_id = self.env["vendor.stock.master.line"].search(
                     [('res_partner_id', '=', self.bks_partner_id.id),
                      ('product_id', '=', self.product_id.id)])
                 if stock_master_line_id:
                     self.bks_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
-                pricelist_id = self.product_id.seller_ids.search([('name' ,'=', self.bks_partner_id.id)], limit=1)
+                pricelist_id = self.product_id._select_seller(
+                                                partner_id=self.bks_partner_id,
+                                                quantity=self.product_uom_qty,
+                                                date=self.order_id.date_order and self.order_id.date_order.date(),
+                                                uom_id=self.product_uom,
+                                                params=params)
                 if pricelist_id:
                     actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
                     self.bks_part_number = pricelist_id.product_code or ''
@@ -474,8 +520,8 @@ class SaleOrderLine(models.Model):
                     actual_cost = self.product_id.standard_price 
                     # self.adi_part_number = adi_pricelist_id.product_code or ''
                     # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
-                    self.bks_actual_cost = actual_cost or 0.0
-                    self.bks_standard_cost = actual_cost or 0.0
+                    self.bks_actual_cost = 0.0
+                    self.bks_standard_cost = 0.0
         return
 
     def split_line(self):
