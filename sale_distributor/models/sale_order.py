@@ -71,8 +71,8 @@ class SaleOrderLine(models.Model):
         })
         return result
 
-    def _default_adi_vendor_id(self):
-        return self.env.ref('sale_distributor.res_partner_adi_address')
+    # def _default_adi_vendor_id(self):
+    #     return self.env.ref('sale_distributor.res_partner_adi_address')
 
     order_id = fields.Many2one('sale.order', string='Order Reference', required=False, ondelete='cascade', index=True,
                                copy=True)
@@ -307,6 +307,7 @@ class SaleOrderLine(models.Model):
                     [('res_partner_id', '=', self.adi_partner_id.id),
                      ('product_id', '=', self.product_id.id)])
                 if stock_master_line_id:
+                    self.adi_total_stock = sum(stock_master_line_id.mapped('case_qty'))
                     self.adi_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
                 pricelist_id = self.product_id._select_seller(
                                                 partner_id=self.adi_partner_id,
@@ -320,6 +321,7 @@ class SaleOrderLine(models.Model):
                     self.adi_case_qty = pricelist_id.min_qty or 0.0
                     self.adi_actual_cost = actual_cost or 0.0
                     self.adi_standard_cost = pricelist_id.price or 0.0
+                    self.adi_sale_exp_date = pricelist_id.date_end
                 else:
                     actual_cost = self.product_id.standard_price 
                     # self.adi_part_number = adi_pricelist_id.product_code or ''
@@ -332,6 +334,7 @@ class SaleOrderLine(models.Model):
                     [('res_partner_id', '=', self.nv_partner_id.id),
                      ('product_id', '=', self.product_id.id)])
                 if stock_master_line_id:
+                    self.nv_total_stock = sum(stock_master_line_id.mapped('case_qty'))
                     self.nv_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
                 pricelist_id = self.product_id._select_seller(
                                             partner_id=self.nv_partner_id,
@@ -345,6 +348,7 @@ class SaleOrderLine(models.Model):
                     self.nv_case_qty = pricelist_id.min_qty or 0.0
                     self.nv_actual_cost = actual_cost or 0.0
                     self.nv_standard_cost = pricelist_id.price or 0.0
+                    self.nv_sale_exp_date = pricelist_id.date_end
                 else:
                     actual_cost = self.product_id.standard_price 
                     # self.adi_part_number = adi_pricelist_id.product_code or ''
@@ -357,6 +361,7 @@ class SaleOrderLine(models.Model):
                     [('res_partner_id', '=', self.sl_partner_id.id),
                      ('product_id', '=', self.product_id.id)])
                 if stock_master_line_id:
+                    self.sl_total_stock = sum(stock_master_line_id.mapped('case_qty'))
                     self.sl_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
                 pricelist_id = self.product_id._select_seller(
                                                 partner_id=self.sl_partner_id,
@@ -370,6 +375,7 @@ class SaleOrderLine(models.Model):
                     self.sl_case_qty = pricelist_id.min_qty or 0.0
                     self.sl_actual_cost = actual_cost or 0.0
                     self.sl_standard_cost = pricelist_id.price or 0.0
+                    self.sl_sale_exp_date = pricelist_id.date_end
                 else:
                     actual_cost = self.product_id.standard_price 
                     # self.adi_part_number = adi_pricelist_id.product_code or ''
@@ -381,6 +387,7 @@ class SaleOrderLine(models.Model):
                     [('res_partner_id', '=', self.ss_partner_id.id),
                      ('product_id', '=', self.product_id.id)])
                 if stock_master_line_id:
+                    self.ss_total_stock = sum(stock_master_line_id.mapped('case_qty'))
                     self.ss_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
                 pricelist_id = self.product_id._select_seller(
                                                 partner_id=self.ss_partner_id,
@@ -394,6 +401,7 @@ class SaleOrderLine(models.Model):
                     self.ss_case_qty = pricelist_id.min_qty or 0.0
                     self.ss_actual_cost = actual_cost or 0.0
                     self.ss_standard_cost = pricelist_id.price or 0.0
+                    self.ss_sale_exp_date = pricelist_id.date_end
                 else:
                     actual_cost = self.product_id.standard_price 
                     # self.adi_part_number = adi_pricelist_id.product_code or ''
@@ -405,6 +413,7 @@ class SaleOrderLine(models.Model):
                     [('res_partner_id', '=', self.jne_partner_id.id),
                      ('product_id', '=', self.product_id.id)])
                 if stock_master_line_id:
+                    self.jne_total_stock = sum(stock_master_line_id.mapped('case_qty'))
                     self.jne_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
                 pricelist_id = self.product_id._select_seller(
                                                 partner_id=self.jne_partner_id,
@@ -418,6 +427,7 @@ class SaleOrderLine(models.Model):
                     self.jne_case_qty = pricelist_id.min_qty or 0.0
                     self.jne_actual_cost = actual_cost or 0.0
                     self.jne_standard_cost = pricelist_id.price or 0.0
+                    self.jne_sale_exp_date = pricelist_id.date_end
                 else:
                     actual_cost = self.product_id.standard_price 
                     # self.adi_part_number = adi_pricelist_id.product_code or ''
@@ -430,6 +440,7 @@ class SaleOrderLine(models.Model):
                     [('res_partner_id', '=', self.bnr_partner_id.id),
                      ('product_id', '=', self.product_id.id)])
                 if stock_master_line_id:
+                    self.bnr_total_stock = sum(stock_master_line_id.mapped('case_qty'))
                     self.bnr_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
                 pricelist_id = self.product_id._select_seller(
                                                 partner_id=self.bnr_partner_id,
@@ -443,6 +454,7 @@ class SaleOrderLine(models.Model):
                     self.bnr_case_qty = pricelist_id.min_qty or 0.0
                     self.bnr_actual_cost = actual_cost or 0.0
                     self.bnr_standard_cost = pricelist_id.price or 0.0
+                    self.bnr_sale_exp_date = pricelist_id.date_end
                 else:
                     actual_cost = self.product_id.standard_price 
                     # self.adi_part_number = adi_pricelist_id.product_code or ''
@@ -455,6 +467,7 @@ class SaleOrderLine(models.Model):
                     [('res_partner_id', '=', self.wr_partner_id.id),
                      ('product_id', '=', self.product_id.id)])
                 if stock_master_line_id:
+                    self.wr_total_stock = sum(stock_master_line_id.mapped('case_qty'))
                     self.wr_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
                 pricelist_id = self.product_id._select_seller(
                                                 partner_id=self.wr_partner_id,
@@ -468,6 +481,7 @@ class SaleOrderLine(models.Model):
                     self.wr_case_qty = pricelist_id.min_qty or 0.0
                     self.wr_actual_cost = actual_cost or 0.0
                     self.wr_standard_cost = pricelist_id.price or 0.0
+                    self.wr_sale_exp_date = pricelist_id.date_end
                 else:
                     actual_cost = self.product_id.standard_price 
                     # self.adi_part_number = adi_pricelist_id.product_code or ''
@@ -479,6 +493,7 @@ class SaleOrderLine(models.Model):
                     [('res_partner_id', '=', self.dfm_partner_id.id),
                      ('product_id', '=', self.product_id.id)])
                 if stock_master_line_id:
+                    self.dfm_total_stock = sum(stock_master_line_id.mapped('case_qty'))
                     self.dfm_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
                 pricelist_id = self.product_id._select_seller(
                                                 partner_id=self.dfm_partner_id,
@@ -492,6 +507,7 @@ class SaleOrderLine(models.Model):
                     self.dfm_case_qty = pricelist_id.min_qty or 0.0
                     self.dfm_actual_cost = actual_cost or 0.0
                     self.dfm_standard_cost = pricelist_id.price or 0.0
+                    self.dfm_sale_exp_date = pricelist_id.date_end
                 else:
                     actual_cost = self.product_id.standard_price 
                     # self.adi_part_number = adi_pricelist_id.product_code or ''
@@ -503,6 +519,7 @@ class SaleOrderLine(models.Model):
                     [('res_partner_id', '=', self.bks_partner_id.id),
                      ('product_id', '=', self.product_id.id)])
                 if stock_master_line_id:
+                    self.bks_total_stock = sum(stock_master_line_id.mapped('case_qty'))
                     self.bks_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
                 pricelist_id = self.product_id._select_seller(
                                                 partner_id=self.bks_partner_id,
@@ -516,6 +533,7 @@ class SaleOrderLine(models.Model):
                     self.bks_case_qty = pricelist_id.min_qty or 0.0
                     self.bks_actual_cost = actual_cost or 0.0
                     self.bks_standard_cost = pricelist_id.price or 0.0
+                    self.bks_sale_exp_date = pricelist_id.date_end
                 else:
                     actual_cost = self.product_id.standard_price 
                     # self.adi_part_number = adi_pricelist_id.product_code or ''
@@ -549,6 +567,8 @@ class SaleOrderLine(models.Model):
             name = self.dfm_partner_id
         elif ctx.get('vendor') == 'bks':
             name = self.bks_partner_id
+        elif ctx.get('vendor') == 'otv':
+            name = self.partner_id
         wiz_name = ''
         msg = ''
         if ctx.get('ship_from_here',False):
