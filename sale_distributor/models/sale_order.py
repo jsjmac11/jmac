@@ -107,7 +107,7 @@ class SaleOrderLine(models.Model):
     adi_stock_last_updated = fields.Datetime(string="ADI Stock Last Updated")
     adi_partner_id = fields.Many2one('res.partner', string='ADI Vendor')
     adi_vendor_stock_ids = fields.Many2many('vendor.stock.master.line', 'sol_vendor_stock_rel',
-                                            'line_id', 'vendor_stock_id', string="Vendor Stock")
+                                            'line_id', 'vendor_stock_id', string="ADI Stock")
     # NV TAB
     nv_part_number = fields.Char(string="NV Part Number")
     nv_case_qty = fields.Float(string="NV Case Qty")
@@ -123,6 +123,8 @@ class SaleOrderLine(models.Model):
     nv_cost_last_updated = fields.Datetime(string="NV Cost Last Updated")
     nv_stock_last_updated = fields.Datetime(string="NV Stock Last Updated")
     nv_partner_id = fields.Many2one('res.partner', string='NV Vendor')
+    nv_vendor_stock_ids = fields.Many2many('vendor.stock.master.line', 'nv_sol_vendor_stock_rel',
+                                            'line_id', 'vendor_stock_id', string="NV Stock")
     # SL TAB
     sl_part_number = fields.Char(string="SL Part Number")
     sl_case_qty = fields.Float(string="SL Case Qty")
@@ -138,6 +140,8 @@ class SaleOrderLine(models.Model):
     sl_cost_last_updated = fields.Datetime(string="SL Cost Last Updated")
     sl_stock_last_updated = fields.Datetime(string="SL Stock Last Updated")
     sl_partner_id = fields.Many2one('res.partner', string='SL Vendor')
+    sl_vendor_stock_ids = fields.Many2many('vendor.stock.master.line', 'sl_sol_vendor_stock_rel',
+                                            'line_id', 'vendor_stock_id', string="SL Stock")
     # SS TAB
     ss_part_number = fields.Char(string="SS Part Number")
     ss_case_qty = fields.Float(string="SS Case Qty")
@@ -153,6 +157,8 @@ class SaleOrderLine(models.Model):
     ss_cost_last_updated = fields.Datetime(string="SS Cost Last Updated")
     ss_stock_last_updated = fields.Datetime(string="SS Stock Last Updated")
     ss_partner_id = fields.Many2one('res.partner', string='SS Vendor')
+    ss_vendor_stock_ids = fields.Many2many('vendor.stock.master.line', 'ss_sol_vendor_stock_rel',
+                                            'line_id', 'vendor_stock_id', string="SS Stock")
     # JNE TAB
     jne_part_number = fields.Char(string="JNE Part Number")
     jne_case_qty = fields.Float(string="JNE Case Qty")
@@ -168,6 +174,8 @@ class SaleOrderLine(models.Model):
     jne_cost_last_updated = fields.Datetime(string="JNE Cost Last Updated")
     jne_stock_last_updated = fields.Datetime(string="JNE Stock Last Updated")
     jne_partner_id = fields.Many2one('res.partner', string='JNE Vendor')
+    jne_vendor_stock_ids = fields.Many2many('vendor.stock.master.line', 'jne_sol_vendor_stock_rel',
+                                            'line_id', 'vendor_stock_id', string="JNE Stock")
     # BNR TAB
     bnr_part_number = fields.Char(string="BNR Part Number")
     bnr_case_qty = fields.Float(string="BNR Case Qty")
@@ -183,6 +191,8 @@ class SaleOrderLine(models.Model):
     bnr_cost_last_updated = fields.Datetime(string="BNR Cost Last Updated")
     bnr_stock_last_updated = fields.Datetime(string="BNR Stock Last Updated")
     bnr_partner_id = fields.Many2one('res.partner', string='BNR Vendor')
+    bnr_vendor_stock_ids = fields.Many2many('vendor.stock.master.line', 'bnr_sol_vendor_stock_rel',
+                                            'line_id', 'vendor_stock_id', string="BNR Stock")
     # WR TAB
     wr_part_number = fields.Char(string="WR Part Number")
     wr_case_qty = fields.Float(string="WR Case Qty")
@@ -198,6 +208,8 @@ class SaleOrderLine(models.Model):
     wr_cost_last_updated = fields.Datetime(string="WR Cost Last Updated")
     wr_stock_last_updated = fields.Datetime(string="WR Stock Last Updated")
     wr_partner_id = fields.Many2one('res.partner', string='WR Vendor')
+    wr_vendor_stock_ids = fields.Many2many('vendor.stock.master.line', 'wr_sol_vendor_stock_rel',
+                                            'line_id', 'vendor_stock_id', string="WR Stock")
     # DFM TAB
     dfm_part_number = fields.Char(string="DFM Part Number")
     dfm_case_qty = fields.Float(string="DFM Case Qty")
@@ -213,10 +225,14 @@ class SaleOrderLine(models.Model):
     dfm_cost_last_updated = fields.Datetime(string="DFM Cost Last Updated")
     dfm_stock_last_updated = fields.Datetime(string="DFM Stock Last Updated")
     dfm_partner_id = fields.Many2one('res.partner', string='DFM Vendor')
+    dfm_vendor_stock_ids = fields.Many2many('vendor.stock.master.line', 'dfm_sol_vendor_stock_rel',
+                                            'line_id', 'vendor_stock_id', string="DFM Stock")
     # JMAC TAB
     jmac_allocated = fields.Float(string="Allocated")
     jmac_available = fields.Float(string="Available")
     jmac_onhand = fields.Float(string="On Hand")
+    jmac_stock_ids = fields.Many2many('stock.quant', 'jmac_sol_vendor_stock_rel',
+                                            'line_id', 'vendor_stock_id', string="Jmac Stock")
     # BKS TAB
     bks_part_number = fields.Char(string="BKS Part Number")
     bks_case_qty = fields.Float(string="BKS Case Qty")
@@ -232,6 +248,8 @@ class SaleOrderLine(models.Model):
     bks_cost_last_updated = fields.Datetime(string="BKS Cost Last Updated")
     bks_stock_last_updated = fields.Datetime(string="BKS Stock Last Updated")
     bks_partner_id = fields.Many2one('res.partner', string='BKS Vendor')
+    bks_vendor_stock_ids = fields.Many2many('vendor.stock.master.line', 'bks_sol_vendor_stock_rel',
+                                            'line_id', 'vendor_stock_id', string="BKS Stock")
     # OTV TAB
     partner_id = fields.Many2one('res.partner', string='Vendor')
     otv_cost = fields.Float(string="Cost")
@@ -259,85 +277,203 @@ class SaleOrderLine(models.Model):
     #         'sale_id': self.order_id.id,
     #         'partner_id': self.order_id.partner_shipping_id.id,
     #     }
-    
+
+    def _action_launch_stock_rule(self, previous_product_uom_qty=False):
+        """
+        Launch procurement group run method with required/custom fields genrated by a
+        sale order line. procurement group will launch '_run_pull', '_run_buy' or '_run_manufacture'
+        depending on the sale order line product rule.
+        """
+        if not self.parent_line_id:
+            return True
+        return super(SaleOrderLine, self)._action_launch_stock_rule()
+
 
     @api.onchange('product_id')
     def onchange_product_id(self):
         if not self.product_id:
             return
         if self.product_id:
-            adi_stock_master_line_id = self.env["vendor.stock.master.line"].search(
-                [('res_partner_id', '=', self.adi_partner_id.id),
-                 ('product_id', '=', self.product_id.id)], limit=1)
-            nv_stock_master_line_id = self.env["vendor.stock.master.line"].search(
-                [('res_partner_id', '=', self.nv_partner_id.id),
-                 ('product_id', '=', self.product_id.id)], limit=1)
-            sl_stock_master_line_id = self.env["vendor.stock.master.line"].search(
-                [('res_partner_id', '=', self.sl_partner_id.id),
-                 ('product_id', '=', self.product_id.id)], limit=1)
-            ss_stock_master_line_id = self.env["vendor.stock.master.line"].search(
-                [('res_partner_id', '=', self.ss_partner_id.id),
-                 ('product_id', '=', self.product_id.id)], limit=1)
-            jne_stock_master_line_id = self.env["vendor.stock.master.line"].search(
-                [('res_partner_id', '=', self.jne_partner_id.id),
-                 ('product_id', '=', self.product_id.id)], limit=1)
-            bnr_stock_master_line_id = self.env["vendor.stock.master.line"].search(
-                [('res_partner_id', '=', self.bnr_partner_id.id),
-                 ('product_id', '=', self.product_id.id)], limit=1)
-            wr_stock_master_line_id = self.env["vendor.stock.master.line"].search(
-                [('res_partner_id', '=', self.wr_partner_id.id),
-                 ('product_id', '=', self.product_id.id)], limit=1)
-            dfm_stock_master_line_id = self.env["vendor.stock.master.line"].search(
-                [('res_partner_id', '=', self.dfm_partner_id.id),
-                 ('product_id', '=', self.product_id.id)], limit=1)
-            bks_stock_master_line_id = self.env["vendor.stock.master.line"].search(
-                [('res_partner_id', '=', self.bks_partner_id.id),
-                 ('product_id', '=', self.product_id.id)], limit=1)
-            if adi_stock_master_line_id:
-                self.adi_part_number = adi_stock_master_line_id.res_partner_id.ref or ''
-                self.adi_case_qty = adi_stock_master_line_id.case_qty or 0.0
-                self.adi_actual_cost = adi_stock_master_line_id.product_id.lst_price or 0.0
-                self.adi_standard_cost = adi_stock_master_line_id.product_id.standard_price or 0.0
-            if nv_stock_master_line_id:
-                self.nv_part_number = nv_stock_master_line_id.res_partner_id.ref or ''
-                self.nv_case_qty = nv_stock_master_line_id.case_qty or 0.0
-                self.nv_actual_cost = nv_stock_master_line_id.product_id.lst_price or 0.0
-                self.nv_standard_cost = nv_stock_master_line_id.product_id.standard_price or 0.0
-            if sl_stock_master_line_id:
-                self.sl_part_number = sl_stock_master_line_id.res_partner_id.ref or ''
-                self.sl_case_qty = sl_stock_master_line_id.case_qty or 0.0
-                self.sl_actual_cost = sl_stock_master_line_id.product_id.lst_price or 0.0
-                self.sl_standard_cost = sl_stock_master_line_id.product_id.standard_price or 0.0
-            if ss_stock_master_line_id:
-                self.ss_part_number = ss_stock_master_line_id.res_partner_id.ref or ''
-                self.ss_case_qty = ss_stock_master_line_id.case_qty or 0.0
-                self.ss_actual_cost = ss_stock_master_line_id.product_id.lst_price or 0.0
-                self.ss_standard_cost = ss_stock_master_line_id.product_id.standard_price or 0.0
-            if jne_stock_master_line_id:
-                self.jne_part_number = jne_stock_master_line_id.res_partner_id.ref or ''
-                self.jne_case_qty = jne_stock_master_line_id.case_qty or 0.0
-                self.jne_actual_cost = jne_stock_master_line_id.product_id.lst_price or 0.0
-                self.jne_standard_cost = jne_stock_master_line_id.product_id.standard_price or 0.0
-            if bnr_stock_master_line_id:
-                self.bnr_part_number = bnr_stock_master_line_id.res_partner_id.ref or ''
-                self.bnr_case_qty = bnr_stock_master_line_id.case_qty or 0.0
-                self.bnr_actual_cost = bnr_stock_master_line_id.product_id.lst_price or 0.0
-                self.bnr_standard_cost = bnr_stock_master_line_id.product_id.standard_price or 0.0
-            if wr_stock_master_line_id:
-                self.wr_part_number = wr_stock_master_line_id.res_partner_id.ref or ''
-                self.wr_case_qty = wr_stock_master_line_id.case_qty or 0.0
-                self.wr_actual_cost = wr_stock_master_line_id.product_id.lst_price or 0.0
-                self.wr_standard_cost = wr_stock_master_line_id.product_id.standard_price or 0.0
-            if dfm_stock_master_line_id:
-                self.dfm_part_number = dfm_stock_master_line_id.res_partner_id.ref or ''
-                self.dfm_case_qty = dfm_stock_master_line_id.case_qty or 0.0
-                self.dfm_actual_cost = dfm_stock_master_line_id.product_id.lst_price or 0.0
-                self.dfm_standard_cost = dfm_stock_master_line_id.product_id.standard_price or 0.0
-            if bks_stock_master_line_id:
-                self.bks_part_number = bks_stock_master_line_id.res_partner_id.ref or ''
-                self.bks_case_qty = bks_stock_master_line_id.case_qty or 0.0
-                self.bks_actual_cost = bks_stock_master_line_id.product_id.lst_price or 0.0
-                self.bks_standard_cost = bks_stock_master_line_id.product_id.standard_price or 0.0
+            # product_tmpl_id = self.product_id.product_tmpl_id
+            jmac_stock_ids = self.env["stock.quant"].search([('product_id', '=', self.product_id.id),
+                ('location_id.usage', '=', 'internal')])
+            if jmac_stock_ids:
+                self.jmac_stock_ids = [(6,0,jmac_stock_ids.ids)]
+            if self.adi_partner_id:
+                stock_master_line_id = self.env["vendor.stock.master.line"].search(
+                    [('res_partner_id', '=', self.adi_partner_id.id),
+                     ('product_id', '=', self.product_id.id)])
+                if stock_master_line_id:
+                    self.adi_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
+                pricelist_id = self.product_id.seller_ids.search([('name' ,'=', self.adi_partner_id.id)], limit=1)
+                if pricelist_id:
+                    actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
+                    self.adi_part_number = pricelist_id.product_code or ''
+                    self.adi_case_qty = pricelist_id.min_qty or 0.0
+                    self.adi_actual_cost = actual_cost or 0.0
+                    self.adi_standard_cost = pricelist_id.price or 0.0
+                else:
+                    actual_cost = self.product_id.standard_price 
+                    # self.adi_part_number = adi_pricelist_id.product_code or ''
+                    # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
+                    self.adi_actual_cost = actual_cost or 0.0
+                    self.adi_standard_cost = actual_cost or 0.0
+
+            if self.nv_partner_id:
+                stock_master_line_id = self.env["vendor.stock.master.line"].search(
+                    [('res_partner_id', '=', self.nv_partner_id.id),
+                     ('product_id', '=', self.product_id.id)])
+                if stock_master_line_id:
+                    self.nv_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
+                pricelist_id = self.product_id.seller_ids.search([('name' ,'=', self.nv_partner_id.id)], limit=1)
+                if pricelist_id:
+                    actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
+                    self.nv_part_number = pricelist_id.product_code or ''
+                    self.nv_case_qty = pricelist_id.min_qty or 0.0
+                    self.nv_actual_cost = actual_cost or 0.0
+                    self.nv_standard_cost = pricelist_id.price or 0.0
+                else:
+                    actual_cost = self.product_id.standard_price 
+                    # self.adi_part_number = adi_pricelist_id.product_code or ''
+                    # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
+                    self.nv_actual_cost = actual_cost or 0.0
+                    self.nv_standard_cost = actual_cost or 0.0
+
+            if self.sl_partner_id:
+                stock_master_line_id = self.env["vendor.stock.master.line"].search(
+                    [('res_partner_id', '=', self.sl_partner_id.id),
+                     ('product_id', '=', self.product_id.id)])
+                if stock_master_line_id:
+                    self.sl_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
+                pricelist_id = self.product_id.seller_ids.search([('name' ,'=', self.sl_partner_id.id)], limit=1)
+                if pricelist_id:
+                    actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
+                    self.sl_part_number = pricelist_id.product_code or ''
+                    self.sl_case_qty = pricelist_id.min_qty or 0.0
+                    self.sl_actual_cost = actual_cost or 0.0
+                    self.sl_standard_cost = pricelist_id.price or 0.0
+                else:
+                    actual_cost = self.product_id.standard_price 
+                    # self.adi_part_number = adi_pricelist_id.product_code or ''
+                    # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
+                    self.sl_actual_cost = actual_cost or 0.0
+                    self.sl_standard_cost = actual_cost or 0.0
+            if self.ss_partner_id:
+                stock_master_line_id = self.env["vendor.stock.master.line"].search(
+                    [('res_partner_id', '=', self.ss_partner_id.id),
+                     ('product_id', '=', self.product_id.id)])
+                if stock_master_line_id:
+                    self.ss_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
+                pricelist_id = self.product_id.seller_ids.search([('name' ,'=', self.ss_partner_id.id)], limit=1)
+                if pricelist_id:
+                    actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
+                    self.ss_part_number = pricelist_id.product_code or ''
+                    self.ss_case_qty = pricelist_id.min_qty or 0.0
+                    self.ss_actual_cost = actual_cost or 0.0
+                    self.ss_standard_cost = pricelist_id.price or 0.0
+                else:
+                    actual_cost = self.product_id.standard_price 
+                    # self.adi_part_number = adi_pricelist_id.product_code or ''
+                    # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
+                    self.ss_actual_cost = actual_cost or 0.0
+                    self.ss_standard_cost = actual_cost or 0.0
+            if self.jne_partner_id:
+                stock_master_line_id = self.env["vendor.stock.master.line"].search(
+                    [('res_partner_id', '=', self.jne_partner_id.id),
+                     ('product_id', '=', self.product_id.id)])
+                if stock_master_line_id:
+                    self.jne_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
+                pricelist_id = self.product_id.seller_ids.search([('name' ,'=', self.jne_partner_id.id)], limit=1)
+                if pricelist_id:
+                    actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
+                    self.jne_part_number = pricelist_id.product_code or ''
+                    self.jne_case_qty = pricelist_id.min_qty or 0.0
+                    self.jne_actual_cost = actual_cost or 0.0
+                    self.jne_standard_cost = pricelist_id.price or 0.0
+                else:
+                    actual_cost = self.product_id.standard_price 
+                    # self.adi_part_number = adi_pricelist_id.product_code or ''
+                    # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
+                    self.jne_actual_cost = actual_cost or 0.0
+                    self.jne_standard_cost = actual_cost or 0.0
+
+            if self.bnr_partner_id:
+                stock_master_line_id = self.env["vendor.stock.master.line"].search(
+                    [('res_partner_id', '=', self.bnr_partner_id.id),
+                     ('product_id', '=', self.product_id.id)])
+                if stock_master_line_id:
+                    self.bnr_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
+                pricelist_id = self.product_id.seller_ids.search([('name' ,'=', self.bnr_partner_id.id)], limit=1)
+                if pricelist_id:
+                    actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
+                    self.bnr_part_number = pricelist_id.product_code or ''
+                    self.bnr_case_qty = pricelist_id.min_qty or 0.0
+                    self.bnr_actual_cost = actual_cost or 0.0
+                    self.bnr_standard_cost = pricelist_id.price or 0.0
+                else:
+                    actual_cost = self.product_id.standard_price 
+                    # self.adi_part_number = adi_pricelist_id.product_code or ''
+                    # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
+                    self.bnr_actual_cost = actual_cost or 0.0
+                    self.bnr_standard_cost = actual_cost or 0.0
+
+            if self.wr_partner_id:
+                stock_master_line_id = self.env["vendor.stock.master.line"].search(
+                    [('res_partner_id', '=', self.wr_partner_id.id),
+                     ('product_id', '=', self.product_id.id)])
+                if stock_master_line_id:
+                    self.wr_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
+                pricelist_id = self.product_id.seller_ids.search([('name' ,'=', self.wr_partner_id.id)], limit=1)
+                if pricelist_id:
+                    actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
+                    self.wr_part_number = pricelist_id.product_code or ''
+                    self.wr_case_qty = pricelist_id.min_qty or 0.0
+                    self.wr_actual_cost = actual_cost or 0.0
+                    self.wr_standard_cost = pricelist_id.price or 0.0
+                else:
+                    actual_cost = self.product_id.standard_price 
+                    # self.adi_part_number = adi_pricelist_id.product_code or ''
+                    # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
+                    self.wr_actual_cost = actual_cost or 0.0
+                    self.wr_standard_cost = actual_cost or 0.0
+            if self.dfm_partner_id:
+                stock_master_line_id = self.env["vendor.stock.master.line"].search(
+                    [('res_partner_id', '=', self.dfm_partner_id.id),
+                     ('product_id', '=', self.product_id.id)])
+                if stock_master_line_id:
+                    self.dfm_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
+                pricelist_id = self.product_id.seller_ids.search([('name' ,'=', self.dfm_partner_id.id)], limit=1)
+                if pricelist_id:
+                    actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
+                    self.dfm_part_number = pricelist_id.product_code or ''
+                    self.dfm_case_qty = pricelist_id.min_qty or 0.0
+                    self.dfm_actual_cost = actual_cost or 0.0
+                    self.dfm_standard_cost = pricelist_id.price or 0.0
+                else:
+                    actual_cost = self.product_id.standard_price 
+                    # self.adi_part_number = adi_pricelist_id.product_code or ''
+                    # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
+                    self.dfm_actual_cost = actual_cost or 0.0
+                    self.dfm_standard_cost = actual_cost or 0.0
+            if self.bks_partner_id:
+                stock_master_line_id = self.env["vendor.stock.master.line"].search(
+                    [('res_partner_id', '=', self.bks_partner_id.id),
+                     ('product_id', '=', self.product_id.id)])
+                if stock_master_line_id:
+                    self.bks_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
+                pricelist_id = self.product_id.seller_ids.search([('name' ,'=', self.bks_partner_id.id)], limit=1)
+                if pricelist_id:
+                    actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
+                    self.bks_part_number = pricelist_id.product_code or ''
+                    self.bks_case_qty = pricelist_id.min_qty or 0.0
+                    self.bks_actual_cost = actual_cost or 0.0
+                    self.bks_standard_cost = pricelist_id.price or 0.0
+                else:
+                    actual_cost = self.product_id.standard_price 
+                    # self.adi_part_number = adi_pricelist_id.product_code or ''
+                    # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
+                    self.bks_actual_cost = actual_cost or 0.0
+                    self.bks_standard_cost = actual_cost or 0.0
         return
 
     def split_line(self):

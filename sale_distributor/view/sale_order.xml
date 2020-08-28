@@ -238,7 +238,6 @@
                                 <field name="adi_vendor_stock_ids" readonly="1">
                                     <tree>
                                         <field name="location_id"/>
-                                        <field name="product_id"/>
                                         <field name="case_qty"/>
                                     </tree>
                                 </field>
@@ -277,10 +276,9 @@
                                         <field name="nv_note"/>
                                     </div>
                                 </group>
-                                <field name="adi_vendor_stock_ids" readonly="1">
+                                <field name="nv_vendor_stock_ids" readonly="1">
                                     <tree>
                                         <field name="location_id"/>
-                                        <field name="product_id"/>
                                         <field name="case_qty"/>
                                     </tree>
                                 </field>
@@ -318,10 +316,9 @@
                                         <field name="sl_note"/>
                                     </div>
                                 </group>
-                                <field name="adi_vendor_stock_ids" readonly="1">
+                                <field name="sl_vendor_stock_ids" readonly="1">
                                     <tree>
                                         <field name="location_id"/>
-                                        <field name="product_id"/>
                                         <field name="case_qty"/>
                                     </tree>
                                 </field>
@@ -359,10 +356,9 @@
                                         <field name="ss_note"/>
                                     </div>
                                 </group>
-                                <field name="adi_vendor_stock_ids" readonly="1">
+                                <field name="ss_vendor_stock_ids" readonly="1">
                                     <tree>
                                         <field name="location_id"/>
-                                        <field name="product_id"/>
                                         <field name="case_qty"/>
                                     </tree>
                                 </field>
@@ -400,10 +396,9 @@
                                         <field name="jne_note"/>
                                     </div>
                                 </group>
-                                <field name="adi_vendor_stock_ids" readonly="1">
+                                <field name="jne_vendor_stock_ids" readonly="1">
                                     <tree>
                                         <field name="location_id"/>
-                                        <field name="product_id"/>
                                         <field name="case_qty"/>
                                     </tree>
                                 </field>
@@ -441,10 +436,9 @@
                                         <field name="bnr_note"/>
                                     </div>
                                 </group>
-                                <field name="adi_vendor_stock_ids" readonly="1">
+                                <field name="bnr_vendor_stock_ids" readonly="1">
                                     <tree>
                                         <field name="location_id"/>
-                                        <field name="product_id"/>
                                         <field name="case_qty"/>
                                     </tree>
                                 </field>
@@ -482,10 +476,9 @@
                                         <field name="wr_note"/>
                                     </div>
                                 </group>
-                                <field name="adi_vendor_stock_ids" readonly="1">
+                                <field name="wr_vendor_stock_ids" readonly="1">
                                     <tree>
                                         <field name="location_id"/>
-                                        <field name="product_id"/>
                                         <field name="case_qty"/>
                                     </tree>
                                 </field>
@@ -500,11 +493,12 @@
                                 <field name="wr_total_stock" string="Total Stock"/>
                                 <field name="wr_cost_last_updated" string="Cost Last Updated"/>
                                 <field name="wr_stock_last_updated" string="Stock Last Updated"/>
+                                <div class="o_row">
+                                    <button name="split_line" context="{'vendor':'wr','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
+                                    <button name="split_line" context="{'vendor':'wr','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+                                </div>
                             </group>
-                            <div class="o_row">
-                                <button name="split_line" context="{'vendor':'wr','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
-                                <button name="split_line" context="{'vendor':'wr','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
-                            </div>
+                            
                         </group>
                     </page>
                     <!-- DFM Tab -->
@@ -523,7 +517,7 @@
                                         <field name="dfm_note"/>
                                     </div>
                                 </group>
-                                <field name="adi_vendor_stock_ids" readonly="1">
+                                <field name="dfm_vendor_stock_ids" readonly="1">
                                     <tree>
                                         <field name="location_id"/>
                                         <field name="product_id"/>
@@ -541,11 +535,12 @@
                                 <field name="dfm_total_stock" string="Total Stock"/>
                                 <field name="dfm_cost_last_updated" string="Cost Last Updated"/>
                                 <field name="dfm_stock_last_updated" string="Stock Last Updated"/>
+                                <div class="o_row">
+                                    <button name="split_line" context="{'vendor':'dfm','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
+                                    <button name="split_line" context="{'vendor':'dfm','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+                                </div>
                             </group>
-                            <div class="o_row">
-                                <button name="split_line" context="{'vendor':'dfm','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
-                                <button name="split_line" context="{'vendor':'dfm','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
-                            </div>
+                            
                         </group>
                     </page>
                     <!-- JMAC Tab -->
@@ -571,11 +566,10 @@
                             <div></div>
                         </div>
                         <group>
-                            <field name="adi_vendor_stock_ids" readonly="1" nolabel="1" class="oe_inline">
+                            <field name="jmac_stock_ids" readonly="1" nolabel="1" class="oe_inline">
                                 <tree>
                                     <field name="location_id"/>
-                                    <field name="product_id"/>
-                                    <field name="case_qty"/>
+                                    <field name="quantity"/>
                                 </tree>
                             </field>
                         </group>
@@ -600,10 +594,9 @@
                                         <field name="bks_note"/>
                                     </div>
                                 </group>
-                                <field name="adi_vendor_stock_ids" readonly="1">
+                                <field name="bks_vendor_stock_ids" readonly="1">
                                     <tree>
                                         <field name="location_id"/>
-                                        <field name="product_id"/>
                                         <field name="case_qty"/>
                                     </tree>
                                 </field>
@@ -643,18 +636,18 @@
                 <div class="o_row">
                     <field name="sale_split_lines" readonly="1" attrs="{'invisible': [('display_type', '!=', False)]}">
                         <tree>
-                            <field name="name"/>
-                            <field name="line_type" string="type"/>
-                            <field name="vendor_id"/>
-                            <field name="route_id"/>
+                            <field name="name" invisible="1"/>
+                            <field name="vendor_id" string="Vendor"/>
+                            <field name="line_type" string="Type"/>
+                            <field name="route_id" invisible="1"/>
                             <field name="product_uom_qty"/>
                         </tree>
                         <form>
                             <group>
-                                <field name="name"/>
-                                <field name="line_type"/>
-                                <field name="vendor_id"/>
-                                <field name="route_id"/>
+                                <field name="name" invisible="1"/>
+                                <field name="vendor_id" string="Vendor"/>
+                                <field name="line_type" string="Type"/>
+                                <field name="route_id" invisible="1"/>
                                 <field name="product_uom_qty"/>
                             </group>
                         </form>
