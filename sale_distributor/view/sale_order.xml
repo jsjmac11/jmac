@@ -235,10 +235,15 @@
                                         <field name="adi_note"/>
                                     </div>
                                 </group>
-                                <field name="adi_vendor_stock_ids" readonly="1">
+                                <field name="adi_vendor_stock_ids" readonly="1" force_save="1">
                                     <tree>
-                                        <field name="location_id"/>
-                                        <field name="case_qty"/>
+                                        <field name="abbreviation" />
+                                        <field name="location_id" required="1"/>
+                                        <field name="case_qty" required="1"/>
+                                        <field name="hub" />
+                                        <field name="state" />
+                                        <field name="zip" />
+                                        <field name="phone" /> 
                                     </tree>
                                 </field>
                             </group>
@@ -276,10 +281,15 @@
                                         <field name="nv_note"/>
                                     </div>
                                 </group>
-                                <field name="nv_vendor_stock_ids" readonly="1">
+                                <field name="nv_vendor_stock_ids" readonly="1" force_save="1">
                                     <tree>
-                                        <field name="location_id"/>
-                                        <field name="case_qty"/>
+                                        <field name="abbreviation" />
+                                        <field name="location_id" required="1"/>
+                                        <field name="case_qty" required="1"/>
+                                        <field name="hub" />
+                                        <field name="state" />
+                                        <field name="zip" />
+                                        <field name="phone" />
                                     </tree>
                                 </field>
                             </group>
@@ -316,10 +326,15 @@
                                         <field name="sl_note"/>
                                     </div>
                                 </group>
-                                <field name="sl_vendor_stock_ids" readonly="1">
+                                <field name="sl_vendor_stock_ids" readonly="1" force_save="1">
                                     <tree>
-                                        <field name="location_id"/>
-                                        <field name="case_qty"/>
+                                        <field name="abbreviation" />
+                                        <field name="location_id" required="1"/>
+                                        <field name="case_qty" required="1"/>
+                                        <field name="hub" />
+                                        <field name="state" />
+                                        <field name="zip" />
+                                        <field name="phone" />
                                     </tree>
                                 </field>
                             </group>
@@ -356,10 +371,15 @@
                                         <field name="ss_note"/>
                                     </div>
                                 </group>
-                                <field name="ss_vendor_stock_ids" readonly="1">
+                                <field name="ss_vendor_stock_ids" readonly="1" force_save="1">
                                     <tree>
-                                        <field name="location_id"/>
-                                        <field name="case_qty"/>
+                                        <field name="abbreviation" />
+                                        <field name="location_id" required="1"/>
+                                        <field name="case_qty" required="1"/>
+                                        <field name="hub" />
+                                        <field name="state" />
+                                        <field name="zip" />
+                                        <field name="phone" />
                                     </tree>
                                 </field>
                             </group>
@@ -396,10 +416,15 @@
                                         <field name="jne_note"/>
                                     </div>
                                 </group>
-                                <field name="jne_vendor_stock_ids" readonly="1">
+                                <field name="jne_vendor_stock_ids" readonly="1" force_save="1">
                                     <tree>
-                                        <field name="location_id"/>
-                                        <field name="case_qty"/>
+                                        <field name="abbreviation" />
+                                        <field name="location_id" required="1"/>
+                                        <field name="case_qty" required="1"/>
+                                        <field name="hub" />
+                                        <field name="state" />
+                                        <field name="zip" />
+                                        <field name="phone" />
                                     </tree>
                                 </field>
                             </group>
@@ -436,10 +461,15 @@
                                         <field name="bnr_note"/>
                                     </div>
                                 </group>
-                                <field name="bnr_vendor_stock_ids" readonly="1">
+                                <field name="bnr_vendor_stock_ids" readonly="1" force_save="1">
                                     <tree>
-                                        <field name="location_id"/>
-                                        <field name="case_qty"/>
+                                        <field name="abbreviation" />
+                                        <field name="location_id" required="1"/>
+                                        <field name="case_qty" required="1"/>
+                                        <field name="hub" />
+                                        <field name="state" />
+                                        <field name="zip" />
+                                        <field name="phone" />
                                     </tree>
                                 </field>
                             </group>
@@ -476,10 +506,15 @@
                                         <field name="wr_note"/>
                                     </div>
                                 </group>
-                                <field name="wr_vendor_stock_ids" readonly="1">
+                                <field name="wr_vendor_stock_ids" readonly="1" force_save="1">
                                     <tree>
-                                        <field name="location_id"/>
-                                        <field name="case_qty"/>
+                                        <field name="abbreviation" />
+                                        <field name="location_id" required="1"/>
+                                        <field name="case_qty" required="1"/>
+                                        <field name="hub" />
+                                        <field name="state" />
+                                        <field name="zip" />
+                                        <field name="phone" />
                                     </tree>
                                 </field>
                             </group>
@@ -517,11 +552,15 @@
                                         <field name="dfm_note"/>
                                     </div>
                                 </group>
-                                <field name="dfm_vendor_stock_ids" readonly="1">
+                                <field name="dfm_vendor_stock_ids" readonly="1" force_save="1">
                                     <tree>
-                                        <field name="location_id"/>
-                                        <field name="product_id"/>
-                                        <field name="case_qty"/>
+                                        <field name="abbreviation" />
+                                        <field name="location_id" required="1"/>
+                                        <field name="case_qty" required="1"/>
+                                        <field name="hub" />
+                                        <field name="state" />
+                                        <field name="zip" />
+                                        <field name="phone" />
                                     </tree>
                                 </field>
                             </group>
@@ -566,7 +605,7 @@
                             <div></div>
                         </div>
                         <group>
-                            <field name="jmac_stock_ids" readonly="1" nolabel="1" class="oe_inline">
+                            <field name="jmac_stock_ids" readonly="1" force_save="1" nolabel="1" class="oe_inline">
                                 <tree>
                                     <field name="location_id"/>
                                     <field name="quantity"/>
@@ -594,10 +633,15 @@
                                         <field name="bks_note"/>
                                     </div>
                                 </group>
-                                <field name="bks_vendor_stock_ids" readonly="1">
+                                <field name="bks_vendor_stock_ids" readonly="1" force_save="1">
                                     <tree>
-                                        <field name="location_id"/>
-                                        <field name="case_qty"/>
+                                        <field name="abbreviation" />
+                                        <field name="location_id" required="1"/>
+                                        <field name="case_qty" required="1"/>
+                                        <field name="hub" />
+                                        <field name="state" />
+                                        <field name="zip" />
+                                        <field name="phone" />
                                     </tree>
                                 </field>
                             </group>

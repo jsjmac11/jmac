@@ -298,6 +298,8 @@ class SaleOrderLine(models.Model):
             jmac_stock_ids = self.env["stock.quant"].search([('product_id', '=', self.product_id.id),
                 ('location_id.usage', '=', 'internal')])
             if jmac_stock_ids:
+                self.jmac_onhand = self.product_id.qty_available
+                self.jmac_available = self.product_id.qty_available
                 self.jmac_stock_ids = [(6,0,jmac_stock_ids.ids)]
             if self.adi_partner_id:
                 stock_master_line_id = self.env["vendor.stock.master.line"].search(

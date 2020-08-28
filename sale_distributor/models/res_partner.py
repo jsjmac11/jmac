@@ -23,6 +23,11 @@ class VendorStockMasterLine(models.Model):
 
     res_partner_id = fields.Many2one('res.partner', string='Vendor')
     # location_id = fields.Many2one('stock.location', string='Location')
-    location_id = fields.Char(string='Location')
+    location_id = fields.Char(string='Name')
     product_id = fields.Many2one('product.product', string="Product")
-    case_qty = fields.Float(string="Quantity")
+    case_qty = fields.Float(string="Stock")
+    state = fields.Char('State')
+    abbreviation = fields.Char('Abbv.')
+    hub = fields.Char('HUB')
+    zip = fields.Char('Zip')
+    phone = fields.Char('Phone#')
