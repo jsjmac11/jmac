@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <template id="assets_common" name="Common Assets Draggable Wizard" inherit_id="web.assets_common">
+    <xpath expr="//link[last()]" position="after">
+      <link rel="stylesheet" type="text/scss" href="/web_wizard_move/static/src/scss/modal.scss"/>
+      <script type="text/javascript" src="/web_wizard_move/static/src/js/draggable-dialog.js"/>
+    </xpath>
+  </template>
+
+</odoo>

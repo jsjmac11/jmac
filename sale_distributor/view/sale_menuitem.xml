@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu Distributor List -->
+    <menuitem id="distributor_id"
+    name="Distributor List"
+    parent="sale.menu_sale_config"
+    action="account.res_partner_action_supplier"
+    sequence="14"/>
+
+    <!-- Menu Distributor Pricelists -->
+    <menuitem id="distributor_list_id"
+    name="Distributor Pricelists"
+    parent="sale.menu_sale_config"
+    action="product.product_supplierinfo_type_action"
+    sequence="15"/>
+
+    <!-- Change action name Vendor Pricelists to Distributor Pricelists-->
+    <record id="product.product_supplierinfo_type_action" model="ir.actions.act_window">
+        <field name="name">Distributor Pricelists</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.supplierinfo</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="context">{'visible_product_tmpl_id':False}</field>
+    </record>
+
+</odoo>

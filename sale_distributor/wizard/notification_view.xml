@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="notification_message_form_view" model="ir.ui.view">
+            <field name="name">notification.message.form</field>
+            <field name="model">notification.message</field>
+            <field name="arch" type="xml">
+                <form string="Message">
+                    <group>
+                        <field name="message" nolabel="1"/>
+                        <field name="partner_id" invisible="1"/>
+                        <div>
+                            <label for="qty" string="How many?"/><br/>
+                            <field name="qty" nolabel="1"/>
+                        </div>
+                        <field name="sale_line_id" invisible="1"/>
+                    </group>
+                    <footer>
+                        <button name="update_quantity" string="Confirm" type="object"
+                            class="oe_highlight"/>
+                        <button string="Cancel" class="oe_default"
+                            special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,666 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Multiple Distributor Tabs -->
+    <record id="view_sale_order_form_inherit" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+             <xpath expr="//field[@name='order_line']" position="after">
+                <field name="all_order_line" invisible="1">
+                    <tree editable="top">
+                    <control>
+                                        <create name="add_product_control" string="Add a product"/>
+                                        <create name="add_section_control" string="Add a section" context="{'default_display_type': 'line_section'}"/>
+                                        <create name="add_note_control" string="Add a note" context="{'default_display_type': 'line_note'}"/>
+                                    </control>
+
+                                    <field name="sequence" widget="handle" />
+                                    <!-- We do not display the type because we don't want the user to be bothered with that information if he has no section or note. -->
+                                    <field name="display_type" invisible="1"/>
+                                    <field name="product_uom_category_id" invisible="1"/>
+
+                                    <field name="product_updatable" invisible="1"/>
+                                    <field
+                                        name="product_id"
+                                        attrs="{
+                                            'readonly': [('product_updatable', '=', False)],
+                                            'required': [('display_type', '=', False)],
+                                        }"
+                                        options="{'no_open': True}"
+                                        force_save="1"
+                                        context="{
+                                            'partner_id': parent.partner_id,
+                                            'quantity': product_uom_qty,
+                                            'pricelist': parent.pricelist_id,
+                                            'uom':product_uom,
+                                            'company_id': parent.company_id,
+                                            'default_lst_price': price_unit,
+                                            'default_description_sale': name
+                                        }"
+                                        domain="[('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"
+                                        widget="product_configurator"
+                                    />
+                                    <field name="product_template_id"
+                                      string="Product"
+                                      invisible="1"
+                                      attrs="{
+                                          'readonly': [('product_updatable', '=', False)],
+                                          'required': [('display_type', '=', False)],
+                                      }"
+                                      options="{'no_open': True}"
+                                      context="{
+                                          'partner_id': parent.partner_id,
+                                          'quantity': product_uom_qty,
+                                          'pricelist': parent.pricelist_id,
+                                          'uom':product_uom,
+                                          'company_id': parent.company_id,
+                                          'default_list_price': price_unit,
+                                          'default_description_sale': name
+                                      }"
+                                      domain="[('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"
+                                      widget="product_configurator"/>
+                                    <field name="name" widget="section_and_note_text" optional="show"/>
+                                    <field
+                                        name="analytic_tag_ids"
+                                        optional="hide"
+                                        groups="analytic.group_analytic_tags"
+                                        widget="many2many_tags"
+                                        options="{'color_field': 'color'}"
+                                        domain="['|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"
+                                    />
+                                    <field
+                                        name="product_uom_qty"
+                                        context="{
+                                            'partner_id': parent.partner_id,
+                                            'quantity': product_uom_qty,
+                                            'pricelist': parent.pricelist_id,
+                                            'uom': product_uom,
+                                            'company_id': parent.company_id
+                                        }"
+                                    />
+                                    <field
+                                        name="qty_delivered"
+                                        string="Delivered"
+                                        attrs="{
+                                            'column_invisible': [('parent.state', 'not in', ['sale', 'done'])],
+                                            'readonly': [('qty_delivered_method', '!=', 'manual')]
+                                        }"
+                                        optional="show"
+                                    />
+                                    <field name="qty_delivered_manual" invisible="1"/>
+                                    <field name="qty_delivered_method" invisible="1"/>
+                                    <field
+                                        name="qty_invoiced"
+                                        string="Invoiced"
+                                        attrs="{'column_invisible': [('parent.state', 'not in', ['sale', 'done'])]}"
+                                        optional="show"
+                                    />
+                                    <field name="qty_to_invoice" invisible="1"/>
+                                    <field
+                                        name="product_uom"
+                                        force_save="1"
+                                        string="UoM"
+                                        attrs="{
+                                            'readonly': [('state', 'in', ('sale','done', 'cancel'))],
+                                            'required': [('display_type', '=', False)],
+                                        }"
+                                        context="{'company_id': parent.company_id}"
+                                        groups="uom.group_uom"
+                                        options='{"no_open": True}'
+                                        optional="show"
+                                    />
+                                    <field
+                                        name="customer_lead"
+                                        optional="hide"
+                                        attrs="{'readonly': [('parent.state', 'not in', ['draft', 'sent'])]}"
+                                    />
+                                    <field
+                                        name="price_unit"
+                                        attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"
+                                    />
+                                    <field
+                                        name="tax_id"
+                                        widget="many2many_tags"
+                                        options="{'no_create': True}"
+                                        domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"
+                                        attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"
+                                        optional="show"
+                                    />
+                                    <field name="discount" string="Disc.%" groups="product.group_discount_per_so_line" optional="show"/>
+                                    <field name="price_subtotal" widget="monetary" groups="account.group_show_line_subtotals_tax_excluded"/>
+                                    <field name="price_total" widget="monetary" groups="account.group_show_line_subtotals_tax_included"/>
+                                    <field name="state" invisible="1"/>
+                                    <field name="invoice_status" invisible="1"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="price_tax" invisible="1"/>
+                                    <field name="company_id" invisible="1"/>
+                                    <field name="route_id" invisible="0"/>
+                                </tree>
+                                </field>
+            </xpath>
+            <xpath expr="//page[@name='other_information']/group/group[@name='sale_shipping']" position="replace">
+            </xpath>
+            <xpath expr="//field[@name='partner_invoice_id']" position="attributes">
+                <attribute name="context">{'show_address': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_shipping_id']" position="attributes">
+                <attribute name="context">{'show_address': True}</attribute>
+            </xpath>
+            <xpath expr="//form/sheet/group/group/field[@name='payment_term_id']" position="after">
+                <label for="commitment_date" string="Delivery Date"/>
+                <div class="o_row">
+                    <field name="commitment_date"/>
+                    <span class="text-muted">Expected:
+                        <field name="expected_date" widget="date"/>
+                    </span>
+                </div>
+                <field name="picking_policy" required="True"/>
+                <field name="shipping_cost"/>
+            </xpath>
+            <xpath expr="//group[@name='note_group']/group/field[@name='note']" position="attributes">
+                <attribute name="placeholder">Quotation Notes...</attribute>
+            </xpath>
+
+            <xpath expr="//form/div[@name='invoice_lines']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/form/group/group/label[@for='customer_lead']"
+                   position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/form/group/group/div[@name='lead']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/form/label[@for='name']" position="attributes">
+                <attribute name="string">Note</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree" position="attributes">
+                <attribute name="editable"></attribute>
+            </xpath>
+            <!-- Manufacturer Info -->
+            <xpath expr="//field[@name='order_line']/form/group/group/div[@name='lead']" position="after">
+                <field name="note" string="Note" attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                <separator string="Manufacturer Info" attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                <field name="phone_number" attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                <field name="dropship_selection" widget="radio" attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                <field name="dropship_fee" attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                <field name="order_min" attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                <field name="below_min_fee" attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                <field name="free_freight_level" attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                <field name="ships_from" attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                <field name="ship_cutoff_time" attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                <field name="order_id" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/form/field[@name='name']" position="after">
+                <div class="o_row" attrs="{'invisible': [('display_type', '!=', False)]}">
+                    <div>
+                        <label for="list_price"/>
+                        <field name="list_price"
+                               style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
+                    </div>
+                    <div>
+                        <label for="lowest_cost"/>
+                        <field name="lowest_cost"
+                               style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
+                    </div>
+                    <div>
+                        <label for="lowest_cost_source"/>
+                        <field name="lowest_cost_source"
+                               style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
+                    </div>
+                    <div></div>
+                    <div></div>
+                    <div>
+                        <label for="total_stock"/>
+                        <field name="total_stock"
+                               style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
+                    </div>
+                </div>
+                <notebook attrs="{'invisible': [('display_type', '!=', False)]}">
+                    <!-- ADI Tab -->
+                    <page name="adi_page" string="ADI">
+                        <group>
+                            <group>
+                                <group>
+                                    <field name="adi_part_number" string="Part Number"/>
+                                    <field name="adi_case_qty" string="Case Qty"/>
+                                    <field name="adi_mo_qty" string="MOQ"/>
+                                    <field name="adi_partner_id" invisible="1"/>
+                                </group>
+                                <group>
+                                    <div>
+                                        <label for="adi_note" string="Description"/>
+                                        <field name="adi_note"/>
+                                    </div>
+                                </group>
+                                <field name="adi_vendor_stock_ids" readonly="1">
+                                    <tree>
+                                        <field name="location_id"/>
+                                        <field name="product_id"/>
+                                        <field name="case_qty"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group>
+                                <field name="adi_actual_cost" string="Actual Cost"/>
+                                <field name="adi_standard_cost" string="Standard Cost"/>
+                                <field name="adi_price_match" string="Price Match"/>
+                                <field name="adi_coded_price_flag" string="Coded Price Flag"/>
+                                <field name="adi_sale_exp_date" string="Sale Exp Date"/>
+                                <field name="adi_sale_cost" string="Sale Cost"/>
+                                <field name="adi_total_stock" string="Total Stock"/>
+                                <field name="adi_cost_last_updated" string="Cost Last Updated"/>
+                                <field name="adi_stock_last_updated" string="Stock Last Updated"/>
+                                <div class="o_row">
+                                    <button name="split_line" context="{'vendor':'adi','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
+                                    <button name="split_line" context="{'vendor':'adi','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+                                </div>
+                            </group>
+                        </group>
+
+                    </page>
+                    <!-- NV Tab -->
+                    <page name="nv_page" string="NV">
+                        <group>
+                            <group>
+                                <group>
+                                    <field name="nv_part_number" string="Part Number"/>
+                                    <field name="nv_case_qty" string="Case Qty"/>
+                                    <field name="nv_mo_qty" string="MOQ"/>
+                                    <field name="nv_partner_id" invisible="1"/>
+                                </group>
+                                <group>
+                                    <div>
+                                        <label for="nv_note" string="Description"/>
+                                        <field name="nv_note"/>
+                                    </div>
+                                </group>
+                                <field name="adi_vendor_stock_ids" readonly="1">
+                                    <tree>
+                                        <field name="location_id"/>
+                                        <field name="product_id"/>
+                                        <field name="case_qty"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group>
+                                <field name="nv_actual_cost" string="Actual Cost"/>
+                                <field name="nv_standard_cost" string="Standard Cost"/>
+                                <field name="nv_price_match" string="Price Match"/>
+                                <field name="nv_coded_price_flag" string="Coded Price Flag"/>
+                                <field name="nv_sale_exp_date" string="Sale Exp Date"/>
+                                <field name="nv_sale_cost" string="Sale Cost"/>
+                                <field name="nv_total_stock" string="Total Stock"/>
+                                <field name="nv_cost_last_updated" string="Cost Last Updated"/>
+                                <field name="nv_stock_last_updated" string="Stock Last Updated"/>
+                                <div class="o_row">
+                                    <button name="split_line" context="{'vendor':'nv','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
+                                    <button name="split_line" context="{'vendor':'nv','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+                                </div>
+                            </group>
+                        </group>
+                    </page>
+                    <!-- SL Tab -->
+                    <page name="sl_page" string="SL">
+                        <group>
+                            <group>
+                                <group>
+                                    <field name="sl_part_number" string="Part Number"/>
+                                    <field name="sl_case_qty" string="Case Qty"/>
+                                    <field name="sl_mo_qty" string="MOQ"/>
+                                    <field name="sl_partner_id" invisible="1"/>
+                                </group>
+                                <group>
+                                    <div>
+                                        <label for="sl_note" string="Description"/>
+                                        <field name="sl_note"/>
+                                    </div>
+                                </group>
+                                <field name="adi_vendor_stock_ids" readonly="1">
+                                    <tree>
+                                        <field name="location_id"/>
+                                        <field name="product_id"/>
+                                        <field name="case_qty"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group>
+                                <field name="sl_actual_cost" string="Actual Cost"/>
+                                <field name="sl_standard_cost" string="Standard Cost"/>
+                                <field name="sl_price_match" string="Price Match"/>
+                                <field name="sl_coded_price_flag" string="Coded Price Flag"/>
+                                <field name="sl_sale_exp_date" string="Sale Exp Date"/>
+                                <field name="sl_sale_cost" string="Sale Cost"/>
+                                <field name="sl_total_stock" string="Total Stock"/>
+                                <field name="sl_cost_last_updated" string="Cost Last Updated"/>
+                                <field name="sl_stock_last_updated" string="Stock Last Updated"/>
+                                <div class="o_row">
+                                    <button name="split_line" context="{'vendor':'sl','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
+                                    <button name="split_line" context="{'vendor':'sl','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+                                </div>
+                            </group>
+                        </group>
+                    </page>
+                    <!-- SS Tab -->
+                    <page name="ss_page" string="SS">
+                        <group>
+                            <group>
+                                <group>
+                                    <field name="ss_part_number" string="Part Number"/>
+                                    <field name="ss_case_qty" string="Case Qty"/>
+                                    <field name="ss_mo_qty" string="MOQ"/>
+                                    <field name="ss_partner_id" invisible="1"/>
+                                </group>
+                                <group>
+                                    <div>
+                                        <label for="ss_note" string="Description"/>
+                                        <field name="ss_note"/>
+                                    </div>
+                                </group>
+                                <field name="adi_vendor_stock_ids" readonly="1">
+                                    <tree>
+                                        <field name="location_id"/>
+                                        <field name="product_id"/>
+                                        <field name="case_qty"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group>
+                                <field name="ss_actual_cost" string="Actual Cost"/>
+                                <field name="ss_standard_cost" string="Standard Cost"/>
+                                <field name="ss_price_match" string="Price Match"/>
+                                <field name="ss_coded_price_flag" string="Coded Price Flag"/>
+                                <field name="ss_sale_exp_date" string="Sale Exp Date"/>
+                                <field name="ss_sale_cost" string="Sale Cost"/>
+                                <field name="ss_total_stock" string="Total Stock"/>
+                                <field name="ss_cost_last_updated" string="Cost Last Updated"/>
+                                <field name="ss_stock_last_updated" string="Stock Last Updated"/>
+                                <div class="o_row">
+                                    <button name="split_line" context="{'vendor':'ss','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
+                                    <button name="split_line" context="{'vendor':'ss','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+                                </div>
+                            </group>
+                        </group>
+                    </page>
+                    <!-- JNE Tab -->
+                    <page name="jne_page" string="JNE">
+                        <group>
+                            <group>
+                                <group>
+                                    <field name="jne_part_number" string="Part Number"/>
+                                    <field name="jne_case_qty" string="Case Qty"/>
+                                    <field name="jne_mo_qty" string="MOQ"/>
+                                    <field name="jne_partner_id" invisible="1"/>
+                                </group>
+                                <group>
+                                    <div>
+                                        <label for="jne_note" string="Description"/>
+                                        <field name="jne_note"/>
+                                    </div>
+                                </group>
+                                <field name="adi_vendor_stock_ids" readonly="1">
+                                    <tree>
+                                        <field name="location_id"/>
+                                        <field name="product_id"/>
+                                        <field name="case_qty"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group>
+                                <field name="jne_actual_cost" string="Actual Cost"/>
+                                <field name="jne_standard_cost" string="Standard Cost"/>
+                                <field name="jne_price_match" string="Price Match"/>
+                                <field name="jne_coded_price_flag" string="Coded Price Flag"/>
+                                <field name="jne_sale_exp_date" string="Sale Exp Date"/>
+                                <field name="jne_sale_cost" string="Sale Cost"/>
+                                <field name="jne_total_stock" string="Total Stock"/>
+                                <field name="jne_cost_last_updated" string="Cost Last Updated"/>
+                                <field name="jne_stock_last_updated" string="Stock Last Updated"/>
+                                <div class="o_row">
+                                    <button name="split_line" context="{'vendor':'jne','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
+                                    <button name="split_line" context="{'vendor':'jne','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+                                </div>
+                            </group>
+                        </group>
+                    </page>
+                    <!-- BNR Tab -->
+                    <page name="bnr_page" string="BNR">
+                        <group>
+                            <group>
+                                <group>
+                                    <field name="bnr_part_number" string="Part Number"/>
+                                    <field name="bnr_case_qty" string="Case Qty"/>
+                                    <field name="bnr_mo_qty" string="MOQ"/>
+                                    <field name="bnr_partner_id" invisible="1"/>
+                                </group>
+                                <group>
+                                    <div>
+                                        <label for="bnr_note" string="Description"/>
+                                        <field name="bnr_note"/>
+                                    </div>
+                                </group>
+                                <field name="adi_vendor_stock_ids" readonly="1">
+                                    <tree>
+                                        <field name="location_id"/>
+                                        <field name="product_id"/>
+                                        <field name="case_qty"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group>
+                                <field name="bnr_actual_cost" string="Actual Cost"/>
+                                <field name="bnr_standard_cost" string="Standard Cost"/>
+                                <field name="bnr_price_match" string="Price Match"/>
+                                <field name="bnr_coded_price_flag" string="Coded Price Flag"/>
+                                <field name="bnr_sale_exp_date" string="Sale Exp Date"/>
+                                <field name="bnr_sale_cost" string="Sale Cost"/>
+                                <field name="bnr_total_stock" string="Total Stock"/>
+                                <field name="bnr_cost_last_updated" string="Cost Last Updated"/>
+                                <field name="bnr_stock_last_updated" string="Stock Last Updated"/>
+                                <div class="o_row">
+                                    <button name="split_line" context="{'vendor':'bnr','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
+                                    <button name="split_line" context="{'vendor':'bnr','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+                                </div>
+                            </group>
+                        </group>
+                    </page>
+                    <!-- WR Tab -->
+                    <page name="wr_page" string="WR">
+                        <group>
+                            <group>
+                                <group>
+                                    <field name="wr_part_number" string="Part Number"/>
+                                    <field name="wr_case_qty" string="Case Qty"/>
+                                    <field name="wr_mo_qty" string="MOQ"/>
+                                    <field name="wr_partner_id" invisible="1"/>
+                                </group>
+                                <group>
+                                    <div>
+                                        <label for="wr_note" string="Description"/>
+                                        <field name="wr_note"/>
+                                    </div>
+                                </group>
+                                <field name="adi_vendor_stock_ids" readonly="1">
+                                    <tree>
+                                        <field name="location_id"/>
+                                        <field name="product_id"/>
+                                        <field name="case_qty"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group>
+                                <field name="wr_actual_cost" string="Actual Cost"/>
+                                <field name="wr_standard_cost" string="Standard Cost"/>
+                                <field name="wr_price_match" string="Price Match"/>
+                                <field name="wr_coded_price_flag" string="Coded Price Flag"/>
+                                <field name="wr_sale_exp_date" string="Sale Exp Date"/>
+                                <field name="wr_sale_cost" string="Sale Cost"/>
+                                <field name="wr_total_stock" string="Total Stock"/>
+                                <field name="wr_cost_last_updated" string="Cost Last Updated"/>
+                                <field name="wr_stock_last_updated" string="Stock Last Updated"/>
+                            </group>
+                            <div class="o_row">
+                                <button name="split_line" context="{'vendor':'wr','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
+                                <button name="split_line" context="{'vendor':'wr','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+                            </div>
+                        </group>
+                    </page>
+                    <!-- DFM Tab -->
+                    <page name="dfm_page" string="DFM">
+                        <group>
+                            <group>
+                                <group>
+                                    <field name="dfm_part_number" string="Part Number"/>
+                                    <field name="dfm_case_qty" string="Case Qty"/>
+                                    <field name="dfm_mo_qty" string="MOQ"/>
+                                    <field name="dfm_partner_id" invisible="1"/>
+                                </group>
+                                <group>
+                                    <div>
+                                        <label for="dfm_note" string="Description"/>
+                                        <field name="dfm_note"/>
+                                    </div>
+                                </group>
+                                <field name="adi_vendor_stock_ids" readonly="1">
+                                    <tree>
+                                        <field name="location_id"/>
+                                        <field name="product_id"/>
+                                        <field name="case_qty"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group>
+                                <field name="dfm_actual_cost" string="Actual Cost"/>
+                                <field name="dfm_standard_cost" string="Standard Cost"/>
+                                <field name="dfm_price_match" string="Price Match"/>
+                                <field name="dfm_coded_price_flag" string="Coded Price Flag"/>
+                                <field name="dfm_sale_exp_date" string="Sale Exp Date"/>
+                                <field name="dfm_sale_cost" string="Sale Cost"/>
+                                <field name="dfm_total_stock" string="Total Stock"/>
+                                <field name="dfm_cost_last_updated" string="Cost Last Updated"/>
+                                <field name="dfm_stock_last_updated" string="Stock Last Updated"/>
+                            </group>
+                            <div class="o_row">
+                                <button name="split_line" context="{'vendor':'dfm','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
+                                <button name="split_line" context="{'vendor':'dfm','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+                            </div>
+                        </group>
+                    </page>
+                    <!-- JMAC Tab -->
+                    <page name="jmac_page" string="JMAC">
+                        <div class="o_row">
+                            <div>
+                                <label for="jmac_allocated"/>
+                                <field name="jmac_allocated"
+                                       style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
+                            </div>
+                            <div>
+                                <label for="jmac_available"/>
+                                <field name="jmac_available"
+                                       style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
+                            </div>
+                            <div>
+                                <label for="jmac_onhand"/>
+                                <field name="jmac_onhand"
+                                       style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
+                            </div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                        <group>
+                            <field name="adi_vendor_stock_ids" readonly="1" nolabel="1" class="oe_inline">
+                                <tree>
+                                    <field name="location_id"/>
+                                    <field name="product_id"/>
+                                    <field name="case_qty"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <div class="o_row">
+                            <button name="split_line" context="{'ship_from_here':True}" type="object" class="oe_highlight" string="Ship from Here"/>
+                            <button name="allocate" type="object" class="oe_highlight" string="Allocate"/>
+                        </div>
+                    </page>
+                    <!-- BKS Tab -->
+                    <page name="bks_page" string="BKS">
+                        <group>
+                            <group>
+                                <group>
+                                    <field name="bks_part_number" string="Part Number"/>
+                                    <field name="bks_case_qty" string="Case Qty"/>
+                                    <field name="bks_mo_qty" string="MOQ"/>
+                                    <field name="bks_partner_id" invisible="1"/>
+                                </group>
+                                <group>
+                                    <div>
+                                        <label for="bks_note" string="Description"/>
+                                        <field name="bks_note"/>
+                                    </div>
+                                </group>
+                                <field name="adi_vendor_stock_ids" readonly="1">
+                                    <tree>
+                                        <field name="location_id"/>
+                                        <field name="product_id"/>
+                                        <field name="case_qty"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group>
+                                <field name="bks_actual_cost" string="Actual Cost"/>
+                                <field name="bks_standard_cost" string="Standard Cost"/>
+                                <field name="bks_price_match" string="Price Match"/>
+                                <field name="bks_coded_price_flag" string="Coded Price Flag"/>
+                                <field name="bks_sale_exp_date" string="Sale Exp Date"/>
+                                <field name="bks_sale_cost" string="Sale Cost"/>
+                                <field name="bks_total_stock" string="Total Stock"/>
+                                <field name="bks_cost_last_updated" string="Cost Last Updated"/>
+                                <field name="bks_stock_last_updated" string="Stock Last Updated"/>
+                                <div class="o_row">
+                                <button name="split_line" context="{'vendor':'bks','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
+                                <button name="split_line" context="{'vendor':'bks','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+                            </div>
+                            </group>
+                        </group>
+                    </page>
+                    <!-- OTV Tab -->
+                    <page name="otv_page" string="OTV">
+                        <group>
+                            <group>
+                                <field name="partner_id"/>
+                                <field name="otv_cost"/>
+                            </group>
+                        </group>
+                        <div class="o_row">
+                            <button name="split_line" context="{'vendor':'otv','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
+                            <button name="split_line" context="{'vendor':'otv','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+                        </div>
+                    </page>
+                </notebook>
+                <separator string="Process Qty" attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                <div class="o_row">
+                    <field name="sale_split_lines" readonly="0" attrs="{'invisible': [('display_type', '!=', False)]}">
+                        <tree>
+                            <field name="name"/>
+                            <field name="line_type" string="type"/>
+                            <field name="vendor_id"/>
+                            <field name="route_id"/>
+                            <field name="product_uom_qty"/>
+                        </tree>
+                        <form>
+                            <group>
+                                <field name="name"/>
+                                <field name="line_type"/>
+                                <field name="vendor_id"/>
+                                <field name="route_id"/>
+                                <field name="product_uom_qty"/>
+                            </group>
+                        </form>
+                    </field>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
