@@ -22,6 +22,7 @@ class VendorStockMasterLine(models.Model):
     _description = 'Vendor Stock Line'
 
     res_partner_id = fields.Many2one('res.partner', string='Vendor')
-    location_id = fields.Many2one('stock.location', string='Location')
+    # location_id = fields.Many2one('stock.location', string='Location')
+    location_id = fields.Char(string='Location')
     product_id = fields.Many2one('product.product', string="Product")
     case_qty = fields.Float(string="Quantity")

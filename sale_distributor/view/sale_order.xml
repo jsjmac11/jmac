@@ -641,7 +641,7 @@
                 </notebook>
                 <separator string="Process Qty" attrs="{'invisible': [('display_type', '!=', False)]}"/>
                 <div class="o_row">
-                    <field name="sale_split_lines" readonly="0" attrs="{'invisible': [('display_type', '!=', False)]}">
+                    <field name="sale_split_lines" readonly="1" attrs="{'invisible': [('display_type', '!=', False)]}">
                         <tree>
                             <field name="name"/>
                             <field name="line_type" string="type"/>

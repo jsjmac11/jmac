@@ -95,7 +95,7 @@ class MailComposer(models.TransientModel):
         string="Display Recipients Cc (Partners)",
         default=lambda self: self.env.user.company_id.display_cc_recipients,)
     display_bcc_recipients = fields.Boolean(
-        string="Display Recipients Cc (Partners)",
+        string="Display Recipients Bcc (Partners)",
         default=lambda self: self.env.user.company_id.display_bcc_recipients)
     display_reply_to = fields.Boolean(
         string="Display Reply To",
