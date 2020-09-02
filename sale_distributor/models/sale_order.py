@@ -6,7 +6,8 @@
 #
 ##############################################################################
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
+from odoo.exceptions import ValidationError
 from datetime import datetime
 
 
@@ -24,6 +25,11 @@ class SaleOrder(models.Model):
     def _action_confirm(self):
         self.all_order_line._action_launch_stock_rule()
         return super(SaleOrder, self)._action_confirm()
+
+    def action_cancel(self):
+        res = super(SaleOrder, self).action_cancel()
+        self.all_order_line.unlink()
+        return res
 
     @api.model
     def create(self, vals):
@@ -259,9 +265,11 @@ class SaleOrderLine(models.Model):
     parent_line_id = fields.Many2one('sale.order.line', string="Parent Line")
     sale_split_lines = fields.One2many("sale.order.line", 'parent_line_id', string="Process Qty")
     vendor_id = fields.Many2one('res.partner', string='Line Vendor')
+    vendor_unit_price= fields
     line_type = fields.Selection([('buy','Buy'),('dropship','Dropship'),('stock','Stock')])
     main_order_id = fields.Many2one('sale.order', string='Sale Order', related='parent_line_id.order_id', ondelete='cascade', index=True,
                                copy=False)
+    vendor_price_unit = fields.Float(string='Vendor Unit Price', digits='Product Price')
 
     # def _prepare_procurement_group_vals(self):
     #     if self.main_order_id:
@@ -301,7 +309,7 @@ class SaleOrderLine(models.Model):
                 self.jmac_onhand = self.product_id.qty_available
                 self.jmac_available = self.product_id.qty_available
                 self.jmac_stock_ids = [(6,0,jmac_stock_ids.ids)]
-            params = {'order_id': self.order_id}
+            params = {} # 'order_id': self.order_id
             if self.adi_partner_id:
                 stock_master_line_id = self.env["vendor.stock.master.line"].search(
                     [('res_partner_id', '=', self.adi_partner_id.id),
@@ -323,9 +331,7 @@ class SaleOrderLine(models.Model):
                     self.adi_standard_cost = pricelist_id.price or 0.0
                     self.adi_sale_exp_date = pricelist_id.date_end
                 else:
-                    actual_cost = self.product_id.standard_price 
-                    # self.adi_part_number = adi_pricelist_id.product_code or ''
-                    # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
+                    actual_cost = self.product_id.standard_price
                     self.adi_actual_cost = 0.0
                     self.adi_standard_cost = 0.0
 
@@ -350,9 +356,7 @@ class SaleOrderLine(models.Model):
                     self.nv_standard_cost = pricelist_id.price or 0.0
                     self.nv_sale_exp_date = pricelist_id.date_end
                 else:
-                    actual_cost = self.product_id.standard_price 
-                    # self.adi_part_number = adi_pricelist_id.product_code or ''
-                    # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
+                    actual_cost = self.product_id.standard_price
                     self.nv_actual_cost = 0.0
                     self.nv_standard_cost = actual_cost or 0.0
 
@@ -377,9 +381,7 @@ class SaleOrderLine(models.Model):
                     self.sl_standard_cost = pricelist_id.price or 0.0
                     self.sl_sale_exp_date = pricelist_id.date_end
                 else:
-                    actual_cost = self.product_id.standard_price 
-                    # self.adi_part_number = adi_pricelist_id.product_code or ''
-                    # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
+                    actual_cost = self.product_id.standard_price
                     self.sl_actual_cost = 0.0
                     self.sl_standard_cost = 0.0
             if self.ss_partner_id:
@@ -403,9 +405,7 @@ class SaleOrderLine(models.Model):
                     self.ss_standard_cost = pricelist_id.price or 0.0
                     self.ss_sale_exp_date = pricelist_id.date_end
                 else:
-                    actual_cost = self.product_id.standard_price 
-                    # self.adi_part_number = adi_pricelist_id.product_code or ''
-                    # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
+                    actual_cost = self.product_id.standard_price
                     self.ss_actual_cost = 0.0
                     self.ss_standard_cost = 0.0
             if self.jne_partner_id:
@@ -429,9 +429,7 @@ class SaleOrderLine(models.Model):
                     self.jne_standard_cost = pricelist_id.price or 0.0
                     self.jne_sale_exp_date = pricelist_id.date_end
                 else:
-                    actual_cost = self.product_id.standard_price 
-                    # self.adi_part_number = adi_pricelist_id.product_code or ''
-                    # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
+                    actual_cost = self.product_id.standard_price
                     self.jne_actual_cost = 0.0
                     self.jne_standard_cost = 0.0
 
@@ -456,9 +454,7 @@ class SaleOrderLine(models.Model):
                     self.bnr_standard_cost = pricelist_id.price or 0.0
                     self.bnr_sale_exp_date = pricelist_id.date_end
                 else:
-                    actual_cost = self.product_id.standard_price 
-                    # self.adi_part_number = adi_pricelist_id.product_code or ''
-                    # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
+                    actual_cost = self.product_id.standard_price
                     self.bnr_actual_cost = 0.0
                     self.bnr_standard_cost = 0.0
 
@@ -483,9 +479,7 @@ class SaleOrderLine(models.Model):
                     self.wr_standard_cost = pricelist_id.price or 0.0
                     self.wr_sale_exp_date = pricelist_id.date_end
                 else:
-                    actual_cost = self.product_id.standard_price 
-                    # self.adi_part_number = adi_pricelist_id.product_code or ''
-                    # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
+                    actual_cost = self.product_id.standard_price
                     self.wr_actual_cost = 0.0
                     self.wr_standard_cost = 0.0
             if self.dfm_partner_id:
@@ -509,9 +503,7 @@ class SaleOrderLine(models.Model):
                     self.dfm_standard_cost = pricelist_id.price or 0.0
                     self.dfm_sale_exp_date = pricelist_id.date_end
                 else:
-                    actual_cost = self.product_id.standard_price 
-                    # self.adi_part_number = adi_pricelist_id.product_code or ''
-                    # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
+                    actual_cost = self.product_id.standard_price
                     self.dfm_actual_cost = 0.0
                     self.dfm_standard_cost = 0.0
             if self.bks_partner_id:
@@ -535,40 +527,54 @@ class SaleOrderLine(models.Model):
                     self.bks_standard_cost = pricelist_id.price or 0.0
                     self.bks_sale_exp_date = pricelist_id.date_end
                 else:
-                    actual_cost = self.product_id.standard_price 
-                    # self.adi_part_number = adi_pricelist_id.product_code or ''
-                    # self.adi_case_qty = adi_pricelist_id.min_qty or 0.0
+                    actual_cost = self.product_id.standard_price
                     self.bks_actual_cost = 0.0
                     self.bks_standard_cost = 0.0
         return
 
     def split_line(self):
         ctx = self._context.copy()
-        ctx.update({'default_qty': self.product_uom_qty,
+        process_qty = sum(self.sale_split_lines.mapped('product_uom_qty'))
+        unprocess_qty = self.product_uom_qty - process_qty
+        if not unprocess_qty:
+            raise ValidationError(_("There is no quantity for process!"))
+        ctx.update({'default_qty': unprocess_qty,
+                    'default_remaining_qty': unprocess_qty,
                     'default_sale_line_id': self.id})
         model = 'notification.message'
         view_id = self.env.ref('sale_distributor.notification_message_form_view').id
         name = False
+        vendor_price_unit = 0.0
         if ctx.get('vendor') == 'adi':
             name = self.adi_partner_id
+            vendor_price_unit = self.adi_actual_cost
         elif ctx.get('vendor') == 'nv':
             name = self.nv_partner_id
+            vendor_price_unit = self.nv_actual_cost
         elif ctx.get('vendor') == 'ss':
             name = self.ss_partner_id
+            vendor_price_unit = self.ss_actual_cost
         elif ctx.get('vendor') == 'sl':
             name = self.sl_partner_id
+            vendor_price_unit = self.sl_actual_cost
         elif ctx.get('vendor') == 'jne':
             name = self.jne_partner_id
+            vendor_price_unit = self.jne_actual_cost
         elif ctx.get('vendor') == 'bnr':
             name = self.bnr_partner_id
+            vendor_price_unit = self.bnr_actual_cost
         elif ctx.get('vendor') == 'wr':
             name = self.wr_partner_id
+            vendor_price_unit = self.wr_actual_cost
         elif ctx.get('vendor') == 'dfm':
             name = self.dfm_partner_id
+            vendor_price_unit = self.dfm_actual_cost
         elif ctx.get('vendor') == 'bks':
             name = self.bks_partner_id
+            vendor_price_unit = self.bks_actual_cost
         elif ctx.get('vendor') == 'otv':
             name = self.partner_id
+            vendor_price_unit = self.otv_cost
         wiz_name = ''
         msg = ''
         if ctx.get('ship_from_here',False):
@@ -584,7 +590,7 @@ class SaleOrderLine(models.Model):
         if name :
             ctx.update({'default_partner_id': name.id})
             wiz_name = name.name + ' ' + wiz_name
-        ctx.update({'default_message': msg})
+        ctx.update({'default_message': msg,'default_unit_price':vendor_price_unit})
         return {
             'name': (wiz_name),
             'type': 'ir.actions.act_window',
@@ -595,57 +601,6 @@ class SaleOrderLine(models.Model):
             'context': ctx,
         }
 
-    # def dropship(self):
-    #     ctx = self._context.copy()
-    #     ctx.update({'default_qty': self.product_uom_qty,
-    #                 'default_sale_line_id': self.id,
-    #                 'default_message': 'Enter the quantity you want to dropship',
-    #                 # 'vendor':'adi',
-    #                 'dropship': True})
-    #     model = 'notification.message'
-    #     view_id = self.env.ref('sale_distributor.notification_message_form_view').id
-    #     if ctx.get('vendor') == 'adi':
-    #         name = self.adi_partner_id
-    #     elif ctx.get('vendor') == 'nv':
-    #         name = self.nv_partner_id
-    #     elif ctx.get('vendor') == 'ss':
-    #         name = self.ss_partner_id
-    #     elif ctx.get('vendor') == 'sl':
-    #         name = self.sl_partner_id
-    #     elif ctx.get('vendor') == 'jne':
-    #         name = self.jne_partner_id
-    #     elif ctx.get('vendor') == 'bnr':
-    #         name = self.bnr_partner_id
-    #     elif ctx.get('vendor') == 'wr':
-    #         name = self.wr_partner_id
-    #     elif ctx.get('vendor') == 'dfm':
-    #         name = self.dfm_partner_id
-    #     elif ctx.get('vendor') == 'bks':
-    #         name = self.bks_partner_id
-    #     ctx.update({'default_partner_id': name.id})
-    #     return {
-    #         'name': (name.name + ' ' + 'Dropship'),
-    #         'type': 'ir.actions.act_window',
-    #         'view_mode': 'form',
-    #         'res_model': model,
-    #         'view_id': view_id,
-    #         'target': 'new',
-    #         'context': ctx,
-    #     }
-
-    # def ship_from_here(self):
-    #     ctx = self._context.copy()
-    #     model = 'notification.message'
-    #     view_id = self.env.ref('sale_distributor.notification_message_form_view').id
-    #     return {
-    #         'name': ('Ship from Here'),
-    #         'type': 'ir.actions.act_window',
-    #         'view_mode': 'form',
-    #         'res_model': model,
-    #         'view_id': view_id,
-    #         'target': 'new',
-    #         'context': ctx,
-    #     }
 
     def allocate(self):
         ctx = self._context.copy()
@@ -671,5 +626,16 @@ class SaleOrderLine(models.Model):
         if self.route_id and self.vendor_id:
             values.update({
                 'supplier_id': self.vendor_id,
+                'vendor_price_unit': self.vendor_price_unit
                 })
         return values
+
+class StockRule(models.Model):
+    _inherit = 'stock.rule'
+
+
+    @api.model
+    def _prepare_purchase_order_line(self, product_id, product_qty, product_uom, company_id, values, po):
+        res = super(StockRule, self)._prepare_purchase_order_line(product_id, product_qty, product_uom, company_id, values, po)
+        res['price_unit'] = values.get('vendor_price_unit', False)
+        return res

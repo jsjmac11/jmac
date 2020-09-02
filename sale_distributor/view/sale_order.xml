@@ -7,138 +7,31 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-             <xpath expr="//field[@name='order_line']" position="after">
-                <field name="all_order_line" invisible="1">
-                    <tree editable="top">
-                    <control>
-                                        <create name="add_product_control" string="Add a product"/>
-                                        <create name="add_section_control" string="Add a section" context="{'default_display_type': 'line_section'}"/>
-                                        <create name="add_note_control" string="Add a note" context="{'default_display_type': 'line_note'}"/>
-                                    </control>
+             <xpath expr="//field[@name='note']" position="before">
+                <group string="Process Qty" name="process_qty" colspan="4">
+                    <!--<separator string="Process Qty"/>-->
+                    <field name="all_order_line" readonly="1" nolabel="1">
+                        <tree>
+                            <field name="name" invisible="1"/>
+                                <field name="vendor_id" string="Vendor"/>
+                                <field name="line_type" string="Type"/>
+                                <field name="route_id" invisible="1"/>
+                                <field name="vendor_price_unit" string="Vendor Price"/>
+                                <field name="product_uom_qty"/>
+                        </tree>
+                        <form>
+                            <group>
+                                <field name="name" invisible="1"/>
+                                <field name="vendor_id" string="Vendor"/>
+                                <field name="line_type" string="Type"/>
+                                <field name="route_id" invisible="1"/>
+                                <field name="vendor_price_unit" string="Vendor Price"/>
+                                <field name="product_uom_qty"/>
+                            </group>
+                        </form>
 
-                                    <field name="sequence" widget="handle" />
-                                    <!-- We do not display the type because we don't want the user to be bothered with that information if he has no section or note. -->
-                                    <field name="display_type" invisible="1"/>
-                                    <field name="product_uom_category_id" invisible="1"/>
-
-                                    <field name="product_updatable" invisible="1"/>
-                                    <field
-                                        name="product_id"
-                                        attrs="{
-                                            'readonly': [('product_updatable', '=', False)],
-                                            'required': [('display_type', '=', False)],
-                                        }"
-                                        options="{'no_open': True}"
-                                        force_save="1"
-                                        context="{
-                                            'partner_id': parent.partner_id,
-                                            'quantity': product_uom_qty,
-                                            'pricelist': parent.pricelist_id,
-                                            'uom':product_uom,
-                                            'company_id': parent.company_id,
-                                            'default_lst_price': price_unit,
-                                            'default_description_sale': name
-                                        }"
-                                        domain="[('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"
-                                        widget="product_configurator"
-                                    />
-                                    <field name="product_template_id"
-                                      string="Product"
-                                      invisible="1"
-                                      attrs="{
-                                          'readonly': [('product_updatable', '=', False)],
-                                          'required': [('display_type', '=', False)],
-                                      }"
-                                      options="{'no_open': True}"
-                                      context="{
-                                          'partner_id': parent.partner_id,
-                                          'quantity': product_uom_qty,
-                                          'pricelist': parent.pricelist_id,
-                                          'uom':product_uom,
-                                          'company_id': parent.company_id,
-                                          'default_list_price': price_unit,
-                                          'default_description_sale': name
-                                      }"
-                                      domain="[('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"
-                                      widget="product_configurator"/>
-                                    <field name="name" widget="section_and_note_text" optional="show"/>
-                                    <field
-                                        name="analytic_tag_ids"
-                                        optional="hide"
-                                        groups="analytic.group_analytic_tags"
-                                        widget="many2many_tags"
-                                        options="{'color_field': 'color'}"
-                                        domain="['|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"
-                                    />
-                                    <field
-                                        name="product_uom_qty"
-                                        context="{
-                                            'partner_id': parent.partner_id,
-                                            'quantity': product_uom_qty,
-                                            'pricelist': parent.pricelist_id,
-                                            'uom': product_uom,
-                                            'company_id': parent.company_id
-                                        }"
-                                    />
-                                    <field
-                                        name="qty_delivered"
-                                        string="Delivered"
-                                        attrs="{
-                                            'column_invisible': [('parent.state', 'not in', ['sale', 'done'])],
-                                            'readonly': [('qty_delivered_method', '!=', 'manual')]
-                                        }"
-                                        optional="show"
-                                    />
-                                    <field name="qty_delivered_manual" invisible="1"/>
-                                    <field name="qty_delivered_method" invisible="1"/>
-                                    <field
-                                        name="qty_invoiced"
-                                        string="Invoiced"
-                                        attrs="{'column_invisible': [('parent.state', 'not in', ['sale', 'done'])]}"
-                                        optional="show"
-                                    />
-                                    <field name="qty_to_invoice" invisible="1"/>
-                                    <field
-                                        name="product_uom"
-                                        force_save="1"
-                                        string="UoM"
-                                        attrs="{
-                                            'readonly': [('state', 'in', ('sale','done', 'cancel'))],
-                                            'required': [('display_type', '=', False)],
-                                        }"
-                                        context="{'company_id': parent.company_id}"
-                                        groups="uom.group_uom"
-                                        options='{"no_open": True}'
-                                        optional="show"
-                                    />
-                                    <field
-                                        name="customer_lead"
-                                        optional="hide"
-                                        attrs="{'readonly': [('parent.state', 'not in', ['draft', 'sent'])]}"
-                                    />
-                                    <field
-                                        name="price_unit"
-                                        attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"
-                                    />
-                                    <field
-                                        name="tax_id"
-                                        widget="many2many_tags"
-                                        options="{'no_create': True}"
-                                        domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"
-                                        attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"
-                                        optional="show"
-                                    />
-                                    <field name="discount" string="Disc.%" groups="product.group_discount_per_so_line" optional="show"/>
-                                    <field name="price_subtotal" widget="monetary" groups="account.group_show_line_subtotals_tax_excluded"/>
-                                    <field name="price_total" widget="monetary" groups="account.group_show_line_subtotals_tax_included"/>
-                                    <field name="state" invisible="1"/>
-                                    <field name="invoice_status" invisible="1"/>
-                                    <field name="currency_id" invisible="1"/>
-                                    <field name="price_tax" invisible="1"/>
-                                    <field name="company_id" invisible="1"/>
-                                    <field name="route_id" invisible="0"/>
-                                </tree>
-                                </field>
+                    </field>
+                </group>
             </xpath>
             <xpath expr="//page[@name='other_information']/group/group[@name='sale_shipping']" position="replace">
             </xpath>
@@ -678,12 +571,13 @@
                 </notebook>
                 <separator string="Process Qty" attrs="{'invisible': [('display_type', '!=', False)]}"/>
                 <div class="o_row">
-                    <field name="sale_split_lines" readonly="1" attrs="{'invisible': [('display_type', '!=', False)]}">
-                        <tree>
+                    <field name="sale_split_lines" attrs="{'invisible': [('display_type', '!=', False)]}">
+                        <tree create="0" edit="0">
                             <field name="name" invisible="1"/>
                             <field name="vendor_id" string="Vendor"/>
                             <field name="line_type" string="Type"/>
                             <field name="route_id" invisible="1"/>
+                            <field name="vendor_price_unit" string="Vendor Price"/>
                             <field name="product_uom_qty"/>
                         </tree>
                         <form>
@@ -692,6 +586,7 @@
                                 <field name="vendor_id" string="Vendor"/>
                                 <field name="line_type" string="Type"/>
                                 <field name="route_id" invisible="1"/>
+                                <field name="vendor_price_unit" string="Vendor Price"/>
                                 <field name="product_uom_qty"/>
                             </group>
                         </form>
