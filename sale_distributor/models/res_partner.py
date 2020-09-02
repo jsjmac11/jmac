@@ -15,6 +15,9 @@ class ResPartner(models.Model):
 
     vendor_stock_master_line = fields.One2many("vendor.stock.master.line", "res_partner_id",
                                                "Vendor Stock Line")
+    sequence_name = fields.Char(string="Customer No.",
+                                default=lambda self: self.env['ir.sequence'].next_by_code('res.partner') or '',
+                                required=True)
 
 
 class VendorStockMasterLine(models.Model):

@@ -65,5 +65,13 @@
             <field name="supplier_rank">1</field>
             <field name="customer_rank">0</field>
         </record>
+        <record id="sequence_partner_group" model="ir.sequence">
+            <field name="name">Res Partner</field>
+            <field name="code">res.partner</field>
+            <field name="prefix">JMC</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
     </data>
 </odoo>

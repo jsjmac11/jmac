@@ -6,6 +6,9 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="sequence_name" readonly="1"/>
+            </xpath>
             <xpath expr="//notebook//page[3]" position="after">
                 <page name="vendor_stock" string="Vendor Stock">
                     <field name="vendor_stock_master_line" readonly="1">
@@ -18,6 +21,21 @@
                     </field>
                 </page>
             </xpath>
+        </field>
+    </record>
+
+    <record id="view_res_partner_filter_search_inherit" model="ir.ui.view">
+        <field name="name">res.partner.search</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <search position="inside">
+                <field name="sequence_name" string="Unique No."
+                filter_domain="[('sequence_name', 'ilike', self)]"/>
+                <group expand="0" string="Group By">
+                        <filter name="groupby_in_sequence_name" string="Unique Customer" domain="[]" context="{'group_by' : 'sequence_name'}" />
+                </group>
+            </search>
         </field>
     </record>
 </odoo>

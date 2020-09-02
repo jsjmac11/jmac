@@ -23,6 +23,9 @@ class ProductTemplate(models.Model):
     height = fields.Float(string='Height')
     weight_oz = fields.Float(string="Weight(oz)")
     weight_oz_uom_name = fields.Char(string='Weight oz unit of measure', default=_get_default_weight_oz_uom)
+    weight = fields.Float(
+        'Weight', compute='_compute_weight', digits='Stock Weight',
+        inverse='_set_weight', store=True, default='1')
 
     @api.onchange('weight_oz')
     def onchange_weight_oz(self):
