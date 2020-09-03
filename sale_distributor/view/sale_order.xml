@@ -7,20 +7,26 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="confirm_purchase" string="Confirm All" type="object" groups="sale_distributor.group_manager_confirm" attrs="{'invisible': [('state', 'not in', ['draft','sent'])]}"/>
+                
+            </xpath>
              <xpath expr="//field[@name='note']" position="before">
                 <group string="Process Qty" name="process_qty" colspan="4">
                     <!--<separator string="Process Qty"/>-->
                     <field name="all_order_line" readonly="1" nolabel="1">
                         <tree>
+                            <field name="product_id"/>
                             <field name="name" invisible="1"/>
-                                <field name="vendor_id" string="Vendor"/>
-                                <field name="line_type" string="Type"/>
-                                <field name="route_id" invisible="1"/>
-                                <field name="vendor_price_unit" string="Vendor Price"/>
-                                <field name="product_uom_qty"/>
+                            <field name="vendor_id" string="Vendor"/>
+                            <field name="line_type" string="Type"/>
+                            <field name="route_id" invisible="1"/>
+                            <field name="vendor_price_unit" string="Vendor Price"/>
+                            <field name="product_uom_qty"/>
                         </tree>
                         <form>
                             <group>
+                                <field name="product_id"/>
                                 <field name="name" invisible="1"/>
                                 <field name="vendor_id" string="Vendor"/>
                                 <field name="line_type" string="Type"/>
