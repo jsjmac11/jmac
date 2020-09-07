@@ -385,7 +385,7 @@ class SaleOrder(models.Model):
             'shipping_cost': ship_cost,
             'amount_untaxed': amount_untaxed,
             'amount_tax': amount_tax,
-            'amount_total': amount_untaxed + amount_tax,
+            'amount_total': amount_untaxed + amount_tax + ship_cost,
         })
 
 class SaleOrderLine(models.Model):

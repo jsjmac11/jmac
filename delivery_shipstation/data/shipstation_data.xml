@@ -2,7 +2,7 @@
 <odoo>
     <data noupdate="1">
 
-        <!-- eShipper Product Packagings -->
+        <!-- Product Packagings -->
         <record id="shipstation_customer_packaging" model="product.packaging">
             <field name="name">Shipstation - Packaging</field>
             <field name="shipper_package_code">Boxes</field>
@@ -22,6 +22,8 @@
             <field name="sale_ok" eval="False"/>
             <field name="purchase_ok" eval="False"/>
             <field name="list_price">0.0</field>
+            <field name="taxes_id" eval="[]"/>
+            <field name="supplier_taxes_id" eval="[]"/>
         </record>
 
 
@@ -127,6 +129,8 @@
             <field name="sale_ok" eval="False"/>
             <field name="purchase_ok" eval="False"/>
             <field name="list_price">0.0</field>
+            <field name="taxes_id" eval="[]"/>
+            <field name="supplier_taxes_id" eval="[]"/>
         </record>
 
         <record id="order_service_free" model="order.service">
