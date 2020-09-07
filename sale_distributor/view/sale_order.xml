@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Inherit Search view for My Quotations and My Order Menu -->
+    <record id="update_sale_order_view_search_inherit_quotation" model="ir.ui.view">
+            <field name="name">sale.order.search.inherit.quotation</field>
+            <field name="model">sale.order</field>
+            <field name="mode">primary</field>
+            <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='my_quotation']" position="attributes">
+                    <attribute name="domain">['|', ('user_id', '=', uid), ('state', 'not in', ('sale','done','cancel'))]</attribute>
+                </xpath>
+            </field>
+    </record>
 
     <!-- Multiple Distributor Tabs -->
     <record id="view_sale_order_form_inherit" model="ir.ui.view">
@@ -43,11 +55,11 @@
             </xpath>
             <xpath expr="//field[@name='partner_invoice_id']" position="attributes">
                 <attribute name="context">{'show_address': True}</attribute>
-                <attribute name="domain">['|', ('id', '=', partner_id), ('type', '=', 'invoice'), ('parent_id', 'in', (partner_id,False))]</attribute>
+                <attribute name="domain">['|',('id', '=', partner_id),'&amp;',('type', '=', 'invoice'), ('parent_id', '=', partner_id)]</attribute>
             </xpath>
             <xpath expr="//field[@name='partner_shipping_id']" position="attributes">
                 <attribute name="context">{'show_address': True}</attribute>
-                <attribute name="domain">['|', ('id', '=', partner_id), ('type', '=', 'delivery'), ('parent_id', 'in', (partner_id,False))]</attribute>
+                <attribute name="domain">['|',('id', '=', partner_id),'&amp;',('type', '=', 'delivery'), ('parent_id', '=', partner_id)]</attribute>
             </xpath>
             <xpath expr="//form/sheet/group/group/field[@name='payment_term_id']" position="after">
                 <label for="commitment_date" string="Delivery Date"/>
@@ -58,7 +70,6 @@
                     </span>
                 </div>
                 <field name="picking_policy" required="True"/>
-                <field name="shipping_cost"/>
             </xpath>
             <xpath expr="//group[@name='note_group']/group/field[@name='note']" position="attributes">
                 <attribute name="placeholder">Quotation Notes...</attribute>

@@ -36,7 +36,7 @@
                         <field name="requested_service_id"
                                options="{'no_open': True, 'no_create': True}"/>
                         <br/>
-                        <field name="service_price" readonly="1" force_save="1"/>
+                        <field name="service_price" force_save="1" attrs="{'readonly': [('state', 'not in', ('draft','sent'))]}"/>
                         <button name="set_price" colspan="1" type="object"
                                 attrs="{'invisible': ['|',('requested_service_id', '=', False),('state', 'not in', ('draft','sent'))]}"
                                 class="fa fa-arrow-right oe_link">Set Price
@@ -44,6 +44,10 @@
                     </div>
                     <field name="tag_id" string="Tag"
                            options="{'no_open': True, 'no_create': True}"/>
+                </xpath>
+                <!-- Shipping Cost Adding-->
+                <xpath expr="//group[@name='note_group']/group/field[@name='amount_tax']" position="before">
+                    <field name="shipping_cost" widget='monetary' options="{'currency_field': 'currency_id'}" readonly="1"/>
                 </xpath>
             </field>
         </record>

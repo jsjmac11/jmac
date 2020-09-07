@@ -30,6 +30,14 @@
                         </tr>
                         <tr>
                             <td class="text-left">
+                                <lable class="mx-2 tr_td">Code</lable>
+                            </td>
+                            <td class="text-left">
+                                <span class="tr_td" style="width: 90%; display:block;border-bottom: 1px solid #808080;" t-field="doc.partner_id.sequence_name" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">
                                 <lable class="mx-2 tr_td">Company Name</lable>
                             </td>
                             <td class="text-left">
@@ -160,7 +168,10 @@
                                 <td name="td_amount_total" class="text-right">
                                     <span class="tr_td">Shipping &amp; Handling</span>
                                 </td>
-                                <td class="text-right"><span class="tr_td mx-1" style="width: 90%; display:block;border-bottom: 1px solid #808080;" t-esc="sum([opt.price_subtotal for opt in doc.order_line if opt.is_delivery == true])" t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/></td>
+                                <td class="text-right">
+                                    <span class="tr_td mx-1" style="width: 90%; display:block;border-bottom: 1px solid #808080;" t-field="doc.shipping_cost" t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+<!--                                    <span class="tr_td mx-1" style="width: 90%; display:block;border-bottom: 1px solid #808080;" t-esc="sum([opt.price_subtotal for opt in doc.order_line if opt.is_delivery == true])" t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>-->
+                                </td>
                             </tr>
                             <tr style="height:35px">
                                 <td name="td_amount_total" class="text-right">

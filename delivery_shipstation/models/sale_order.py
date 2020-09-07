@@ -42,6 +42,8 @@ class SaleOrder(models.Model):
     tag_id = fields.Many2one("order.tag", string="Order Tag")
     weight_oz = fields.Float(compute='_compute_order_weight', string='Order Weight(oz)')
     payment_received = fields.Float("Total Payment Received")
+    shipping_cost = fields.Float(string="Shipping Cost", compute='_amount_all', store=True,
+                                 help="Sum of Requested Service Charge in the sales order lines")
 
     @api.onchange('requested_service_id')
     def onchange_requested_service_id(self):
@@ -366,6 +368,25 @@ class SaleOrder(models.Model):
         self.env['sale.order.line'].search(
             [('order_id', 'in', self.ids), ('is_delivery', '=', True), ('is_service', '=', False)]).unlink()
 
+    @api.depends('order_line.price_total')
+    def _amount_all(self):
+        """
+        Compute the total amounts of the SO.
+        """
+        for order in self:
+            amount_untaxed = amount_tax = ship_cost = 0.0
+        for line in order.order_line:
+            if line.is_delivery:
+                ship_cost += line.price_subtotal or 0.0
+            else:
+                amount_untaxed += line.price_subtotal
+                amount_tax += line.price_tax
+        order.update({
+            'shipping_cost': ship_cost,
+            'amount_untaxed': amount_untaxed,
+            'amount_tax': amount_tax,
+            'amount_total': amount_untaxed + amount_tax,
+        })
 
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"

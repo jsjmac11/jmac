@@ -35,3 +35,9 @@ class ProductTemplate(models.Model):
         """
         if self.weight_oz >= 16 or self.weight_oz < 0:
             raise ValidationError(_("Please enter Weight(oz) between 0 and 15.99!"))
+
+    # @api.model
+    # def create(self, vals):
+    #     if vals['type'] == 'service' and vals['taxes_id']:
+    #         vals['taxes_id'] = False
+    #     return super(ProductTemplate, self).create(vals)

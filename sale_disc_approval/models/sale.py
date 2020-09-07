@@ -17,8 +17,9 @@ class SaleOrder(models.Model):
         for order in self:
             total = 0.0
             for line in order.order_line:
-                # why is there a discount in a field named amount_undiscounted ??
-                total += line.price_subtotal + line.price_unit * ((line.discount or 0.0) / 100.0) * line.product_uom_qty
+                if not line.is_delivery:
+                    # why is there a discount in a field named amount_undiscounted ??
+                    total += line.price_subtotal + line.price_unit * ((line.discount or 0.0) / 100.0) * line.product_uom_qty
 
             order.amount_undiscounted = total
 

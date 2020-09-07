@@ -14,48 +14,18 @@ from datetime import datetime
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    shipping_cost = fields.Float(string="Shipping Cost")
-    order_line = fields.One2many('sale.order.line', 'order_id', string='Order Lines', 
+    order_line = fields.One2many('sale.order.line', 'order_id', string='Order Lines',
         states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=False, auto_join=True,
         domain=[('line_split','=',False)])
     all_order_line = fields.One2many('sale.order.line', 'main_order_id', string='All Order Lines', 
         states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True,
         domain=[('line_split','=',True)])
 
-    @api.onchange('partner_id')
-    def onchange_partner_id(self):
-        """
-        Update the following fields when the partner is changed:
-        - Pricelist
-        - Payment terms
-        - Invoice address
-        - Delivery address
-        """
-        if not self.partner_id:
-            self.update({
-                'partner_invoice_id': False,
-                'partner_shipping_id': False,
-                'payment_term_id': False,
-                'fiscal_position_id': False,
-            })
-            return
-
-        addr = self.partner_id.address_get(['delivery', 'invoice'])
-        partner_user = self.partner_id.user_id or self.partner_id.commercial_partner_id.user_id
-        values = {
-            'pricelist_id': self.partner_id.property_product_pricelist and self.partner_id.property_product_pricelist.id or False,
-            'payment_term_id': self.partner_id.property_payment_term_id and self.partner_id.property_payment_term_id.id or False,
-            'partner_invoice_id': False,
-            'partner_shipping_id': False,
-            'user_id': partner_user.id or self.env.uid
-        }
-        if self.env['ir.config_parameter'].sudo().get_param(
-                'account.use_invoice_terms') and self.env.company.invoice_terms:
-            values['note'] = self.with_context(lang=self.partner_id.lang).env.company.invoice_terms
-
-        # Use team of salesman if any otherwise leave as-is
-        values['team_id'] = partner_user.team_id.id if partner_user and partner_user.team_id else self.team_id
-        self.update(values)
+    # @api.onchange('partner_id')
+    # def onchange_partner_id(self):
+    #     res = super(SaleOrder, self).onchange_partner_id()
+    #     self.update({'partner_invoice_id': False, 'partner_shipping_id': False, })
+    #     return res
 
     def _action_confirm(self):
         self.all_order_line._action_launch_stock_rule()
