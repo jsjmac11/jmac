@@ -61,6 +61,33 @@ class SaleOrder(models.Model):
             purchase_ids.button_confirm()
         return True
 
+    def order_process(self):
+        ctx = self._context.copy()
+        ctx.update({'default_order_id': self.id})
+        model = 'notification.message'
+        view_id = self.env.ref('sale_distributor.notification_message_form_view').id
+        wiz_name = ''
+        msg = 'Please Select Vendor for '
+        if ctx.get('ship_from_here',False):
+            wiz_name = 'Ship from here'
+            msg += 'Ship from here?'
+        elif ctx.get('add_to_buy',False):
+            wiz_name = 'Add to Buy'
+            msg += 'Add to buy'
+        elif ctx.get('dropship',False):
+            wiz_name = 'Dropship'
+            msg +=  'Dropship'
+        ctx.update({'default_message': msg})
+        return {
+            'name': (wiz_name),
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': model,
+            'view_id': view_id,
+            'target': 'new',
+            'context': ctx,
+        }
+
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'

@@ -15,6 +15,7 @@ class NotificationMessage(models.TransientModel):
     sale_line_id = fields.Many2one("sale.order.line", 'Line ID', invisible=True)
     partner_id = fields.Many2one('res.partner', 'Vendor', invisible=True)
     unit_price = fields.Float('Unit Price')
+    order_id = fields.Many2one("sale.order", 'Order ID', invisible=True)
 
     # @api.onchange('qty')
     # def onchange_qty(self):
@@ -23,16 +24,9 @@ class NotificationMessage(models.TransientModel):
 
 
     def update_quantity(self):
-        if self.qty <= 0.0:
-            raise ValidationError(_("Quantity must be greater than 0!"))
-        elif self.qty > self.remaining_qty:
-            raise ValidationError(_("Quantity must not be greater than unprocess quantity %s!" % self.remaining_qty))
         dict = {'line_split': True,
                 'vendor_id': self.partner_id.id,
-                'product_uom_qty': self.qty,
-                'parent_line_id': self.sale_line_id.id,
-                'order_id': self.sale_line_id.order_id.id if self.sale_line_id.order_id else False,
-                'vendor_price_unit': self.unit_price,
+                'order_id': self.order_id.id if self.order_id else self.sale_line_id.order_id.id,
                 }
         if self._context.get('add_to_buy'):
             route_id = self.env.ref('purchase_stock.route_warehouse0_buy').id
@@ -43,5 +37,45 @@ class NotificationMessage(models.TransientModel):
         elif self._context.get('ship_from_here'):
             dict.update({'line_type': 'stock'})
 
-        split_line_id = self.sale_line_id.copy(dict)
+        if not self.order_id:
+            if self.qty <= 0.0:
+                raise ValidationError(_("Quantity must be greater than 0!"))
+            elif self.qty > self.remaining_qty:
+                raise ValidationError(_("Quantity must not be greater than unprocess quantity %s!" % self.remaining_qty))
+            dict.update({'product_uom_qty': self.qty,
+                    'parent_line_id': self.sale_line_id.id,
+                    'vendor_price_unit': self.unit_price,
+                    })
+            split_line_id = self.sale_line_id.copy(dict)
+        else:
+            for line in self.order_id.order_line.filtered(lambda l : not l.is_delivery):
+                vendor_price_unit = 0.0
+                if self.partner_id.id == line.adi_partner_id.id:
+                    vendor_price_unit = line.adi_actual_cost
+                elif self.partner_id.id == line.nv_partner_id.id:
+                    vendor_price_unit = line.nv_actual_cost
+                elif self.partner_id.id == line.ss_partner_id.id:
+                    vendor_price_unit = line.ss_actual_cost
+                elif self.partner_id.id == line.sl_partner_id.id:
+                    vendor_price_unit = line.sl_actual_cost
+                elif self.partner_id.id == line.jne_partner_id.id:
+                    vendor_price_unit = line.jne_actual_cost
+                elif self.partner_id.id == line.bnr_partner_id.id:
+                    vendor_price_unit = line.bnr_actual_cost
+                elif self.partner_id.id == line.wr_partner_id.id:
+                    vendor_price_unit = line.wr_actual_cost
+                elif self.partner_id.id == line.dfm_partner_id.id:
+                    vendor_price_unit = line.dfm_actual_cost
+                elif self.partner_id.id == line.bks_partner_id.id:
+                    vendor_price_unit = line.bks_actual_cost
+                elif self.partner_id.id == line.partner_id.id:
+                    vendor_price_unit = line.otv_cost
+
+                dict.update({
+                    'product_uom_qty': line.product_uom_qty,
+                    'parent_line_id': line.id,
+                    'vendor_price_unit': vendor_price_unit,
+                    })
+                split_line_id = line.copy(dict)
+            self.order_id.action_confirm()
         return True

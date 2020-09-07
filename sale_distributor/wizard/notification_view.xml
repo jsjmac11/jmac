@@ -7,13 +7,17 @@
             <field name="arch" type="xml">
                 <form string="Message">
                     <group>
-                        <field name="message" nolabel="1"/>
-                        <field name="partner_id" invisible="1"/>
-                        <div>
+                        <field name="message" nolabel="1"/><br/>
+                        <div class="o_row" name="partner" attrs="{'invisible':[('order_id','=', False)]}">
+                            <label for="partner_id" attrs="{'invisible':[('order_id','=', False)]}"/>
+                            <field name="partner_id"/>
+                        </div>
+                        <div attrs="{'invisible':[('order_id','!=', False)]}">
                             <label for="qty" string="How many?"/><br/>
                             <field name="qty" nolabel="1"/>
                         </div>
                         <field name="sale_line_id" invisible="1"/>
+                        <field name="order_id" invisible="1"/>
                     </group>
                     <footer>
                         <button name="update_quantity" string="Confirm" type="object"
