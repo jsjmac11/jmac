@@ -380,7 +380,7 @@ class SaleOrder(models.Model):
                 ship_cost += line.price_subtotal or 0.0
             else:
                 amount_untaxed += line.price_subtotal
-                amount_tax += line.price_tax
+            amount_tax += line.price_tax
         order.update({
             'shipping_cost': ship_cost,
             'amount_untaxed': amount_untaxed,
