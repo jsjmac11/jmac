@@ -117,12 +117,12 @@
                     <div>
                         <label for="lowest_cost"/>
                         <field name="lowest_cost"
-                               style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
+                               style="border: 1px solid black; border-collapse: collapse; text-align:center;" readonly="1" force_save="1"/>
                     </div>
                     <div>
                         <label for="lowest_cost_source"/>
                         <field name="lowest_cost_source"
-                               style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
+                               style="border: 1px solid black; border-collapse: collapse; text-align:center;" readonly="1" force_save="1"/>
                     </div>
                     <div></div>
                     <div></div>
