@@ -21,13 +21,12 @@ class SaleOrder(models.Model):
     #     states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True,
     #     domain=[('line_split','=',True)])
 
-    split_line_ids = fields.One2many('sale.order.line', compute='_compute_attachment')
+    split_line_ids = fields.One2many('sale.order.line', compute='_compute_split_lines')
 
     @api.depends('order_line')
-    def _compute_attachment(self):
+    def _compute_split_lines(self):
         for record in self:
             record.split_line_ids = record.order_line.sale_split_lines
-            # record.move_attachment_ids = record.move_id.attachment_ids + record.statement_id.attachment_ids + record.payment_id.attachment_ids
 
 
     # @api.onchange('partner_id')
@@ -100,17 +99,19 @@ class SaleOrder(models.Model):
     def fields_view_get(self, view_id=None, view_type='tree', toolbar=False, submenu=False):
         res = super(SaleOrder, self).fields_view_get(
             view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
-        quotation_view_id = self.env.ref('sale.view_quotation_tree_with_onboarding').id
         if view_type == 'tree':
-            if view_id != quotation_view_id:
+            quotation_view_id = self.env.ref('sale.view_quotation_tree_with_onboarding').id
+            order_view_id = self.env.ref('sale.view_order_tree').id
+            if view_id == quotation_view_id:
                 action = res['toolbar']['action']
-                res['toolbar']['action'] = []
                 for rec in action:
-                    if rec['name'] in ('Create invoices'):
-                        (res['toolbar']['action']).append(rec)
-            else:
-                if res.get('toolbar'):
-                    res['toolbar']['action'] = []
+                    if rec['name'] == 'Create invoices':
+                        res['toolbar']['action'].remove(rec)
+            if view_id == order_view_id:
+                action = res['toolbar']['action']
+                for rec in action:
+                    if rec['name'] == 'Mark Quotation as Sent':
+                        res['toolbar']['action'].remove(rec)
         return res
 
 
