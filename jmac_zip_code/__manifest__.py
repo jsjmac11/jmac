@@ -11,7 +11,7 @@
     'name': "Bista Zip Code",
     'summary': """Populate city and state based on zip code.""",
     'category': 'Address',
-    'version': "13.0.1.0.1",
+    'version': "13.0.1.0.0",
     'author': 'Bista Solutions Pvt. Ltd.',
     'website': "https://www.bistasolutions.com",
     'description': """
