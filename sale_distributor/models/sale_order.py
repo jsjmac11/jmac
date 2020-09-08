@@ -96,6 +96,23 @@ class SaleOrder(models.Model):
             'context': ctx,
         }
 
+    @api.model
+    def fields_view_get(self, view_id=None, view_type='tree', toolbar=False, submenu=False):
+        res = super(SaleOrder, self).fields_view_get(
+            view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
+        quotation_view_id = self.env.ref('sale.view_quotation_tree_with_onboarding').id
+        if view_type == 'tree':
+            if view_id != quotation_view_id:
+                action = res['toolbar']['action']
+                res['toolbar']['action'] = []
+                for rec in action:
+                    if rec['name'] in ('Create invoices'):
+                        (res['toolbar']['action']).append(rec)
+            else:
+                if res.get('toolbar'):
+                    res['toolbar']['action'] = []
+        return res
+
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
