@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Inherit Search view for My Quotations and My Order Menu -->
-    <record id="update_sale_order_view_search_inherit_quotation" model="ir.ui.view">
-            <field name="name">sale.order.search.inherit.quotation</field>
-            <field name="model">sale.order</field>
-            <field name="mode">primary</field>
-            <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>
-            <field name="arch" type="xml">
-                <xpath expr="//filter[@name='my_quotation']" position="attributes">
-                    <attribute name="domain">['|', ('user_id', '=', uid), ('state', 'not in', ('sale','done','cancel'))]</attribute>
-                </xpath>
-            </field>
-    </record>
+<!--    &lt;!&ndash; Inherit Search view for My Quotations and My Order Menu &ndash;&gt;-->
+<!--    <record id="update_sale_order_view_search_inherit_quotation" model="ir.ui.view">-->
+<!--            <field name="name">sale.order.search.inherit.quotation</field>-->
+<!--            <field name="model">sale.order</field>-->
+<!--            <field name="mode">primary</field>-->
+<!--            <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//filter[@name='my_quotation']" position="attributes">-->
+<!--                    <attribute name="domain">['|', ('user_id', '=', uid), ('state', 'not in', ('sale','done','cancel'))]</attribute>-->
+<!--                </xpath>-->
+<!--            </field>-->
+<!--    </record>-->
 
     <!-- Multiple Distributor Tabs -->
     <record id="view_sale_order_form_inherit" model="ir.ui.view">

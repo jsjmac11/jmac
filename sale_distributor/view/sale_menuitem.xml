@@ -23,4 +23,14 @@
         <field name="context">{'visible_product_tmpl_id':False}</field>
     </record>
 
+    <!-- Inherit the Quotation Action and pass the domain-->
+    <record id="sale.action_quotations" model="ir.actions.act_window">
+        <field name="domain">[('state', 'not in', ('sale','done','cancel'))]</field>
+    </record>
+
+    <!-- Inherit the Order Action and pass the domain-->
+    <record id="sale.action_orders" model="ir.actions.act_window">
+        <field name="domain">[('state', 'in', ('sale','done','cancel'))]</field>
+    </record>
+
 </odoo>
