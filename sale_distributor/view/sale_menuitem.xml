@@ -24,7 +24,7 @@
     </record>
 
     <!-- Inherit the Quotation Action and pass the domain-->
-    <record id="sale.action_quotations" model="ir.actions.act_window">
+    <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
         <field name="domain">[('state', 'not in', ('sale','done','cancel'))]</field>
     </record>
 
