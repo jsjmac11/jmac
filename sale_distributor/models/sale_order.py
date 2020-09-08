@@ -17,23 +17,31 @@ class SaleOrder(models.Model):
     order_line = fields.One2many('sale.order.line', 'order_id', string='Order Lines',
         states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=False, auto_join=True,
         domain=[('line_split','=',False)])
-    all_order_line = fields.One2many('sale.order.line', 'main_order_id', string='All Order Lines', 
-        states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True,
-        domain=[('line_split','=',True)])
+    # all_order_line = fields.One2many('sale.order.line', 'main_order_id', string='Process Order Lines', 
+    #     states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True,
+    #     domain=[('line_split','=',True)])
+
+    split_line_ids = fields.One2many('sale.order.line', compute='_compute_attachment')
+
+    @api.depends('order_line')
+    def _compute_attachment(self):
+        for record in self:
+            record.split_line_ids = record.order_line.sale_split_lines
+            # record.move_attachment_ids = record.move_id.attachment_ids + record.statement_id.attachment_ids + record.payment_id.attachment_ids
+
 
     # @api.onchange('partner_id')
     # def onchange_partner_id(self):
     #     res = super(SaleOrder, self).onchange_partner_id()
-    #     self.update({'partner_invoice_id': False, 'partner_shipping_id': False, })
     #     return res
 
     def _action_confirm(self):
-        self.all_order_line._action_launch_stock_rule()
+        self.split_line_ids._action_launch_stock_rule()
         return super(SaleOrder, self)._action_confirm()
 
     def action_cancel(self):
         res = super(SaleOrder, self).action_cancel()
-        self.all_order_line.unlink()
+        self.split_line_ids.unlink()
         return res
 
     @api.model
@@ -699,6 +707,7 @@ class SaleOrderLine(models.Model):
                 'vendor_price_unit': self.vendor_price_unit
                 })
         return values
+
 
 class StockRule(models.Model):
     _inherit = 'stock.rule'
