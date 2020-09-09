@@ -32,8 +32,9 @@ class SaleOrder(models.Model):
     @api.depends('order_line')
     def _compute_is_process_qty(self):
         for order in self:
-            ordered_qty = sum(order.order_line.mapped('product_uom_qty'))
-            processed_qty = sum(order.order_line.mapped('sale_split_lines').mapped('product_uom_qty'))
+            lines = order.order_line.filtered(lambda l: not l.is_delivery)
+            ordered_qty = sum(lines.mapped('product_uom_qty'))
+            processed_qty = sum(lines.mapped('sale_split_lines').mapped('product_uom_qty'))
             if processed_qty == ordered_qty:
                 qty_all = True
             else:
