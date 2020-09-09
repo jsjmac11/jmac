@@ -22,6 +22,25 @@ class SaleOrder(models.Model):
     #     domain=[('line_split','=',True)])
 
     split_line_ids = fields.One2many('sale.order.line', compute='_compute_split_lines')
+    is_process_line = fields.Boolean(string="Is Process Qty",
+        compute='_compute_is_process_qty',
+        help='Technical field used to see if we have process qty.')
+    qty_all = fields.Boolean(string="All Qty",
+        compute='_compute_is_process_qty',
+        help='Technical field used to see if we have process qty.')
+
+    @api.depends('order_line')
+    def _compute_is_process_qty(self):
+        for order in self:
+            ordered_qty = sum(order.order_line.mapped('product_uom_qty'))
+            processed_qty = sum(order.order_line.mapped('sale_split_lines').mapped('product_uom_qty'))
+            if processed_qty == ordered_qty:
+                qty_all = True
+            else:
+                qty_all = False
+            order.is_process_line = any(order.order_line.mapped('sale_split_lines'))
+            order.qty_all = qty_all
+            
 
     @api.depends('order_line')
     def _compute_split_lines(self):
@@ -61,6 +80,8 @@ class SaleOrder(models.Model):
         return res
 
     def confirm_purchase(self):
+        # if not self.split_line_ids:
+        #     raise ValidationError(_("There is no quantity for process!"))
         self.action_confirm()
         purchase_line_data = self.env['purchase.order.line'].search([('sale_order_id', 'in', self.ids)])
         purchase_ids = purchase_line_data.mapped('order_id')
@@ -69,6 +90,8 @@ class SaleOrder(models.Model):
         return True
 
     def order_process(self):
+        # if self.split_line_ids:
+        #     raise ValidationError(_("There is no quantity for process!"))
         ctx = self._context.copy()
         ctx.update({'default_order_id': self.id})
         model = 'notification.message'
@@ -305,6 +328,8 @@ class SaleOrderLine(models.Model):
     jmac_onhand = fields.Float(string="On Hand")
     jmac_stock_ids = fields.Many2many('stock.quant', 'jmac_sol_vendor_stock_rel',
                                             'line_id', 'vendor_stock_id', string="Jmac Stock")
+    inbound_stock_lines = fields.One2many("inbound.stock", 'sale_line_id', string="Inbound Stock", readonly="1")
+
     # BKS TAB
     bks_part_number = fields.Char(string="BKS Part Number")
     bks_case_qty = fields.Float(string="BKS Case Qty")
@@ -336,7 +361,22 @@ class SaleOrderLine(models.Model):
     main_order_id = fields.Many2one('sale.order', string='Sale Order', related='parent_line_id.order_id', ondelete='cascade', index=True,
                                copy=False)
     vendor_price_unit = fields.Float(string='Vendor Unit Price', digits='Product Price')
+    # sequence_ref = fields.Char('No.', compute="_sequence_ref")
 
+
+    # @api.depends('order_id')
+    # def _sequence_ref(self):
+    #     for line in self:
+    #         no = 0
+    #         for l in line.order_id.order_line:
+    #             no += 1
+    #             # if l.parent_line_id:
+    #             #     split_no = 0.0
+    #             l.sequence_ref = no
+    #             for s in l.sale_split_lines:
+    #                 split_no = no + 0.1
+    #                 s.sequence_ref = split_no
+            # line.sequence_ref = no
     # def _prepare_procurement_group_vals(self):
     #     if self.main_order_id:
     #         return {
@@ -369,9 +409,26 @@ class SaleOrderLine(models.Model):
         if not self.product_id:
             return
         if self.product_id:
+            incoming_move_ids = self.env["stock.move"].search([('product_id', '=', self.product_id.id),
+                                             ('location_id.usage', 'not in', ('internal', 'transit')),
+                                             ('location_dest_id.usage', 'in', ('internal', 'transit')),
+                                             ('state', 'not in', ('cancel', 'done'))]).filtered(lambda mo: mo.purchase_line_id)
+            if incoming_move_ids:
+                inbound_lines = []
+                for move in incoming_move_ids:
+                    po_line = move.purchase_line_id
+                    inbound_lines.append((0, 0,{'purchase_id': po_line.order_id.id or '',
+                                               'state': po_line.order_id.state or '',
+                                               'qty_ordered': po_line.product_qty or 0.0,
+                                               'qty_committed': 0.0,
+                                               'qty_received': po_line.qty_received or 0.0,
+                                               'date_submitted': po_line.order_id.date_approve or '',
+                                               # 'sale_line_id': self.parent_line_id.id,
+                                               'po_line_id': po_line.id}))
+                self.inbound_stock_lines = inbound_lines
             # product_tmpl_id = self.product_id.product_tmpl_id
             jmac_stock_ids = self.env["stock.quant"].search([('product_id', '=', self.product_id.id),
-                ('location_id.usage', '=', 'internal')])
+                ('location_id.usage', '=', 'internal'),('quantity','!=',0.0)])
             if jmac_stock_ids:
                 self.jmac_onhand = self.product_id.qty_available
                 self.jmac_available = self.product_id.qty_available
@@ -398,7 +455,8 @@ class SaleOrderLine(models.Model):
 
                 stock_master_line_id = self.env["vendor.stock.master.line"].search(
                     [('res_partner_id', '=', self.adi_partner_id.id),
-                     ('product_id', '=', self.product_id.id)])
+                     ('product_id', '=', self.product_id.id),
+                     ('case_qty','!=',0.0)])
                 if stock_master_line_id:
                     if actual_cost:
                         vendor_cost.update({self.adi_partner_id: actual_cost})
@@ -425,7 +483,8 @@ class SaleOrderLine(models.Model):
                     self.nv_standard_cost = actual_cost or 0.0
                 stock_master_line_id = self.env["vendor.stock.master.line"].search(
                     [('res_partner_id', '=', self.nv_partner_id.id),
-                     ('product_id', '=', self.product_id.id)])
+                     ('product_id', '=', self.product_id.id),
+                     ('case_qty','!=',0.0)])
                 if stock_master_line_id:
                     if actual_cost:
                         vendor_cost.update({self.nv_partner_id: actual_cost})
@@ -452,7 +511,8 @@ class SaleOrderLine(models.Model):
                     self.sl_standard_cost = 0.0
                 stock_master_line_id = self.env["vendor.stock.master.line"].search(
                     [('res_partner_id', '=', self.sl_partner_id.id),
-                     ('product_id', '=', self.product_id.id)])
+                     ('product_id', '=', self.product_id.id),
+                     ('case_qty','!=',0.0)])
                 if stock_master_line_id:
                     if actual_cost:
                         vendor_cost.update({self.sl_partner_id: actual_cost})
@@ -478,7 +538,8 @@ class SaleOrderLine(models.Model):
                     self.ss_standard_cost = 0.0
                 stock_master_line_id = self.env["vendor.stock.master.line"].search(
                     [('res_partner_id', '=', self.ss_partner_id.id),
-                     ('product_id', '=', self.product_id.id)])
+                     ('product_id', '=', self.product_id.id),
+                     ('case_qty','!=',0.0)])
                 if stock_master_line_id:
                     if actual_cost:
                         vendor_cost.update({self.ss_partner_id: actual_cost})
@@ -504,7 +565,8 @@ class SaleOrderLine(models.Model):
                     self.jne_standard_cost = 0.0
                 stock_master_line_id = self.env["vendor.stock.master.line"].search(
                     [('res_partner_id', '=', self.jne_partner_id.id),
-                     ('product_id', '=', self.product_id.id)])
+                     ('product_id', '=', self.product_id.id),
+                     ('case_qty','!=',0.0)])
                 if stock_master_line_id:
                     if actual_cost:
                         vendor_cost.update({self.jne_partner_id: actual_cost})
@@ -532,7 +594,8 @@ class SaleOrderLine(models.Model):
                     self.bnr_standard_cost = 0.0
                 stock_master_line_id = self.env["vendor.stock.master.line"].search(
                     [('res_partner_id', '=', self.bnr_partner_id.id),
-                     ('product_id', '=', self.product_id.id)])
+                     ('product_id', '=', self.product_id.id),
+                     ('case_qty','!=',0.0)])
                 if stock_master_line_id:
                     if actual_cost:
                         vendor_cost.update({self.bnr_partner_id: actual_cost})
@@ -560,7 +623,8 @@ class SaleOrderLine(models.Model):
                     self.wr_standard_cost = 0.0
                 stock_master_line_id = self.env["vendor.stock.master.line"].search(
                     [('res_partner_id', '=', self.wr_partner_id.id),
-                     ('product_id', '=', self.product_id.id)])
+                     ('product_id', '=', self.product_id.id),
+                     ('case_qty','!=',0.0)])
                 if stock_master_line_id:
                     if actual_cost:
                         vendor_cost.update({self.wr_partner_id: actual_cost})
@@ -586,14 +650,14 @@ class SaleOrderLine(models.Model):
                     self.dfm_standard_cost = 0.0
                 stock_master_line_id = self.env["vendor.stock.master.line"].search(
                     [('res_partner_id', '=', self.dfm_partner_id.id),
-                     ('product_id', '=', self.product_id.id)])
+                     ('product_id', '=', self.product_id.id),
+                     ('case_qty','!=',0.0)])
                 if stock_master_line_id:
                     if actual_cost:
                         vendor_cost.update({self.dfm_partner_id: actual_cost})
                     self.dfm_total_stock = sum(stock_master_line_id.mapped('case_qty'))
                     self.dfm_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
             if self.bks_partner_id:
-                
                 pricelist_id = self.product_id._select_seller(
                                                 partner_id=self.bks_partner_id,
                                                 quantity=self.product_uom_qty,
@@ -613,7 +677,8 @@ class SaleOrderLine(models.Model):
                     self.bks_standard_cost = 0.0
                 stock_master_line_id = self.env["vendor.stock.master.line"].search(
                     [('res_partner_id', '=', self.bks_partner_id.id),
-                     ('product_id', '=', self.product_id.id)])
+                     ('product_id', '=', self.product_id.id),
+                     ('case_qty','!=',0.0)])
                 if stock_master_line_id:
                     if actual_cost:
                         vendor_cost.update({self.bks_partner_id: actual_cost})
@@ -722,7 +787,7 @@ class SaleOrderLine(models.Model):
         if self.route_id and self.vendor_id:
             values.update({
                 'supplier_id': self.vendor_id,
-                'vendor_price_unit': self.vendor_price_unit
+                'vendor_price_unit': self.vendor_price_unit,
                 })
         return values
 
@@ -736,3 +801,24 @@ class StockRule(models.Model):
         res = super(StockRule, self)._prepare_purchase_order_line(product_id, product_qty, product_uom, company_id, values, po)
         res['price_unit'] = values.get('vendor_price_unit', False)
         return res
+
+
+class InboundStock(models.Model):
+    _name = "inbound.stock"
+    _description = "Inbound Stock"
+
+    sale_line_id = fields.Many2one("sale.order.line", string="Inbound Stock Ref", ondelete='cascade', index=True, copy=True)
+    purchase_id = fields.Many2one("purchase.order", string="PO Number")
+    po_line_id = fields.Many2one("purchase.order.line", string="PO Line")
+    state = fields.Selection([
+        ('draft', 'RFQ'),
+        ('sent', 'RFQ Sent'),
+        ('to approve', 'To Approve'),
+        ('purchase', 'Purchase Order'),
+        ('done', 'Locked'),
+        ('cancel', 'Cancelled')
+    ], string='PO Status')
+    qty_ordered = fields.Float(string="Qty Ordered")
+    qty_committed = fields.Float(string="Qty Committed")
+    qty_received = fields.Float(string="Qty Received")
+    date_submitted = fields.Datetime(string="Date Submitted")

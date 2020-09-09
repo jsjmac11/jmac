@@ -19,18 +19,27 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//header" position="inside">
-                <button name="confirm_purchase" string="Confirm All" type="object" groups="sale_distributor.group_manager_confirm" attrs="{'invisible': [('state', 'not in', ['draft','sent'])]}"/>
-                <button name="order_process" string="Dropship" context="{'dropship':True}" type="object" attrs="{'invisible': [('state', 'not in', ['draft','sent'])]}"/>
+            <xpath expr="//header/button[@name='action_confirm'][1]" position="attributes">
+                <attribute name="attrs">{'invisible': ['|',('state', 'not in', ['sent']),('qty_all','=',False)]}</attribute>
+            </xpath>
+            <xpath expr="//header/button[@name='action_confirm'][2]" position="attributes">
+                <attribute name="attrs">{'invisible': ['|',('state', 'not in', ['draft']),('qty_all','=',False)]}</attribute>
+            </xpath>
+            <xpath expr="//header/button[@name='action_cancel']" position="before">
+                <button name="confirm_purchase" string="Confirm All" type="object" groups="sale_distributor.group_manager_confirm" attrs="{'invisible': ['|',('state', 'not in', ['draft','sent']),('qty_all','=',False)]}"/>
+                <button name="order_process" string="Dropship" context="{'dropship':True}" type="object" attrs="{'invisible': ['|',('state', 'not in', ['draft','sent']),('is_process_line','=',True)]}"/>
                 <!-- <button name="order_process" string="Add to Buy" context="{'add_to_buy':True}" type="object" attrs="{'invisible': [('state', 'not in', ['draft','sent'])]}"/> -->
-
+                <field name="is_process_line" invisible="1"/>
+                <field name="qty_all" invisible="1"/>
             </xpath>
 
              <xpath expr="//field[@name='note']" position="before">
                 <group string="Process Qty" name="process_qty" colspan="4">
                     <!--<separator string="Process Qty"/>-->
+
                     <field name="split_line_ids" readonly="1" nolabel="1" options="{'post_refresh': 'always'}">
                         <tree>
+                            <!-- <field name="sequence_ref"/> -->
                             <field name="product_id"/>
                             <field name="name" invisible="1"/>
                             <field name="vendor_id" string="Vendor"/>
@@ -41,6 +50,7 @@
                         </tree>
                         <form>
                             <group>
+                                <!-- <field name="sequence_ref"/> -->
                                 <field name="product_id"/>
                                 <field name="name" invisible="1"/>
                                 <field name="vendor_id" string="Vendor"/>
@@ -53,6 +63,10 @@
                     </field>
                 </group>
             </xpath>
+            <!-- <xpath expr="//field[@name='order_line']/tree/field[@name='product_id']"
+                   position="before">
+                <field name="sequence_ref"/>
+            </xpath> -->
             <xpath expr="//page[@name='other_information']/group/group[@name='sale_shipping']" position="replace">
             </xpath>
             <xpath expr="//field[@name='partner_invoice_id']" position="attributes">
@@ -518,14 +532,47 @@
                             <div></div>
                             <div></div>
                         </div>
-                        <group>
-                            <field name="jmac_stock_ids" readonly="1" force_save="1" nolabel="1" class="oe_inline">
-                                <tree>
-                                    <field name="location_id"/>
-                                    <field name="quantity"/>
-                                </tree>
-                            </field>
-                        </group>
+
+                        <notebook>
+                            <page name="inventory_log" string="Inventory Log">
+                                <field name="jmac_stock_ids" readonly="1" force_save="1" nolabel="1" class="oe_inline">
+                                    <tree>
+                                        <field name="location_id"/>
+                                        <field name="quantity"/>
+                                    </tree>
+                                    <form>
+                                        <group>
+                                            <field name="location_id"/>
+                                            <field name="quantity"/>
+                                        </group>
+                                    </form>
+                                </field>
+                            </page>
+                            <page name="inbound_stock" string="Inbound Stock">
+                                <field name="inbound_stock_lines" readonly="1" force_save="1" nolabel="1">
+                                    <tree>
+                                        <field name="purchase_id"/>
+                                        <field name="state"/>
+                                        <field name="qty_ordered"/>
+                                        <field name="qty_committed"/>
+                                        <field name="qty_received"/>
+                                        <field name="date_submitted"/>
+                                        <field name="po_line_id" invisible="1"/>
+                                    </tree>
+                                    <form>
+                                        <group>
+                                            <field name="purchase_id"/>
+                                            <field name="state"/>
+                                            <field name="qty_ordered"/>
+                                            <field name="qty_committed"/>
+                                            <field name="qty_received"/>
+                                            <field name="date_submitted"/>
+                                            <field name="po_line_id" invisible="1"/>
+                                        </group>
+                                    </form>
+                                </field>
+                            </page>
+                        </notebook>
                         <div class="o_row">
                             <button name="split_line" context="{'ship_from_here':True}" type="object" class="oe_highlight" string="Ship from Here"/>
                             <button name="allocate" type="object" class="oe_highlight" string="Allocate"/>
@@ -601,7 +648,7 @@
                             <field name="vendor_price_unit" string="Vendor Price"/>
                             <field name="product_uom_qty"/>
                         </tree>
-                        <form>
+                        <form create="0" edit="0">
                             <group>
                                 <field name="name" invisible="1"/>
                                 <field name="vendor_id" string="Vendor"/>

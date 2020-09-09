@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_vendor_stock_master_line,vendor.stock.master.line,model_vendor_stock_master_line,,1,1,1,1
+access_inbound_stock,inbound.stock,model_inbound_stock,,1,1,1,1
