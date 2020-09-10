@@ -9,7 +9,7 @@
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from datetime import datetime
-
+import string
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -63,26 +63,38 @@ class SaleOrder(models.Model):
         self.split_line_ids.unlink()
         return res
 
+    def _genrate_line_sequence(self):
+        no = 1
+        for l in self.order_line:
+            l.sequence_ref = no
+            count = 0
+            for sl in l.sale_split_lines:
+                res = string.ascii_uppercase[count]
+                sl.sequence_ref = str(no) + res
+                count +=1
+            no += 1
+        return True
+
     @api.model
     def create(self, vals):
         res = super(SaleOrder, self).create(vals)
-        if res.order_line:
+        if vals.get('order_line'):
             child_lines = res.mapped('order_line').mapped('sale_split_lines').filtered(lambda cl: not cl.order_id)
             if child_lines:
                 child_lines.update({'order_id':res.id})
+            res._genrate_line_sequence()     
         return res
 
     def write(self, values):
         res = super(SaleOrder, self).write(values)
-        if self.order_line:
+        if values.get('order_line'):
             child_lines = self.mapped('order_line').mapped('sale_split_lines').filtered(lambda cl: not cl.order_id)
             if child_lines:
                 child_lines.update({'order_id':self.id})
+            self._genrate_line_sequence()
         return res
 
     def confirm_purchase(self):
-        # if not self.split_line_ids:
-        #     raise ValidationError(_("There is no quantity for process!"))
         self.action_confirm()
         purchase_line_data = self.env['purchase.order.line'].search([('sale_order_id', 'in', self.ids)])
         purchase_ids = purchase_line_data.mapped('order_id')
@@ -91,8 +103,6 @@ class SaleOrder(models.Model):
         return True
 
     def order_process(self):
-        # if self.split_line_ids:
-        #     raise ValidationError(_("There is no quantity for process!"))
         ctx = self._context.copy()
         ctx.update({'default_order_id': self.id})
         model = 'notification.message'
@@ -141,6 +151,7 @@ class SaleOrder(models.Model):
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
+    _order = 'order_id, id, sequence_ref'
 
     @api.model
     def default_get(self, fields):
@@ -167,11 +178,8 @@ class SaleOrderLine(models.Model):
         })
         return result
 
-    # def _default_adi_vendor_id(self):
-    #     return self.env.ref('sale_distributor.res_partner_adi_address')
-
     order_id = fields.Many2one('sale.order', string='Order Reference', required=False, ondelete='cascade', index=True,
-                               copy=True)
+                               copy=False)
     phone_number = fields.Char(string="Phone Number")
     dropship_selection = fields.Selection([('Yes', 'Yes'), ('No', 'No')], string='Dropships')
     dropship_fee = fields.Float(string="Dropship Fee")
@@ -355,43 +363,14 @@ class SaleOrderLine(models.Model):
     # Splited Line check
     line_split = fields.Boolean('Split')
     parent_line_id = fields.Many2one('sale.order.line', string="Parent Line")
-    sale_split_lines = fields.One2many("sale.order.line", 'parent_line_id', string="Process Qty")
+    sale_split_lines = fields.One2many("sale.order.line", 'parent_line_id', string="Process Qty",  ondelete='cascade')
     vendor_id = fields.Many2one('res.partner', string='Line Vendor')
     vendor_unit_price= fields
     line_type = fields.Selection([('buy','Buy'),('dropship','Dropship'),('stock','Stock')])
     main_order_id = fields.Many2one('sale.order', string='Sale Order', related='parent_line_id.order_id', ondelete='cascade', index=True,
                                copy=False)
     vendor_price_unit = fields.Float(string='Vendor Unit Price', digits='Product Price')
-    # sequence_ref = fields.Char('No.', compute="_sequence_ref")
-
-
-    # @api.depends('order_id')
-    # def _sequence_ref(self):
-    #     for line in self:
-    #         no = 0
-    #         for l in line.order_id.order_line:
-    #             no += 1
-    #             # if l.parent_line_id:
-    #             #     split_no = 0.0
-    #             l.sequence_ref = no
-    #             for s in l.sale_split_lines:
-    #                 split_no = no + 0.1
-    #                 s.sequence_ref = split_no
-            # line.sequence_ref = no
-    # def _prepare_procurement_group_vals(self):
-    #     if self.main_order_id:
-    #         return {
-    #             'name': self.main_order_id.name,
-    #             'move_type': self.main_order_id.picking_policy,
-    #             'sale_id': self.main_order_id.id,
-    #             'partner_id': self.main_order_id.partner_shipping_id.id,
-    #         }
-    #     return {
-    #         'name': self.order_id.name,
-    #         'move_type': self.order_id.picking_policy,
-    #         'sale_id': self.order_id.id,
-    #         'partner_id': self.order_id.partner_shipping_id.id,
-    #     }
+    sequence_ref = fields.Char('No.')
 
     def _action_launch_stock_rule(self, previous_product_uom_qty=False):
         """

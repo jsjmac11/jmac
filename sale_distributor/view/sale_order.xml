@@ -39,7 +39,7 @@
 
                     <field name="split_line_ids" readonly="1" nolabel="1" options="{'post_refresh': 'always'}">
                         <tree>
-                            <!-- <field name="sequence_ref"/> -->
+                            <field name="sequence_ref"/>
                             <field name="product_id"/>
                             <field name="name" invisible="1"/>
                             <field name="vendor_id" string="Vendor"/>
@@ -50,7 +50,7 @@
                         </tree>
                         <form>
                             <group>
-                                <!-- <field name="sequence_ref"/> -->
+                                <field name="sequence_ref"/>
                                 <field name="product_id"/>
                                 <field name="name" invisible="1"/>
                                 <field name="vendor_id" string="Vendor"/>
@@ -63,10 +63,10 @@
                     </field>
                 </group>
             </xpath>
-            <!-- <xpath expr="//field[@name='order_line']/tree/field[@name='product_id']"
+            <xpath expr="//field[@name='order_line']/tree/field[@name='product_id']"
                    position="before">
                 <field name="sequence_ref"/>
-            </xpath> -->
+            </xpath>
             <xpath expr="//page[@name='other_information']/group/group[@name='sale_shipping']" position="replace">
             </xpath>
             <xpath expr="//field[@name='partner_invoice_id']" position="attributes">
@@ -136,14 +136,13 @@
                     <div>
                         <label for="lowest_cost_source"/>
                         <field name="lowest_cost_source"
-                               style="border: 1px solid black; border-collapse: collapse; text-align:center;" readonly="1" force_save="1"/>
+                        style="border: 1px solid black; border-collapse: collapse; text-align:center;" readonly="1" force_save="1"/>
                     </div>
-                    <div></div>
-                    <div></div>
-                    <div>
+                    <div style="margin-left:300px;">
                         <label for="total_stock"/>
                         <field name="total_stock"
-                               style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
+                        style="border: 1px solid black; border-collapse: collapse; text-align:center;"
+                        readonly="1" force_save="1"/>
                     </div>
                 </div>
                 <notebook attrs="{'invisible': [('display_type', '!=', False)]}">
@@ -641,6 +640,7 @@
                 <div class="o_row">
                     <field name="sale_split_lines" attrs="{'invisible': [('display_type', '!=', False)]}">
                         <tree create="0" edit="0">
+                            <field name="sequence_ref" invisible="1"/>
                             <field name="name" invisible="1"/>
                             <field name="vendor_id" string="Vendor"/>
                             <field name="line_type" string="Type"/>
@@ -650,6 +650,7 @@
                         </tree>
                         <form create="0" edit="0">
                             <group>
+                                <field name="sequence_ref" invisible="1"/>
                                 <field name="name" invisible="1"/>
                                 <field name="vendor_id" string="Vendor"/>
                                 <field name="line_type" string="Type"/>

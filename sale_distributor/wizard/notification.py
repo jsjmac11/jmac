@@ -17,16 +17,11 @@ class NotificationMessage(models.TransientModel):
     unit_price = fields.Float('Unit Price')
     order_id = fields.Many2one("sale.order", 'Order ID', invisible=True)
 
-    # @api.onchange('qty')
-    # def onchange_qty(self):
-    #     if self.qty <= 0.0:
-    #         raise ValidationError(_("Quantities must be greater than 0!"))
-
-
     def update_quantity(self):
         dict = {'line_split': True,
                 'vendor_id': self.partner_id.id,
                 'order_id': self.order_id.id if self.order_id else self.sale_line_id.order_id.id,
+                'sequence_ref': ''
                 }
         if self._context.get('add_to_buy'):
             route_id = self.env.ref('purchase_stock.route_warehouse0_buy').id
@@ -47,6 +42,7 @@ class NotificationMessage(models.TransientModel):
                     'vendor_price_unit': self.unit_price,
                     })
             split_line_id = self.sale_line_id.copy(dict)
+            split_line_id.order_id._genrate_line_sequence()
         else:
             for line in self.order_id.order_line.filtered(lambda l : not l.is_delivery):
                 vendor_price_unit = 0.0
@@ -77,5 +73,6 @@ class NotificationMessage(models.TransientModel):
                     'vendor_price_unit': vendor_price_unit,
                     })
                 split_line_id = line.copy(dict)
+            self.order_id._genrate_line_sequence()
             self.order_id.action_confirm()
         return True
