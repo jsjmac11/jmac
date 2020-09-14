@@ -26,9 +26,18 @@ class ResPartner(models.Model):
                                                    access_rights_uid=access_rights_uid)
 
     def name_get(self):
+        """
+        Overriding the name_get function from res.partner so that the "invoice address" 
+        and "shipping address" fields on the quotes form display the full address, not 
+        the standard contact name. Requires that the contact type be set as 'delivery' 
+        or 'invoice'.
+        """
         result = []
         for s in self:
-            if s.sequence_name:
+            if s.type in ["delivery", "invoice"]:
+                name = s.street + ", " + s.city + ", " + s.state_id.code + " " + s.zip
+                result.append((s.id, name))
+            elif s.sequence_name:
                 name = '[' + str(s.sequence_name) + '] ' + str(s.name)
                 result.append((s.id, name))
             else:
