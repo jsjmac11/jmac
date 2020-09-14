@@ -26,7 +26,9 @@
                 <attribute name="attrs">{'invisible': ['|',('state', 'not in', ['draft']),('qty_all','=',False)]}</attribute>
             </xpath>
             <xpath expr="//header/button[@name='action_cancel']" position="before">
-                <button name="confirm_purchase" string="Confirm All" type="object" groups="sale_distributor.group_manager_confirm" attrs="{'invisible': ['|',('state', 'not in', ['draft','sent']),('qty_all','=',False)]}"/>
+                <button name="confirm_purchase" string="Confirm All" type="object" 
+                        groups="sale_distributor.group_manager_confirm" 
+                        attrs="{'invisible': ['|',('state', 'not in', ['draft','sent']),('qty_all','=',False)]}"/>
                 <button name="order_process" string="Dropship" context="{'dropship':True}" type="object" attrs="{'invisible': ['|',('state', 'not in', ['draft','sent']),('is_process_line','=',True)]}"/>
                 <!-- <button name="order_process" string="Add to Buy" context="{'add_to_buy':True}" type="object" attrs="{'invisible': [('state', 'not in', ['draft','sent'])]}"/> -->
                 <field name="is_process_line" invisible="1"/>
