@@ -29,7 +29,7 @@ class SaleOrder(models.Model):
         compute='_compute_is_process_qty',
         help='Technical field used to see if we have process qty.')
 
-    @api.depends('order_line')
+    @api.depends('order_line','order_line.sale_split_lines')
     def _compute_is_process_qty(self):
         for order in self:
             lines = order.order_line.filtered(lambda l: not l.is_delivery)
@@ -378,8 +378,9 @@ class SaleOrderLine(models.Model):
         sale order line. procurement group will launch '_run_pull', '_run_buy' or '_run_manufacture'
         depending on the sale order line product rule.
         """
-        if not self.parent_line_id:
-            return True
+        for line in self:
+            if not line.parent_line_id:
+                return True
         return super(SaleOrderLine, self)._action_launch_stock_rule()
 
     @api.model
