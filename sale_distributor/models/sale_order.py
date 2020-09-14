@@ -382,6 +382,18 @@ class SaleOrderLine(models.Model):
             return True
         return super(SaleOrderLine, self)._action_launch_stock_rule()
 
+    @api.model
+    def create(self, vals):
+        res = super(SaleOrderLine, self).create(vals)
+        if vals.get('is_delivery'):
+            res.order_id._genrate_line_sequence()     
+        return res
+
+    def write(self, values):
+        res = super(SaleOrderLine, self).write(values)
+        if values.get('is_delivery'):
+            self.order_id._genrate_line_sequence()
+        return res
 
     @api.onchange('product_id')
     def onchange_product_id(self):
@@ -764,7 +776,7 @@ class SaleOrderLine(models.Model):
         """
         values = super(SaleOrderLine, self)._prepare_procurement_values(group_id)
         self.ensure_one()
-        if self.route_id and self.vendor_id:
+        if self.split_line and self.route_id and self.vendor_id:
             values.update({
                 'supplier_id': self.vendor_id,
                 'vendor_price_unit': self.vendor_price_unit,
