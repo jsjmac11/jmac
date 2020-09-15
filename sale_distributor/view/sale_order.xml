@@ -30,7 +30,7 @@
                         groups="sale_distributor.group_manager_confirm" 
                         attrs="{'invisible': ['|',('state', 'not in', ['draft','sent']),('qty_all','=',False)]}"/>
                 <button name="order_process" string="Dropship" context="{'dropship':True}" type="object" attrs="{'invisible': ['|',('state', 'not in', ['draft','sent']),('is_process_line','=',True)]}"/>
-                <!-- <button name="order_process" string="Add to Buy" context="{'add_to_buy':True}" type="object" attrs="{'invisible': [('state', 'not in', ['draft','sent'])]}"/> -->
+                <button name="order_process" string="Add to Buy" context="{'add_to_buy':True}" type="object" attrs="{'invisible': ['|',('state', 'not in', ['draft','sent']),('is_process_line','=',True)]}"/>
                 <field name="is_process_line" invisible="1"/>
                 <field name="qty_all" invisible="1"/>
             </xpath>
