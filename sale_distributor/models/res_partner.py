@@ -35,7 +35,11 @@ class ResPartner(models.Model):
         result = []
         for s in self:
             if s.type in ["delivery", "invoice"]:
-                name = s.street + ", " + s.city + ", " + s.state_id.code + " " + s.zip
+                street = str(s.street) + ", " if s.street else "" 
+                city = str(s.city) + ", " if s.city else ""
+                state = str(s.state_id.code) + " " if s.state_id else ""
+                zip = str(s.zip) if s.zip else ""
+                name = street + city + state + zip
                 result.append((s.id, name))
             elif s.sequence_name:
                 name = '[' + str(s.sequence_name) + '] ' + str(s.name)
