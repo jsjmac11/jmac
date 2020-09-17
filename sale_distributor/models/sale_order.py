@@ -193,12 +193,12 @@ class SaleOrderLine(models.Model):
     list_price = fields.Float(string="List Price")
     lowest_cost = fields.Float(string="Lowest Cost")
     lowest_cost_source = fields.Char(string="Lowest Cost Source")
-    total_stock = fields.Float(string="Total Stock")
+    total_stock = fields.Float(string="Total Stock", digits='Product Unit of Measure')
 
     # ADI TAB
     adi_part_number = fields.Char(string="ADI Part Number")
-    adi_case_qty = fields.Float(string="ADI Case Qty")
-    adi_mo_qty = fields.Float(string="ADI MOQ")
+    adi_case_qty = fields.Float(string="ADI Case Qty", digits='Product Unit of Measure')
+    adi_mo_qty = fields.Float(string="ADI MOQ", digits='Product Unit of Measure')
     adi_sale_exp_date = fields.Date(string="ADI Sale Exp Date")
     adi_note = fields.Text(string="ADI Description")
     adi_actual_cost = fields.Float(string="ADI Actual Cost")
@@ -206,7 +206,7 @@ class SaleOrderLine(models.Model):
     adi_price_match = fields.Float(string="ADI Price Match")
     adi_coded_price_flag = fields.Float(string="ADI Coded Price Flag")
     adi_sale_cost = fields.Float(string="ADI Sale Cost")
-    adi_total_stock = fields.Float(string="ADI Total Stock")
+    adi_total_stock = fields.Float(string="ADI Total Stock", digits='Product Unit of Measure')
     adi_cost_last_updated = fields.Datetime(string="ADI Cost Last Updated")
     adi_stock_last_updated = fields.Datetime(string="ADI Stock Last Updated")
     adi_partner_id = fields.Many2one('res.partner', string='ADI Vendor')
@@ -214,8 +214,8 @@ class SaleOrderLine(models.Model):
                                             'line_id', 'vendor_stock_id', string="ADI Stock")
     # NV TAB
     nv_part_number = fields.Char(string="NV Part Number")
-    nv_case_qty = fields.Float(string="NV Case Qty")
-    nv_mo_qty = fields.Float(string="NV MOQ")
+    nv_case_qty = fields.Float(string="NV Case Qty", digits='Product Unit of Measure')
+    nv_mo_qty = fields.Float(string="NV MOQ", digits='Product Unit of Measure')
     nv_sale_exp_date = fields.Date(string="NV Sale Exp Date")
     nv_note = fields.Text(string="NV Description")
     nv_actual_cost = fields.Float(string="NV Actual Cost")
@@ -223,7 +223,7 @@ class SaleOrderLine(models.Model):
     nv_price_match = fields.Float(string="NV Price Match")
     nv_coded_price_flag = fields.Float(string="NV Coded Price Flag")
     nv_sale_cost = fields.Float(string="NV Sale Cost")
-    nv_total_stock = fields.Float(string="NV Total Stock")
+    nv_total_stock = fields.Float(string="NV Total Stock", digits='Product Unit of Measure')
     nv_cost_last_updated = fields.Datetime(string="NV Cost Last Updated")
     nv_stock_last_updated = fields.Datetime(string="NV Stock Last Updated")
     nv_partner_id = fields.Many2one('res.partner', string='NV Vendor')
@@ -231,8 +231,8 @@ class SaleOrderLine(models.Model):
                                             'line_id', 'vendor_stock_id', string="NV Stock")
     # SL TAB
     sl_part_number = fields.Char(string="SL Part Number")
-    sl_case_qty = fields.Float(string="SL Case Qty")
-    sl_mo_qty = fields.Float(string="SL MOQ")
+    sl_case_qty = fields.Float(string="SL Case Qty", digits='Product Unit of Measure')
+    sl_mo_qty = fields.Float(string="SL MOQ", digits='Product Unit of Measure')
     sl_sale_exp_date = fields.Date(string="SL Sale Exp Date")
     sl_note = fields.Text(string="SL Description")
     sl_actual_cost = fields.Float(string="SL Actual Cost")
@@ -240,7 +240,7 @@ class SaleOrderLine(models.Model):
     sl_price_match = fields.Float(string="SL Price Match")
     sl_coded_price_flag = fields.Float(string="SL Coded Price Flag")
     sl_sale_cost = fields.Float(string="SL Sale Cost")
-    sl_total_stock = fields.Float(string="SL Total Stock")
+    sl_total_stock = fields.Float(string="SL Total Stock", digits='Product Unit of Measure')
     sl_cost_last_updated = fields.Datetime(string="SL Cost Last Updated")
     sl_stock_last_updated = fields.Datetime(string="SL Stock Last Updated")
     sl_partner_id = fields.Many2one('res.partner', string='SL Vendor')
@@ -248,8 +248,8 @@ class SaleOrderLine(models.Model):
                                             'line_id', 'vendor_stock_id', string="SL Stock")
     # SS TAB
     ss_part_number = fields.Char(string="SS Part Number")
-    ss_case_qty = fields.Float(string="SS Case Qty")
-    ss_mo_qty = fields.Float(string="SS MOQ")
+    ss_case_qty = fields.Float(string="SS Case Qty", digits='Product Unit of Measure')
+    ss_mo_qty = fields.Float(string="SS MOQ", digits='Product Unit of Measure')
     ss_sale_exp_date = fields.Date(string="SS Sale Exp Date")
     ss_note = fields.Text(string="SS Description")
     ss_actual_cost = fields.Float(string="SS Actual Cost")
@@ -257,7 +257,7 @@ class SaleOrderLine(models.Model):
     ss_price_match = fields.Float(string="SS Price Match")
     ss_coded_price_flag = fields.Float(string="SS Coded Price Flag")
     ss_sale_cost = fields.Float(string="SS Sale Cost")
-    ss_total_stock = fields.Float(string="SS Total Stock")
+    ss_total_stock = fields.Float(string="SS Total Stock", digits='Product Unit of Measure')
     ss_cost_last_updated = fields.Datetime(string="SS Cost Last Updated")
     ss_stock_last_updated = fields.Datetime(string="SS Stock Last Updated")
     ss_partner_id = fields.Many2one('res.partner', string='SS Vendor')
@@ -265,8 +265,8 @@ class SaleOrderLine(models.Model):
                                             'line_id', 'vendor_stock_id', string="SS Stock")
     # JNE TAB
     jne_part_number = fields.Char(string="JNE Part Number")
-    jne_case_qty = fields.Float(string="JNE Case Qty")
-    jne_mo_qty = fields.Float(string="JNE MOQ")
+    jne_case_qty = fields.Float(string="JNE Case Qty", digits='Product Unit of Measure')
+    jne_mo_qty = fields.Float(string="JNE MOQ", digits='Product Unit of Measure')
     jne_sale_exp_date = fields.Date(string="JNE Sale Exp Date")
     jne_note = fields.Text(string="JNE Description")
     jne_actual_cost = fields.Float(string="JNE Actual Cost")
@@ -274,7 +274,7 @@ class SaleOrderLine(models.Model):
     jne_price_match = fields.Float(string="JNE Price Match")
     jne_coded_price_flag = fields.Float(string="JNE Coded Price Flag")
     jne_sale_cost = fields.Float(string="JNE Sale Cost")
-    jne_total_stock = fields.Float(string="JNE Total Stock")
+    jne_total_stock = fields.Float(string="JNE Total Stock", digits='Product Unit of Measure')
     jne_cost_last_updated = fields.Datetime(string="JNE Cost Last Updated")
     jne_stock_last_updated = fields.Datetime(string="JNE Stock Last Updated")
     jne_partner_id = fields.Many2one('res.partner', string='JNE Vendor')
@@ -282,8 +282,8 @@ class SaleOrderLine(models.Model):
                                             'line_id', 'vendor_stock_id', string="JNE Stock")
     # BNR TAB
     bnr_part_number = fields.Char(string="BNR Part Number")
-    bnr_case_qty = fields.Float(string="BNR Case Qty")
-    bnr_mo_qty = fields.Float(string="BNR MOQ")
+    bnr_case_qty = fields.Float(string="BNR Case Qty", digits='Product Unit of Measure')
+    bnr_mo_qty = fields.Float(string="BNR MOQ", digits='Product Unit of Measure')
     bnr_sale_exp_date = fields.Date(string="BNR Sale Exp Date")
     bnr_note = fields.Text(string="BNR Description")
     bnr_actual_cost = fields.Float(string="BNR Actual Cost")
@@ -291,7 +291,7 @@ class SaleOrderLine(models.Model):
     bnr_price_match = fields.Float(string="BNR Price Match")
     bnr_coded_price_flag = fields.Float(string="BNR Coded Price Flag")
     bnr_sale_cost = fields.Float(string="BNR Sale Cost")
-    bnr_total_stock = fields.Float(string="BNR Total Stock")
+    bnr_total_stock = fields.Float(string="BNR Total Stock", digits='Product Unit of Measure')
     bnr_cost_last_updated = fields.Datetime(string="BNR Cost Last Updated")
     bnr_stock_last_updated = fields.Datetime(string="BNR Stock Last Updated")
     bnr_partner_id = fields.Many2one('res.partner', string='BNR Vendor')
@@ -299,8 +299,8 @@ class SaleOrderLine(models.Model):
                                             'line_id', 'vendor_stock_id', string="BNR Stock")
     # WR TAB
     wr_part_number = fields.Char(string="WR Part Number")
-    wr_case_qty = fields.Float(string="WR Case Qty")
-    wr_mo_qty = fields.Float(string="WR MOQ")
+    wr_case_qty = fields.Float(string="WR Case Qty", digits='Product Unit of Measure')
+    wr_mo_qty = fields.Float(string="WR MOQ", digits='Product Unit of Measure')
     wr_sale_exp_date = fields.Date(string="WR Sale Exp Date")
     wr_note = fields.Text(string="WR Description")
     wr_actual_cost = fields.Float(string="WR Actual Cost")
@@ -308,7 +308,7 @@ class SaleOrderLine(models.Model):
     wr_price_match = fields.Float(string="WR Price Match")
     wr_coded_price_flag = fields.Float(string="WR Coded Price Flag")
     wr_sale_cost = fields.Float(string="WR Sale Cost")
-    wr_total_stock = fields.Float(string="WR Total Stock")
+    wr_total_stock = fields.Float(string="WR Total Stock", digits='Product Unit of Measure')
     wr_cost_last_updated = fields.Datetime(string="WR Cost Last Updated")
     wr_stock_last_updated = fields.Datetime(string="WR Stock Last Updated")
     wr_partner_id = fields.Many2one('res.partner', string='WR Vendor')
@@ -316,8 +316,8 @@ class SaleOrderLine(models.Model):
                                             'line_id', 'vendor_stock_id', string="WR Stock")
     # DFM TAB
     dfm_part_number = fields.Char(string="DFM Part Number")
-    dfm_case_qty = fields.Float(string="DFM Case Qty")
-    dfm_mo_qty = fields.Float(string="DFM MOQ")
+    dfm_case_qty = fields.Float(string="DFM Case Qty", digits='Product Unit of Measure')
+    dfm_mo_qty = fields.Float(string="DFM MOQ", digits='Product Unit of Measure')
     dfm_sale_exp_date = fields.Date(string="DFM Sale Exp Date")
     dfm_note = fields.Text(string="DFM Description")
     dfm_actual_cost = fields.Float(string="DFM Actual Cost")
@@ -325,24 +325,24 @@ class SaleOrderLine(models.Model):
     dfm_price_match = fields.Float(string="DFM Price Match")
     dfm_coded_price_flag = fields.Float(string="DFM Coded Price Flag")
     dfm_sale_cost = fields.Float(string="DFM Sale Cost")
-    dfm_total_stock = fields.Float(string="DFM Total Stock")
+    dfm_total_stock = fields.Float(string="DFM Total Stock", digits='Product Unit of Measure')
     dfm_cost_last_updated = fields.Datetime(string="DFM Cost Last Updated")
     dfm_stock_last_updated = fields.Datetime(string="DFM Stock Last Updated")
     dfm_partner_id = fields.Many2one('res.partner', string='DFM Vendor')
     dfm_vendor_stock_ids = fields.Many2many('vendor.stock.master.line', 'dfm_sol_vendor_stock_rel',
                                             'line_id', 'vendor_stock_id', string="DFM Stock")
     # JMAC TAB
-    jmac_allocated = fields.Float(string="Allocated")
-    jmac_available = fields.Float(string="Available")
-    jmac_onhand = fields.Float(string="On Hand")
+    jmac_allocated = fields.Float(string="Allocated", digits='Product Unit of Measure')
+    jmac_available = fields.Float(string="Available", digits='Product Unit of Measure')
+    jmac_onhand = fields.Float(string="On Hand", digits='Product Unit of Measure')
     jmac_stock_ids = fields.Many2many('stock.quant', 'jmac_sol_vendor_stock_rel',
                                             'line_id', 'vendor_stock_id', string="Jmac Stock")
     inbound_stock_lines = fields.One2many("inbound.stock", 'sale_line_id', string="Inbound Stock", readonly="1")
 
     # BKS TAB
     bks_part_number = fields.Char(string="BKS Part Number")
-    bks_case_qty = fields.Float(string="BKS Case Qty")
-    bks_mo_qty = fields.Float(string="BKS MOQ")
+    bks_case_qty = fields.Float(string="BKS Case Qty", digits='Product Unit of Measure')
+    bks_mo_qty = fields.Float(string="BKS MOQ", digits='Product Unit of Measure')
     bks_sale_exp_date = fields.Date(string="BKS Sale Exp Date")
     bks_note = fields.Text(string="BKS Description")
     bks_actual_cost = fields.Float(string="BKS Actual Cost")
@@ -350,7 +350,7 @@ class SaleOrderLine(models.Model):
     bks_price_match = fields.Float(string="BKS Price Match")
     bks_coded_price_flag = fields.Float(string="BKS Coded Price Flag")
     bks_sale_cost = fields.Float(string="BKS Sale Cost")
-    bks_total_stock = fields.Float(string="BKS Total Stock")
+    bks_total_stock = fields.Float(string="BKS Total Stock", digits='Product Unit of Measure')
     bks_cost_last_updated = fields.Datetime(string="BKS Cost Last Updated")
     bks_stock_last_updated = fields.Datetime(string="BKS Stock Last Updated")
     bks_partner_id = fields.Many2one('res.partner', string='BKS Vendor')
@@ -397,10 +397,36 @@ class SaleOrderLine(models.Model):
         return res
 
     @api.onchange('product_id')
-    def onchange_product_id(self):
+    def product_id_change(self):
         vendor_cost = {}
-        if not self.product_id:
-            return
+        all_total_stock = 0.0
+        # if not self.product_id:
+        self.lowest_cost_source = ''
+        self.adi_part_number = self.nv_part_number = self.jne_part_number = ''
+        self.sl_part_number = self.ss_part_number = self.bnr_part_number = ''
+        self.wr_part_number = self.dfm_part_number = self.bks_part_number = ''
+        self.lowest_cost = self.jmac_onhand  = self.jmac_available = 0.0
+        self.adi_case_qty = self.adi_actual_cost = self.adi_standard_cost = 0.0
+        self.nv_case_qty = self.nv_actual_cost = self.nv_standard_cost = 0.0
+        self.jne_case_qty = self.jne_actual_cost = self.jne_standard_cost = 0.0
+        self.sl_case_qty = self.sl_actual_cost = self.sl_standard_cost = 0.0
+        self.ss_case_qty = self.ss_actual_cost = self.ss_standard_cost = 0.0
+        self.bnr_case_qty = self.bnr_actual_cost = self.bnr_standard_cost = 0.0
+        self.wr_case_qty = self.wr_actual_cost = self.wr_standard_cost = 0.0
+        self.dfm_case_qty = self.dfm_actual_cost = self.dfm_standard_cost = 0.0
+        self.bks_case_qty = self.bks_actual_cost = self.bks_standard_cost = 0.0
+        self.adi_sale_exp_date = self.nv_sale_exp_date = self.jne_sale_exp_date = False
+        self.sl_sale_exp_date = self.ss_sale_exp_date = self.bnr_sale_exp_date = False
+        self.wr_sale_exp_date = self.dfm_sale_exp_date = self.bks_sale_exp_date = False
+        self.jmac_stock_ids = self.inbound_stock_lines = self.adi_vendor_stock_ids = [(6,0,[])]
+        self.nv_vendor_stock_ids = self.jne_vendor_stock_ids = self.sl_vendor_stock_ids = [(6,0,[])]
+        self.ss_vendor_stock_ids = self.bnr_vendor_stock_ids = self.wr_vendor_stock_ids = [(6,0,[])]
+        self.dfm_vendor_stock_ids = self.bks_vendor_stock_ids = [(6,0,[])]
+        self.adi_total_stock = self.nv_total_stock = self.jne_total_stock = self.sl_total_stock = 0.0
+        self.ss_total_stock = self.bnr_total_stock = self.wr_total_stock = self.dfm_total_stock = self.bks_total_stock = 0.0
+        self.sale_split_lines = [(6,0,[])]
+        result = super(SaleOrderLine, self).product_id_change()
+            # return
         if self.product_id:
             incoming_move_ids = self.env["stock.move"].search([('product_id', '=', self.product_id.id),
                                              ('location_id.usage', 'not in', ('internal', 'transit')),
@@ -426,6 +452,7 @@ class SaleOrderLine(models.Model):
                 self.jmac_onhand = self.product_id.qty_available
                 self.jmac_available = self.product_id.qty_available
                 self.jmac_stock_ids = [(6,0,jmac_stock_ids.ids)]
+                all_total_stock += self.product_id.qty_available
             params = {} # 'order_id': self.order_id
             if self.adi_partner_id:
                 pricelist_id = self.product_id._select_seller(
@@ -453,7 +480,9 @@ class SaleOrderLine(models.Model):
                 if stock_master_line_id:
                     if actual_cost:
                         vendor_cost.update({self.adi_partner_id: actual_cost})
-                    self.adi_total_stock = sum(stock_master_line_id.mapped('case_qty'))
+                    stock_sum = sum(stock_master_line_id.mapped('case_qty'))
+                    all_total_stock += stock_sum
+                    self.adi_total_stock = stock_sum
                     self.adi_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
 
             if self.nv_partner_id:
@@ -481,7 +510,9 @@ class SaleOrderLine(models.Model):
                 if stock_master_line_id:
                     if actual_cost:
                         vendor_cost.update({self.nv_partner_id: actual_cost})
-                    self.nv_total_stock = sum(stock_master_line_id.mapped('case_qty'))
+                    stock_sum = sum(stock_master_line_id.mapped('case_qty'))
+                    all_total_stock += stock_sum
+                    self.nv_total_stock = stock_sum
                     self.nv_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
 
             if self.sl_partner_id:
@@ -509,7 +540,9 @@ class SaleOrderLine(models.Model):
                 if stock_master_line_id:
                     if actual_cost:
                         vendor_cost.update({self.sl_partner_id: actual_cost})
-                    self.sl_total_stock = sum(stock_master_line_id.mapped('case_qty'))
+                    stock_sum = sum(stock_master_line_id.mapped('case_qty'))
+                    all_total_stock += stock_sum
+                    self.sl_total_stock = stock_sum
                     self.sl_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
             if self.ss_partner_id:
                 pricelist_id = self.product_id._select_seller(
@@ -536,7 +569,9 @@ class SaleOrderLine(models.Model):
                 if stock_master_line_id:
                     if actual_cost:
                         vendor_cost.update({self.ss_partner_id: actual_cost})
-                    self.ss_total_stock = sum(stock_master_line_id.mapped('case_qty'))
+                    stock_sum = sum(stock_master_line_id.mapped('case_qty'))
+                    all_total_stock += stock_sum
+                    self.ss_total_stock = stock_sum
                     self.ss_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
             if self.jne_partner_id:
                 pricelist_id = self.product_id._select_seller(
@@ -563,7 +598,9 @@ class SaleOrderLine(models.Model):
                 if stock_master_line_id:
                     if actual_cost:
                         vendor_cost.update({self.jne_partner_id: actual_cost})
-                    self.jne_total_stock = sum(stock_master_line_id.mapped('case_qty'))
+                    stock_sum = sum(stock_master_line_id.mapped('case_qty'))
+                    all_total_stock += stock_sum
+                    self.jne_total_stock = stock_sum
                     self.jne_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
 
             if self.bnr_partner_id:
@@ -592,7 +629,9 @@ class SaleOrderLine(models.Model):
                 if stock_master_line_id:
                     if actual_cost:
                         vendor_cost.update({self.bnr_partner_id: actual_cost})
-                    self.bnr_total_stock = sum(stock_master_line_id.mapped('case_qty'))
+                    stock_sum = sum(stock_master_line_id.mapped('case_qty'))
+                    all_total_stock += stock_sum
+                    self.bnr_total_stock = stock_sum
                     self.bnr_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
 
             if self.wr_partner_id:
@@ -621,7 +660,9 @@ class SaleOrderLine(models.Model):
                 if stock_master_line_id:
                     if actual_cost:
                         vendor_cost.update({self.wr_partner_id: actual_cost})
-                    self.wr_total_stock = sum(stock_master_line_id.mapped('case_qty'))
+                    stock_sum = sum(stock_master_line_id.mapped('case_qty'))
+                    all_total_stock += stock_sum
+                    self.wr_total_stock = stock_sum
                     self.wr_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
             if self.dfm_partner_id:
                 pricelist_id = self.product_id._select_seller(
@@ -648,7 +689,9 @@ class SaleOrderLine(models.Model):
                 if stock_master_line_id:
                     if actual_cost:
                         vendor_cost.update({self.dfm_partner_id: actual_cost})
-                    self.dfm_total_stock = sum(stock_master_line_id.mapped('case_qty'))
+                    stock_sum = sum(stock_master_line_id.mapped('case_qty'))
+                    all_total_stock += stock_sum
+                    self.dfm_total_stock = stock_sum
                     self.dfm_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
             if self.bks_partner_id:
                 pricelist_id = self.product_id._select_seller(
@@ -675,7 +718,9 @@ class SaleOrderLine(models.Model):
                 if stock_master_line_id:
                     if actual_cost:
                         vendor_cost.update({self.bks_partner_id: actual_cost})
-                    self.bks_total_stock = sum(stock_master_line_id.mapped('case_qty'))
+                    stock_sum = sum(stock_master_line_id.mapped('case_qty'))
+                    all_total_stock += stock_sum
+                    self.bks_total_stock = stock_sum
                     self.bks_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
             if vendor_cost:
                 min_cost = min(vendor_cost.keys(), key=(lambda k: vendor_cost[k]))
@@ -684,7 +729,7 @@ class SaleOrderLine(models.Model):
             else:
                 self.lowest_cost_source = ''
                 self.lowest_cost = 0.0
-        return
+        return result
 
     def split_line(self):
         ctx = self._context.copy()
@@ -811,7 +856,7 @@ class InboundStock(models.Model):
         ('done', 'Locked'),
         ('cancel', 'Cancelled')
     ], string='PO Status')
-    qty_ordered = fields.Float(string="Qty Ordered")
-    qty_committed = fields.Float(string="Qty Committed")
-    qty_received = fields.Float(string="Qty Received")
+    qty_ordered = fields.Float(string="Qty Ordered", digits='Product Unit of Measure')
+    qty_committed = fields.Float(string="Qty Committed", digits='Product Unit of Measure')
+    qty_received = fields.Float(string="Qty Received", digits='Product Unit of Measure')
     date_submitted = fields.Datetime(string="Date Submitted")

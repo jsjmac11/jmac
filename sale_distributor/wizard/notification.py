@@ -10,8 +10,8 @@ class NotificationMessage(models.TransientModel):
     _description = 'Notification Message'
 
     message = fields.Char("Message", readonly=True)
-    qty = fields.Float(string="Quantity")
-    remaining_qty = fields.Float(string="Remaining Quantity")
+    qty = fields.Float(string="Quantity", digits='Product Unit of Measure')
+    remaining_qty = fields.Float(string="Remaining Quantity", digits='Product Unit of Measure')
     sale_line_id = fields.Many2one("sale.order.line", 'Line ID', invisible=True)
     partner_id = fields.Many2one('res.partner', 'Vendor', invisible=True)
     unit_price = fields.Float('Unit Price')
