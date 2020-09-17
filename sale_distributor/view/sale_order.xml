@@ -73,11 +73,11 @@
             </xpath>
             <xpath expr="//field[@name='partner_invoice_id']" position="attributes">
                 <attribute name="context">{'show_address': True}</attribute>
-                <attribute name="domain">['|',('id', '=', partner_id),'&amp;',('type', '=', 'invoice'), ('parent_id', '=', partner_id)]</attribute>
+                <attribute name="domain">['|',('id', '=', partner_id), ('parent_id', '=', partner_id)]</attribute>
             </xpath>
             <xpath expr="//field[@name='partner_shipping_id']" position="attributes">
                 <attribute name="context">{'show_address': True}</attribute>
-                <attribute name="domain">['|',('id', '=', partner_id),'&amp;',('type', '=', 'delivery'), ('parent_id', '=', partner_id)]</attribute>
+                <attribute name="domain">['|',('id', '=', partner_id), ('parent_id', '=', partner_id)]</attribute>
             </xpath>
             <xpath expr="//form/sheet/group/group/field[@name='payment_term_id']" position="after">
                 <label for="commitment_date" string="Delivery Date"/>
