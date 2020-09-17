@@ -60,7 +60,11 @@ class ResPartner(models.Model):
 
     @api.model
     def create(self, vals):
-        vals['sequence_name'] = self.env['ir.sequence'].next_by_code('res.partner') or _('New')
+        if vals.get('parent_id'):
+            parent_id = self.browse(vals.get('parent_id'))
+            vals['sequence_name'] = parent_id.sequence_name
+        else:
+            vals['sequence_name'] = self.env['ir.sequence'].next_by_code('res.partner') or _('New')
         return super(ResPartner, self).create(vals)
 
 
