@@ -396,11 +396,35 @@ class SaleOrderLine(models.Model):
             self.order_id._genrate_line_sequence()
         return res
 
+    def vendor_price_stock(self, partner_id, product_uom_qty,params,vendor):
+        pricelist_id = self.product_id._select_seller(
+                                                partner_id=partner_id,
+                                                quantity=product_uom_qty,
+                                                date=self.order_id.date_order and self.order_id.date_order.date(),
+                                                uom_id=self.product_uom,
+                                                params=params)
+        actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
+        values = {vendor+'_part_number' : pricelist_id.product_code or '',
+                  vendor+'_case_qty' : pricelist_id.min_qty or 0.0,
+                  vendor+'_actual_cost' : actual_cost or 0.0,
+                  vendor+'_standard_cost' : pricelist_id.price or 0.0,
+                  vendor+'_sale_exp_date' : pricelist_id.date_end}
+        vendor_cost = {}
+        stock_sum = 0.0
+        stock_master_line_id = self.env["vendor.stock.master.line"].search(
+                    [('res_partner_id', '=', partner_id.id),
+                     ('product_id', '=', self.product_id.id),
+                     ('case_qty','!=',0.0)])
+        if stock_master_line_id:
+            if actual_cost:
+                vendor_cost = {partner_id: actual_cost}
+            stock_sum = sum(stock_master_line_id.mapped('case_qty'))
+            values.update({vendor+'_total_stock' : stock_sum,
+             vendor+'_vendor_stock_ids' : [(6,0,stock_master_line_id.ids)]})
+        return [values, vendor_cost, stock_sum]
+
     @api.onchange('product_id')
     def product_id_change(self):
-        vendor_cost = {}
-        all_total_stock = 0.0
-        # if not self.product_id:
         self.lowest_cost_source = ''
         self.adi_part_number = self.nv_part_number = self.jne_part_number = ''
         self.sl_part_number = self.ss_part_number = self.bnr_part_number = ''
@@ -426,8 +450,10 @@ class SaleOrderLine(models.Model):
         self.ss_total_stock = self.bnr_total_stock = self.wr_total_stock = self.dfm_total_stock = self.bks_total_stock = 0.0
         self.sale_split_lines = [(6,0,[])]
         result = super(SaleOrderLine, self).product_id_change()
-            # return
         if self.product_id:
+            vendor_cost = {}
+            all_total_stock = 0.0
+            result.update({'value': {}})
             incoming_move_ids = self.env["stock.move"].search([('product_id', '=', self.product_id.id),
                                              ('location_id.usage', 'not in', ('internal', 'transit')),
                                              ('location_dest_id.usage', 'in', ('internal', 'transit')),
@@ -445,7 +471,6 @@ class SaleOrderLine(models.Model):
                                                # 'sale_line_id': self.parent_line_id.id,
                                                'po_line_id': po_line.id}))
                 self.inbound_stock_lines = inbound_lines
-            # product_tmpl_id = self.product_id.product_tmpl_id
             jmac_stock_ids = self.env["stock.quant"].search([('product_id', '=', self.product_id.id),
                 ('location_id.usage', '=', 'internal'),('quantity','!=',0.0)])
             if jmac_stock_ids:
@@ -455,280 +480,127 @@ class SaleOrderLine(models.Model):
                 all_total_stock += self.product_id.qty_available
             params = {} # 'order_id': self.order_id
             if self.adi_partner_id:
-                pricelist_id = self.product_id._select_seller(
-                                                partner_id=self.adi_partner_id,
-                                                quantity=self.product_uom_qty,
-                                                date=self.order_id.date_order and self.order_id.date_order.date(),
-                                                uom_id=self.product_uom,
-                                                params=params)
-                if pricelist_id:
-                    actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
-                    self.adi_part_number = pricelist_id.product_code or ''
-                    self.adi_case_qty = pricelist_id.min_qty or 0.0
-                    self.adi_actual_cost = actual_cost or 0.0
-                    self.adi_standard_cost = pricelist_id.price or 0.0
-                    self.adi_sale_exp_date = pricelist_id.date_end
-                else:
-                    actual_cost = 0.0 # self.product_id.standard_price
-                    self.adi_actual_cost = 0.0
-                    self.adi_standard_cost = 0.0
-
-                stock_master_line_id = self.env["vendor.stock.master.line"].search(
-                    [('res_partner_id', '=', self.adi_partner_id.id),
-                     ('product_id', '=', self.product_id.id),
-                     ('case_qty','!=',0.0)])
-                if stock_master_line_id:
-                    if actual_cost:
-                        vendor_cost.update({self.adi_partner_id: actual_cost})
-                    stock_sum = sum(stock_master_line_id.mapped('case_qty'))
-                    all_total_stock += stock_sum
-                    self.adi_total_stock = stock_sum
-                    self.adi_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
+                price_stock_list = self.vendor_price_stock(self.adi_partner_id,self.product_uom_qty,params,'adi')
+                result['value'].update(price_stock_list[0])
+                vendor_cost.update(price_stock_list[1])
+                all_total_stock += price_stock_list[2]
 
             if self.nv_partner_id:
-                pricelist_id = self.product_id._select_seller(
-                                            partner_id=self.nv_partner_id,
-                                            quantity=self.product_uom_qty,
-                                            date=self.order_id.date_order and self.order_id.date_order.date(),
-                                            uom_id=self.product_uom,
-                                            params=params)
-                if pricelist_id:
-                    actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
-                    self.nv_part_number = pricelist_id.product_code or ''
-                    self.nv_case_qty = pricelist_id.min_qty or 0.0
-                    self.nv_actual_cost = actual_cost or 0.0
-                    self.nv_standard_cost = pricelist_id.price or 0.0
-                    self.nv_sale_exp_date = pricelist_id.date_end
-                else:
-                    actual_cost = 0.0 # self.product_id.standard_price
-                    self.nv_actual_cost = 0.0
-                    self.nv_standard_cost = actual_cost or 0.0
-                stock_master_line_id = self.env["vendor.stock.master.line"].search(
-                    [('res_partner_id', '=', self.nv_partner_id.id),
-                     ('product_id', '=', self.product_id.id),
-                     ('case_qty','!=',0.0)])
-                if stock_master_line_id:
-                    if actual_cost:
-                        vendor_cost.update({self.nv_partner_id: actual_cost})
-                    stock_sum = sum(stock_master_line_id.mapped('case_qty'))
-                    all_total_stock += stock_sum
-                    self.nv_total_stock = stock_sum
-                    self.nv_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
+                price_stock_list = self.vendor_price_stock(self.nv_partner_id,self.product_uom_qty,params,'nv')
+                result['value'].update(price_stock_list[0])
+                vendor_cost.update(price_stock_list[1])
+                all_total_stock += price_stock_list[2]
 
             if self.sl_partner_id:
-                pricelist_id = self.product_id._select_seller(
-                                                partner_id=self.sl_partner_id,
-                                                quantity=self.product_uom_qty,
-                                                date=self.order_id.date_order and self.order_id.date_order.date(),
-                                                uom_id=self.product_uom,
-                                                params=params)
-                if pricelist_id:
-                    actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
-                    self.sl_part_number = pricelist_id.product_code or ''
-                    self.sl_case_qty = pricelist_id.min_qty or 0.0
-                    self.sl_actual_cost = actual_cost or 0.0
-                    self.sl_standard_cost = pricelist_id.price or 0.0
-                    self.sl_sale_exp_date = pricelist_id.date_end
-                else:
-                    actual_cost = self.product_id.standard_price
-                    self.sl_actual_cost = 0.0
-                    self.sl_standard_cost = 0.0
-                stock_master_line_id = self.env["vendor.stock.master.line"].search(
-                    [('res_partner_id', '=', self.sl_partner_id.id),
-                     ('product_id', '=', self.product_id.id),
-                     ('case_qty','!=',0.0)])
-                if stock_master_line_id:
-                    if actual_cost:
-                        vendor_cost.update({self.sl_partner_id: actual_cost})
-                    stock_sum = sum(stock_master_line_id.mapped('case_qty'))
-                    all_total_stock += stock_sum
-                    self.sl_total_stock = stock_sum
-                    self.sl_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
+                price_stock_list = self.vendor_price_stock(self.sl_partner_id,self.product_uom_qty,params,'sl')
+                result['value'].update(price_stock_list[0])
+                vendor_cost.update(price_stock_list[1])
+                all_total_stock += price_stock_list[2]
+
             if self.ss_partner_id:
-                pricelist_id = self.product_id._select_seller(
-                                                partner_id=self.ss_partner_id,
-                                                quantity=self.product_uom_qty,
-                                                date=self.order_id.date_order and self.order_id.date_order.date(),
-                                                uom_id=self.product_uom,
-                                                params=params)
-                if pricelist_id:
-                    actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
-                    self.ss_part_number = pricelist_id.product_code or ''
-                    self.ss_case_qty = pricelist_id.min_qty or 0.0
-                    self.ss_actual_cost = actual_cost or 0.0
-                    self.ss_standard_cost = pricelist_id.price or 0.0
-                    self.ss_sale_exp_date = pricelist_id.date_end
-                else:
-                    actual_cost = 0.0 # self.product_id.standard_price
-                    self.ss_actual_cost = 0.0
-                    self.ss_standard_cost = 0.0
-                stock_master_line_id = self.env["vendor.stock.master.line"].search(
-                    [('res_partner_id', '=', self.ss_partner_id.id),
-                     ('product_id', '=', self.product_id.id),
-                     ('case_qty','!=',0.0)])
-                if stock_master_line_id:
-                    if actual_cost:
-                        vendor_cost.update({self.ss_partner_id: actual_cost})
-                    stock_sum = sum(stock_master_line_id.mapped('case_qty'))
-                    all_total_stock += stock_sum
-                    self.ss_total_stock = stock_sum
-                    self.ss_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
+                price_stock_list = self.vendor_price_stock(self.ss_partner_id,self.product_uom_qty,params,'ss')
+                result['value'].update(price_stock_list[0])
+                vendor_cost.update(price_stock_list[1])
+                all_total_stock += price_stock_list[2]
+
             if self.jne_partner_id:
-                pricelist_id = self.product_id._select_seller(
-                                                partner_id=self.jne_partner_id,
-                                                quantity=self.product_uom_qty,
-                                                date=self.order_id.date_order and self.order_id.date_order.date(),
-                                                uom_id=self.product_uom,
-                                                params=params)
-                if pricelist_id:
-                    actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
-                    self.jne_part_number = pricelist_id.product_code or ''
-                    self.jne_case_qty = pricelist_id.min_qty or 0.0
-                    self.jne_actual_cost = actual_cost or 0.0
-                    self.jne_standard_cost = pricelist_id.price or 0.0
-                    self.jne_sale_exp_date = pricelist_id.date_end
-                else:
-                    actual_cost = 0.0 # self.product_id.standard_price
-                    self.jne_actual_cost = 0.0
-                    self.jne_standard_cost = 0.0
-                stock_master_line_id = self.env["vendor.stock.master.line"].search(
-                    [('res_partner_id', '=', self.jne_partner_id.id),
-                     ('product_id', '=', self.product_id.id),
-                     ('case_qty','!=',0.0)])
-                if stock_master_line_id:
-                    if actual_cost:
-                        vendor_cost.update({self.jne_partner_id: actual_cost})
-                    stock_sum = sum(stock_master_line_id.mapped('case_qty'))
-                    all_total_stock += stock_sum
-                    self.jne_total_stock = stock_sum
-                    self.jne_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
+                price_stock_list = self.vendor_price_stock(self.jne_partner_id,self.product_uom_qty,params,'jne')
+                result['value'].update(price_stock_list[0])
+                vendor_cost.update(price_stock_list[1])
+                all_total_stock += price_stock_list[2]
 
             if self.bnr_partner_id:
-                
-                pricelist_id = self.product_id._select_seller(
-                                                partner_id=self.bnr_partner_id,
-                                                quantity=self.product_uom_qty,
-                                                date=self.order_id.date_order and self.order_id.date_order.date(),
-                                                uom_id=self.product_uom,
-                                                params=params)
-                if pricelist_id:
-                    actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
-                    self.bnr_part_number = pricelist_id.product_code or ''
-                    self.bnr_case_qty = pricelist_id.min_qty or 0.0
-                    self.bnr_actual_cost = actual_cost or 0.0
-                    self.bnr_standard_cost = pricelist_id.price or 0.0
-                    self.bnr_sale_exp_date = pricelist_id.date_end
-                else:
-                    actual_cost = 0.0 # self.product_id.standard_price
-                    self.bnr_actual_cost = 0.0
-                    self.bnr_standard_cost = 0.0
-                stock_master_line_id = self.env["vendor.stock.master.line"].search(
-                    [('res_partner_id', '=', self.bnr_partner_id.id),
-                     ('product_id', '=', self.product_id.id),
-                     ('case_qty','!=',0.0)])
-                if stock_master_line_id:
-                    if actual_cost:
-                        vendor_cost.update({self.bnr_partner_id: actual_cost})
-                    stock_sum = sum(stock_master_line_id.mapped('case_qty'))
-                    all_total_stock += stock_sum
-                    self.bnr_total_stock = stock_sum
-                    self.bnr_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
+                price_stock_list = self.vendor_price_stock(self.bnr_partner_id,self.product_uom_qty,params,'bnr')
+                result['value'].update(price_stock_list[0])
+                vendor_cost.update(price_stock_list[1])
+                all_total_stock += price_stock_list[2]
 
             if self.wr_partner_id:
-                
-                pricelist_id = self.product_id._select_seller(
-                                                partner_id=self.wr_partner_id,
-                                                quantity=self.product_uom_qty,
-                                                date=self.order_id.date_order and self.order_id.date_order.date(),
-                                                uom_id=self.product_uom,
-                                                params=params)
-                if pricelist_id:
-                    actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
-                    self.wr_part_number = pricelist_id.product_code or ''
-                    self.wr_case_qty = pricelist_id.min_qty or 0.0
-                    self.wr_actual_cost = actual_cost or 0.0
-                    self.wr_standard_cost = pricelist_id.price or 0.0
-                    self.wr_sale_exp_date = pricelist_id.date_end
-                else:
-                    actual_cost = 0.0 # self.product_id.standard_price
-                    self.wr_actual_cost = 0.0
-                    self.wr_standard_cost = 0.0
-                stock_master_line_id = self.env["vendor.stock.master.line"].search(
-                    [('res_partner_id', '=', self.wr_partner_id.id),
-                     ('product_id', '=', self.product_id.id),
-                     ('case_qty','!=',0.0)])
-                if stock_master_line_id:
-                    if actual_cost:
-                        vendor_cost.update({self.wr_partner_id: actual_cost})
-                    stock_sum = sum(stock_master_line_id.mapped('case_qty'))
-                    all_total_stock += stock_sum
-                    self.wr_total_stock = stock_sum
-                    self.wr_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
+                price_stock_list = self.vendor_price_stock(self.wr_partner_id,self.product_uom_qty,params,'wr')
+                result['value'].update(price_stock_list[0])
+                vendor_cost.update(price_stock_list[1])
+                all_total_stock += price_stock_list[2]
+
             if self.dfm_partner_id:
-                pricelist_id = self.product_id._select_seller(
-                                                partner_id=self.dfm_partner_id,
-                                                quantity=self.product_uom_qty,
-                                                date=self.order_id.date_order and self.order_id.date_order.date(),
-                                                uom_id=self.product_uom,
-                                                params=params)
-                if pricelist_id:
-                    actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
-                    self.dfm_part_number = pricelist_id.product_code or ''
-                    self.dfm_case_qty = pricelist_id.min_qty or 0.0
-                    self.dfm_actual_cost = actual_cost or 0.0
-                    self.dfm_standard_cost = pricelist_id.price or 0.0
-                    self.dfm_sale_exp_date = pricelist_id.date_end
-                else:
-                    actual_cost = 0.0 # self.product_id.standard_price
-                    self.dfm_actual_cost = 0.0
-                    self.dfm_standard_cost = 0.0
-                stock_master_line_id = self.env["vendor.stock.master.line"].search(
-                    [('res_partner_id', '=', self.dfm_partner_id.id),
-                     ('product_id', '=', self.product_id.id),
-                     ('case_qty','!=',0.0)])
-                if stock_master_line_id:
-                    if actual_cost:
-                        vendor_cost.update({self.dfm_partner_id: actual_cost})
-                    stock_sum = sum(stock_master_line_id.mapped('case_qty'))
-                    all_total_stock += stock_sum
-                    self.dfm_total_stock = stock_sum
-                    self.dfm_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
+                price_stock_list = self.vendor_price_stock(self.dfm_partner_id,self.product_uom_qty,params,'dfm')
+                result['value'].update(price_stock_list[0])
+                vendor_cost.update(price_stock_list[1])
+                all_total_stock += price_stock_list[2]
+
             if self.bks_partner_id:
-                pricelist_id = self.product_id._select_seller(
-                                                partner_id=self.bks_partner_id,
-                                                quantity=self.product_uom_qty,
-                                                date=self.order_id.date_order and self.order_id.date_order.date(),
-                                                uom_id=self.product_uom,
-                                                params=params)
-                if pricelist_id:
-                    actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
-                    self.bks_part_number = pricelist_id.product_code or ''
-                    self.bks_case_qty = pricelist_id.min_qty or 0.0
-                    self.bks_actual_cost = actual_cost or 0.0
-                    self.bks_standard_cost = pricelist_id.price or 0.0
-                    self.bks_sale_exp_date = pricelist_id.date_end
-                else:
-                    actual_cost = 0.0 # self.product_id.standard_price
-                    self.bks_actual_cost = 0.0
-                    self.bks_standard_cost = 0.0
-                stock_master_line_id = self.env["vendor.stock.master.line"].search(
-                    [('res_partner_id', '=', self.bks_partner_id.id),
-                     ('product_id', '=', self.product_id.id),
-                     ('case_qty','!=',0.0)])
-                if stock_master_line_id:
-                    if actual_cost:
-                        vendor_cost.update({self.bks_partner_id: actual_cost})
-                    stock_sum = sum(stock_master_line_id.mapped('case_qty'))
-                    all_total_stock += stock_sum
-                    self.bks_total_stock = stock_sum
-                    self.bks_vendor_stock_ids = [(6,0,stock_master_line_id.ids)]
+                price_stock_list = self.vendor_price_stock(self.bks_partner_id,self.product_uom_qty,params,'bks')
+                result['value'].update(price_stock_list[0])
+                vendor_cost.update(price_stock_list[1])
+                all_total_stock += price_stock_list[2]
+
+            result['value'].update({'total_stock': all_total_stock})
             if vendor_cost:
                 min_cost = min(vendor_cost.keys(), key=(lambda k: vendor_cost[k]))
-                self.lowest_cost_source = min_cost.name
-                self.lowest_cost = vendor_cost.get(min_cost)
+                result['value'].update({'lowest_cost_source': min_cost.name,
+                                        'lowest_cost': vendor_cost.get(min_cost)})
             else:
-                self.lowest_cost_source = ''
-                self.lowest_cost = 0.0
+                result['value'].update({'lowest_cost_source': '',
+                                        'lowest_cost': 0.0})
+        return result
+
+    @api.onchange('product_uom', 'product_uom_qty')
+    def product_uom_change(self):
+        result = super(SaleOrderLine, self).product_uom_change()
+        if self.product_id:
+            vendor_cost = {}
+            result = {'value': {}}
+            params = {} # 'order_id': self.order_id
+            if self.adi_partner_id:
+                price_stock_list = self.vendor_price_stock(self.adi_partner_id,self.product_uom_qty,params,'adi')
+                result['value'].update(price_stock_list[0])
+                vendor_cost.update(price_stock_list[1])
+
+            if self.nv_partner_id:
+                price_stock_list = self.vendor_price_stock(self.nv_partner_id,self.product_uom_qty,params,'nv')
+                result['value'].update(price_stock_list[0])
+                vendor_cost.update(price_stock_list[1])
+
+            if self.sl_partner_id:
+                price_stock_list = self.vendor_price_stock(self.sl_partner_id,self.product_uom_qty,params,'sl')
+                result['value'].update(price_stock_list[0])
+                vendor_cost.update(price_stock_list[1])
+
+            if self.ss_partner_id:
+                price_stock_list = self.vendor_price_stock(self.ss_partner_id,self.product_uom_qty,params,'ss')
+                result['value'].update(price_stock_list[0])
+                vendor_cost.update(price_stock_list[1])
+
+            if self.jne_partner_id:
+                price_stock_list = self.vendor_price_stock(self.jne_partner_id,self.product_uom_qty,params,'jne')
+                result['value'].update(price_stock_list[0])
+                vendor_cost.update(price_stock_list[1])
+
+            if self.bnr_partner_id:
+                price_stock_list = self.vendor_price_stock(self.bnr_partner_id,self.product_uom_qty,params,'bnr')
+                result['value'].update(price_stock_list[0])
+                vendor_cost.update(price_stock_list[1])
+
+            if self.wr_partner_id:
+                price_stock_list = self.vendor_price_stock(self.wr_partner_id,self.product_uom_qty,params,'wr')
+                result['value'].update(price_stock_list[0])
+                vendor_cost.update(price_stock_list[1])
+
+            if self.dfm_partner_id:
+                price_stock_list = self.vendor_price_stock(self.dfm_partner_id,self.product_uom_qty,params,'dfm')
+                result['value'].update(price_stock_list[0])
+                vendor_cost.update(price_stock_list[1])
+
+            if self.bks_partner_id:
+                price_stock_list = self.vendor_price_stock(self.bks_partner_id,self.product_uom_qty,params,'bks')
+                result['value'].update(price_stock_list[0])
+                vendor_cost.update(price_stock_list[1])
+            if vendor_cost:
+                min_cost = min(vendor_cost.keys(), key=(lambda k: vendor_cost[k]))
+                result['value'].update({'lowest_cost_source': min_cost.name,
+                                        'lowest_cost': vendor_cost.get(min_cost)})
+            else:
+                result['value'].update({'lowest_cost_source': '',
+                                        'lowest_cost': 0.0})
         return result
 
     def split_line(self):

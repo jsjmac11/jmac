@@ -10,7 +10,7 @@
                         <field name="message" nolabel="1"/><br/>
                         <div class="o_row" name="partner">
                             <label for="partner_id" attrs="{'invisible':[('order_id','=', False)]}"/>
-                            <field name="partner_id" attrs="{'invisible':[('order_id','=', False)]}"/>
+                            <field name="partner_id" domain="[('supplier_rank','=', 1)]" attrs="{'invisible':[('order_id','=', False)]}"/>
                             <div attrs="{'invisible':[('order_id','!=', False)]}">
                             <label for="qty" string="How many?" attrs="{'invisible':[('order_id','!=', False)]}"/><br/>
                             <field name="qty" nolabel="1" attrs="{'invisible':[('order_id','!=', False)]}"/>
