@@ -16,6 +16,7 @@ class ResPartner(models.Model):
     vendor_stock_master_line = fields.One2many("vendor.stock.master.line", "res_partner_id",
                                                "Vendor Stock Line")
     sequence_name = fields.Char(string="Unique No.")
+    
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
@@ -26,22 +27,9 @@ class ResPartner(models.Model):
                                                    access_rights_uid=access_rights_uid)
 
     def name_get(self):
-        """
-        Overriding the name_get function from res.partner so that the "invoice address" 
-        and "shipping address" fields on the quotes form display the full address, not 
-        the standard contact name. Requires that the contact type be set as 'delivery' 
-        or 'invoice'.
-        """
         result = []
         for s in self:
-            if s.type in ["delivery", "invoice"]:
-                street = str(s.street) + ", " if s.street else "" 
-                city = str(s.city) + ", " if s.city else ""
-                state = str(s.state_id.code) + " " if s.state_id else ""
-                zip = str(s.zip) if s.zip else ""
-                name = street + city + state + zip
-                result.append((s.id, name))
-            elif s.sequence_name:
+            if s.sequence_name:
                 name = '[' + str(s.sequence_name) + '] ' + str(s.name)
                 result.append((s.id, name))
             else:

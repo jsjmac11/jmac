@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sale_order_form_inherit" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Updating the shipping field so that to show the address -->
+            <field name="partner_shipping_id" position="attributes">
+                <attribute name="class">oe_edit_only</attribute>
+                <attribute name="nolabel">1</attribute>
+            </field>
+            <field name="partner_shipping_id" position="before">
+                <label for="partner_shipping_id" class="oe_edit_only"/>
+            </field>
+             <field name="partner_shipping_id" position="after">
+                <label for="partner_shipping_id_address" class="oe_read_only"/>
+                <field name="partner_shipping_id_address" class="oe_read_only" nolabel="1"/>
+            </field>
+            <!-- Updating the Invoice field to show the address-->
+            <field name="partner_invoice_id" position="attributes">
+                <attribute name="class">oe_edit_only</attribute>
+                <attribute name="nolabel">1</attribute>
+            </field>
+            <field name="partner_invoice_id" position="before">
+                <label for="partner_invoice_id" class="oe_edit_only"/>
+            </field>
+            <field name="partner_invoice_id" position="after">
+                <label for="partner_invoice_id_address" class="oe_read_only"/>
+                <field name="partner_invoice_id_address" class="oe_read_only" nolabel="1"/>
+            </field>
+        </field>
+    </record>
+</odoo>

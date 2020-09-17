@@ -29,6 +29,7 @@ class SaleOrder(models.Model):
         compute='_compute_is_process_qty',
         help='Technical field used to see if we have process qty.')
 
+    
     @api.depends('order_line','order_line.sale_split_lines')
     def _compute_is_process_qty(self):
         for order in self:
