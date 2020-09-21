@@ -58,6 +58,20 @@ class SaleOrder(models.Model):
         self.split_line_ids._action_launch_stock_rule()
         return super(SaleOrder, self)._action_confirm()
 
+    def action_confirm(self):
+        """
+        Creates the stock.picking normally with call to Super. If the pick has more than one split line
+        item. If so, looks to see if any of the split lines are "Ship To Here", indicated by the line
+        type of "stock". For each of the Ship To Here split lines, creates a new pick and moves that line
+        to the new pick.
+        """
+        res = super(SaleOrder, self).action_confirm()
+        for picking in self.picking_ids.filtered(lambda r: len(r.move_lines) > 1):
+            for move_line in picking.move_lines.filtered(lambda r: r.sale_line_id.line_type == 'stock'):
+                new_picking = picking.copy({'move_lines': []})
+                move_line.picking_id = new_picking
+        return res
+
     def action_cancel(self):
         res = super(SaleOrder, self).action_cancel()
         self.split_line_ids.unlink()
@@ -379,7 +393,7 @@ class SaleOrderLine(models.Model):
         depending on the sale order line product rule.
         """
         for line in self:
-            if not line.parent_line_id:
+            if not line.parent_line_id: # Shortcuts if not a "split line"
                 return True
         return super(SaleOrderLine, self)._action_launch_stock_rule()
 
