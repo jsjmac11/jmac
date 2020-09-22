@@ -9,34 +9,6 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
 
-class SaleDiscount(models.Model):
-    _inherit = 'sale.order'
-
-    state = fields.Selection(selection_add=[('waiting', 'Waiting Approval'), ('approved', 'Quotation Approved')],
-                             string='Status', readonly=True, copy=False, index=True,
-                             track_visibility='onchange', default='draft')
-    is_approved = fields.Boolean('Approved', copy=False, help="Indicate manager approved the order.")
-
-    def action_confirm(self):
-        discnt = 0.0
-        no_line = 0.0
-        if not self.is_approved and self.company_id.so_double_validation == 'two_step':
-            discnt = self.discount_rate
-            if self.company_id.so_double_validation_limit and discnt > self.company_id.so_double_validation_limit:
-                self.state = 'waiting'
-                return True
-        super(SaleDiscount, self).action_confirm()
-
-    def action_approve(self):
-        self.update({'is_approved': True, 'state': 'draft'})
-        return True
-
-    def action_cancel(self):
-        if self.is_approved:
-            self.write({'is_approved': False})
-        return super(SaleDiscount, self).action_cancel()
-
-
 class Company(models.Model):
     _inherit = 'res.company'
 
