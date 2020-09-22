@@ -34,12 +34,14 @@ class ResPartner(models.Model):
         """
         result = []
         for s in self:
-            if s.type in ["delivery", "invoice"]:
-                street = str(s.street) + ", " if s.street else "" 
+            if s._context.get('bista_show_address'):
+                street = str(s.street) + ", " if s.street else ""
+                street2 = str(s.street2) + ", " if s.street2 else ""
                 city = str(s.city) + ", " if s.city else ""
                 state = str(s.state_id.code) + " " if s.state_id else ""
-                zip = str(s.zip) if s.zip else ""
-                name = street + city + state + zip
+                zipcode = str(s.zip) if s.zip else ""
+                country = ", " + str(s.country_id.name) if s.country_id else ""
+                name = street + street2 + city + state + zipcode + country
                 result.append((s.id, name))
             elif s.sequence_name:
                 name = '[' + str(s.sequence_name) + '] ' + str(s.name)
