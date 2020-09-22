@@ -33,6 +33,7 @@ class ResPartner(models.Model):
         or 'invoice'.
         """
         result = []
+        name = ''
         for s in self:
             if s._context.get('bista_show_address'):
                 street = str(s.street) + ", " if s.street else ""
@@ -43,12 +44,13 @@ class ResPartner(models.Model):
                 country = ", " + str(s.country_id.name) if s.country_id else ""
                 name = street + street2 + city + state + zipcode + country
                 result.append((s.id, name))
-            elif s.sequence_name:
-                name = '[' + str(s.sequence_name) + '] ' + str(s.name)
-                result.append((s.id, name))
             else:
-                name = str(s.name)
-                result.append((s.id, name))
+                if s.sequence_name:
+                    name = '[' + str(s.sequence_name) + '] ' + str(s.name)
+                    result.append((s.id, name))
+                else:
+                    name = str(s.name)
+                    result.append((s.id, name))
         return result
 
     @api.model
