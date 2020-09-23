@@ -1,0 +1,5 @@
+/* causes a vendor tab on the sales order line to darken when made active */ 
+div > div > main > div > div > div > div.o_notebook > div.o_notebook_headers > ul > li > a.nav-link.nav-link.active {
+    background-color: #d2d2d6 !important;
+}
+
