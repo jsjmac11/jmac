@@ -68,8 +68,12 @@ class SaleOrder(models.Model):
         res = super(SaleOrder, self).action_confirm()
         for picking in self.picking_ids.filtered(lambda r: len(r.move_lines) > 1):
             for move_line in picking.move_lines.filtered(lambda r: r.sale_line_id.line_type == 'stock'):
-                new_picking = picking.copy({'move_lines': []})
+                new_picking = picking.copy({'move_lines': [], 
+                                            'move_line_ids_without_package': [],
+                                            'move_line_ids': [],
+                                            })
                 move_line.picking_id = new_picking
+                move_line.move_line_ids.picking_id = new_picking
         return res
 
     def action_cancel(self):
