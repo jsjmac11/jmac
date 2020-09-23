@@ -24,6 +24,7 @@
         'view/sale_order.xml',
         'view/res_partner_view.xml',
         'view/vendor_stock_view.xml',
+        'view/vendor_tabs_css.xml',
         'security/ir.model.access.csv',
     ],
     'demo': [
