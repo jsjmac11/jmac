@@ -24,7 +24,7 @@ class NotificationMessage(models.TransientModel):
                 'sequence_ref': ''
                 }
         if self._context.get('add_to_buy'):
-            route_id = self.env.ref('stock.route_warehouse0_mto').id
+            route_id = self.env.ref('stock.route_warehouse0_mto_buy').id
             dict.update({'line_type': 'buy','route_id': route_id})
         elif self._context.get('dropship'):
             route_id = self.env.ref('stock_dropshipping.route_drop_shipping').id
