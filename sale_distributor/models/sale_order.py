@@ -716,17 +716,6 @@ class SaleOrderLine(models.Model):
         return values
 
 
-class StockRule(models.Model):
-    _inherit = 'stock.rule'
-
-
-    @api.model
-    def _prepare_purchase_order_line(self, product_id, product_qty, product_uom, company_id, values, po):
-        res = super(StockRule, self)._prepare_purchase_order_line(product_id, product_qty, product_uom, company_id, values, po)
-        res['price_unit'] = values.get('vendor_price_unit', False)
-        return res
-
-
 class InboundStock(models.Model):
     _name = "inbound.stock"
     _description = "Inbound Stock"
