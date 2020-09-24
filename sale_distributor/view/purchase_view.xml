@@ -6,8 +6,9 @@
         <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='notes']" position="before">
-                <field name="split_line" widget="section_and_note_one2many" mode="tree,kanban" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}">
-                                <tree string="Purchase Order Lines" editable="bottom">
+                <group string="Process Qty" attrs="{'invisible': [('split_line', '=', False)]}" name="process_qty" colspan="4">
+                    <field name="split_line" nolabel="1" readonly="1" widget="section_and_note_one2many" mode="tree" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}">
+                                <tree string="Purchase Order Split Lines" editable="bottom">
                                     <field name="display_type" invisible="1"/>
                                     <field name="currency_id" invisible="1"/>
                                     <field name="state" invisible="1"/>
@@ -26,14 +27,15 @@
                                     <field name="product_qty"/>
                                     <field name="qty_received_manual" invisible="1"/>
                                     <field name="qty_received_method" invisible="1"/>
-                                    <field name="qty_received" string="Received" attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))], 'readonly': [('qty_received_method', '!=', 'manual')]}" optional="show"/>
-                                    <field name="qty_invoiced" string="Billed" attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))]}" optional="show"/>
+                                    <field name="qty_received" string="Received" attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))], 'readonly': [('qty_received_method', '!=', 'manual')]}"/>
+                                    <field name="qty_invoiced" string="Billed" attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))]}"/>
                                     <field name="product_uom" string="UoM" groups="uom.group_uom" attrs="{                                             'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))],                                             'required': [('display_type', '=', False)]                                         }" force_save="1" optional="show"/>
-                                    <field name="price_unit" attrs="{'readonly': [('invoice_lines', '!=', [])]}"/>
+                                    <field name="price_unit" attrs="{'readonly': [('invoice_lines', '!=', [])]}" invisible="1"/>
                                     <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','purchase'), ('company_id', '=', parent.company_id)]" context="{'default_type_tax_use': 'purchase', 'search_view_ref': 'account.account_tax_view_search'}" options="{'no_create': True}" optional="show" invisible="1"/>
-                                    <field name="price_subtotal" widget="monetary"/>
+                                    <field name="price_subtotal" widget="monetary" invisible="1"/>
                                 </tree>
                                 </field>
+                </group>
             </xpath>
         </field>
     </record>
