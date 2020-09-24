@@ -18,9 +18,11 @@
                      <field name="is_approved" readonly="1" force_save="1"/>
                 </xpath>
                 <xpath expr="//field[@name='note']" position="before">
-                    <field name="amount_undiscounted"/>
-                    <field name="discount_type" invisible="1"/>
-                    <field name="discount_rate"/>
+                    <group name="discount" colspan="2">
+                        <field name="amount_undiscounted"/>
+                        <field name="discount_type" invisible="1"/>
+                        <field name="discount_rate"/>
+                    </group>
                 </xpath>
             </field>
         </record>

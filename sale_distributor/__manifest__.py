@@ -16,16 +16,18 @@
     'description': """
     JMAC Sale Distributor module help to make the vendor details.
     """,
-    'depends': ['sale','sale_stock','product','mail'],
+    'depends': ['sale','sale_stock','product','mail','purchase_stock'],
     'data': [
+        'security/ir.model.access.csv',
         'data/res_partner_demo.xml',
-        'wizard/notification_view.xml',
         'view/sale_menuitem.xml',
         'view/sale_order.xml',
         'view/res_partner_view.xml',
         'view/vendor_stock_view.xml',
         'view/vendor_tabs_css.xml',
         'security/ir.model.access.csv',
+        'wizard/notification_view.xml',
+        'view/purchase_view.xml',
     ],
     'demo': [
         ],
