@@ -73,6 +73,9 @@ class StockRule(models.Model):
                 product_id, product_qty,
                 product_uom, company_id,
                 values, line.order_id)
+            if split_line:
+                sale_line = values.get('split_sale_line_id',False)
+                split_line.update({'sale_line_id': sale_line.id if sale_line else False})
             # if split_line:
             res['split_line_ids'] = [(0,0,split_line)]
             res['price_unit'] = price_unit
