@@ -12,7 +12,7 @@ class StockMove(models.Model):
         """
         values = super(StockMove, self)._prepare_procurement_values()
         values.update({
-        		'sale_line_id': self.sale_line_id.id,
+        		'split_sale_line_id': self.sale_line_id,
                 'supplier_id': self.sale_line_id.vendor_id,
                 'vendor_price_unit': self.sale_line_id.vendor_price_unit,
                 })

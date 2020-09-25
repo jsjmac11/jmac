@@ -18,7 +18,7 @@
                                     <field name="sequence" widget="handle" invisible="1"/>
                                     <field name="sequence_ref" readonly="1" force_save="1" width="0.2"/>
                                     <field name="line_split" invisible="1"/>
-                                    <field name="product_id" attrs="{                                             'readonly': [('state', 'in', ('purchase', 'to approve','done', 'cancel'))],                                             'required': [('display_type', '=', False)],                                         }" context="{'partner_id':parent.partner_id, 'quantity':product_qty,'uom':product_uom, 'company_id': parent.company_id}" force_save="1" domain="[('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
+                                    <field name="product_id" attrs="{'readonly': [('state', 'in', ('purchase', 'to approve','done','cancel'))], 'required': [('display_type', '=', False)]}" context="{'partner_id':parent.partner_id, 'quantity':product_qty,'uom':product_uom, 'company_id': parent.company_id}" force_save="1" domain="[('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]" invisible="1"/>
                                     <field name="name" widget="section_and_note_text"/>
                                     <field name="sale_line_id" invisible="0"/>
                                     <field name="date_planned" optional="hide" attrs="{'required': [('display_type', '=', False)], 'readonly': [('parent.date_planned', '!=', False)]}" invisible="1"/>
@@ -36,6 +36,9 @@
                                 </tree>
                                 </field>
                 </group>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='sequence']" position="replace">
+                <field name="sequence_ref" readonly="1" force_save="1"/>
             </xpath>
         </field>
     </record>

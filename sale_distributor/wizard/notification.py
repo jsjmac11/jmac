@@ -32,6 +32,8 @@ class NotificationMessage(models.TransientModel):
         elif self._context.get('ship_from_here'):
             route_id = self.env.ref('stock.route_warehouse0_mto').id
             dict.update({'line_type': 'stock', 'route_id': route_id})
+        elif self._context.get('allocate'):
+            dict.update({'line_type': 'allocate', 'route_id': False})
 
         if not self.order_id:
             if self.qty <= 0.0:

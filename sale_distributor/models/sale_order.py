@@ -120,9 +120,9 @@ class SaleOrder(models.Model):
     def confirm_purchase(self):
         self.action_confirm()
         purchase_line_data = self.env['purchase.order.line'].search([('sale_order_id', 'in', self.ids)])
-        purchase_ids = purchase_line_data.mapped('order_id')
-        if purchase_ids:
-            purchase_ids.button_confirm()
+        dropship_purchase_ids = purchase_line_data.mapped('order_id').filtered(lambda po: po.dest_address_id)
+        if dropship_purchase_ids:
+            dropship_purchase_ids.button_confirm()
         return True
 
     def order_process(self):
@@ -141,6 +141,9 @@ class SaleOrder(models.Model):
         elif ctx.get('dropship',False):
             wiz_name = 'Dropship'
             msg +=  'Dropship'
+        elif ctx.get('allocate',False):
+            wiz_name = 'Allocate'
+            msg += 'Allocate'
         ctx.update({'default_message': msg})
         return {
             'name': (wiz_name),
@@ -170,6 +173,71 @@ class SaleOrder(models.Model):
                     if rec['name'] == 'Mark Quotation as Sent':
                         res['toolbar']['action'].remove(rec)
         return res
+
+    def _activity_cancel_on_purchase(self):
+        """ If some SO are cancelled, we need to put an activity on their generated purchase. If sale lines of
+            different sale orders impact different purchase, we only want one activity to be attached.
+        """
+        res = super(SaleOrder, self)._activity_cancel_on_purchase()
+        if self.mapped('split_line_ids').ids:
+            purchase_to_notify_map = {}  # map PO -> recordset of SOL as {purchase.order: set(sale.orde.liner)}
+
+            purchase_order_lines = self.env['purchase.order.line'].search([('sale_line_id', 'in', self.mapped('split_line_ids').ids), ('state', '!=', 'cancel')])
+            for purchase_line in purchase_order_lines:
+                purchase_to_notify_map.setdefault(purchase_line.order_id, self.env['sale.order.line'])
+                purchase_to_notify_map[purchase_line.order_id] |= purchase_line.sale_line_id
+
+            for purchase_order, sale_order_lines in purchase_to_notify_map.items():
+                purchase_order.activity_schedule_with_view('mail.mail_activity_data_warning',
+                    user_id=purchase_order.user_id.id or self.env.uid,
+                    views_or_xmlid='sale_purchase.exception_purchase_on_sale_cancellation',
+                    render_context={
+                        'sale_orders': sale_order_lines.mapped('order_id'),
+                        'sale_order_lines': sale_order_lines,
+                })
+
+    def _add_supplier_to_product(self):
+        # Add the partner in the supplier list of the product if the supplier is not registered for
+        # this product. We limit to 10 the number of suppliers for a product to avoid the mess that
+        # could be caused for some generic products ("Miscellaneous").
+        for line in self.order_line:
+            # Do not add a contact as a supplier
+            partner = self.partner_id if not self.partner_id.parent_id else self.partner_id.parent_id
+            if line.product_id and partner not in line.product_id.seller_ids.mapped('name') and len(line.product_id.seller_ids) <= 10:
+                # Convert the price in the right currency.
+                currency = partner.property_purchase_currency_id or self.env.company.currency_id
+                price = self.currency_id._convert(line.price_unit, currency, line.company_id, line.date_order or fields.Date.today(), round=False)
+                # Compute the price for the template's UoM, because the supplier's UoM is related to that UoM.
+                if line.product_id.product_tmpl_id.uom_po_id != line.product_uom:
+                    default_uom = line.product_id.product_tmpl_id.uom_po_id
+                    price = line.product_uom._compute_price(price, default_uom)
+
+                supplierinfo = {
+                    'name': partner.id,
+                    'sequence': max(line.product_id.seller_ids.mapped('sequence')) + 1 if line.product_id.seller_ids else 1,
+                    'min_qty': 0.0,
+                    'price': price,
+                    'currency_id': currency.id,
+                    'delay': 0,
+                }
+                # In case the order partner is a contact address, a new supplierinfo is created on
+                # the parent company. In this case, we keep the product name and code.
+                seller = line.product_id._select_seller(
+                    partner_id=line.partner_id,
+                    quantity=line.product_qty,
+                    date=line.order_id.date_order and line.order_id.date_order.date(),
+                    uom_id=line.product_uom)
+                if seller:
+                    supplierinfo['product_name'] = seller.product_name
+                    supplierinfo['product_code'] = seller.product_code
+                vals = {
+                    'seller_ids': [(0, 0, supplierinfo)],
+                }
+                try:
+                    line.product_id.write(vals)
+                except AccessError:  # no write access rights -> just ignore
+                    break
+
 
 
 class SaleOrderLine(models.Model):
@@ -389,7 +457,7 @@ class SaleOrderLine(models.Model):
     sale_split_lines = fields.One2many("sale.order.line", 'parent_line_id', string="Process Qty",  ondelete='cascade')
     vendor_id = fields.Many2one('res.partner', string='Line Vendor')
     vendor_unit_price= fields
-    line_type = fields.Selection([('buy','Buy'),('dropship','Dropship'),('stock','Stock')])
+    line_type = fields.Selection([('buy','Buy'),('dropship','Dropship'),('stock','Ship'),('allocate','Allocated')])
     main_order_id = fields.Many2one('sale.order', string='Sale Order', related='parent_line_id.order_id', ondelete='cascade', index=True,
                                copy=False)
     vendor_price_unit = fields.Float(string='Vendor Unit Price', digits='Product Price')
@@ -681,27 +749,15 @@ class SaleOrderLine(models.Model):
         elif ctx.get('dropship',False):
             wiz_name = 'Dropship'
             msg =  'Dropship %s' % self.product_id.name
+        elif ctx.get('allocate',False):
+            wiz_name = 'Allocate'
+            msg = 'Allocate %s?' % self.product_id.name
         if name :
             ctx.update({'default_partner_id': name.id})
             wiz_name = name.name + ' ' + wiz_name
         ctx.update({'default_message': msg,'default_unit_price':vendor_price_unit})
         return {
             'name': (wiz_name),
-            'type': 'ir.actions.act_window',
-            'view_mode': 'form',
-            'res_model': model,
-            'view_id': view_id,
-            'target': 'new',
-            'context': ctx,
-        }
-
-
-    def allocate(self):
-        ctx = self._context.copy()
-        model = 'notification.message'
-        view_id = self.env.ref('sale_distributor.allocate_notification_message_form_view').id
-        return {
-            'name': ('Allocate'),
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': model,

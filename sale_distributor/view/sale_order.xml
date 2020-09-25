@@ -65,8 +65,8 @@
                     </field>
                 </group>
             </xpath>
-            <xpath expr="//field[@name='order_line']/tree/field[@name='product_id']"
-                   position="before">
+            <xpath expr="//field[@name='order_line']/tree/field[@name='sequence']"
+                   position="replace">
                 <field name="sequence_ref"/>
             </xpath>
             <xpath expr="//page[@name='other_information']/group/group[@name='sale_shipping']" position="replace">
@@ -576,7 +576,7 @@
                         </notebook>
                         <div class="o_row">
                             <button name="split_line" context="{'ship_from_here':True}" type="object" class="oe_highlight" string="Ship from Here"/>
-                            <button name="allocate" type="object" class="oe_highlight" string="Allocate"/>
+                            <button name="split_line" context="{'allocate':True}" type="object" class="oe_highlight" string="Allocate"/>
                         </div>
                     </page>
                     <!-- BKS Tab -->

@@ -14,6 +14,7 @@ import string
 
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
+    _order = 'order_id, sequence_ref, id'
 
     line_split = fields.Boolean('Split')
     parent_line_id = fields.Many2one('purchase.order.line', string="Parent Line")
