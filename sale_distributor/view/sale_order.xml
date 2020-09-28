@@ -109,6 +109,10 @@
             <xpath expr="//field[@name='order_line']/tree" position="attributes">
                 <attribute name="editable"></attribute>
             </xpath>
+            <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="after">
+                <field name="substitute_product_id"/>
+                <field name="substitute_product_template_id" invisible="1"/>
+            </xpath>
             <!-- Manufacturer Info -->
             <xpath expr="//field[@name='order_line']/form/group/group/div[@name='lead']" position="after">
                 <field name="note" string="Note" attrs="{'invisible': [('display_type', '!=', False)]}"/>

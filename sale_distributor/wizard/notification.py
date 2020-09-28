@@ -40,9 +40,13 @@ class NotificationMessage(models.TransientModel):
                 raise ValidationError(_("Quantity must be greater than 0!"))
             elif self.qty > self.remaining_qty:
                 raise ValidationError(_("Quantity must not be greater than unprocess quantity %s!" % self.remaining_qty))
+            product_id = self.sale_line_id.product_id
+            if self.sale_line_id.substitute_product_id:
+                product_id = self.sale_line_id.substitute_product_id
             dict.update({'product_uom_qty': self.qty,
                     'parent_line_id': self.sale_line_id.id,
                     'vendor_price_unit': self.unit_price,
+                    'product_id': product_id.id,
                     })
             split_line_id = self.sale_line_id.copy(dict)
             split_line_id.order_id._genrate_line_sequence()
@@ -69,11 +73,14 @@ class NotificationMessage(models.TransientModel):
                     vendor_price_unit = line.bks_actual_cost
                 elif self.partner_id.id == line.partner_id.id:
                     vendor_price_unit = line.otv_cost
-
+                product_id = line.product_id
+                if line.substitute_product_id:
+                    product_id = line.substitute_product_id
                 dict.update({
                     'product_uom_qty': line.product_uom_qty,
                     'parent_line_id': line.id,
                     'vendor_price_unit': vendor_price_unit,
+                    'product_id': product_id.id,
                     })
                 split_line_id = line.copy(dict)
             self.order_id._genrate_line_sequence()
