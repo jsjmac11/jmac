@@ -43,7 +43,7 @@ class SaleOrder(models.Model):
             order.qty_all = qty_all
             
 
-    @api.depends('order_line')
+    @api.depends('order_line','order_line.sale_split_lines')
     def _compute_split_lines(self):
         for record in self:
             record.split_line_ids = record.order_line.sale_split_lines
