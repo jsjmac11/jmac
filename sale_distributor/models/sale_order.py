@@ -43,7 +43,7 @@ class SaleOrder(models.Model):
             order.qty_all = qty_all
             
 
-    @api.depends('order_line')
+    @api.depends('order_line','order_line.sale_split_lines')
     def _compute_split_lines(self):
         for record in self:
             record.split_line_ids = record.order_line.sale_split_lines
@@ -606,6 +606,12 @@ class SaleOrderLine(models.Model):
                                copy=False)
     vendor_price_unit = fields.Float(string='Vendor Unit Price', digits='Product Price')
     sequence_ref = fields.Char('No.')
+    substitute_product_id = fields.Many2one(
+        'product.product', string='Substitute Product', domain="[('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', company_id)]",
+        change_default=True, ondelete='restrict', check_company=True)  # Unrequired company
+    substitute_product_template_id = fields.Many2one(
+        'product.template', string='Substitute Product Template',
+        related="substitute_product_id.product_tmpl_id", domain=[('sale_ok', '=', True)])
 
     def _action_launch_stock_rule(self, previous_product_uom_qty=False):
         """
@@ -632,7 +638,10 @@ class SaleOrderLine(models.Model):
         return res
 
     def vendor_price_stock(self, partner_id, product_uom_qty,params,vendor):
-        pricelist_id = self.product_id._select_seller(
+        product_id = self.product_id
+        if self.substitute_product_id:
+            product_id = self.substitute_product_id
+        pricelist_id = product_id._select_seller(
                                                 partner_id=partner_id,
                                                 quantity=product_uom_qty,
                                                 date=self.order_id.date_order and self.order_id.date_order.date(),
@@ -648,7 +657,7 @@ class SaleOrderLine(models.Model):
         stock_sum = 0.0
         stock_master_line_id = self.env["vendor.stock.master.line"].search(
                     [('res_partner_id', '=', partner_id.id),
-                     ('product_id', '=', self.product_id.id),
+                     ('product_id', '=', product_id.id),
                      ('case_qty','!=',0.0)])
         if stock_master_line_id:
             if actual_cost:
@@ -658,7 +667,7 @@ class SaleOrderLine(models.Model):
              vendor+'_vendor_stock_ids' : [(6,0,stock_master_line_id.ids)]})
         return [values, vendor_cost, stock_sum]
 
-    @api.onchange('product_id')
+    @api.onchange('product_id','substitute_product_id')
     def product_id_change(self):
         self.lowest_cost_source = ''
         self.adi_part_number = self.nv_part_number = self.jne_part_number = ''
@@ -685,11 +694,14 @@ class SaleOrderLine(models.Model):
         self.ss_total_stock = self.bnr_total_stock = self.wr_total_stock = self.dfm_total_stock = self.bks_total_stock = 0.0
         self.sale_split_lines = [(6,0,[])]
         result = super(SaleOrderLine, self).product_id_change()
-        if self.product_id:
+        product_id = self.product_id
+        if self.substitute_product_id:
+            product_id = self.substitute_product_id
+        if product_id:
             vendor_cost = {}
             all_total_stock = 0.0
             result.update({'value': {}})
-            incoming_move_ids = self.env["stock.move"].search([('product_id', '=', self.product_id.id),
+            incoming_move_ids = self.env["stock.move"].search([('product_id', '=', product_id.id),
                                              ('location_id.usage', 'not in', ('internal', 'transit')),
                                              ('location_dest_id.usage', 'in', ('internal', 'transit')),
                                              ('state', 'not in', ('cancel', 'done'))]).filtered(lambda mo: mo.purchase_line_id)
@@ -706,13 +718,13 @@ class SaleOrderLine(models.Model):
                                                # 'sale_line_id': self.parent_line_id.id,
                                                'po_line_id': po_line.id}))
                 self.inbound_stock_lines = inbound_lines
-            jmac_stock_ids = self.env["stock.quant"].search([('product_id', '=', self.product_id.id),
+            jmac_stock_ids = self.env["stock.quant"].search([('product_id', '=', product_id.id),
                 ('location_id.usage', '=', 'internal'),('quantity','!=',0.0)])
             if jmac_stock_ids:
-                self.jmac_onhand = self.product_id.qty_available
-                self.jmac_available = self.product_id.qty_available
+                self.jmac_onhand = product_id.qty_available
+                self.jmac_available = product_id.qty_available
                 self.jmac_stock_ids = [(6,0,jmac_stock_ids.ids)]
-                all_total_stock += self.product_id.qty_available
+                all_total_stock += product_id.qty_available
             params = {} # 'order_id': self.order_id
             if self.adi_partner_id:
                 price_stock_list = self.vendor_price_stock(self.adi_partner_id,self.product_uom_qty,params,'adi')
@@ -781,7 +793,10 @@ class SaleOrderLine(models.Model):
     @api.onchange('product_uom', 'product_uom_qty')
     def product_uom_change(self):
         result = super(SaleOrderLine, self).product_uom_change()
-        if self.product_id:
+        product_id = self.product_id
+        if self.substitute_product_id:
+            product_id = self.substitute_product_id
+        if product_id:
             vendor_cost = {}
             result = {'value': {}}
             params = {} # 'order_id': self.order_id
@@ -883,19 +898,22 @@ class SaleOrderLine(models.Model):
             vendor_price_unit = self.otv_cost
         wiz_name = ''
         msg = ''
+        product_id = self.product_id
+        if self.substitute_product_id:
+            product_id = self.substitute_product_id
         if ctx.get('ship_from_here',False):
             wiz_name = 'Ship from here'
-            msg = 'Ship %s from here?' % self.product_id.name
+            msg = 'Ship %s from here?' % product_id.name
             
         elif ctx.get('add_to_buy',False):
             wiz_name = 'Add to Buy'
-            msg = 'Add %s to buy' % self.product_id.name
+            msg = 'Add %s to buy' % product_id.name
         elif ctx.get('dropship',False):
             wiz_name = 'Dropship'
-            msg =  'Dropship %s' % self.product_id.name
+            msg =  'Dropship %s' % product_id.name
         elif ctx.get('allocate',False):
             wiz_name = 'Allocate'
-            msg = 'Allocate %s?' % self.product_id.name
+            msg = 'Allocate %s?' % product_id.name
         if name :
             ctx.update({'default_partner_id': name.id})
             wiz_name = name.name + ' ' + wiz_name

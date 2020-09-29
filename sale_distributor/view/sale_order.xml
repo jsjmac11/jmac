@@ -109,6 +109,10 @@
             <xpath expr="//field[@name='order_line']/tree" position="attributes">
                 <attribute name="editable"></attribute>
             </xpath>
+            <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="after">
+                <field name="substitute_product_id"/>
+                <field name="substitute_product_template_id" invisible="1"/>
+            </xpath>
             <!-- Manufacturer Info -->
             <xpath expr="//field[@name='order_line']/form/group/group/div[@name='lead']" position="after">
                 <field name="note" string="Note" attrs="{'invisible': [('display_type', '!=', False)]}"/>
@@ -188,8 +192,8 @@
                                 <field name="adi_cost_last_updated" string="Cost Last Updated"/>
                                 <field name="adi_stock_last_updated" string="Stock Last Updated"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'adi','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
-                                    <button name="split_line" context="{'vendor':'adi','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+                                    <button name="split_line" context="{'vendor':'adi','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy"/>
+                                    <button name="split_line" context="{'vendor':'adi','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship"/>
                                 </div>
                             </group>
                         </group>
@@ -418,8 +422,8 @@
                                 <field name="nv_cost_last_updated" string="Cost Last Updated"/>
                                 <field name="nv_stock_last_updated" string="Stock Last Updated"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'nv','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
-                                    <button name="split_line" context="{'vendor':'nv','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+                                    <button name="split_line" context="{'vendor':'nv','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy"/>
+                                    <button name="split_line" context="{'vendor':'nv','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship"/>
                                 </div>
                             </group>
                         </group>
@@ -511,6 +515,7 @@
                                 <field name="sl_cost_last_updated" string="Cost Last Updated"/>
                                 <field name="sl_stock_last_updated" string="Stock Last Updated"/>
                                 <div class="o_row">
+<<<<<<< HEAD
                                     <button name="split_line" context="{'vendor':'sl','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'sl','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
                                 </div>
@@ -1017,6 +1022,10 @@
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'wr','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'wr','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+=======
+                                    <button name="split_line" context="{'vendor':'sl','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy"/>
+                                    <button name="split_line" context="{'vendor':'sl','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship"/>
+>>>>>>> order_line_process
                                 </div>
                             </group>
                             
@@ -1061,8 +1070,13 @@
                                 <field name="wr_cost_last_updated" string="Cost Last Updated"/>
                                 <field name="wr_stock_last_updated" string="Stock Last Updated"/>
                                 <div class="o_row">
+<<<<<<< HEAD
                                     <button name="split_line" context="{'vendor':'wr','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'wr','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+=======
+                                    <button name="split_line" context="{'vendor':'ss','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy"/>
+                                    <button name="split_line" context="{'vendor':'ss','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship"/>
+>>>>>>> order_line_process
                                 </div>
                             </group>
                             
@@ -1107,8 +1121,8 @@
                                 <field name="wr_cost_last_updated" string="Cost Last Updated"/>
                                 <field name="wr_stock_last_updated" string="Stock Last Updated"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'wr','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
-                                    <button name="split_line" context="{'vendor':'wr','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+                                    <button name="split_line" context="{'vendor':'jne','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy"/>
+                                    <button name="split_line" context="{'vendor':'jne','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship"/>
                                 </div>
                             </group>
                             
@@ -1156,8 +1170,13 @@
                                 <field name="dfm_cost_last_updated" string="Cost Last Updated"/>
                                 <field name="dfm_stock_last_updated" string="Stock Last Updated"/>
                                 <div class="o_row">
+<<<<<<< HEAD
                                     <button name="split_line" context="{'vendor':'dfm','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'dfm','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+=======
+                                    <button name="split_line" context="{'vendor':'bnr','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy"/>
+                                    <button name="split_line" context="{'vendor':'bnr','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship"/>
+>>>>>>> order_line_process
                                 </div>
                             </group>
                             
@@ -1202,8 +1221,13 @@
                                 <field name="dfm_cost_last_updated" string="Cost Last Updated"/>
                                 <field name="dfm_stock_last_updated" string="Stock Last Updated"/>
                                 <div class="o_row">
+<<<<<<< HEAD
                                     <button name="split_line" context="{'vendor':'dfm','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'dfm','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+=======
+                                    <button name="split_line" context="{'vendor':'wr','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy"/>
+                                    <button name="split_line" context="{'vendor':'wr','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship"/>
+>>>>>>> order_line_process
                                 </div>
                             </group>
                             
@@ -1248,8 +1272,8 @@
                                 <field name="dfm_cost_last_updated" string="Cost Last Updated"/>
                                 <field name="dfm_stock_last_updated" string="Stock Last Updated"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'dfm','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
-                                    <button name="split_line" context="{'vendor':'dfm','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+                                    <button name="split_line" context="{'vendor':'dfm','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy"/>
+                                    <button name="split_line" context="{'vendor':'dfm','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship"/>
                                 </div>
                             </group>
                             
@@ -1321,8 +1345,8 @@
                             </page>
                         </notebook>
                         <div class="o_row">
-                            <button name="split_line" context="{'ship_from_here':True}" type="object" class="oe_highlight" string="Ship from Here"/>
-                            <button name="split_line" context="{'allocate':True}" type="object" class="oe_highlight" string="Allocate"/>
+                            <button name="split_line" context="{'ship_from_here':True}" type="object" class="oe_highlight oe_edit_only" string="Ship from Here"/>
+                            <button name="split_line" context="{'allocate':True}" type="object" class="oe_highlight oe_edit_only" string="Allocate"/>
                         </div>
                     </page>
 
@@ -1457,8 +1481,8 @@
                                 <field name="bks_cost_last_updated" string="Cost Last Updated"/>
                                 <field name="bks_stock_last_updated" string="Stock Last Updated"/>
                                 <div class="o_row">
-                                <button name="split_line" context="{'vendor':'bks','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
-                                <button name="split_line" context="{'vendor':'bks','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+                                <button name="split_line" context="{'vendor':'bks','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy"/>
+                                <button name="split_line" context="{'vendor':'bks','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship"/>
                             </div>
                             </group>
                         </group>
@@ -1474,8 +1498,8 @@
                             </group>
                         </group>
                         <div class="o_row">
-                            <button name="split_line" context="{'vendor':'otv','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
-                            <button name="split_line" context="{'vendor':'otv','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
+                            <button name="split_line" context="{'vendor':'otv','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy"/>
+                            <button name="split_line" context="{'vendor':'otv','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship"/>
                         </div>
                     </page>
                 </notebook>
