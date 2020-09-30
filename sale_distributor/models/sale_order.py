@@ -311,13 +311,7 @@ class SaleOrderLine(models.Model):
         Gives a color scheme for the vendor tab depending on whether the vendor carries the product
         and has it in inventory.
         """
-        if bool(self.adi_vendor_stock_ids):
-            if self.adi_vendor_stock_ids.case_qty > 0:
-                self.adi_tab_color = 'green_blue'
-            else:
-                self.adi_tab_color = 'green'
-        else:
-            self.adi_tab_color = 'grey'
+        self.adi_tab_color = self._compute_generic_tab_color('adi')
 
     # NV TAB
     nv_part_number = fields.Char(string="NV Part Number")
@@ -344,13 +338,7 @@ class SaleOrderLine(models.Model):
         Gives a color scheme for the vendor tab depending on whether the vendor carries the product
         and has it in inventory.
         """
-        if bool(self.nv_vendor_stock_ids):
-            if self.nv_vendor_stock_ids.case_qty > 0:
-                self.nv_tab_color = 'green_blue'
-            else:
-                self.nv_tab_color = 'green'
-        else:
-            self.nv_tab_color = 'grey'
+        self.nv_tab_color = self._compute_generic_tab_color('nv')
 
     # SL TAB
     sl_part_number = fields.Char(string="SL Part Number")
@@ -377,13 +365,7 @@ class SaleOrderLine(models.Model):
         Gives a color scheme for the vendor tab depending on whether the vendor carries the product
         and has it in inventory.
         """
-        if bool(self.sl_vendor_stock_ids):
-            if self.sl_vendor_stock_ids.case_qty > 0:
-                self.sl_tab_color = 'green_blue'
-            else:
-                self.sl_tab_color = 'green'
-        else:
-            self.sl_tab_color = 'grey'
+        self.sl_tab_color = self._compute_generic_tab_color('sl')
                                                         
     # SS TAB
     ss_part_number = fields.Char(string="SS Part Number")
@@ -410,13 +392,7 @@ class SaleOrderLine(models.Model):
         Gives a color scheme for the vendor tab depending on whether the vendor carries the product
         and has it in inventory.
         """
-        if bool(self.ss_vendor_stock_ids):
-            if self.ss_vendor_stock_ids.case_qty > 0:
-                self.ss_tab_color = 'green_blue'
-            else:
-                self.ss_tab_color = 'green'
-        else:
-            self.ss_tab_color = 'grey'
+        self.ss_tab_color = self._compute_generic_tab_color('ss')
 
     # JNE TAB
     jne_part_number = fields.Char(string="JNE Part Number")
@@ -443,13 +419,7 @@ class SaleOrderLine(models.Model):
         Gives a color scheme for the vendor tab depending on whether the vendor carries the product
         and has it in inventory.
         """
-        if bool(self.jne_vendor_stock_ids):
-            if self.jne_vendor_stock_ids.case_qty > 0:
-                self.jne_tab_color = 'green_blue'
-            else:
-                self.jne_tab_color = 'green'
-        else:
-            self.jne_tab_color = 'grey'
+        self.jne_tab_color = self._compute_generic_tab_color('jne')
 
     # BNR TAB
     bnr_part_number = fields.Char(string="BNR Part Number")
@@ -476,13 +446,7 @@ class SaleOrderLine(models.Model):
         Gives a color scheme for the vendor tab depending on whether the vendor carries the product
         and has it in inventory.
         """
-        if bool(self.bnr_vendor_stock_ids):
-            if self.bnr_vendor_stock_ids.case_qty > 0:
-                self.bnr_tab_color = 'green_blue'
-            else:
-                self.bnr_tab_color = 'green'
-        else:
-            self.bnr_tab_color = 'grey'
+        self.bnr_tab_color = self._compute_generic_tab_color('bnr')
 
     # WR TAB
     wr_part_number = fields.Char(string="WR Part Number")
@@ -509,13 +473,7 @@ class SaleOrderLine(models.Model):
         Gives a color scheme for the vendor tab depending on whether the vendor carries the product
         and has it in inventory.
         """
-        if bool(self.wr_vendor_stock_ids):
-            if self.wr_vendor_stock_ids.case_qty > 0:
-                self.wr_tab_color = 'green_blue'
-            else:
-                self.wr_tab_color = 'green'
-        else:
-            self.wr_tab_color = 'grey'
+        self.wr_tab_color = self._compute_generic_tab_color('wr')
 
     # DFM TAB
     dfm_part_number = fields.Char(string="DFM Part Number")
@@ -542,13 +500,7 @@ class SaleOrderLine(models.Model):
         Gives a color scheme for the vendor tab depending on whether the vendor carries the product
         and has it in inventory.
         """
-        if bool(self.dfm_vendor_stock_ids):
-            if self.dfm_vendor_stock_ids.case_qty > 0:
-                self.dfm_tab_color = 'green_blue'
-            else:
-                self.dfm_tab_color = 'green'
-        else:
-            self.dfm_tab_color = 'grey'
+        self.dfm_tab_color = self._compute_generic_tab_color('dfm')
 
     # JMAC TAB
     jmac_allocated = fields.Float(string="Allocated", digits='Product Unit of Measure')
@@ -583,13 +535,7 @@ class SaleOrderLine(models.Model):
         Gives a color scheme for the vendor tab depending on whether the vendor carries the product
         and has it in inventory.
         """
-        if bool(self.bks_vendor_stock_ids):
-            if self.bks_vendor_stock_ids.case_qty > 0:
-                self.bks_tab_color = 'green_blue'
-            else:
-                self.bks_tab_color = 'green'
-        else:
-            self.bks_tab_color = 'grey'
+        self.bks_tab_color = self._compute_generic_tab_color('bks')
 
     # OTV TAB
     partner_id = fields.Many2one('res.partner', string='Vendor')
@@ -942,6 +888,23 @@ class SaleOrderLine(models.Model):
                 })
         return values
 
+    def _compute_generic_tab_color(self, vendor):
+        """
+        Gives a color scheme for the vendor tab depending on whether the vendor carries the product
+        and has it in inventory.
+        """
+        res_partner = getattr(self, f"{vendor}_partner_id", False)
+        if not res_partner:
+            return 'grey'
+        all_stock_master_line_ids = self.env["vendor.stock.master.line"].search(
+                    [('res_partner_id', '=', res_partner.id),
+                     ('product_id', '=', self.product_id.id)])
+        if bool(all_stock_master_line_ids):
+            if sum(all_stock_master_line_ids.mapped('case_qty')) > 0:
+                return 'green_blue'
+            else:
+                return 'green'
+        return 'grey'
 
 class InboundStock(models.Model):
     _name = "inbound.stock"
