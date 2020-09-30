@@ -1,5 +1,38 @@
-/* causes a vendor tab on the sales order line to darken when made active */ 
-div > div > main > div > div > div > div.o_notebook > div.o_notebook_headers > ul > li > a.nav-link.nav-link.active {
-    background-color: #d2d2d6 !important;
+/* grey_tab */
+div > div > main > div > div > div > div.o_notebook > div.o_notebook_headers > ul > li.nav-item.grey_tab > a.nav-link
+{
+    background-color: #E0E0E0 !important;
+}
+div > div > main > div > div > div > div.o_notebook > div.o_notebook_headers > ul > li.nav-item.grey_tab > a.nav-link.nav-link.active
+{
+    background-color: #B8B8B8 !important;
+}
+
+/* green with grey text tab */
+div > div > main > div > div > div > div.o_notebook > div.o_notebook_headers > ul > li.nav-item.green_tab > a.nav-link
+{
+    background-color: #90EE90 !important;
+    color: #B8B8B8 !important;
+    font-weight: bold !important;
+}
+div > div > main > div > div > div > div.o_notebook > div.o_notebook_headers > ul > li.nav-item.green_tab > a.nav-link.nav-link.active
+{
+    background-color: #2E8B57 !important;
+    color: #B8B8B8 !important;
+    font-weight: bold !important;
+}
+
+/* green with blue text tab */
+div > div > main > div > div > div > div.o_notebook > div.o_notebook_headers > ul > li.nav-item.green_blue_tab > a.nav-link
+{
+    background-color: #90EE90 !important;
+    color: #000080 !important;
+    font-weight: bold !important;
+}
+div > div > main > div > div > div > div.o_notebook > div.o_notebook_headers > ul > li.nav-item.green_blue_tab > a.nav-link.nav-link.active
+{
+    background-color: #2E8B57 !important;
+    color: #000080 !important;
+    font-weight: bold !important;
 }
 

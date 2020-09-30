@@ -303,6 +303,16 @@ class SaleOrderLine(models.Model):
     adi_partner_id = fields.Many2one('res.partner', string='ADI Vendor')
     adi_vendor_stock_ids = fields.Many2many('vendor.stock.master.line', 'sol_vendor_stock_rel',
                                             'line_id', 'vendor_stock_id', string="ADI Stock")
+    adi_tab_color = fields.Char(string="ADI Tab Color", compute='_compute_adi_tab_color')
+    
+    @api.depends('product_id', 'adi_vendor_stock_ids')
+    def _compute_adi_tab_color(self):
+        """
+        Gives a color scheme for the vendor tab depending on whether the vendor carries the product
+        and has it in inventory.
+        """
+        self.adi_tab_color = self._compute_generic_tab_color('adi')
+
     # NV TAB
     nv_part_number = fields.Char(string="NV Part Number")
     nv_case_qty = fields.Float(string="NV Case Qty", digits='Product Unit of Measure')
@@ -320,6 +330,16 @@ class SaleOrderLine(models.Model):
     nv_partner_id = fields.Many2one('res.partner', string='NV Vendor')
     nv_vendor_stock_ids = fields.Many2many('vendor.stock.master.line', 'nv_sol_vendor_stock_rel',
                                             'line_id', 'vendor_stock_id', string="NV Stock")
+    nv_tab_color = fields.Char(string="NV Tab Color", compute='_compute_nv_tab_color')
+
+    @api.depends('product_id', 'nv_vendor_stock_ids')
+    def _compute_nv_tab_color(self):
+        """
+        Gives a color scheme for the vendor tab depending on whether the vendor carries the product
+        and has it in inventory.
+        """
+        self.nv_tab_color = self._compute_generic_tab_color('nv')
+
     # SL TAB
     sl_part_number = fields.Char(string="SL Part Number")
     sl_case_qty = fields.Float(string="SL Case Qty", digits='Product Unit of Measure')
@@ -337,6 +357,16 @@ class SaleOrderLine(models.Model):
     sl_partner_id = fields.Many2one('res.partner', string='SL Vendor')
     sl_vendor_stock_ids = fields.Many2many('vendor.stock.master.line', 'sl_sol_vendor_stock_rel',
                                             'line_id', 'vendor_stock_id', string="SL Stock")
+    sl_tab_color = fields.Char(string="SL Tab Color", compute='_compute_sl_tab_color')
+
+    @api.depends('product_id', 'sl_vendor_stock_ids')
+    def _compute_sl_tab_color(self):
+        """
+        Gives a color scheme for the vendor tab depending on whether the vendor carries the product
+        and has it in inventory.
+        """
+        self.sl_tab_color = self._compute_generic_tab_color('sl')
+                                                        
     # SS TAB
     ss_part_number = fields.Char(string="SS Part Number")
     ss_case_qty = fields.Float(string="SS Case Qty", digits='Product Unit of Measure')
@@ -354,6 +384,16 @@ class SaleOrderLine(models.Model):
     ss_partner_id = fields.Many2one('res.partner', string='SS Vendor')
     ss_vendor_stock_ids = fields.Many2many('vendor.stock.master.line', 'ss_sol_vendor_stock_rel',
                                             'line_id', 'vendor_stock_id', string="SS Stock")
+    ss_tab_color = fields.Char(string="SS Tab Color", compute='_compute_ss_tab_color')
+
+    @api.depends('product_id', 'ss_vendor_stock_ids')
+    def _compute_ss_tab_color(self):
+        """
+        Gives a color scheme for the vendor tab depending on whether the vendor carries the product
+        and has it in inventory.
+        """
+        self.ss_tab_color = self._compute_generic_tab_color('ss')
+
     # JNE TAB
     jne_part_number = fields.Char(string="JNE Part Number")
     jne_case_qty = fields.Float(string="JNE Case Qty", digits='Product Unit of Measure')
@@ -371,6 +411,16 @@ class SaleOrderLine(models.Model):
     jne_partner_id = fields.Many2one('res.partner', string='JNE Vendor')
     jne_vendor_stock_ids = fields.Many2many('vendor.stock.master.line', 'jne_sol_vendor_stock_rel',
                                             'line_id', 'vendor_stock_id', string="JNE Stock")
+    jne_tab_color = fields.Char(string="JNE Tab Color", compute='_compute_jne_tab_color')
+
+    @api.depends('product_id', 'jne_vendor_stock_ids')
+    def _compute_jne_tab_color(self):
+        """
+        Gives a color scheme for the vendor tab depending on whether the vendor carries the product
+        and has it in inventory.
+        """
+        self.jne_tab_color = self._compute_generic_tab_color('jne')
+
     # BNR TAB
     bnr_part_number = fields.Char(string="BNR Part Number")
     bnr_case_qty = fields.Float(string="BNR Case Qty", digits='Product Unit of Measure')
@@ -388,6 +438,16 @@ class SaleOrderLine(models.Model):
     bnr_partner_id = fields.Many2one('res.partner', string='BNR Vendor')
     bnr_vendor_stock_ids = fields.Many2many('vendor.stock.master.line', 'bnr_sol_vendor_stock_rel',
                                             'line_id', 'vendor_stock_id', string="BNR Stock")
+    bnr_tab_color = fields.Char(string="BNR Tab Color", compute='_compute_bnr_tab_color')
+
+    @api.depends('product_id', 'bnr_vendor_stock_ids')
+    def _compute_bnr_tab_color(self):
+        """
+        Gives a color scheme for the vendor tab depending on whether the vendor carries the product
+        and has it in inventory.
+        """
+        self.bnr_tab_color = self._compute_generic_tab_color('bnr')
+
     # WR TAB
     wr_part_number = fields.Char(string="WR Part Number")
     wr_case_qty = fields.Float(string="WR Case Qty", digits='Product Unit of Measure')
@@ -405,6 +465,16 @@ class SaleOrderLine(models.Model):
     wr_partner_id = fields.Many2one('res.partner', string='WR Vendor')
     wr_vendor_stock_ids = fields.Many2many('vendor.stock.master.line', 'wr_sol_vendor_stock_rel',
                                             'line_id', 'vendor_stock_id', string="WR Stock")
+    wr_tab_color = fields.Char(string="WR Tab Color", compute='_compute_wr_tab_color')
+
+    @api.depends('product_id', 'wr_vendor_stock_ids')
+    def _compute_wr_tab_color(self):
+        """
+        Gives a color scheme for the vendor tab depending on whether the vendor carries the product
+        and has it in inventory.
+        """
+        self.wr_tab_color = self._compute_generic_tab_color('wr')
+
     # DFM TAB
     dfm_part_number = fields.Char(string="DFM Part Number")
     dfm_case_qty = fields.Float(string="DFM Case Qty", digits='Product Unit of Measure')
@@ -422,6 +492,16 @@ class SaleOrderLine(models.Model):
     dfm_partner_id = fields.Many2one('res.partner', string='DFM Vendor')
     dfm_vendor_stock_ids = fields.Many2many('vendor.stock.master.line', 'dfm_sol_vendor_stock_rel',
                                             'line_id', 'vendor_stock_id', string="DFM Stock")
+    dfm_tab_color = fields.Char(string="DFM Tab Color", compute='_compute_dfm_tab_color')
+
+    @api.depends('product_id', 'dfm_vendor_stock_ids')
+    def _compute_dfm_tab_color(self):
+        """
+        Gives a color scheme for the vendor tab depending on whether the vendor carries the product
+        and has it in inventory.
+        """
+        self.dfm_tab_color = self._compute_generic_tab_color('dfm')
+
     # JMAC TAB
     jmac_allocated = fields.Float(string="Allocated", digits='Product Unit of Measure')
     jmac_available = fields.Float(string="Available", digits='Product Unit of Measure')
@@ -447,6 +527,16 @@ class SaleOrderLine(models.Model):
     bks_partner_id = fields.Many2one('res.partner', string='BKS Vendor')
     bks_vendor_stock_ids = fields.Many2many('vendor.stock.master.line', 'bks_sol_vendor_stock_rel',
                                             'line_id', 'vendor_stock_id', string="BKS Stock")
+    bks_tab_color = fields.Char(string="BKS Tab Color", compute='_compute_bks_tab_color')
+
+    @api.depends('product_id', 'bks_vendor_stock_ids')
+    def _compute_bks_tab_color(self):
+        """
+        Gives a color scheme for the vendor tab depending on whether the vendor carries the product
+        and has it in inventory.
+        """
+        self.bks_tab_color = self._compute_generic_tab_color('bks')
+
     # OTV TAB
     partner_id = fields.Many2one('res.partner', string='Vendor')
     otv_cost = fields.Float(string="Cost")
@@ -798,6 +888,23 @@ class SaleOrderLine(models.Model):
                 })
         return values
 
+    def _compute_generic_tab_color(self, vendor):
+        """
+        Gives a color scheme for the vendor tab depending on whether the vendor carries the product
+        and has it in inventory.
+        """
+        res_partner = getattr(self, f"{vendor}_partner_id", False)
+        if not res_partner:
+            return 'grey'
+        all_stock_master_line_ids = self.env["vendor.stock.master.line"].search(
+                    [('res_partner_id', '=', res_partner.id),
+                     ('product_id', '=', self.product_id.id)])
+        if bool(all_stock_master_line_ids):
+            if sum(all_stock_master_line_ids.mapped('case_qty')) > 0:
+                return 'green_blue'
+            else:
+                return 'green'
+        return 'grey'
 
 class InboundStock(models.Model):
     _name = "inbound.stock"
