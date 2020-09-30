@@ -893,17 +893,15 @@ class SaleOrderLine(models.Model):
         Gives a color scheme for the vendor tab depending on whether the vendor carries the product
         and has it in inventory.
         """
-        res_partner = getattr(self, f"{vendor}_partner_id", False)
-        if not res_partner:
+        stock = getattr(self, f"{vendor}_total_stock", 0.0)
+        price = getattr(self, f"{vendor}_actual_cost", 0.0)
+        if stock and price:
+            return 'green_blue'
+        elif price:
+            return 'green'
+        else:
             return 'grey'
-        all_stock_master_line_ids = self.env["vendor.stock.master.line"].search(
-                    [('res_partner_id', '=', res_partner.id),
-                     ('product_id', '=', self.product_id.id)])
-        if bool(all_stock_master_line_ids):
-            if sum(all_stock_master_line_ids.mapped('case_qty')) > 0:
-                return 'green_blue'
-            else:
-                return 'green'
+
         return 'grey'
 
 class InboundStock(models.Model):
