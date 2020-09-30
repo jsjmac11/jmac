@@ -569,7 +569,7 @@
 
 
                     <!-- SS Tabs -->
-                    <page name="ss_page_grey" string="SS" class="grey_tab" attrs="{'invisible': [('ss_tab_color', '!=', 'grey')]}">>
+                    <page name="ss_page_grey" string="SS" class="grey_tab" attrs="{'invisible': [('ss_tab_color', '!=', 'grey')]}">
                         <group>
                             <group>
                                 <group>
@@ -706,7 +706,7 @@
                     </page>                    
 
                     <!-- JNE Tabs -->
-                    <page name="jne_page_grey" string="JNE" class="grey_tab" attrs="{'invisible': [('jne_tab_color', '!=', 'grey')]}">>
+                    <page name="jne_page_grey" string="JNE" class="grey_tab" attrs="{'invisible': [('jne_tab_color', '!=', 'grey')]}">
                         <group>
                             <group>
                                 <group>
@@ -843,7 +843,7 @@
                     </page>
 
                     <!-- BNR Tabs -->
-                    <page name="bnr_page_grey" string="BNR" class="grey_tab" attrs="{'invisible': [('bnr_tab_color', '!=', 'grey')]}">>
+                    <page name="bnr_page_grey" string="BNR" class="grey_tab" attrs="{'invisible': [('bnr_tab_color', '!=', 'grey')]}">
                         <group>
                             <group>
                                 <group>
@@ -980,7 +980,7 @@
                     </page>
 
                     <!-- WR Tabs -->
-                    <page name="wr_page_grey" string="WR" class="grey_tab" attrs="{'invisible': [('wr_tab_color', '!=', 'grey')]}">>
+                    <page name="wr_page_grey" string="WR" class="grey_tab" attrs="{'invisible': [('wr_tab_color', '!=', 'grey')]}">
                         <group>
                             <group>
                                 <group>
@@ -1121,7 +1121,7 @@
 
 
                     <!-- DFM Tab -->
-                    <page name="dfm_page_grey" string="DFM" class="grey_tab" attrs="{'invisible': [('dfm_tab_color', '!=', 'grey')]}">>
+                    <page name="dfm_page_grey" string="DFM" class="grey_tab" attrs="{'invisible': [('dfm_tab_color', '!=', 'grey')]}">
                         <group>
                             <group>
                                 <group>
@@ -1262,7 +1262,7 @@
 
 
                     <!-- JMAC Tab -->
-                    <page name="jmac_page" class="grey_tab" string="JMAC">
+                    <page name="jmac_page" class="green_blue_tab" string="JMAC">
                         <div class="o_row">
                             <div>
                                 <label for="jmac_allocated"/>
@@ -1332,7 +1332,7 @@
 
 
                     <!-- BKS Tab -->
-                    <page name="bks_page_grey" string="BKS" class="grey_tab" attrs="{'invisible': [('bks_tab_color', '!=', 'grey')]}">>
+                    <page name="bks_page_grey" string="BKS" class="grey_tab" attrs="{'invisible': [('bks_tab_color', '!=', 'grey')]}">
                         <group>
                             <group>
                                 <group>
