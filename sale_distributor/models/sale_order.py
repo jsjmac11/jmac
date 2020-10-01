@@ -509,7 +509,17 @@ class SaleOrderLine(models.Model):
     jmac_stock_ids = fields.Many2many('stock.quant', 'jmac_sol_vendor_stock_rel',
                                             'line_id', 'vendor_stock_id', string="Jmac Stock")
     inbound_stock_lines = fields.One2many("inbound.stock", 'sale_line_id', string="Inbound Stock", readonly="1")
+    jmac_tab_color = fields.Char(string="JMAC Tab Color", compute='_compute_jmac_tab_color')
 
+    @api.depends('product_id', 'jmac_onhand')
+    def _compute_jmac_tab_color(self):
+        """
+        Gives a color scheme for the JMAC vendor tab depending on whether there is stock in inventory.
+        """
+        self.jmac_tab_color = 'grey'
+        if self.jmac_onhand > 0:
+            self.jmac_tab_color = 'green_blue'
+        
     # BKS TAB
     bks_part_number = fields.Char(string="BKS Part Number")
     bks_case_qty = fields.Float(string="BKS Case Qty", digits='Product Unit of Measure')
