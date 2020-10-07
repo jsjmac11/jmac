@@ -285,6 +285,9 @@ class SaleOrderLine(models.Model):
     lowest_cost = fields.Float(string="Lowest Cost")
     lowest_cost_source = fields.Char(string="Lowest Cost Source")
     total_stock = fields.Float(string="Total Stock", digits='Product Unit of Measure')
+    message_inbound_orders = fields.Char(string="Indicates whether there is an inbound order", 
+        compute='_compute_message_inbound_orders',
+        store=True)
 
     # ADI TAB
     adi_part_number = fields.Char(string="ADI Part Number")
@@ -622,6 +625,14 @@ class SaleOrderLine(models.Model):
             values.update({vendor+'_total_stock' : stock_sum,
              vendor+'_vendor_stock_ids' : [(6,0,stock_master_line_id.ids)]})
         return [values, vendor_cost, stock_sum]
+
+
+    @api.depends('product_id', 'substitute_product_id')
+    def _compute_message_inbound_orders(self):
+        res = ""
+        if self.inbound_stock_lines:
+            res = "There are inbound orders from vendors for this product."
+        self.message_inbound_orders = res
 
     @api.onchange('product_id','substitute_product_id')
     def product_id_change(self):
