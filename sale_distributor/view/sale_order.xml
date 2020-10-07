@@ -110,7 +110,7 @@
                 <attribute name="editable"></attribute>
             </xpath>
             <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="before">
-                <field name="message_inbound_orders" colspan="2" nolabel="1" attrs="{'invisible': [('message_inbound_orders', '=', '')]}"/>
+                <field name="message_inbound_orders" decoration-danger="1" colspan="2" nolabel="1" attrs="{'invisible': [('message_inbound_orders', '=', '')]}"/>
             </xpath>
             <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="after">
                 <field name="substitute_product_id"/>
