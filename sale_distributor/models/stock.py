@@ -84,59 +84,59 @@ class StockRule(models.Model):
     def add_vendor_to_product(self, procurements):
         for procurement, rule in procurements:
             # Get the schedule date in order to find a valid seller
-            partner_id = procurement.values.get("supplier_id")
-            product_id = procurement.product_id
-            procurement_date_planned = fields.Datetime.from_string(procurement.values['date_planned'])
-            schedule_date = (procurement_date_planned - relativedelta(days=procurement.company_id.po_lead))
+            if procurement.values.get("supplier_id"):
+                partner_id = procurement.values.get("supplier_id")
+                product_id = procurement.product_id
+                procurement_date_planned = fields.Datetime.from_string(procurement.values['date_planned'])
+                schedule_date = (procurement_date_planned - relativedelta(days=procurement.company_id.po_lead))
 
-            supplier = product_id.with_context(force_company=procurement.company_id.id)._select_seller(
-                partner_id=partner_id,
-                quantity=procurement.product_qty,
-                date=schedule_date.date(),
-                uom_id=procurement.product_uom)
-            if not supplier:
-                # Do not add a contact as a supplier
-                v_price_unit = procurement.values.get("vendor_price_unit")
-                line = procurement.values.get("split_sale_line_id")
-                partner = partner_id if not partner_id.parent_id else partner_id.parent_id
-                # Convert the price in the right currency.
-                currency = partner.property_purchase_currency_id or self.env.company.currency_id
-                line_currency = line.currency_id
-                price = line_currency._convert(v_price_unit, currency, procurement.company_id.id, schedule_date.date() or fields.Date.today(), round=False)
-                # Compute the price for the template's UoM, because the supplier's UoM is related to that UoM.
-                if product_id.product_tmpl_id.uom_po_id != procurement.product_uom:
-                    default_uom = product_id.product_tmpl_id.uom_po_id
-                    price = procurement.product_uom._compute_price(price, default_uom)
-
-                supplierinfo = {
-                    'name': partner.id,
-                    'sequence': max(product_id.seller_ids.mapped('sequence')) + 1 if product_id.seller_ids else 1,
-                    'min_qty': 0.0,
-                    'price': price,
-                    'currency_id': currency.id,
-                    'delay': 0,
-                }
-                seller = product_id._select_seller(
+                supplier = product_id.with_context(force_company=procurement.company_id.id)._select_seller(
                     partner_id=partner_id,
                     quantity=procurement.product_qty,
                     date=schedule_date.date(),
                     uom_id=procurement.product_uom)
-                if seller:
-                    supplierinfo['product_name'] = seller.product_name
-                    supplierinfo['product_code'] = seller.product_code
-                vals = {
-                    'seller_ids': [(0, 0, supplierinfo)],
-                }
-                try:
-                    product_id.write(vals)
-                except AccessError:  # no write access rights -> just ignore
-                    break
+                if not supplier:
+                    # Do not add a contact as a supplier
+                    v_price_unit = procurement.values.get("vendor_price_unit")
+                    line = procurement.values.get("split_sale_line_id")
+                    partner = partner_id if not partner_id.parent_id else partner_id.parent_id
+                    # Convert the price in the right currency.
+                    currency = partner.property_purchase_currency_id or self.env.company.currency_id
+                    line_currency = line.currency_id
+                    price = line_currency._convert(v_price_unit, currency, procurement.company_id.id, schedule_date.date() or fields.Date.today(), round=False)
+                    # Compute the price for the template's UoM, because the supplier's UoM is related to that UoM.
+                    if product_id.product_tmpl_id.uom_po_id != procurement.product_uom:
+                        default_uom = product_id.product_tmpl_id.uom_po_id
+                        price = procurement.product_uom._compute_price(price, default_uom)
+
+                    supplierinfo = {
+                        'name': partner.id,
+                        'sequence': max(product_id.seller_ids.mapped('sequence')) + 1 if product_id.seller_ids else 1,
+                        'min_qty': 0.0,
+                        'price': price,
+                        'currency_id': currency.id,
+                        'delay': 0,
+                    }
+                    seller = product_id._select_seller(
+                        partner_id=partner_id,
+                        quantity=procurement.product_qty,
+                        date=schedule_date.date(),
+                        uom_id=procurement.product_uom)
+                    if seller:
+                        supplierinfo['product_name'] = seller.product_name
+                        supplierinfo['product_code'] = seller.product_code
+                    vals = {
+                        'seller_ids': [(0, 0, supplierinfo)],
+                    }
+                    try:
+                        product_id.write(vals)
+                    except AccessError:  # no write access rights -> just ignore
+                        break
         return
 
 
     @api.model
     def _run_buy(self, procurements):
-        if self._context.get('add_to_buy') or self._context.get('dropship'):
-            self.add_vendor_to_product(procurements)
+        self.add_vendor_to_product(procurements)
         return super(StockRule, self)._run_buy(procurements)
 
