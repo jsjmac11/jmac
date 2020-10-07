@@ -265,7 +265,7 @@
                                     </div>
                                 </group>
                                 <field name="adi_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-warning="case_qty&gt;5 and case_qty&lt;10" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -1272,74 +1272,7 @@
                                 <field name="jmac_allocated"
                                        style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
                                 <field name="jmac_tab_color" invisible="1"/>
-                            </div>
-                            <div>
-                                <label for="jmac_available"/>
-                                <field name="jmac_available"
-                                       style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
-                            </div>
-                            <div>
-                                <label for="jmac_onhand"/>
-                                <field name="jmac_onhand"
-                                       style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
-                            </div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                        </div>
 
-                        <notebook>
-                            <page name="inventory_log" string="Inventory Log">
-                                <field name="jmac_stock_ids" readonly="1" force_save="1" nolabel="1" class="oe_inline">
-                                    <tree>
-                                        <field name="location_id"/>
-                                        <field name="quantity"/>
-                                    </tree>
-                                    <form>
-                                        <group>
-                                            <field name="location_id"/>
-                                            <field name="quantity"/>
-                                        </group>
-                                    </form>
-                                </field>
-                            </page>
-                            <page name="inbound_stock" string="Inbound Stock">
-                                <field name="inbound_stock_lines" readonly="1" force_save="1" nolabel="1">
-                                    <tree>
-                                        <field name="purchase_id"/>
-                                        <field name="state"/>
-                                        <field name="qty_ordered"/>
-                                        <field name="qty_committed"/>
-                                        <field name="qty_received"/>
-                                        <field name="date_submitted"/>
-                                        <field name="po_line_id" invisible="1"/>
-                                    </tree>
-                                    <form>
-                                        <group>
-                                            <field name="purchase_id"/>
-                                            <field name="state"/>
-                                            <field name="qty_ordered"/>
-                                            <field name="qty_committed"/>
-                                            <field name="qty_received"/>
-                                            <field name="date_submitted"/>
-                                            <field name="po_line_id" invisible="1"/>
-                                        </group>
-                                    </form>
-                                </field>
-                            </page>
-                        </notebook>
-                        <div class="o_row">
-                            <button name="split_line" context="{'ship_from_here':True}" type="object" class="oe_highlight oe_edit_only" string="Ship from Here"/>
-                            <button name="split_line" context="{'allocate':True}" type="object" class="oe_highlight oe_edit_only" string="Allocate"/>
-                        </div>
-                    </page>
-                    <page name="jmac_page_greenblue" class="green_blue_tab" string="JMAC" attrs="{'invisible': [('jmac_tab_color', '!=', 'green_blue')]}">
-                        <div class="o_row">
-                            <div>
-                                <label for="jmac_allocated"/>
-                                <field name="jmac_allocated"
-                                       style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
-                                <field name="jmac_tab_color" invisible="1"/>
                             </div>
                             <div>
                                 <label for="jmac_available"/>
