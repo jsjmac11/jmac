@@ -73,7 +73,7 @@ class SaleOrder(models.Model):
                             'sale_line_id': sol.id,
                             'product_qty': sol.product_uom_qty,
                             'line_split': True,
-                            'parent_line_id': pol.id
+                            'parent_line_id': pol.parent_line_id.id if pol.parent_line_id else pol.id
                         })]
                     })
                     sol.allocated_pol_id.product_qty = diff_qty
@@ -87,7 +87,7 @@ class SaleOrder(models.Model):
                     else:
                         move_id.sale_line_id = sol.id
                         # move_id.write({'move_dest_ids': [(4, sol_move_id.id, False)]})
-                        move_id.write({'move_dest_ids': [(6, 0, [sol_move_id.id])]})
+                    move_id.write({'move_dest_ids': [(6, 0, [sol_move_id.id])]})
         return super(SaleOrder, self)._action_confirm()
 
     def action_confirm(self):
