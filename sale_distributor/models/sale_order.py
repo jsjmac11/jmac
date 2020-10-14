@@ -65,7 +65,7 @@ class SaleOrder(models.Model):
                 if diff_qty:
                     pol.order_id.write({'order_line': [
                         (0, 0, {
-                            'name': product.name,
+                            'name': pol.name,
                             'product_id': product.id,
                             'product_uom': product.uom_po_id.id,
                             'price_unit': pol.price_unit,
@@ -81,13 +81,16 @@ class SaleOrder(models.Model):
                     sol.allocated_pol_id.sale_line_id = sol.id
                 move_id = self.env['stock.move'].search([('purchase_line_id','=',sol.allocated_pol_id.id)])
                 sol_move_id = self.env['stock.move'].search([('sale_line_id','=',sol.id),('picking_code','=','outgoing')])
+                sol_in_move_id = self.env['stock.move'].search([('sale_line_id','=',sol.id),('picking_code','=','incoming')])
+                
                 if move_id:
                     if diff_qty:
                         move_id.product_uom_qty = diff_qty
+                        sol_in_move_id.write({'move_dest_ids': [(6, 0, [sol_move_id.id])]})
                     else:
                         move_id.sale_line_id = sol.id
                         # move_id.write({'move_dest_ids': [(4, sol_move_id.id, False)]})
-                    move_id.write({'move_dest_ids': [(6, 0, [sol_move_id.id])]})
+                        move_id.write({'move_dest_ids': [(6, 0, [sol_move_id.id])]})
         return super(SaleOrder, self)._action_confirm()
 
     def action_confirm(self):
@@ -966,6 +969,23 @@ class SaleOrderLine(models.Model):
             return 'grey'
 
         return 'grey'
+
+    def name_get(self):
+        """
+        Overriding the name_get function from res.partner so that the "invoice address" 
+        and "shipping address" fields on the quotes form display the full address, not 
+        the standard contact name. Requires that the contact type be set as 'delivery' 
+        or 'invoice'. If there is no address set, simply returns the customer name.
+        """
+        result = []
+        name = ''
+        for s in self:
+            name = s.order_id.name
+            if s.sequence_ref:
+                name = name + ' - ' + str(s.sequence_ref)
+            result.append((s.id, name))                
+        return result
+
 
 class InboundStock(models.Model):
     _name = "inbound.stock"
