@@ -175,7 +175,7 @@
                                     </div>
                                 </group>
                                 <field name="adi_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -221,7 +221,7 @@
                                     </div>
                                 </group>
                                 <field name="adi_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -315,7 +315,7 @@
                                     </div>
                                 </group>
                                 <field name="nv_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -360,7 +360,7 @@
                                     </div>
                                 </group>
                                 <field name="nv_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -405,7 +405,7 @@
                                     </div>
                                 </group>
                                 <field name="nv_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -453,7 +453,7 @@
                                     </div>
                                 </group>
                                 <field name="sl_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -498,7 +498,7 @@
                                     </div>
                                 </group>
                                 <field name="sl_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -543,7 +543,7 @@
                                     </div>
                                 </group>
                                 <field name="sl_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -591,7 +591,7 @@
                                     </div>
                                 </group>
                                 <field name="ss_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -636,7 +636,7 @@
                                     </div>
                                 </group>
                                 <field name="ss_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -681,7 +681,7 @@
                                     </div>
                                 </group>
                                 <field name="ss_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -728,7 +728,7 @@
                                     </div>
                                 </group>
                                 <field name="jne_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -773,7 +773,7 @@
                                     </div>
                                 </group>
                                 <field name="jne_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -818,7 +818,7 @@
                                     </div>
                                 </group>
                                 <field name="jne_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -865,7 +865,7 @@
                                     </div>
                                 </group>
                                 <field name="bnr_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -910,7 +910,7 @@
                                     </div>
                                 </group>
                                 <field name="bnr_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -955,7 +955,7 @@
                                     </div>
                                 </group>
                                 <field name="bnr_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -1002,7 +1002,7 @@
                                     </div>
                                 </group>
                                 <field name="wr_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -1048,7 +1048,7 @@
                                     </div>
                                 </group>
                                 <field name="wr_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -1094,7 +1094,7 @@
                                     </div>
                                 </group>
                                 <field name="wr_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -1143,7 +1143,7 @@
                                     </div>
                                 </group>
                                 <field name="dfm_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -1189,7 +1189,7 @@
                                     </div>
                                 </group>
                                 <field name="dfm_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -1235,7 +1235,7 @@
                                     </div>
                                 </group>
                                 <field name="dfm_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -1451,7 +1451,7 @@
                                     </div>
                                 </group>
                                 <field name="bks_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -1496,7 +1496,7 @@
                                     </div>
                                 </group>
                                 <field name="bks_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
@@ -1541,7 +1541,7 @@
                                     </div>
                                 </group>
                                 <field name="bks_vendor_stock_ids" readonly="1" force_save="1">
-                                    <tree>
+                                    <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
                                         <field name="case_qty" required="1"/>
