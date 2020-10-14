@@ -45,6 +45,8 @@
                             <field name="product_id"/>
                             <field name="name" invisible="1"/>
                             <field name="vendor_id" string="Vendor"/>
+                            <field name="allocated_pol_id" invisible="1"/>
+                            <field name="allocated_po_id" />
                             <field name="line_type" string="Type"/>
                             <field name="route_id" invisible="1"/>
                             <field name="vendor_price_unit" string="Vendor Price"/>
@@ -1303,36 +1305,49 @@
                                         </group>
                                     </form>
                                 </field>
+                                <div class="o_row">
+                                    <button name="split_line" context="{'ship_from_here':True}" type="object" class="oe_highlight oe_edit_only" string="Ship from Here"/>
+                                    <button name="split_line" context="{'allocate':True}" type="object" class="oe_highlight oe_edit_only" string="Allocate"/>
+                                </div>
                             </page>
                             <page name="inbound_stock" string="Inbound Stock">
-                                <field name="inbound_stock_lines" readonly="1" force_save="1" nolabel="1">
-                                    <tree>
-                                        <field name="purchase_id"/>
-                                        <field name="state"/>
-                                        <field name="qty_ordered"/>
-                                        <field name="qty_committed"/>
-                                        <field name="qty_received"/>
-                                        <field name="date_submitted"/>
+                                <field name="inbound_stock_lines" nolabel="1">
+                                    <tree editable="bottom">
+                                        <field name="purchase_id" readonly="1" force_save="1"/>
+                                        <field name="state" readonly="1" force_save="1"/>
+                                        <field name="po_sale_line_id" readonly="1" force_save="1"/>
+                                        <field name="po_sale_id" invisible="1"/>
+                                        <field name="qty_ordered" readonly="1" force_save="1"/>
+                                        <field name="qty_committed" readonly="1" force_save="1"/>
+                                        <field name="qty_received" readonly="1" force_save="1"/>
+                                        <field name="date_submitted" readonly="1" force_save="1"/>
+                                        <field name="select_pol"/>
+                                        <field name="allocate_qty" attrs="{'readonly':[('select_pol','=', False)]}"/>
                                         <field name="po_line_id" invisible="1"/>
+                                        <field name="picking_id" invisible="1"/>
+                                        <field name="move_id" invisible="1"/>
                                     </tree>
                                     <form>
                                         <group>
                                             <field name="purchase_id"/>
-                                            <field name="state"/>
+                                            <field name="state" />
+                                            <field name="po_sale_id" readonly="1" force_save="1"/>
                                             <field name="qty_ordered"/>
                                             <field name="qty_committed"/>
                                             <field name="qty_received"/>
                                             <field name="date_submitted"/>
+                                            <field name="select_pol"/>
+                                            <field name="allocate_qty" attrs="{'readonly':[('select_pol','=', False)]}"/>
+                                            <field name="po_sale_line_id" invisible="1"/>
                                             <field name="po_line_id" invisible="1"/>
+                                            <field name="picking_id" invisible="1"/>
+                                            <field name="move_id" invisible="1"/>
                                         </group>
                                     </form>
                                 </field>
+                                <button name="split_line" context="{'allocate_po':True}" type="object" class="oe_highlight oe_edit_only" string="Allocate"/>
                             </page>
                         </notebook>
-                        <div class="o_row">
-                            <button name="split_line" context="{'ship_from_here':True}" type="object" class="oe_highlight oe_edit_only" string="Ship from Here"/>
-                            <button name="split_line" context="{'allocate':True}" type="object" class="oe_highlight oe_edit_only" string="Allocate"/>
-                        </div>
                     </page>
                     <page name="jmac_page_greenblue" class="green_blue_tab" string="JMAC" attrs="{'invisible': [('jmac_tab_color', '!=', 'green_blue')]}">
                         <div class="o_row">
@@ -1372,36 +1387,49 @@
                                         </group>
                                     </form>
                                 </field>
+                                <div class="o_row">
+                                    <button name="split_line" context="{'ship_from_here':True}" type="object" class="oe_highlight oe_edit_only" string="Ship from Here"/>
+                                    <button name="split_line" context="{'allocate':True}" type="object" class="oe_highlight oe_edit_only" string="Allocate"/>
+                                </div>
                             </page>
                             <page name="inbound_stock" string="Inbound Stock">
-                                <field name="inbound_stock_lines" readonly="1" force_save="1" nolabel="1">
-                                    <tree>
-                                        <field name="purchase_id"/>
-                                        <field name="state"/>
-                                        <field name="qty_ordered"/>
-                                        <field name="qty_committed"/>
-                                        <field name="qty_received"/>
-                                        <field name="date_submitted"/>
+                                <field name="inbound_stock_lines" nolabel="1">
+                                    <tree editable="bottom" create="0" delete="0">
+                                        <field name="purchase_id" readonly="1" force_save="1"/>
+                                        <field name="state" readonly="1" force_save="1"/>
+                                        <field name="po_sale_line_id" readonly="1" force_save="1"/>
+                                        <field name="po_sale_id" invisible="1"/>
+                                        <field name="qty_ordered" readonly="1" force_save="1"/>
+                                        <field name="qty_committed" readonly="1" force_save="1"/>
+                                        <field name="qty_received" readonly="1" force_save="1"/>
+                                        <field name="date_submitted" readonly="1" force_save="1"/>
+                                        <field name="select_pol" />
+                                        <field name="allocate_qty" attrs="{'readonly':[('select_pol','=', False)]}"/>
                                         <field name="po_line_id" invisible="1"/>
+                                        <field name="picking_id" invisible="1"/>
+                                        <field name="move_id" invisible="1"/>
                                     </tree>
                                     <form>
                                         <group>
                                             <field name="purchase_id"/>
-                                            <field name="state"/>
+                                            <field name="state" />
+                                            <field name="po_sale_id" readonly="1" force_save="1"/>
                                             <field name="qty_ordered"/>
                                             <field name="qty_committed"/>
                                             <field name="qty_received"/>
                                             <field name="date_submitted"/>
+                                            <field name="select_pol"/>
+                                            <field name="allocate_qty" attrs="{'readonly':[('select_pol','=', False)]}"/>
+                                            <field name="po_sale_line_id" invisible="1"/>
                                             <field name="po_line_id" invisible="1"/>
+                                            <field name="picking_id" invisible="1"/>
+                                            <field name="move_id" invisible="1"/>
                                         </group>
                                     </form>
                                 </field>
+                                <button name="split_line" context="{'allocate_po':True}" type="object" class="oe_highlight oe_edit_only" string="Allocate"/>
                             </page>
                         </notebook>
-                        <div class="o_row">
-                            <button name="split_line" context="{'ship_from_here':True}" type="object" class="oe_highlight oe_edit_only" string="Ship from Here"/>
-                            <button name="split_line" context="{'allocate':True}" type="object" class="oe_highlight oe_edit_only" string="Allocate"/>
-                        </div>
                     </page>
 
 
@@ -1564,6 +1592,8 @@
                             <field name="sequence_ref" invisible="1"/>
                             <field name="name" invisible="1"/>
                             <field name="vendor_id" string="Vendor"/>
+                            <field name="allocated_pol_id" invisible="1"/>
+                            <field name="allocated_po_id" />
                             <field name="line_type" string="Type"/>
                             <field name="route_id" invisible="1"/>
                             <field name="vendor_price_unit" string="Vendor Price"/>

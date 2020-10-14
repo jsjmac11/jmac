@@ -16,6 +16,7 @@ class NotificationMessage(models.TransientModel):
     partner_id = fields.Many2one('res.partner', 'Vendor', invisible=True)
     unit_price = fields.Float('Unit Price')
     order_id = fields.Many2one("sale.order", 'Order ID', invisible=True)
+    # purchase_id = fields.Many2one("purchase.order", string="Purchase Order")
 
     def update_quantity(self):
         dict = {'line_split': True,
@@ -34,22 +35,38 @@ class NotificationMessage(models.TransientModel):
             dict.update({'line_type': 'stock', 'route_id': route_id})
         elif self._context.get('allocate'):
             dict.update({'line_type': 'allocate', 'route_id': False})
+        elif self._context.get('allocate_po'):
+            route_id = self.env.ref('sale_distributor.route_warehouse0_mto_buy').id
+            dict.update({'line_type': 'allocate_po','route_id': route_id})
 
         if not self.order_id:
-            if self.qty <= 0.0:
-                raise ValidationError(_("Quantity must be greater than 0!"))
-            elif self.qty > self.remaining_qty:
-                raise ValidationError(_("Quantity must not be greater than unprocess quantity %s!" % self.remaining_qty))
             product_id = self.sale_line_id.product_id
             if self.sale_line_id.substitute_product_id:
                 product_id = self.sale_line_id.substitute_product_id
-            dict.update({'product_uom_qty': self.qty,
+
+            if self._context.get('allocate_po', False):
+                for po_line in self.sale_line_id.inbound_stock_lines.filtered(lambda l: l.select_pol):
+                    dict.update({'product_uom_qty': po_line.allocate_qty,
+                        'parent_line_id': self.sale_line_id.id,
+                        'vendor_price_unit': self.unit_price,
+                        'product_id': product_id.id,
+                        'allocated_pol_id': po_line.po_line_id.id,
+                        'allocated_po_id': po_line.po_line_id.order_id.id,
+                        })
+                    split_line_id = self.sale_line_id.copy(dict)
+            else:
+                if self.qty <= 0.0:
+                    raise ValidationError(_("Quantity must be greater than 0!"))
+                elif self.qty > self.remaining_qty:
+                    raise ValidationError(_("Quantity must not be greater than unprocess quantity %s!" % self.remaining_qty))
+                
+                dict.update({'product_uom_qty': self.qty,
                     'parent_line_id': self.sale_line_id.id,
                     'vendor_price_unit': self.unit_price,
                     'product_id': product_id.id,
                     })
-            split_line_id = self.sale_line_id.copy(dict)
-            split_line_id.order_id._genrate_line_sequence()
+                split_line_id = self.sale_line_id.copy(dict)
+            self.sale_line_id.order_id._genrate_line_sequence()
         else:
             for line in self.order_id.order_line.filtered(lambda l : not l.is_delivery):
                 vendor_price_unit = 0.0

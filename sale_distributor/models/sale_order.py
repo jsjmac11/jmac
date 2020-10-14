@@ -56,6 +56,38 @@ class SaleOrder(models.Model):
 
     def _action_confirm(self):
         self.split_line_ids._action_launch_stock_rule()
+        pol_allocate_ids = self.split_line_ids.filtered(lambda sl: sl.line_type == 'allocate_po')
+        if pol_allocate_ids:
+            for sol in pol_allocate_ids:
+                pol = sol.allocated_pol_id
+                product = pol.product_id
+                diff_qty = sol.allocated_pol_id.product_qty - sol.product_uom_qty
+                if diff_qty:
+                    pol.order_id.write({'order_line': [
+                        (0, 0, {
+                            'name': product.name,
+                            'product_id': product.id,
+                            'product_uom': product.uom_po_id.id,
+                            'price_unit': pol.price_unit,
+                            'date_planned': pol.date_planned,
+                            'sale_line_id': sol.id,
+                            'product_qty': sol.product_uom_qty,
+                            'line_split': True,
+                            'parent_line_id': pol.id
+                        })]
+                    })
+                    sol.allocated_pol_id.product_qty = diff_qty
+                else:
+                    sol.allocated_pol_id.sale_line_id = sol.id
+                move_id = self.env['stock.move'].search([('purchase_line_id','=',sol.allocated_pol_id.id)])
+                sol_move_id = self.env['stock.move'].search([('sale_line_id','=',sol.id),('picking_code','=','outgoing')])
+                if move_id:
+                    if diff_qty:
+                        move_id.product_uom_qty = diff_qty
+                    else:
+                        move_id.sale_line_id = sol.id
+                        # move_id.write({'move_dest_ids': [(4, sol_move_id.id, False)]})
+                        move_id.write({'move_dest_ids': [(6, 0, [sol_move_id.id])]})
         return super(SaleOrder, self)._action_confirm()
 
     def action_confirm(self):
@@ -65,6 +97,7 @@ class SaleOrder(models.Model):
         type of "stock". For each of the Ship To Here split lines, creates a new pick and moves that line
         to the new pick.
         """
+        
         res = super(SaleOrder, self).action_confirm()
         for picking in self.picking_ids.filtered(lambda r: len(r.move_lines) > 1):
             lines_by_type = {type: picking.move_lines.filtered(lambda r: r.sale_line_id.line_type == type) 
@@ -78,7 +111,7 @@ class SaleOrder(models.Model):
                                             })
                 for move_line in lines_by_type['stock']:
                     move_line.picking_id = new_picking
-                    move_line.move_line_ids.picking_id = new_picking
+                    move_line.move_line_ids.picking_id = new_picking    
         return res
 
     def action_cancel(self):
@@ -511,8 +544,10 @@ class SaleOrderLine(models.Model):
     jmac_onhand = fields.Float(string="On Hand", digits='Product Unit of Measure')
     jmac_stock_ids = fields.Many2many('stock.quant', 'jmac_sol_vendor_stock_rel',
                                             'line_id', 'vendor_stock_id', string="Jmac Stock")
-    inbound_stock_lines = fields.One2many("inbound.stock", 'sale_line_id', string="Inbound Stock", readonly="1")
+    inbound_stock_lines = fields.One2many("inbound.stock", 'sale_line_id', string="Inbound Stock")
     jmac_tab_color = fields.Char(string="JMAC Tab Color", compute='_compute_jmac_tab_color')
+    allocated_pol_id = fields.Many2one("purchase.order.line", string="Purchase Line #")
+    allocated_po_id = fields.Many2one("purchase.order", string="Purchase #")
 
     @api.depends('product_id', 'jmac_onhand')
     def _compute_jmac_tab_color(self):
@@ -560,7 +595,7 @@ class SaleOrderLine(models.Model):
     sale_split_lines = fields.One2many("sale.order.line", 'parent_line_id', string="Process Qty",  ondelete='cascade')
     vendor_id = fields.Many2one('res.partner', string='Line Vendor')
     vendor_unit_price= fields
-    line_type = fields.Selection([('buy','Buy'),('dropship','Dropship'),('stock','Ship'),('allocate','Allocated')])
+    line_type = fields.Selection([('buy','Buy'),('dropship','Dropship'),('stock','Ship'),('allocate','Allocated'),('allocate_po','Allocated')])
     main_order_id = fields.Many2one('sale.order', string='Sale Order', related='parent_line_id.order_id', ondelete='cascade', index=True,
                                copy=False)
     vendor_price_unit = fields.Float(string='Vendor Unit Price', digits='Product Price')
@@ -683,7 +718,11 @@ class SaleOrderLine(models.Model):
                                                'qty_received': po_line.qty_received or 0.0,
                                                'date_submitted': po_line.order_id.date_approve or '',
                                                # 'sale_line_id': self.parent_line_id.id,
-                                               'po_line_id': po_line.id}))
+                                               'po_line_id': po_line.id,
+                                               'move_id': move.id,
+                                               'picking_id': move.picking_id.id,
+                                               'po_sale_line_id': po_line.sale_line_id.id,
+                                               'po_sale_id': po_line.sale_line_id.order_id.id}))
                 self.inbound_stock_lines = inbound_lines
             jmac_stock_ids = self.env["stock.quant"].search([('product_id', '=', product_id.id),
                 ('location_id.usage', '=', 'internal'),('quantity','!=',0.0)])
@@ -871,7 +910,6 @@ class SaleOrderLine(models.Model):
         if ctx.get('ship_from_here',False):
             wiz_name = 'Ship from here'
             msg = 'Ship %s from here?' % product_id.name
-            
         elif ctx.get('add_to_buy',False):
             wiz_name = 'Add to Buy'
             msg = 'Add %s to buy' % product_id.name
@@ -881,6 +919,10 @@ class SaleOrderLine(models.Model):
         elif ctx.get('allocate',False):
             wiz_name = 'Allocate'
             msg = 'Allocate %s?' % product_id.name
+        elif ctx.get('allocate_po',False):
+            wiz_name = 'Allocate From Inbound PO'
+            msg = 'Allocate %s from selected Inbound Purchase order?' % product_id.name
+
         if name :
             ctx.update({'default_partner_id': name.id})
             wiz_name = name.name + ' ' + wiz_name
@@ -944,3 +986,9 @@ class InboundStock(models.Model):
     qty_committed = fields.Float(string="Qty Committed", digits='Product Unit of Measure')
     qty_received = fields.Float(string="Qty Received", digits='Product Unit of Measure')
     date_submitted = fields.Datetime(string="Date Submitted")
+    picking_id = fields.Many2one('stock.picking', string="Picking")
+    move_id = fields.Many2one('stock.move', string="Move")
+    select_pol = fields.Boolean("Select")
+    allocate_qty = fields.Float(string="Allocate Qty", digits='Product Unit of Measure')
+    po_sale_line_id = fields.Many2one("sale.order.line", string="Sale Order Line")
+    po_sale_id = fields.Many2one("sale.order", string="Sale Order")

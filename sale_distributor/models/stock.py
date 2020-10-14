@@ -138,5 +138,8 @@ class StockRule(models.Model):
     @api.model
     def _run_buy(self, procurements):
         self.add_vendor_to_product(procurements)
+        for procurement, rule in procurements:
+            if procurement.values.get("split_sale_line_id").line_type == 'allocate_po':
+                return True
         return super(StockRule, self)._run_buy(procurements)
 
