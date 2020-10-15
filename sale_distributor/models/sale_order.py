@@ -350,7 +350,8 @@ class SaleOrderLine(models.Model):
         Gives a color scheme for the vendor tab depending on whether the vendor carries the product
         and has it in inventory.
         """
-        self.adi_tab_color = self._compute_generic_tab_color('adi')
+        for rec in self:
+            rec.adi_tab_color = rec._compute_generic_tab_color('adi')
 
     # NV TAB
     nv_part_number = fields.Char(string="NV Part Number")
@@ -377,7 +378,8 @@ class SaleOrderLine(models.Model):
         Gives a color scheme for the vendor tab depending on whether the vendor carries the product
         and has it in inventory.
         """
-        self.nv_tab_color = self._compute_generic_tab_color('nv')
+        for rec in self:
+            rec.nv_tab_color = rec._compute_generic_tab_color('nv')
 
     # SL TAB
     sl_part_number = fields.Char(string="SL Part Number")
@@ -404,7 +406,8 @@ class SaleOrderLine(models.Model):
         Gives a color scheme for the vendor tab depending on whether the vendor carries the product
         and has it in inventory.
         """
-        self.sl_tab_color = self._compute_generic_tab_color('sl')
+        for rec in self:
+            rec.sl_tab_color = rec._compute_generic_tab_color('sl')
                                                         
     # SS TAB
     ss_part_number = fields.Char(string="SS Part Number")
@@ -431,7 +434,8 @@ class SaleOrderLine(models.Model):
         Gives a color scheme for the vendor tab depending on whether the vendor carries the product
         and has it in inventory.
         """
-        self.ss_tab_color = self._compute_generic_tab_color('ss')
+        for rec in self:
+            rec.ss_tab_color = rec._compute_generic_tab_color('ss')
 
     # JNE TAB
     jne_part_number = fields.Char(string="JNE Part Number")
@@ -458,7 +462,8 @@ class SaleOrderLine(models.Model):
         Gives a color scheme for the vendor tab depending on whether the vendor carries the product
         and has it in inventory.
         """
-        self.jne_tab_color = self._compute_generic_tab_color('jne')
+        for rec in self:
+            rec.jne_tab_color = rec._compute_generic_tab_color('jne')
 
     # BNR TAB
     bnr_part_number = fields.Char(string="BNR Part Number")
@@ -485,7 +490,8 @@ class SaleOrderLine(models.Model):
         Gives a color scheme for the vendor tab depending on whether the vendor carries the product
         and has it in inventory.
         """
-        self.bnr_tab_color = self._compute_generic_tab_color('bnr')
+        for rec in self:
+            rec.bnr_tab_color = rec._compute_generic_tab_color('bnr')
 
     # WR TAB
     wr_part_number = fields.Char(string="WR Part Number")
@@ -512,7 +518,8 @@ class SaleOrderLine(models.Model):
         Gives a color scheme for the vendor tab depending on whether the vendor carries the product
         and has it in inventory.
         """
-        self.wr_tab_color = self._compute_generic_tab_color('wr')
+        for rec in self:
+            rec.wr_tab_color = rec._compute_generic_tab_color('wr')
 
     # DFM TAB
     dfm_part_number = fields.Char(string="DFM Part Number")
@@ -539,7 +546,8 @@ class SaleOrderLine(models.Model):
         Gives a color scheme for the vendor tab depending on whether the vendor carries the product
         and has it in inventory.
         """
-        self.dfm_tab_color = self._compute_generic_tab_color('dfm')
+        for rec in self:
+            rec.dfm_tab_color = rec._compute_generic_tab_color('dfm')
 
     # JMAC TAB
     jmac_allocated = fields.Float(string="Allocated", digits='Product Unit of Measure')
@@ -557,9 +565,10 @@ class SaleOrderLine(models.Model):
         """
         Gives a color scheme for the JMAC vendor tab depending on whether there is stock in inventory.
         """
-        self.jmac_tab_color = 'grey'
-        if self.jmac_onhand > 0:
-            self.jmac_tab_color = 'green_blue'
+        for rec in self:
+            rec.jmac_tab_color = 'grey'
+            if rec.jmac_onhand > 0:
+                rec.jmac_tab_color = 'green_blue'
         
     # BKS TAB
     bks_part_number = fields.Char(string="BKS Part Number")
@@ -586,7 +595,8 @@ class SaleOrderLine(models.Model):
         Gives a color scheme for the vendor tab depending on whether the vendor carries the product
         and has it in inventory.
         """
-        self.bks_tab_color = self._compute_generic_tab_color('bks')
+        for rec in self:
+            rec.bks_tab_color = rec._compute_generic_tab_color('bks')
 
     # OTV TAB
     partner_id = fields.Many2one('res.partner', string='Vendor')
