@@ -7,7 +7,7 @@
 ##############################################################################
 
 from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, UserError, ValidationError
 from datetime import datetime
 import string
 
@@ -54,14 +54,14 @@ class SaleOrder(models.Model):
     #     res = super(SaleOrder, self).onchange_partner_id()
     #     return res
 
-    def _action_confirm(self):
-        self.split_line_ids._action_launch_stock_rule()
+
+    def allocate_inbound_po(self):
         pol_allocate_ids = self.split_line_ids.filtered(lambda sl: sl.line_type == 'allocate_po')
         if pol_allocate_ids:
             for sol in pol_allocate_ids:
                 pol = sol.allocated_pol_id
                 product = pol.product_id
-                diff_qty = sol.allocated_pol_id.product_qty - sol.product_uom_qty
+                diff_qty = pol.product_qty - sol.product_uom_qty
                 if diff_qty:
                     pol.order_id.write({'order_line': [
                         (0, 0, {
@@ -76,10 +76,16 @@ class SaleOrder(models.Model):
                             'parent_line_id': pol.parent_line_id.id if pol.parent_line_id else pol.id
                         })]
                     })
-                    sol.allocated_pol_id.product_qty = diff_qty
+                    pol.product_qty = diff_qty
                 else:
-                    sol.allocated_pol_id.sale_line_id = sol.id
-                move_id = self.env['stock.move'].search([('purchase_line_id','=',sol.allocated_pol_id.id)])
+                    pol.sale_line_id = sol.id
+                # Update PO origin
+                po_lines = self.env['purchase.order.line'].search([('order_id','=',pol.order_id.id)])
+                so_no = po_lines.mapped('sale_line_id.order_id.name')
+                po_no = ", ".join(so_no) # + ',' + self.name
+                pol.order_id.origin = po_no
+
+                move_id = self.env['stock.move'].search([('purchase_line_id','=',pol.id)])
                 sol_move_id = self.env['stock.move'].search([('sale_line_id','=',sol.id),('picking_code','=','outgoing')])
                 sol_in_move_id = self.env['stock.move'].search([('sale_line_id','=',sol.id),('picking_code','=','incoming')])
                 
@@ -91,6 +97,12 @@ class SaleOrder(models.Model):
                         move_id.sale_line_id = sol.id
                         # move_id.write({'move_dest_ids': [(4, sol_move_id.id, False)]})
                         move_id.write({'move_dest_ids': [(6, 0, [sol_move_id.id])]})
+                
+        return True
+
+    def _action_confirm(self):
+        self.split_line_ids._action_launch_stock_rule()
+        self.allocate_inbound_po()
         return super(SaleOrder, self)._action_confirm()
 
     def action_confirm(self):
@@ -569,6 +581,24 @@ class SaleOrderLine(models.Model):
             rec.jmac_tab_color = 'grey'
             if rec.jmac_onhand > 0:
                 rec.jmac_tab_color = 'green_blue'
+
+    @api.onchange('inbound_stock_lines')
+    def onchange_inbound_stock_lines(self):
+        result = {}
+        warning = {}
+        title = False
+        message = False
+        process_qty = sum(self.sale_split_lines.filtered(lambda l: l.line_type != 'allocate_po').mapped('product_uom_qty'))
+        for inl in self.inbound_stock_lines.filtered(lambda l:l.select_pol):
+            process_qty += inl.allocate_qty
+        unprocess_qty = self.product_uom_qty - process_qty
+        if unprocess_qty < 0:
+            title = _("Warning for %s") % self.product_id.name
+            message = "There is no quantity for process!"
+            warning['title'] = title
+            warning['message'] = message
+            result = {'warning': warning}
+        return result
         
     # BKS TAB
     bks_part_number = fields.Char(string="BKS Part Number")
@@ -608,7 +638,7 @@ class SaleOrderLine(models.Model):
     sale_split_lines = fields.One2many("sale.order.line", 'parent_line_id', string="Process Qty",  ondelete='cascade')
     vendor_id = fields.Many2one('res.partner', string='Line Vendor')
     vendor_unit_price= fields
-    line_type = fields.Selection([('buy','Buy'),('dropship','Dropship'),('stock','Ship'),('allocate','Allocated'),('allocate_po','Allocated')])
+    line_type = fields.Selection([('buy','Buy'),('dropship','Dropship'),('stock','Ship'),('allocate','Allocated Stock'),('allocate_po','Allocated PO')])
     main_order_id = fields.Many2one('sale.order', string='Sale Order', related='parent_line_id.order_id', ondelete='cascade', index=True,
                                copy=False)
     vendor_price_unit = fields.Float(string='Vendor Unit Price', digits='Product Price')
@@ -724,7 +754,8 @@ class SaleOrderLine(models.Model):
                 inbound_lines = []
                 for move in incoming_move_ids:
                     po_line = move.purchase_line_id
-                    inbound_lines.append((0, 0,{'purchase_id': po_line.order_id.id or '',
+                    if po_line.product_qty != po_line.qty_received:
+                        inbound_lines.append((0, 0,{'purchase_id': po_line.order_id.id or '',
                                                'state': po_line.order_id.state or '',
                                                'qty_ordered': po_line.product_qty or 0.0,
                                                'qty_committed': 0.0,
@@ -874,10 +905,19 @@ class SaleOrderLine(models.Model):
 
     def split_line(self):
         ctx = self._context.copy()
-        process_qty = sum(self.sale_split_lines.mapped('product_uom_qty'))
-        unprocess_qty = self.product_uom_qty - process_qty
-        if not unprocess_qty:
-            raise ValidationError(_("There is no quantity for process!"))
+        if ctx.get('allocate_po', False):
+            process_qty = sum(self.sale_split_lines.filtered(lambda l: l.line_type != 'allocate_po').mapped('product_uom_qty'))
+            for inl in self.inbound_stock_lines.filtered(lambda l:l.select_pol):
+                process_qty += inl.allocate_qty
+            unprocess_qty = self.product_uom_qty - process_qty
+            if unprocess_qty < 0:
+                raise ValidationError(_("More quantity allocated then unprocess quantity!"))
+        else:
+            process_qty = sum(self.sale_split_lines.mapped('product_uom_qty'))
+            unprocess_qty = self.product_uom_qty - process_qty
+            if not unprocess_qty:
+                raise ValidationError(_("There is no quantity for process!"))
+
         ctx.update({'default_qty': unprocess_qty,
                     'default_remaining_qty': unprocess_qty,
                     'default_sale_line_id': self.id})
@@ -1022,3 +1062,18 @@ class InboundStock(models.Model):
     allocate_qty = fields.Float(string="Allocate Qty", digits='Product Unit of Measure')
     po_sale_line_id = fields.Many2one("sale.order.line", string="Sale Order Line")
     po_sale_id = fields.Many2one("sale.order", string="Sale Order")
+
+    @api.onchange('allocate_qty')
+    def onchange_allocate_qty(self):
+        result = {}
+        warning = {}
+        title = False
+        message = False
+        if self.allocate_qty > (self.qty_ordered - self.qty_received):
+            title = _("Warning for %s") % self.purchase_id.name
+            message = "Allocate quantity must not be greater than ordered quantity "
+            warning['title'] = title
+            warning['message'] = message
+            self.allocate_qty = 0
+            result = {'warning': warning}
+        return result
