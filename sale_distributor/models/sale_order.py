@@ -650,6 +650,20 @@ class SaleOrderLine(models.Model):
         'product.template', string='Substitute Product Template',
         related="substitute_product_id.product_tmpl_id", domain=[('sale_ok', '=', True)])
 
+    @api.onchange('adi_actual_cost','nv_actual_cost','ss_actual_cost','sl_actual_cost'
+        ,'jne_actual_cost','bnr_actual_cost','wr_actual_cost','dfm_actual_cost','bks_actual_cost')
+    def onchange_actual_cost(self):
+        self.adi_standard_cost = self.adi_actual_cost * self.adi_case_qty
+        self.nv_standard_cost = self.nv_actual_cost * self.nv_case_qty
+        self.ss_standard_cost = self.ss_actual_cost * self.ss_case_qty
+        self.sl_standard_cost = self.sl_actual_cost * self.sl_case_qty
+        self.jne_standard_cost = self.jne_actual_cost * self.jne_case_qty
+        self.bnr_standard_cost = self.bnr_actual_cost * self.bnr_case_qty
+        self.wr_standard_cost = self.wr_actual_cost * self.wr_case_qty
+        self.dfm_standard_cost = self.dfm_actual_cost * self.dfm_case_qty
+        self.bks_standard_cost = self.bks_actual_cost * self.bks_case_qty
+        return {}
+
     def _action_launch_stock_rule(self, previous_product_uom_qty=False):
         """
         Launch procurement group run method with required/custom fields genrated by a
@@ -685,11 +699,12 @@ class SaleOrderLine(models.Model):
                                                 uom_id=self.product_uom,
                                                 params=params)
         actual_cost = pricelist_id.price / pricelist_id.min_qty if pricelist_id.min_qty else pricelist_id.price 
-        values = {vendor+'_part_number' : pricelist_id.product_code or '',
-                  vendor+'_case_qty' : pricelist_id.min_qty or 0.0,
-                  vendor+'_actual_cost' : actual_cost or 0.0,
-                  vendor+'_standard_cost' : pricelist_id.price or 0.0,
-                  vendor+'_sale_exp_date' : pricelist_id.date_end}
+        values = {vendor+'_part_number': pricelist_id.product_code or '',
+                  vendor+'_case_qty': pricelist_id.min_qty or 0.0,
+                  vendor+'_actual_cost': actual_cost or 0.0,
+                  vendor+'_standard_cost': pricelist_id.price or 0.0,
+                  vendor+'_sale_exp_date': pricelist_id.date_end,
+                  vendor+'_cost_last_updated': pricelist_id.write_date}
         vendor_cost = {}
         stock_sum = 0.0
         stock_master_line_id = self.env["vendor.stock.master.line"].search(
@@ -700,8 +715,11 @@ class SaleOrderLine(models.Model):
             if actual_cost:
                 vendor_cost = {partner_id: actual_cost}
             stock_sum = sum(stock_master_line_id.mapped('case_qty'))
+            stock_last_update = max(stock_master_line_id.mapped('write_date'))
             values.update({vendor+'_total_stock' : stock_sum,
-             vendor+'_vendor_stock_ids' : [(6,0,stock_master_line_id.ids)]})
+                           vendor+'_vendor_stock_ids' : [(6,0,stock_master_line_id.ids)],
+                           vendor+'_stock_last_updated': stock_last_update,
+                           })
         return [values, vendor_cost, stock_sum]
 
 

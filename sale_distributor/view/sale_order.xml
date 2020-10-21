@@ -162,9 +162,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="adi_part_number" string="Part Number"/>
-                                    <field name="adi_case_qty" string="Case Qty"/>
-                                    <field name="adi_mo_qty" string="MOQ"/>
+                                    <field name="adi_part_number" string="Part Number"  readonly="1" force_save="1"/>
+                                    <field name="adi_case_qty" string="Case Qty"  readonly="1" force_save="1"/>
+                                    <field name="adi_mo_qty" string="MOQ"  readonly="1" force_save="1"/>
                                     <field name="adi_partner_id" invisible="1"/>
                                     <field name="adi_tab_color" invisible="1"/>
                                 </group>
@@ -188,14 +188,14 @@
                             </group>
                             <group>
                                 <field name="adi_actual_cost" string="Actual Cost"/>
-                                <field name="adi_standard_cost" string="Standard Cost"/>
+                                <field name="adi_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="adi_price_match" string="Price Match"/>
-                                <field name="adi_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="adi_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="adi_sale_cost" string="Sale Cost"/>
-                                <field name="adi_total_stock" string="Total Stock"/>
-                                <field name="adi_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="adi_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="adi_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="adi_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="adi_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="adi_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="adi_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="adi_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'adi','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'adi','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship"/>
@@ -208,9 +208,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="adi_part_number" string="Part Number"/>
-                                    <field name="adi_case_qty" string="Case Qty"/>
-                                    <field name="adi_mo_qty" string="MOQ"/>
+                                    <field name="adi_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="adi_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="adi_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="adi_partner_id" invisible="1"/>
                                     <field name="adi_tab_color" invisible="1"/>
                                 </group>
@@ -234,14 +234,14 @@
                             </group>
                             <group>
                                 <field name="adi_actual_cost" string="Actual Cost"/>
-                                <field name="adi_standard_cost" string="Standard Cost"/>
+                                <field name="adi_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="adi_price_match" string="Price Match"/>
-                                <field name="adi_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="adi_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="adi_sale_cost" string="Sale Cost"/>
-                                <field name="adi_total_stock" string="Total Stock"/>
-                                <field name="adi_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="adi_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="adi_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="adi_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="adi_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="adi_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="adi_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="adi_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'adi','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'adi','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
@@ -254,9 +254,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="adi_part_number" string="Part Number"/>
-                                    <field name="adi_case_qty" string="Case Qty"/>
-                                    <field name="adi_mo_qty" string="MOQ"/>
+                                    <field name="adi_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="adi_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="adi_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="adi_partner_id" invisible="1"/>
                                     <field name="adi_tab_color" invisible="1"/>
                                 </group>
@@ -280,14 +280,14 @@
                             </group>
                             <group>
                                 <field name="adi_actual_cost" string="Actual Cost"/>
-                                <field name="adi_standard_cost" string="Standard Cost"/>
-                                <field name="adi_price_match" string="Price Match"/>
-                                <field name="adi_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="adi_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="adi_sale_cost" string="Sale Cost"/>
-                                <field name="adi_total_stock" string="Total Stock"/>
-                                <field name="adi_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="adi_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="adi_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="adi_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="adi_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="adi_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="adi_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="adi_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="adi_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="adi_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'adi','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'adi','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
@@ -302,9 +302,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="nv_part_number" string="Part Number"/>
-                                    <field name="nv_case_qty" string="Case Qty"/>
-                                    <field name="nv_mo_qty" string="MOQ"/>
+                                    <field name="nv_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="nv_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="nv_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="nv_partner_id" invisible="1"/>
                                     <field name="nv_tab_color" invisible="1"/>
                                 </group>
@@ -328,14 +328,14 @@
                             </group>
                             <group>
                                 <field name="nv_actual_cost" string="Actual Cost"/>
-                                <field name="nv_standard_cost" string="Standard Cost"/>
-                                <field name="nv_price_match" string="Price Match"/>
-                                <field name="nv_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="nv_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="nv_sale_cost" string="Sale Cost"/>
-                                <field name="nv_total_stock" string="Total Stock"/>
-                                <field name="nv_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="nv_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="nv_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="nv_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="nv_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="nv_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="nv_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="nv_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="nv_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="nv_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'nv','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'nv','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
@@ -347,9 +347,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="nv_part_number" string="Part Number"/>
-                                    <field name="nv_case_qty" string="Case Qty"/>
-                                    <field name="nv_mo_qty" string="MOQ"/>
+                                    <field name="nv_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="nv_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="nv_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="nv_partner_id" invisible="1"/>
                                     <field name="nv_tab_color" invisible="1"/>
                                 </group>
@@ -373,14 +373,14 @@
                             </group>
                             <group>
                                 <field name="nv_actual_cost" string="Actual Cost"/>
-                                <field name="nv_standard_cost" string="Standard Cost"/>
-                                <field name="nv_price_match" string="Price Match"/>
-                                <field name="nv_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="nv_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="nv_sale_cost" string="Sale Cost"/>
-                                <field name="nv_total_stock" string="Total Stock"/>
-                                <field name="nv_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="nv_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="nv_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="nv_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="nv_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="nv_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="nv_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="nv_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="nv_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="nv_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'nv','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'nv','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
@@ -392,9 +392,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="nv_part_number" string="Part Number"/>
-                                    <field name="nv_case_qty" string="Case Qty"/>
-                                    <field name="nv_mo_qty" string="MOQ"/>
+                                    <field name="nv_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="nv_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="nv_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="nv_partner_id" invisible="1"/>
                                     <field name="nv_tab_color" invisible="1"/>
                                 </group>
@@ -418,14 +418,14 @@
                             </group>
                             <group>
                                 <field name="nv_actual_cost" string="Actual Cost"/>
-                                <field name="nv_standard_cost" string="Standard Cost"/>
-                                <field name="nv_price_match" string="Price Match"/>
-                                <field name="nv_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="nv_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="nv_sale_cost" string="Sale Cost"/>
-                                <field name="nv_total_stock" string="Total Stock"/>
-                                <field name="nv_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="nv_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="nv_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="nv_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="nv_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="nv_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="nv_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="nv_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="nv_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="nv_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'nv','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'nv','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship"/>
@@ -440,9 +440,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="sl_part_number" string="Part Number"/>
-                                    <field name="sl_case_qty" string="Case Qty"/>
-                                    <field name="sl_mo_qty" string="MOQ"/>
+                                    <field name="sl_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="sl_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="sl_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="sl_partner_id" invisible="1"/>
                                     <field name="sl_tab_color" invisible="1"/>
                                 </group>
@@ -466,14 +466,14 @@
                             </group>
                             <group>
                                 <field name="sl_actual_cost" string="Actual Cost"/>
-                                <field name="sl_standard_cost" string="Standard Cost"/>
-                                <field name="sl_price_match" string="Price Match"/>
-                                <field name="sl_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="sl_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="sl_sale_cost" string="Sale Cost"/>
-                                <field name="sl_total_stock" string="Total Stock"/>
-                                <field name="sl_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="sl_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="sl_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="sl_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="sl_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="sl_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="sl_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="sl_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="sl_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="sl_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'sl','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'sl','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
@@ -485,9 +485,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="sl_part_number" string="Part Number"/>
-                                    <field name="sl_case_qty" string="Case Qty"/>
-                                    <field name="sl_mo_qty" string="MOQ"/>
+                                    <field name="sl_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="sl_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="sl_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="sl_partner_id" invisible="1"/>
                                     <field name="sl_tab_color" invisible="1"/>
                                 </group>
@@ -511,14 +511,14 @@
                             </group>
                             <group>
                                 <field name="sl_actual_cost" string="Actual Cost"/>
-                                <field name="sl_standard_cost" string="Standard Cost"/>
-                                <field name="sl_price_match" string="Price Match"/>
-                                <field name="sl_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="sl_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="sl_sale_cost" string="Sale Cost"/>
-                                <field name="sl_total_stock" string="Total Stock"/>
-                                <field name="sl_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="sl_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="sl_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="sl_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="sl_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="sl_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="sl_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="sl_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="sl_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="sl_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'sl','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'sl','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
@@ -530,9 +530,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="sl_part_number" string="Part Number"/>
-                                    <field name="sl_case_qty" string="Case Qty"/>
-                                    <field name="sl_mo_qty" string="MOQ"/>
+                                    <field name="sl_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="sl_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="sl_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="sl_partner_id" invisible="1"/>
                                     <field name="sl_tab_color" invisible="1"/>
                                 </group>
@@ -556,14 +556,14 @@
                             </group>
                             <group>
                                 <field name="sl_actual_cost" string="Actual Cost"/>
-                                <field name="sl_standard_cost" string="Standard Cost"/>
-                                <field name="sl_price_match" string="Price Match"/>
-                                <field name="sl_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="sl_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="sl_sale_cost" string="Sale Cost"/>
-                                <field name="sl_total_stock" string="Total Stock"/>
-                                <field name="sl_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="sl_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="sl_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="sl_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="sl_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="sl_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="sl_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="sl_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="sl_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="sl_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'sl','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'sl','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
@@ -578,9 +578,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="ss_part_number" string="Part Number"/>
-                                    <field name="ss_case_qty" string="Case Qty"/>
-                                    <field name="ss_mo_qty" string="MOQ"/>
+                                    <field name="ss_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="ss_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="ss_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="ss_partner_id" invisible="1"/>
                                     <field name="ss_tab_color" invisible="1"/>
                                 </group>
@@ -604,14 +604,14 @@
                             </group>
                             <group>
                                 <field name="ss_actual_cost" string="Actual Cost"/>
-                                <field name="ss_standard_cost" string="Standard Cost"/>
-                                <field name="ss_price_match" string="Price Match"/>
-                                <field name="ss_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="ss_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="ss_sale_cost" string="Sale Cost"/>
+                                <field name="ss_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="ss_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="ss_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="ss_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="ss_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="ss_total_stock" string="Total Stock"/>
-                                <field name="ss_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="ss_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="ss_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="ss_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'ss','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'ss','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
@@ -623,9 +623,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="ss_part_number" string="Part Number"/>
-                                    <field name="ss_case_qty" string="Case Qty"/>
-                                    <field name="ss_mo_qty" string="MOQ"/>
+                                    <field name="ss_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="ss_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="ss_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="ss_partner_id" invisible="1"/>
                                     <field name="ss_tab_color" invisible="1"/>
                                 </group>
@@ -649,14 +649,14 @@
                             </group>
                             <group>
                                 <field name="ss_actual_cost" string="Actual Cost"/>
-                                <field name="ss_standard_cost" string="Standard Cost"/>
-                                <field name="ss_price_match" string="Price Match"/>
-                                <field name="ss_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="ss_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="ss_sale_cost" string="Sale Cost"/>
-                                <field name="ss_total_stock" string="Total Stock"/>
-                                <field name="ss_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="ss_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="ss_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="ss_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="ss_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="ss_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="ss_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="ss_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="ss_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="ss_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'ss','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'ss','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
@@ -668,9 +668,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="ss_part_number" string="Part Number"/>
-                                    <field name="ss_case_qty" string="Case Qty"/>
-                                    <field name="ss_mo_qty" string="MOQ"/>
+                                    <field name="ss_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="ss_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="ss_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="ss_partner_id" invisible="1"/>
                                     <field name="ss_tab_color" invisible="1"/>
                                 </group>
@@ -694,14 +694,14 @@
                             </group>
                             <group>
                                 <field name="ss_actual_cost" string="Actual Cost"/>
-                                <field name="ss_standard_cost" string="Standard Cost"/>
-                                <field name="ss_price_match" string="Price Match"/>
-                                <field name="ss_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="ss_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="ss_sale_cost" string="Sale Cost"/>
-                                <field name="ss_total_stock" string="Total Stock"/>
-                                <field name="ss_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="ss_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="ss_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="ss_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="ss_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="ss_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="ss_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="ss_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="ss_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="ss_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'ss','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'ss','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
@@ -715,9 +715,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="jne_part_number" string="Part Number"/>
-                                    <field name="jne_case_qty" string="Case Qty"/>
-                                    <field name="jne_mo_qty" string="MOQ"/>
+                                    <field name="jne_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="jne_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="jne_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="jne_partner_id" invisible="1"/>
                                     <field name="jne_tab_color" invisible="1"/>
                                 </group>
@@ -741,14 +741,14 @@
                             </group>
                             <group>
                                 <field name="jne_actual_cost" string="Actual Cost"/>
-                                <field name="jne_standard_cost" string="Standard Cost"/>
-                                <field name="jne_price_match" string="Price Match"/>
-                                <field name="jne_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="jne_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="jne_sale_cost" string="Sale Cost"/>
-                                <field name="jne_total_stock" string="Total Stock"/>
-                                <field name="jne_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="jne_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="jne_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="jne_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="jne_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="jne_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="jne_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="jne_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="jne_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="jne_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'jne','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'jne','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
@@ -760,9 +760,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="jne_part_number" string="Part Number"/>
-                                    <field name="jne_case_qty" string="Case Qty"/>
-                                    <field name="jne_mo_qty" string="MOQ"/>
+                                    <field name="jne_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="jne_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="jne_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="jne_partner_id" invisible="1"/>
                                     <field name="jne_tab_color" invisible="1"/>
                                 </group>
@@ -786,14 +786,14 @@
                             </group>
                             <group>
                                 <field name="jne_actual_cost" string="Actual Cost"/>
-                                <field name="jne_standard_cost" string="Standard Cost"/>
-                                <field name="jne_price_match" string="Price Match"/>
-                                <field name="jne_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="jne_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="jne_sale_cost" string="Sale Cost"/>
-                                <field name="jne_total_stock" string="Total Stock"/>
-                                <field name="jne_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="jne_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="jne_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="jne_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="jne_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="jne_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="jne_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="jne_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="jne_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="jne_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'jne','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'jne','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
@@ -805,9 +805,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="jne_part_number" string="Part Number"/>
-                                    <field name="jne_case_qty" string="Case Qty"/>
-                                    <field name="jne_mo_qty" string="MOQ"/>
+                                    <field name="jne_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="jne_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="jne_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="jne_partner_id" invisible="1"/>
                                     <field name="jne_tab_color" invisible="1"/>
                                 </group>
@@ -831,14 +831,14 @@
                             </group>
                             <group>
                                 <field name="jne_actual_cost" string="Actual Cost"/>
-                                <field name="jne_standard_cost" string="Standard Cost"/>
-                                <field name="jne_price_match" string="Price Match"/>
-                                <field name="jne_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="jne_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="jne_sale_cost" string="Sale Cost"/>
-                                <field name="jne_total_stock" string="Total Stock"/>
-                                <field name="jne_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="jne_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="jne_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="jne_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="jne_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="jne_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="jne_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="jne_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="jne_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="jne_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'jne','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'jne','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
@@ -852,9 +852,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="bnr_part_number" string="Part Number"/>
-                                    <field name="bnr_case_qty" string="Case Qty"/>
-                                    <field name="bnr_mo_qty" string="MOQ"/>
+                                    <field name="bnr_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="bnr_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="bnr_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="bnr_partner_id" invisible="1"/>
                                     <field name="bnr_tab_color" invisible="1"/>
                                 </group>
@@ -878,14 +878,14 @@
                             </group>
                             <group>
                                 <field name="bnr_actual_cost" string="Actual Cost"/>
-                                <field name="bnr_standard_cost" string="Standard Cost"/>
-                                <field name="bnr_price_match" string="Price Match"/>
-                                <field name="bnr_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="bnr_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="bnr_sale_cost" string="Sale Cost"/>
-                                <field name="bnr_total_stock" string="Total Stock"/>
-                                <field name="bnr_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="bnr_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="bnr_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="bnr_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="bnr_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="bnr_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="bnr_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="bnr_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="bnr_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="bnr_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'bnr','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'bnr','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
@@ -897,11 +897,11 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="bnr_part_number" string="Part Number"/>
-                                    <field name="bnr_case_qty" string="Case Qty"/>
-                                    <field name="bnr_mo_qty" string="MOQ"/>
-                                    <field name="bnr_partner_id" invisible="1"/>
-                                    <field name="bnr_tab_color" invisible="1"/>
+                                    <field name="bnr_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="bnr_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="bnr_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="bnr_partner_id" invisible="1" readonly="1" force_save="1"/>
+                                    <field name="bnr_tab_color" invisible="1" readonly="1" force_save="1"/>
                                 </group>
                                 <group>
                                     <div>
@@ -923,14 +923,14 @@
                             </group>
                             <group>
                                 <field name="bnr_actual_cost" string="Actual Cost"/>
-                                <field name="bnr_standard_cost" string="Standard Cost"/>
-                                <field name="bnr_price_match" string="Price Match"/>
-                                <field name="bnr_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="bnr_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="bnr_sale_cost" string="Sale Cost"/>
-                                <field name="bnr_total_stock" string="Total Stock"/>
-                                <field name="bnr_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="bnr_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="bnr_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="bnr_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="bnr_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="bnr_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="bnr_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="bnr_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="bnr_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="bnr_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'bnr','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'bnr','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
@@ -942,9 +942,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="bnr_part_number" string="Part Number"/>
-                                    <field name="bnr_case_qty" string="Case Qty"/>
-                                    <field name="bnr_mo_qty" string="MOQ"/>
+                                    <field name="bnr_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="bnr_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="bnr_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="bnr_partner_id" invisible="1"/>
                                     <field name="bnr_tab_color" invisible="1"/>
                                 </group>
@@ -968,14 +968,14 @@
                             </group>
                             <group>
                                 <field name="bnr_actual_cost" string="Actual Cost"/>
-                                <field name="bnr_standard_cost" string="Standard Cost"/>
-                                <field name="bnr_price_match" string="Price Match"/>
-                                <field name="bnr_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="bnr_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="bnr_sale_cost" string="Sale Cost"/>
-                                <field name="bnr_total_stock" string="Total Stock"/>
-                                <field name="bnr_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="bnr_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="bnr_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="bnr_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="bnr_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="bnr_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="bnr_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="bnr_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="bnr_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="bnr_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'bnr','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'bnr','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
@@ -989,9 +989,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="wr_part_number" string="Part Number"/>
-                                    <field name="wr_case_qty" string="Case Qty"/>
-                                    <field name="wr_mo_qty" string="MOQ"/>
+                                    <field name="wr_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="wr_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="wr_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="wr_partner_id" invisible="1"/>
                                     <field name="wr_tab_color" invisible="1"/>
                                 </group>
@@ -1015,14 +1015,14 @@
                             </group>
                             <group>
                                 <field name="wr_actual_cost" string="Actual Cost"/>
-                                <field name="wr_standard_cost" string="Standard Cost"/>
-                                <field name="wr_price_match" string="Price Match"/>
-                                <field name="wr_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="wr_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="wr_sale_cost" string="Sale Cost"/>
-                                <field name="wr_total_stock" string="Total Stock"/>
-                                <field name="wr_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="wr_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="wr_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="wr_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="wr_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="wr_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="wr_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="wr_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="wr_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="wr_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'wr','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'wr','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
@@ -1035,9 +1035,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="wr_part_number" string="Part Number"/>
-                                    <field name="wr_case_qty" string="Case Qty"/>
-                                    <field name="wr_mo_qty" string="MOQ"/>
+                                    <field name="wr_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="wr_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="wr_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="wr_partner_id" invisible="1"/>
                                     <field name="wr_tab_color" invisible="1"/>
                                 </group>
@@ -1061,14 +1061,14 @@
                             </group>
                             <group>
                                 <field name="wr_actual_cost" string="Actual Cost"/>
-                                <field name="wr_standard_cost" string="Standard Cost"/>
-                                <field name="wr_price_match" string="Price Match"/>
-                                <field name="wr_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="wr_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="wr_sale_cost" string="Sale Cost"/>
-                                <field name="wr_total_stock" string="Total Stock"/>
-                                <field name="wr_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="wr_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="wr_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="wr_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="wr_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="wr_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="wr_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="wr_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="wr_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="wr_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'ss','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'ss','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship"/>
@@ -1081,9 +1081,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="wr_part_number" string="Part Number"/>
-                                    <field name="wr_case_qty" string="Case Qty"/>
-                                    <field name="wr_mo_qty" string="MOQ"/>
+                                    <field name="wr_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="wr_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="wr_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="wr_partner_id" invisible="1"/>
                                     <field name="wr_tab_color" invisible="1"/>
                                 </group>
@@ -1107,14 +1107,14 @@
                             </group>
                             <group>
                                 <field name="wr_actual_cost" string="Actual Cost"/>
-                                <field name="wr_standard_cost" string="Standard Cost"/>
-                                <field name="wr_price_match" string="Price Match"/>
-                                <field name="wr_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="wr_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="wr_sale_cost" string="Sale Cost"/>
-                                <field name="wr_total_stock" string="Total Stock"/>
-                                <field name="wr_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="wr_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="wr_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="wr_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="wr_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="wr_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="wr_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="wr_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="wr_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="wr_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'jne','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'jne','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship"/>
@@ -1130,10 +1130,10 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="dfm_part_number" string="Part Number"/>
-                                    <field name="dfm_case_qty" string="Case Qty"/>
-                                    <field name="dfm_mo_qty" string="MOQ"/>
-                                    <field name="dfm_partner_id" invisible="1"/>
+                                    <field name="dfm_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="dfm_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="dfm_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="dfm_partner_id" invisible="1" readonly="1" force_save="1"/>
                                     <field name="dfm_tab_color" invisible="1"/>
                                 </group>
                                 <group>
@@ -1156,14 +1156,14 @@
                             </group>
                             <group>
                                 <field name="dfm_actual_cost" string="Actual Cost"/>
-                                <field name="dfm_standard_cost" string="Standard Cost"/>
-                                <field name="dfm_price_match" string="Price Match"/>
-                                <field name="dfm_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="dfm_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="dfm_sale_cost" string="Sale Cost"/>
-                                <field name="dfm_total_stock" string="Total Stock"/>
-                                <field name="dfm_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="dfm_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="dfm_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="dfm_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="dfm_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="dfm_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="dfm_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="dfm_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="dfm_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="dfm_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'bnr','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'bnr','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship"/>
@@ -1176,9 +1176,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="dfm_part_number" string="Part Number"/>
-                                    <field name="dfm_case_qty" string="Case Qty"/>
-                                    <field name="dfm_mo_qty" string="MOQ"/>
+                                    <field name="dfm_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="dfm_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="dfm_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="dfm_partner_id" invisible="1"/>
                                     <field name="dfm_tab_color" invisible="1"/>
                                 </group>
@@ -1202,14 +1202,14 @@
                             </group>
                             <group>
                                 <field name="dfm_actual_cost" string="Actual Cost"/>
-                                <field name="dfm_standard_cost" string="Standard Cost"/>
-                                <field name="dfm_price_match" string="Price Match"/>
-                                <field name="dfm_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="dfm_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="dfm_sale_cost" string="Sale Cost"/>
-                                <field name="dfm_total_stock" string="Total Stock"/>
-                                <field name="dfm_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="dfm_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="dfm_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="dfm_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="dfm_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="dfm_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="dfm_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="dfm_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="dfm_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="dfm_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'wr','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'wr','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship"/>
@@ -1222,9 +1222,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="dfm_part_number" string="Part Number"/>
-                                    <field name="dfm_case_qty" string="Case Qty"/>
-                                    <field name="dfm_mo_qty" string="MOQ"/>
+                                    <field name="dfm_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="dfm_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="dfm_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="dfm_partner_id" invisible="1"/>
                                     <field name="dfm_tab_color" invisible="1"/>
                                 </group>
@@ -1248,14 +1248,14 @@
                             </group>
                             <group>
                                 <field name="dfm_actual_cost" string="Actual Cost"/>
-                                <field name="dfm_standard_cost" string="Standard Cost"/>
-                                <field name="dfm_price_match" string="Price Match"/>
-                                <field name="dfm_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="dfm_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="dfm_sale_cost" string="Sale Cost"/>
-                                <field name="dfm_total_stock" string="Total Stock"/>
-                                <field name="dfm_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="dfm_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="dfm_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="dfm_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="dfm_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="dfm_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="dfm_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="dfm_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="dfm_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="dfm_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                     <button name="split_line" context="{'vendor':'dfm','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy"/>
                                     <button name="split_line" context="{'vendor':'dfm','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship"/>
@@ -1271,19 +1271,19 @@
                         <div class="o_row">
                             <div>
                                 <label for="jmac_allocated"/>
-                                <field name="jmac_allocated"
+                                <field name="jmac_allocated" readonly="1" force_save="1"
                                        style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
                                 <field name="jmac_tab_color" invisible="1"/>
 
                             </div>
                             <div>
                                 <label for="jmac_available"/>
-                                <field name="jmac_available"
+                                <field name="jmac_available" readonly="1" force_save="1"
                                        style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
                             </div>
                             <div>
                                 <label for="jmac_onhand"/>
-                                <field name="jmac_onhand"
+                                <field name="jmac_onhand" readonly="1" force_save="1"
                                        style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
                             </div>
                             <div></div>
@@ -1353,19 +1353,19 @@
                         <div class="o_row">
                             <div>
                                 <label for="jmac_allocated"/>
-                                <field name="jmac_allocated"
+                                <field name="jmac_allocated" readonly="1" force_save="1"
                                        style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
                                 <field name="jmac_tab_color" invisible="1"/>
 
                             </div>
                             <div>
                                 <label for="jmac_available"/>
-                                <field name="jmac_available"
+                                <field name="jmac_available" readonly="1" force_save="1"
                                        style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
                             </div>
                             <div>
                                 <label for="jmac_onhand"/>
-                                <field name="jmac_onhand"
+                                <field name="jmac_onhand" readonly="1" force_save="1"
                                        style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
                             </div>
                             <div></div>
@@ -1438,9 +1438,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="bks_part_number" string="Part Number"/>
-                                    <field name="bks_case_qty" string="Case Qty"/>
-                                    <field name="bks_mo_qty" string="MOQ"/>
+                                    <field name="bks_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="bks_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="bks_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="bks_partner_id" invisible="1"/>
                                     <field name="bks_tab_color" invisible="1"/>
                                 </group>
@@ -1464,14 +1464,14 @@
                             </group>
                             <group>
                                 <field name="bks_actual_cost" string="Actual Cost"/>
-                                <field name="bks_standard_cost" string="Standard Cost"/>
-                                <field name="bks_price_match" string="Price Match"/>
-                                <field name="bks_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="bks_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="bks_sale_cost" string="Sale Cost"/>
-                                <field name="bks_total_stock" string="Total Stock"/>
-                                <field name="bks_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="bks_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="bks_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="bks_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="bks_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="bks_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="bks_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="bks_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="bks_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="bks_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                 <button name="split_line" context="{'vendor':'bks','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                 <button name="split_line" context="{'vendor':'bks','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
@@ -1483,9 +1483,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="bks_part_number" string="Part Number"/>
-                                    <field name="bks_case_qty" string="Case Qty"/>
-                                    <field name="bks_mo_qty" string="MOQ"/>
+                                    <field name="bks_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="bks_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="bks_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="bks_partner_id" invisible="1"/>
                                     <field name="bks_tab_color" invisible="1"/>
                                 </group>
@@ -1509,14 +1509,14 @@
                             </group>
                             <group>
                                 <field name="bks_actual_cost" string="Actual Cost"/>
-                                <field name="bks_standard_cost" string="Standard Cost"/>
-                                <field name="bks_price_match" string="Price Match"/>
-                                <field name="bks_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="bks_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="bks_sale_cost" string="Sale Cost"/>
-                                <field name="bks_total_stock" string="Total Stock"/>
-                                <field name="bks_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="bks_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="bks_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="bks_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="bks_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="bks_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="bks_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="bks_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="bks_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="bks_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                 <button name="split_line" context="{'vendor':'bks','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy"/>
                                 <button name="split_line" context="{'vendor':'bks','dropship':True}" type="object" class="oe_highlight" string="Dropship"/>
@@ -1528,9 +1528,9 @@
                         <group>
                             <group>
                                 <group>
-                                    <field name="bks_part_number" string="Part Number"/>
-                                    <field name="bks_case_qty" string="Case Qty"/>
-                                    <field name="bks_mo_qty" string="MOQ"/>
+                                    <field name="bks_part_number" string="Part Number" readonly="1" force_save="1"/>
+                                    <field name="bks_case_qty" string="Case Qty" readonly="1" force_save="1"/>
+                                    <field name="bks_mo_qty" string="MOQ" readonly="1" force_save="1"/>
                                     <field name="bks_partner_id" invisible="1"/>
                                     <field name="bks_tab_color" invisible="1"/>
                                 </group>
@@ -1554,14 +1554,14 @@
                             </group>
                             <group>
                                 <field name="bks_actual_cost" string="Actual Cost"/>
-                                <field name="bks_standard_cost" string="Standard Cost"/>
-                                <field name="bks_price_match" string="Price Match"/>
-                                <field name="bks_coded_price_flag" string="Coded Price Flag"/>
-                                <field name="bks_sale_exp_date" string="Sale Exp Date"/>
-                                <field name="bks_sale_cost" string="Sale Cost"/>
-                                <field name="bks_total_stock" string="Total Stock"/>
-                                <field name="bks_cost_last_updated" string="Cost Last Updated"/>
-                                <field name="bks_stock_last_updated" string="Stock Last Updated"/>
+                                <field name="bks_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
+                                <field name="bks_price_match" string="Price Match" readonly="1" force_save="1"/>
+                                <field name="bks_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="bks_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
+                                <field name="bks_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
+                                <field name="bks_total_stock" string="Total Stock" readonly="1" force_save="1"/>
+                                <field name="bks_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
+                                <field name="bks_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
                                 <button name="split_line" context="{'vendor':'bks','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy"/>
                                 <button name="split_line" context="{'vendor':'bks','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship"/>
