@@ -143,7 +143,6 @@ class StockRule(models.Model):
             if procurement.values.get("split_sale_line_id"):
                 if procurement.values.get("split_sale_line_id").line_type == 'allocate_po':
                     continue
-                else:
-                    other_procurements.append((procurement, rule))
+            other_procurements.append((procurement, rule))
         return super(StockRule, self)._run_buy(other_procurements)
 

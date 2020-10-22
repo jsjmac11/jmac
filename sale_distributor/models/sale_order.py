@@ -1026,6 +1026,7 @@ class SaleOrderLine(models.Model):
         self.ensure_one()
         if self.split_line and self.route_id and self.vendor_id:
             values.update({
+                'split_sale_line_id': self,
                 'supplier_id': self.vendor_id,
                 'vendor_price_unit': self.vendor_price_unit,
                 })
