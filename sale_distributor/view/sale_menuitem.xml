@@ -20,6 +20,7 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">product.supplierinfo</field>
         <field name="view_mode">tree,form,kanban</field>
+        <field name="domain">['|', ('active', '=', False), ('active', '=', True)]</field>
         <field name="context">{'visible_product_tmpl_id':False}</field>
     </record>
 

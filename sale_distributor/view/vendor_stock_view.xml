@@ -32,4 +32,19 @@
     action="sale_distributor.vendor_stock_info_action"
     sequence="16"/>
 
+
+    <record id="supplier_info_form_inherit_jmac" model="ir.ui.view">
+        <field name="name">product.supplierinfo.jmac.view</field>
+        <field name="model">product.supplierinfo</field>
+        <field name="priority">21</field>
+        <field name="inherit_id" ref="product.product_supplierinfo_form_view"/>
+        <field name="arch" type="xml">
+            <label for="date_start" position="before">
+                <field name="ignore_cost"/>
+                <field name="active" invisible="1"/>
+            </label>
+        </field>
+    </record>
+
+
 </odoo>
