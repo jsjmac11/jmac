@@ -562,7 +562,14 @@ class SaleOrderLine(models.Model):
             rec.dfm_tab_color = rec._compute_generic_tab_color('dfm')
 
     # JMAC TAB
-    jmac_allocated = fields.Float(string="Allocated", digits='Product Unit of Measure')
+    jmac_allocated = fields.Float(string="Allocated", digits='Product Unit of Measure', compute='_compute_jmac_allocated')
+
+    @api.depends('sale_split_lines')
+    def _compute_jmac_allocated(self):
+        for rec in self:
+            rec.jmac_allocated = sum(self.sale_split_lines.filtered(lambda al: al.line_type in ('allocate','allocate_po')).mapped('product_uom_qty'))
+            
+
     jmac_available = fields.Float(string="Available", digits='Product Unit of Measure')
     jmac_onhand = fields.Float(string="On Hand", digits='Product Unit of Measure')
     jmac_stock_ids = fields.Many2many('stock.quant', 'jmac_sol_vendor_stock_rel',
@@ -789,10 +796,12 @@ class SaleOrderLine(models.Model):
             jmac_stock_ids = self.env["stock.quant"].search([('product_id', '=', product_id.id),
                 ('location_id.usage', '=', 'internal'),('quantity','!=',0.0)])
             if jmac_stock_ids:
-                self.jmac_onhand = product_id.qty_available
-                self.jmac_available = product_id.qty_available
+                jmac_onhand = sum(jmac_stock_ids.mapped('quantity'))
+                jmac_available = jmac_onhand - sum(jmac_stock_ids.mapped('reserved_quantity'))
+                self.jmac_onhand = jmac_onhand
+                self.jmac_available = jmac_available
                 self.jmac_stock_ids = [(6,0,jmac_stock_ids.ids)]
-                all_total_stock += product_id.qty_available
+                all_total_stock += jmac_onhand
             params = {} # 'order_id': self.order_id
             if self.adi_partner_id:
                 price_stock_list = self.vendor_price_stock(self.adi_partner_id,self.product_uom_qty,params,'adi')
