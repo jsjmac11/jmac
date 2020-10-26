@@ -11,8 +11,23 @@ from odoo.exceptions import AccessError, UserError, ValidationError
 from datetime import datetime
 import string
 
+ORDER_PRIORITY = [
+    ('0', 'Low'),
+    ('1', 'Medium'),
+    ('2', 'High'),
+    ('3', 'Urgent'),
+]
+
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
+
+    # @api.depends('po_lines')
+    def _compute_po_ids(self):
+        pol_obj = self.env['purchase.order.line']
+        for order in self:
+            sol_ids = order.split_line_ids.filtered(lambda l: l.line_type in ('buy','dropship','allocate_po'))
+            po_line_ids = pol_obj.search([('sale_line_id','in', sol_ids.ids)])
+            order.po_count = len(po_line_ids.mapped('order_id'))
 
     order_line = fields.One2many('sale.order.line', 'order_id', string='Order Lines',
         states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=False, auto_join=True,
@@ -28,6 +43,37 @@ class SaleOrder(models.Model):
     qty_all = fields.Boolean(string="All Qty",
         compute='_compute_is_process_qty',
         help='Technical field used to see if we have process qty.')
+    priority = fields.Selection(ORDER_PRIORITY, string='Priority', default='0')
+    po_count = fields.Integer(string='Purchase Orders', compute='_compute_po_ids')
+
+    def action_view_purchase(self):
+        '''
+        This function returns an action that display existing purchase orders
+        of given sales order ids. It can either be a in a list or in a form
+        view, if there is only one purchase order to show.
+        '''
+        action = self.env.ref('purchase.purchase_form_action').read()[0]
+
+        sol_ids = self.split_line_ids.filtered(lambda l: l.line_type in ('buy','dropship','allocate_po'))
+        purchase_lines = self.env['purchase.order.line'].search([('sale_line_id','in', sol_ids.ids)])
+        purchases = purchase_lines.mapped('order_id')
+        if len(purchases) > 1:
+            action['domain'] = [('id', 'in', purchases.ids)]
+        elif purchases:
+            form_view = [(self.env.ref('purchase.purchase_order_form').id, 'form')]
+            if 'views' in action:
+                action['views'] = form_view + [(state,view) for state,view in action['views'] if view != 'form']
+            else:
+                action['views'] = form_view
+            action['res_id'] = purchases.id
+        # Prepare the context.
+        # picking_id = purchases.filtered(lambda l: l.picking_type_id.code == 'outgoing')
+        # if picking_id:
+        #     picking_id = picking_id[0]
+        # else:
+        #     picking_id = pickings[0]
+        # action['context'] = dict(self._context, default_partner_id=self.partner_id.id, default_picking_id=picking_id.id, default_picking_type_id=picking_id.picking_type_id.id, default_origin=self.name, default_group_id=picking_id.group_id.id)
+        return action
 
     @api.depends('order_line','order_line.sale_split_lines')
     def _compute_is_process_qty(self):
@@ -765,9 +811,19 @@ class SaleOrderLine(models.Model):
         self.sale_split_lines = [(6,0,[])]
         result = super(SaleOrderLine, self).product_id_change()
         product_id = self.product_id
+        title = False
+        message = False
+        warning = {}
         if self.substitute_product_id:
             product_id = self.substitute_product_id
         if product_id:
+            product_order_lines = self.order_id.order_line.filtered(lambda l: l.product_id.id == product_id.id)
+            if len(product_order_lines) > 1:
+                message = "Sale order line already exists for the selected product!"
+                title = _("Warning for %s") % product_id.name
+                warning['title'] = title
+                warning['message'] = message
+                result.update({'warning': warning})
             vendor_cost = {}
             all_total_stock = 0.0
             result.update({'value': {}})
