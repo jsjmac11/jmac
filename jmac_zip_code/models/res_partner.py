@@ -54,17 +54,17 @@ class ResPartner(models.Model):
                 else:  # If country is changing to none
                     raise UserError(_('You can not leave country blank.'))
                 city, state_id = self.get_city_state(country_id, res.zip)
-                if res.city:
-                    if res.city.lower() != city.lower():
-                        warning_message += "City is wrong.\n"
-                    else:
-                        pass
-                else:
+                if not res.city:
+                #     if res.city.lower() != city.lower():
+                #         warning_message += "City is wrong.\n"
+                #     else:
+                #         pass
+                # else:
                     warning_message += "You can not leave city blank.\n"
-                if res.state_id:
+                if res.state_id and state_id:
                     if res.state_id.id != state_id.id:
                         warning_message += "State is wrong."
-                else:
+                if not res.state_id:
                     warning_message += "You can not leave state blank"
                 if warning_message:
                     raise UserError(_(warning_message))
@@ -81,15 +81,15 @@ class ResPartner(models.Model):
                     else:  # If country is changing to none
                         raise UserError(_('You can not leave country blank.'))
                     city, state_id = partner.get_city_state(country_id, partner.zip)
-                    if partner.city:
-                        if partner.city.lower() != city.lower():
-                            warning_message += "City is wrong.\n"
-                    else:
+                    if not partner.city:
+                    #     if partner.city.lower() != city.lower():
+                    #         warning_message += "City is wrong.\n"
+                    # else:
                         warning_message += "You can not leave city blank.\n"
-                    if partner.state_id:
+                    if partner.state_id and state_id:
                         if partner.state_id.id != state_id.id:
                             warning_message += "State is wrong."
-                    else:
+                    if not partner.state_id:
                         warning_message += "You can not leave state blank"
                     if warning_message:
                         raise UserError(_(warning_message))

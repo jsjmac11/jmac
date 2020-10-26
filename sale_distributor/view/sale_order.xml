@@ -34,11 +34,20 @@
                 <field name="is_process_line" invisible="1"/>
                 <field name="qty_all" invisible="1"/>
             </xpath>
-
-             <xpath expr="//field[@name='note']" position="before">
+            <xpath expr="//field[@name='partner_shipping_id']" position="after">
+                <field name="priority" widget="priority" attrs="{'readonly': [('state', 'not in', ['draft','sent'])]}"/>
+            </xpath>
+            <xpath expr="//button[@name='action_view_invoice']" position="before">
+                <button type="object"
+                    name="action_view_purchase"
+                    class="oe_stat_button"
+                    icon="fa-truck"
+                    attrs="{'invisible': ['|',('po_count', '=', 0),('state', 'not in', ['sale','done'])]}" groups="base.group_user">
+                    <field name="po_count" widget="statinfo" string="Purchase"/>
+                </button>
+            </xpath>
+            <xpath expr="//field[@name='note']" position="before">
                 <group string="Process Qty" name="process_qty" colspan="4">
-                    <!--<separator string="Process Qty"/>-->
-
                     <field name="split_line_ids" readonly="1" nolabel="1" options="{'post_refresh': 'always'}">
                         <tree>
                             <field name="sequence_ref"/>
@@ -1615,4 +1624,28 @@
             </xpath>
         </field>
     </record>
+
+    <record id="view_order_tree_inherit_jmac" model="ir.ui.view">
+        <field name="name">sale.order.tree.inherit.jmac</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="note" string="Quotation Note"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_quotation_tree_with_onboarding_inht" model="ir.ui.view">
+            <field name="name">sale.order.tree.inht</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_quotation_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="note" string="Quotation Note"/>
+                </xpath>
+            </field>
+        </record>
+
+
 </odoo>
