@@ -36,3 +36,20 @@ div > div > main > div > div > div > div.o_notebook > div.o_notebook_headers > u
     font-weight: bold !important;
 }
 
+[name='adi_vendor_stock_ids'] .table-responsive, [name='nv_vendor_stock_ids'] .table-responsive, [name='sl_vendor_stock_ids'] .table-responsive,
+[name='ss_vendor_stock_ids'] .table-responsive, [name='jne_vendor_stock_ids'] .table-responsive, [name='bnr_vendor_stock_ids'] .table-responsive,
+[name='wr_vendor_stock_ids'] .table-responsive, [name='dfm_vendor_stock_ids'] .table-responsive, [name='jmac_stock_ids'] .table-responsive,
+[name='inbound_stock_lines'] .table-responsive, [name='bks_vendor_stock_ids'] .table-responsive{
+    height: 160px !important;
+}
+[name='adi_vendor_stock_ids'] .table-responsive thead > tr > th, [name='nv_vendor_stock_ids'] .table-responsive thead > tr > th,
+[name='sl_vendor_stock_ids'] .table-responsive thead > tr > th, [name='ss_vendor_stock_ids'] .table-responsive thead > tr > th,
+[name='jne_vendor_stock_ids'] .table-responsive thead > tr > th, [name='bnr_vendor_stock_ids'] .table-responsive thead > tr > th,
+[name='wr_vendor_stock_ids'] .table-responsive thead > tr > th, [name='dfm_vendor_stock_ids'] .table-responsive thead > tr > th,
+[name='jmac_stock_ids'] .table-responsive thead > tr > th, [name='inbound_stock_lines'] .table-responsive thead > tr > th,
+[name='bks_vendor_stock_ids'] .table-responsive thead > tr > th
+{
+    position: sticky !important;
+    top: 0px !important;
+    background-color: #eee;
+}
