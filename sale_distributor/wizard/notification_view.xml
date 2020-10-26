@@ -13,10 +13,16 @@
                             <label for="partner_id" attrs="{'invisible':[('order_id','=', False)]}"/>
                             <field name="partner_id" domain="[('supplier_rank','=', 1)]" attrs="{'invisible':[('order_id','=', False)]}"/>
                             <div attrs="{'invisible':[('order_id','!=', False)]}">
-                            <label for="qty" string="How many?" attrs="{'invisible':[('order_id','!=', False)]}"/><br/>
-                            <field name="qty" nolabel="1" attrs="{'invisible':[('order_id','!=', False)]}"/>
+                                <label for="qty" string="How many?" attrs="{'invisible':[('order_id','!=', False)]}"/><br/>
+                                <field name="qty" nolabel="1" attrs="{'invisible':[('order_id','!=', False)]}"/>
+
+                            </div>
+                            <div attrs="{'invisible':[('order_id','!=', False)]}">
+                                <label for="unit_price" string="Vendor Cost" invisible="not(context.get('add_to_buy',False) or context.get('dropship',False))"/><br/>
+                                <field name="unit_price" invisible="not(context.get('add_to_buy',False) or context.get('dropship',False))"/>
                             </div>
                         </div>
+
                         <field name="sale_line_id" invisible="1"/>
                         <field name="order_id" invisible="1"/>
                     </group>
