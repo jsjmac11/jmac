@@ -55,6 +55,8 @@ class NotificationMessage(models.TransientModel):
                         })
                     split_line_id = self.sale_line_id.copy(dict)
             else:
+                if self.unit_price <= 0.0:
+                    raise ValidationError(_("Vendor price must be greater than 0!"))
                 if self.qty <= 0.0:
                     raise ValidationError(_("Quantity must be greater than 0!"))
                 elif self.qty > self.remaining_qty:

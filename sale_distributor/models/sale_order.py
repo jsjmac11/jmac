@@ -45,6 +45,53 @@ class SaleOrder(models.Model):
         help='Technical field used to see if we have process qty.')
     priority = fields.Selection(ORDER_PRIORITY, string='Priority', default='0')
     po_count = fields.Integer(string='Purchase Orders', compute='_compute_po_ids')
+    state = fields.Selection(selection_add=[('new', 'Quotation'),
+        ('draft', 'Sales Order'),
+        ('sent', 'Sent'),
+        ('sale', 'Processed Order'),
+        ('done', 'Locked'),
+        ('cancel', 'Cancelled')], string='Status', readonly=True, copy=False, index=True, tracking=3, default='new')
+    partner_id = fields.Many2one(
+        'res.partner', string='Customer', readonly=True,
+        states={'new': [('readonly', False)], 'draft': [('readonly', False)], 'sent': [('readonly', False)]},
+        required=True, change_default=True, index=True, tracking=1,
+        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",)
+    partner_invoice_id = fields.Many2one(
+        'res.partner', string='Invoice Address',
+        readonly=True, required=True,
+        states={'new': [('readonly', False)], 'draft': [('readonly', False)], 'sent': [('readonly', False)], 'sale': [('readonly', False)]},
+        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",)
+    partner_shipping_id = fields.Many2one(
+        'res.partner', string='Delivery Address', readonly=True, required=True,
+        states={'new': [('readonly', False)], 'draft': [('readonly', False)], 'sent': [('readonly', False)], 'sale': [('readonly', False)]},
+        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",)
+    
+    def _default_validity_date(self):
+        if self.env['ir.config_parameter'].sudo().get_param('sale.use_quotation_validity_days'):
+            days = self.env.company.quotation_validity_days
+            if days > 0:
+                return fields.Date.to_string(datetime.now() + timedelta(days))
+        return False
+
+    validity_date = fields.Date(string='Expiration', readonly=True, copy=False, states={'new': [('readonly', False)], 'draft': [('readonly', False)], 'sent': [('readonly', False)]},
+                                default=_default_validity_date)
+    commitment_date = fields.Datetime('Delivery Date',
+                                      states={'new': [('readonly', False)], 'draft': [('readonly', False)], 'sent': [('readonly', False)]},
+                                      copy=False, readonly=True,
+                                      help="This is the delivery date promised to the customer. "
+                                           "If set, the delivery order will be scheduled based on "
+                                           "this date rather than product lead times.")
+    picking_policy = fields.Selection([
+        ('direct', 'As soon as possible'),
+        ('one', 'When all products are ready')],
+        string='Shipping Policy', required=True, readonly=True, default='direct',
+        states={'new': [('readonly', False)], 'draft': [('readonly', False)], 'sent': [('readonly', False)]}
+        ,help="If you deliver all products at once, the delivery order will be scheduled based on the greatest "
+        "product lead time. Otherwise, it will be based on the shortest.")
+    date_order = fields.Datetime(string='Order Date', required=True, readonly=True, index=True, states={'new': [('readonly', False)], 'draft': [('readonly', False)], 'sent': [('readonly', False)]}, copy=False, default=fields.Datetime.now, help="Creation date of draft/sent orders,\nConfirmation date of confirmed orders.")
+    
+    def set_to_unprocess(self):
+        return self.write({'state': 'draft'})
 
     def action_view_purchase(self):
         '''
