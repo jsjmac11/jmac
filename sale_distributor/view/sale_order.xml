@@ -26,6 +26,7 @@
                 <attribute name="attrs">{'invisible': ['|',('state', 'not in', ['draft']),('qty_all','=',False)]}</attribute>
             </xpath>
             <xpath expr="//header/button[@name='action_cancel']" position="before">
+                <button name="set_to_unprocess" string="Set to Sale Order" type="object" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['new'])]}"/>
                 <button name="confirm_purchase" string="Confirm All" type="object" 
                         groups="sale_distributor.group_manager_confirm" 
                         attrs="{'invisible': ['|',('state', 'not in', ['draft','sent']),('qty_all','=',False)]}"/>
@@ -34,8 +35,22 @@
                 <field name="is_process_line" invisible="1"/>
                 <field name="qty_all" invisible="1"/>
             </xpath>
+            <xpath expr="//button[@name='action_cancel']" position="attributes">
+                <attribute name="states">new,draft,sent,sale</attribute>
+            </xpath>
+            
+            <xpath expr="//sheet/group/group[2]/div[2]" position="attributes">
+                <attribute name="attrs">{'invisible': [('state', 'in', ['new','draft', 'sent'])]}</attribute>
+            </xpath>
+            <xpath expr="//sheet/group/group[2]/field[@name='date_order'][2]" position="attributes">
+                <attribute name="attrs">{'required': [('state', 'in', ['sale', 'done'])], 'invisible': [('state', 'in', ['new','draft', 'sent'])]}</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='partner_shipping_id']" position="after">
                 <field name="priority" widget="priority" attrs="{'readonly': [('state', 'not in', ['draft','sent'])]}"/>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="replace">
+                <field name="state" widget="statusbar" statusbar_visible="new,draft,sale"/>
             </xpath>
             <xpath expr="//button[@name='action_view_invoice']" position="before">
                 <button type="object"
