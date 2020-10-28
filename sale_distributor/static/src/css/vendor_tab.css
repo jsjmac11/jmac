@@ -35,7 +35,7 @@ div > div > main > div > div > div > div.o_notebook > div.o_notebook_headers > u
     color: #000080 !important;
     font-weight: bold !important;
 }
-
+/*ONE2MANY SCROLL BAR*/
 [name='adi_vendor_stock_ids'] .table-responsive, [name='nv_vendor_stock_ids'] .table-responsive, [name='sl_vendor_stock_ids'] .table-responsive,
 [name='ss_vendor_stock_ids'] .table-responsive, [name='jne_vendor_stock_ids'] .table-responsive, [name='bnr_vendor_stock_ids'] .table-responsive,
 [name='wr_vendor_stock_ids'] .table-responsive, [name='dfm_vendor_stock_ids'] .table-responsive, [name='jmac_stock_ids'] .table-responsive,
@@ -52,4 +52,15 @@ div > div > main > div > div > div > div.o_notebook > div.o_notebook_headers > u
     position: sticky !important;
     top: 0px !important;
     background-color: #eee;
+    z-index: 10 !important;
+}
+/*NEXT & PREV BUTTON*/
+button.button-next-form-dialog {
+  float: right !important;
+}
+button.button-previous-form-dialog {
+  float: right !important;
+}
+.modal-footer {
+    display: inline-block !important;
 }
