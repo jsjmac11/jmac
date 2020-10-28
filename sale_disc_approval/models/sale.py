@@ -43,7 +43,7 @@ class SaleOrder(models.Model):
     amount_undiscounted = fields.Float('Amount Before Discount', compute='_compute_amount_undiscounted', digits=0)
     state = fields.Selection(selection_add=[('waiting', 'Waiting Approval'), ('approved', 'Quotation Approved')],
                              string='Status', readonly=True, copy=False, index=True,
-                             track_visibility='onchange', default='draft')
+                             track_visibility='onchange')
     is_approved = fields.Boolean('Approved', copy=False, help="Indicate manager approved the order.")
 
     def action_confirm(self):
