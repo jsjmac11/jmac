@@ -56,7 +56,7 @@
                 <button type="object"
                     name="action_view_purchase"
                     class="oe_stat_button"
-                    icon="fa-truck"
+                    icon="fa-cart-arrow-down"
                     attrs="{'invisible': ['|',('po_count', '=', 0),('state', 'not in', ['sale','done'])]}" groups="base.group_user">
                     <field name="po_count" widget="statinfo" string="Purchase"/>
                 </button>
@@ -1342,7 +1342,7 @@
                                         <field name="po_sale_line_id" readonly="1" force_save="1"/>
                                         <field name="po_sale_id" invisible="1"/>
                                         <field name="qty_ordered" readonly="1" force_save="1"/>
-                                        <field name="qty_committed" readonly="1" force_save="1"/>
+                                        <field name="qty_committed" readonly="1" force_save="1" invisible="1"/>
                                         <field name="qty_received" readonly="1" force_save="1"/>
                                         <field name="date_submitted" readonly="1" force_save="1"/>
                                         <field name="select_pol"/>
@@ -1357,7 +1357,7 @@
                                             <field name="state" />
                                             <field name="po_sale_id" readonly="1" force_save="1"/>
                                             <field name="qty_ordered"/>
-                                            <field name="qty_committed"/>
+                                            <field name="qty_committed" invisible="1"/>
                                             <field name="qty_received"/>
                                             <field name="date_submitted"/>
                                             <field name="select_pol"/>
@@ -1424,7 +1424,7 @@
                                         <field name="po_sale_line_id" readonly="1" force_save="1"/>
                                         <field name="po_sale_id" invisible="1"/>
                                         <field name="qty_ordered" readonly="1" force_save="1"/>
-                                        <field name="qty_committed" readonly="1" force_save="1"/>
+                                        <field name="qty_committed" readonly="1" force_save="1" invisible="1"/>
                                         <field name="qty_received" readonly="1" force_save="1"/>
                                         <field name="date_submitted" readonly="1" force_save="1"/>
                                         <field name="select_pol" />
@@ -1439,7 +1439,7 @@
                                             <field name="state" />
                                             <field name="po_sale_id" readonly="1" force_save="1"/>
                                             <field name="qty_ordered"/>
-                                            <field name="qty_committed"/>
+                                            <field name="qty_committed" invisible="1"/>
                                             <field name="qty_received"/>
                                             <field name="date_submitted"/>
                                             <field name="select_pol"/>
