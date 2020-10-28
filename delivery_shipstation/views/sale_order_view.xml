@@ -32,13 +32,13 @@
                 </xpath>
                 <xpath expr="//field[@name='payment_term_id']" position="after">
                     <label for="requested_service_id" string="Requested Service"/>
-                    <div>
+                    <div class="o_row">
                         <field name="requested_service_id"
                                options="{'no_open': True, 'no_create': True}"/>
-                        <br/>
-                        <field name="service_price" force_save="1" attrs="{'readonly': [('state', 'not in', ('draft','sent'))]}"/>
+                        <!-- <br/> -->
+                        <field name="service_price" force_save="1" attrs="{'invisible': [('requested_service_id', '=', False)],'readonly': [('state', 'not in', ('new','draft','sent'))]}"/>
                         <button name="set_price" colspan="1" type="object"
-                                attrs="{'invisible': ['|',('requested_service_id', '=', False),('state', 'not in', ('draft','sent'))]}"
+                                attrs="{'invisible': ['|',('requested_service_id', '=', False),('state', 'not in', ('new','draft','sent'))]}"
                                 class="fa fa-arrow-right oe_link">Set Price
                         </button>
                     </div>
