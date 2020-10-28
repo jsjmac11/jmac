@@ -198,6 +198,15 @@ class SaleOrder(models.Model):
         self.allocate_inbound_po()
         return super(SaleOrder, self)._action_confirm()
 
+    def action_draft(self):
+        orders = self.filtered(lambda s: s.state in ['cancel', 'sent', 'draft'])
+        return orders.write({
+            'state': 'new',
+            'signature': False,
+            'signed_by': False,
+            'signed_on': False,
+        })
+
     def action_confirm(self):
         """
         Creates the stock.picking normally with call to Super. If the pick has more than one split line
