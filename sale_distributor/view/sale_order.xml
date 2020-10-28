@@ -76,10 +76,14 @@
                     </field>
                 </group>
             </xpath>
+            <xpath expr="//field[@name='order_line']" position="attributes">
+                <attribute name="context">{'is_next_prev': True}</attribute>
+            </xpath>
             <xpath expr="//field[@name='order_line']/tree/field[@name='sequence']"
                    position="replace">
                 <field name="sequence_ref"/>
             </xpath>
+
             <xpath expr="//page[@name='other_information']/group/group[@name='sale_shipping']" position="replace">
             </xpath>
             <xpath expr="//field[@name='partner_invoice_id']" position="attributes">
