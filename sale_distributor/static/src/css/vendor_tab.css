@@ -64,3 +64,8 @@ button.button-previous-form-dialog {
 .modal-footer {
     display: inline-block !important;
 }
+/*@media (min-width: 1200px){
+    .o_form_view .o_form_sheet_bg > .o_form_sheet {
+        max-width: max-content !important;
+    }
+}*/
