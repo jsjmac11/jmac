@@ -6,12 +6,10 @@ odoo.define('sale.distributor', function (require) {
 
     var QWeb = core.qweb;
     var _t = core._t;
-
     var FormViewDialog = FormDialog.FormViewDialog.include({
-
         init: function (parent, options) {
             var res = this._super(parent, options);
-            if ((this.res_model == 'sale.order.line') && this.context.is_next_prev){ 
+            if ((this.res_model == 'sale.order.line') && this.context.is_next_prev){
                 if ('buttons' in this) {
                     this.buttons.splice(this.buttons.length, 0, {
                         text: _t("Next"),
@@ -34,9 +32,13 @@ odoo.define('sale.distributor', function (require) {
             var options = this.options;
             var parent = this.getParent();
             var local_array = parent.model.localData[this.parentID];
-            var array_child_ids = local_array.res_ids;
-            var index = array_child_ids.indexOf(this.res_id)
-
+            var array_child_ids = Object.keys(local_array._cache)
+            if (this.res_id){
+                var index = array_child_ids.indexOf(this.res_id.toString())
+            }
+            else{
+                var index = array_child_ids.length
+            }
             if (index === (array_child_ids.length - 1)){
                 this.close();
             }else{
@@ -52,9 +54,13 @@ odoo.define('sale.distributor', function (require) {
             var options = this.options;
             var parent = this.getParent();
             var local_array = parent.model.localData[this.parentID];
-            var array_child_ids = local_array.res_ids;
-            var index = array_child_ids.indexOf(this.res_id)
-
+            var array_child_ids = Object.keys(local_array._cache)
+            if (this.res_id){
+                var index = array_child_ids.indexOf(this.res_id.toString())
+            }
+            else{
+                var index = array_child_ids.length -1
+            }
             if (index === 0){
                 this.close();
             }else{
