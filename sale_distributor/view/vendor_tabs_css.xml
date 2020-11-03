@@ -6,7 +6,7 @@
             <xpath expr="//link[last()]" position="after">
                 <link rel="stylesheet" type="text/css" href="/sale_distributor/static/src/css/vendor_tab.css"/>
                 <script type="text/javascript" src="/sale_distributor/static/src/js/next_prev_buttons.js"></script>
-            </xpath>
+			</xpath>
         </template>
     </data>     
 </odoo>

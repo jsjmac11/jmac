@@ -89,7 +89,13 @@ class SaleOrder(models.Model):
         ,help="If you deliver all products at once, the delivery order will be scheduled based on the greatest "
         "product lead time. Otherwise, it will be based on the shortest.")
     date_order = fields.Datetime(string='Order Date', required=True, readonly=True, index=True, states={'new': [('readonly', False)], 'draft': [('readonly', False)], 'sent': [('readonly', False)]}, copy=False, default=fields.Datetime.now, help="Creation date of draft/sent orders,\nConfirmation date of confirmed orders.")
-    
+    description_note = fields.Html('Note', compute='_compute_description_note')
+
+    def _compute_description_note(self):
+        for record in self: 
+            discription = record.note
+            html = '<i id="sale-order" data-html="true" title="'+ discription +'" class="fa fa-info-circle text-primary"/>'
+            record.description_note = html
     def set_to_unprocess(self):
         return self.write({'state': 'draft'})
 

@@ -10,20 +10,45 @@ odoo.define('sale.distributor', function (require) {
         init: function (parent, options) {
             var res = this._super(parent, options);
             if ((this.res_model == 'sale.order.line') && this.context.is_next_prev){
+                var options = this.options;
+                var parent = this.getParent();
+                var local_array = parent.model.localData[this.parentID]._cache;
+                var array_child_ids = Object.keys(local_array)
+                if (this.res_id){
+                    var index = array_child_ids.indexOf(this.res_id.toString())
+                }
+                var total_length = array_child_ids.length - 1
                 if ('buttons' in this) {
-                    this.buttons.splice(this.buttons.length, 0, {
-                        text: _t("Next"),
-                        classes: "btn-primary button-next-form-dialog",
-                        click: function () {
-                            this.on_click_form_dialog_next();
-                        },
-                    }, {
-                        text: _t("Previous"),
-                        classes: "btn-primary button-previous-form-dialog",
-                        click: function () {
-                            this.on_click_form_dialog_previous();
-                        },
-                    });
+                    if(total_length != index){
+                        this.buttons.splice(this.buttons.length, 0, {
+                            classes: "fa fa-chevron-right btn-primary button-next-form-dialog",
+                            click: function () {
+                                this.on_click_form_dialog_next();
+                            },
+                        });
+                    }
+                    if(index != 0){
+                        this.buttons.splice(this.buttons.length, 1, {
+                            classes: "fa fa-chevron-left btn-primary button-previous-form-dialog",
+                            click: function () {
+                                this.on_click_form_dialog_previous();
+                            },
+                        });
+                    }
+                    if(this.res_id){
+                        this.buttons.splice(this.buttons.length, 3, {
+                            text: array_child_ids.length,
+                            classes: "form_pager",
+                        });
+                        this.buttons.splice(this.buttons.length, 4, {
+                            text: _t("/"),
+                            classes: "form_pager",
+                        });
+                        this.buttons.splice(this.buttons.length, 5, {
+                            text: index + 1,
+                            classes: "form_pager",
+                        });
+                    }
                 }
             }
             return res
