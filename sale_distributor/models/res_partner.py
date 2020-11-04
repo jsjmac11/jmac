@@ -17,6 +17,13 @@ class ResPartner(models.Model):
                                                "Vendor Stock Line")
     sequence_name = fields.Char(string="Unique No.")
 
+    def _get_default_country(self):
+        return self.env.ref('base.us').id
+        
+    country_id = fields.Many2one('res.country', string='Country', ondelete='restrict', default=_get_default_country)
+
+    
+
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         # TDE FIXME: strange

@@ -46,8 +46,9 @@ class SaleOrder(models.Model):
     priority = fields.Selection(ORDER_PRIORITY, string='Priority', default='0')
     po_count = fields.Integer(string='Purchase Orders', compute='_compute_po_ids')
     state = fields.Selection(selection_add=[('new', 'Quotation'),
+        ('sent', 'Quotation Sent'),
+        ('review', 'Quotation Reviewed'),
         ('draft', 'Sales Order'),
-        ('sent', 'Sent'),
         ('sale', 'Processed Order'),
         ('done', 'Locked'),
         ('cancel', 'Cancelled')], string='Status', readonly=True, copy=False, index=True, tracking=3, default='new')
@@ -96,8 +97,17 @@ class SaleOrder(models.Model):
             discription = record.note
             html = '<i id="sale-order" data-html="true" title="'+ discription +'" class="fa fa-info-circle text-primary"/>'
             record.description_note = html
+
     def set_to_unprocess(self):
         return self.write({'state': 'draft'})
+
+    @api.returns('mail.message', lambda value: value.id)
+    def message_post(self, **kwargs):
+        if self.env.context.get('mark_so_as_sent'):
+            self.filtered(lambda o: o.state == 'new').with_context(tracking_disable=True).write({'state': 'sent'})
+            # self.env.company.sudo().set_onboarding_step_done('sale_onboarding_sample_quotation_state')
+        return super(SaleOrder, self.with_context(mail_post_autofollow=True)).message_post(**kwargs)
+
 
     def action_view_purchase(self):
         '''
