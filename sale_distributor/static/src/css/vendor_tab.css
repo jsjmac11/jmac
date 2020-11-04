@@ -64,8 +64,12 @@ button.button-previous-form-dialog {
 .modal-footer {
     display: inline-block !important;
 }
-/*@media (min-width: 1200px){
-    .o_form_view .o_form_sheet_bg > .o_form_sheet {
-        max-width: max-content !important;
-    }
-}*/
+.form_pager {
+    float: right !important;
+    padding: 0 !important;
+    margin-top: 5px !important;
+}
+
+.modal {
+    background: #0006 !important;
+}

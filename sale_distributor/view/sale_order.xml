@@ -1652,6 +1652,9 @@
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="note" string="Quotation Note"/>
             </xpath>
+            <!-- <xpath expr="//field[@name='tag_ids']" position="after">
+                <button name="button" string="register" type="object" class="oe_highlight"/>
+            </xpath> -->
         </field>
     </record>
 
@@ -1663,6 +1666,12 @@
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="note" string="Quotation Note"/>
                 </xpath>
+                <xpath expr="//field[@name='tag_ids']" position="after">
+                    <field name="description_note" widget="html" attrs="{'invisible': [('note', '=', '')]}"/>
+                </xpath>
+                <xpath expr="//field[@name='note']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
             </field>
         </record>
 
