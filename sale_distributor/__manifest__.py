@@ -16,7 +16,7 @@
     'description': """
     JMAC Sale Distributor module help to make the vendor details.
     """,
-    'depends': ['sale','sale_stock','product','mail','purchase_stock'],
+    'depends': ['sale','sale_stock','product','mail','purchase_stock','account'],
     'data': [
         'security/ir.model.access.csv',
         'data/res_partner_demo.xml',

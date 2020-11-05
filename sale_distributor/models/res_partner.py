@@ -22,6 +22,13 @@ class ResPartner(models.Model):
         
     country_id = fields.Many2one('res.country', string='Country', ondelete='restrict', default=_get_default_country)
 
+    def _get_default_customer_payment_term(self):
+        return self.env.ref('account.account_payment_term_immediate').id
+
+    property_payment_term_id = fields.Many2one('account.payment.term', company_dependent=True,
+        string='Customer Payment Terms',
+        default=_get_default_customer_payment_term,
+        help="This payment term will be used instead of the default one for sales orders and customer invoices")
     
 
     @api.model

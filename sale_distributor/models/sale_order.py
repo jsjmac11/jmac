@@ -91,6 +91,8 @@ class SaleOrder(models.Model):
         "product lead time. Otherwise, it will be based on the shortest.")
     date_order = fields.Datetime(string='Order Date', required=True, readonly=True, index=True, states={'new': [('readonly', False)], 'draft': [('readonly', False)], 'sent': [('readonly', False)]}, copy=False, default=fields.Datetime.now, help="Creation date of draft/sent orders,\nConfirmation date of confirmed orders.")
     description_note = fields.Html('Note', compute='_compute_description_note')
+    email = fields.Char("Email")
+    phone = fields.Char("Phone")
 
     def _compute_description_note(self):
         for record in self: 
@@ -158,11 +160,16 @@ class SaleOrder(models.Model):
             record.split_line_ids = record.order_line.sale_split_lines
 
 
-    # @api.onchange('partner_id')
-    # def onchange_partner_id(self):
-    #     res = super(SaleOrder, self).onchange_partner_id()
-    #     return res
-
+    @api.onchange('partner_id')
+    def onchange_partner_id(self):
+        res = super(SaleOrder, self).onchange_partner_id()
+        if not self.partner_id:
+            self.update({
+                'email': '',
+                'phone': '',
+            })
+            return
+        self.update({'email':self.partner_id.email, 'phone':self.partner_id.phone})
 
     def allocate_inbound_po(self):
         pol_allocate_ids = self.split_line_ids.filtered(lambda sl: sl.line_type == 'allocate_po')

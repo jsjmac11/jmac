@@ -58,6 +58,8 @@
             </xpath>
 
             <xpath expr="//field[@name='partner_shipping_id']" position="after">
+                <field name="email" widget="email"/>
+                <field name="phone" widget="phone"/>
                 <field name="priority" widget="priority" attrs="{'readonly': [('state', 'not in', ['new','draft','sent'])]}"/>
             </xpath>
             <xpath expr="//field[@name='state']" position="replace">
@@ -1690,23 +1692,40 @@
         </record>
 
     <record id="sale.sale_order_view_search_inherit_quotation" model="ir.ui.view">
-            <field name="name">sale.order.search.inherit.quotation</field>
-            <field name="model">sale.order</field>
-            <field name="mode">primary</field>
-            <field name="inherit_id" ref="sale.view_sales_order_filter"/>
-            <field name="arch" type="xml">
-                <xpath expr="//filter[@name='my_sale_orders_filter']" position="replace">
-                    <field name="campaign_id"/>
-                    <separator/>
-                    <!-- <filter string="My Quotations" name="my_quotation" domain="[('user_id', '=', uid)]"/>
-                    <separator/>
-                    <filter string="Sales Order" name="draft" domain="[('state','in',('draft'))]"/>
-                    <filter string="Processed Orders" name="sales" domain="[('state','in',('sale','done'))]"/>
-                    <separator/> -->
-                    <filter string="Create Date" name="filter_create_date" date="create_date"/>
-                </xpath>
-            </field>
-        </record>
+        <field name="name">sale.order.search.inherit.quotation</field>
+        <field name="model">sale.order</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_sale_orders_filter']" position="replace">
+                <field name="campaign_id"/>
+                <separator/>
+                <!-- <filter string="My Quotations" name="my_quotation" domain="[('user_id', '=', uid)]"/>
+                <separator/>
+                <filter string="Sales Order" name="draft" domain="[('state','in',('draft'))]"/>
+                <filter string="Processed Orders" name="sales" domain="[('state','in',('sale','done'))]"/>
+                <separator/> -->
+                <filter string="Create Date" name="filter_create_date" date="create_date"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_order_form_with_carrier_inht" model="ir.ui.view">
+        <field name="name">delivery.sale.order.form.view.with_carrier_inht</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="delivery.view_order_form_with_carrier"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_open_delivery_wizard'][1]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_open_delivery_wizard'][2]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_open_delivery_wizard'][3]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
 
 
 </odoo>
