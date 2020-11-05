@@ -17,6 +17,8 @@ class NotificationMessage(models.TransientModel):
     unit_price = fields.Float('Unit Price')
     order_id = fields.Many2one("sale.order", 'Order ID', invisible=True)
     # purchase_id = fields.Many2one("purchase.order", string="Purchase Order")
+    note = fields.Text("Note")
+    user_id = fields.Many2one("res.users", string="User")
 
     def update_quantity(self):
         dict = {'line_split': True,
@@ -104,4 +106,13 @@ class NotificationMessage(models.TransientModel):
                 split_line_id = line.copy(dict)
             self.order_id._genrate_line_sequence()
             self.order_id.action_confirm()
+        return True
+
+    def submit(self):
+        if self._context.get('review', False):
+            self.order_id.message_post(body=_(u'Quote assign to <b>%s</b> <br/> <b>Note :</b> %s' % (self.user_id.name,self.note)))
+            self.order_id.write({'state':'review'})
+        if self._context.get('reject', False):
+            self.order_id.message_post(body=_(u'<b>Quote reject reson :</b> %s' % self.note))
+            self.order_id.write({'state':'new'})
         return True
