@@ -47,7 +47,7 @@ class SaleOrder(models.Model):
     po_count = fields.Integer(string='Purchase Orders', compute='_compute_po_ids')
     state = fields.Selection(selection_add=[('new', 'Quotation'),
         ('sent', 'Quotation Sent'),
-        ('review', 'Quotation Reviewed'),
+        ('review', 'Review'),
         ('draft', 'Sales Order'),
         ('sale', 'Processed Order'),
         ('done', 'Locked'),
@@ -310,6 +310,29 @@ class SaleOrder(models.Model):
         elif ctx.get('allocate',False):
             wiz_name = 'Allocate'
             msg += 'Allocate'
+        ctx.update({'default_message': msg})
+        return {
+            'name': (wiz_name),
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': model,
+            'view_id': view_id,
+            'target': 'new',
+            'context': ctx,
+        }
+
+    def to_review(self):
+        ctx = self._context.copy()
+        ctx.update({'default_order_id': self.id})
+        model = 'notification.message'
+        view_id = self.env.ref('sale_distributor.notification_message_form_view_review_reject').id
+        wiz_name = ''
+        if ctx.get('review',False):
+            msg = 'Please select user for review'
+            wiz_name = "Review"
+        if ctx.get('reject',False):
+            msg = 'Please enter reson for reject'
+            wiz_name = "Reject"
         ctx.update({'default_message': msg})
         return {
             'name': (wiz_name),

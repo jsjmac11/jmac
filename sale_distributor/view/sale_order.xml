@@ -43,6 +43,8 @@
                         attrs="{'invisible': ['|',('state', 'not in', ['draft']),('qty_all','=',False)]}"/>
                 <button name="order_process" string="Dropship" context="{'dropship':True}" type="object" attrs="{'invisible': ['|',('state', 'not in', ['draft']),('is_process_line','=',True)]}"/>
                 <button name="order_process" string="Add to Buy" context="{'add_to_buy':True}" type="object" attrs="{'invisible': ['|',('state', 'not in', ['draft']),('is_process_line','=',True)]}"/>
+                <button name="to_review" string="To Review" context="{'review':True}" type="object" attrs="{'invisible': [('state', 'not in', ['new','sent'])]}"/>
+                <button name="to_review" string="Reject" context="{'reject':True}" type="object" attrs="{'invisible': [('state', 'not in', ['review'])]}"/>
                 <field name="is_process_line" invisible="1"/>
                 <field name="qty_all" invisible="1"/>
             </xpath>
