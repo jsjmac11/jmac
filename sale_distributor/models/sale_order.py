@@ -261,7 +261,7 @@ class SaleOrder(models.Model):
 
     def _genrate_line_sequence(self):
         no = 1
-        for l in self.order_line:
+        for l in self.order_line.filtered(lambda l: not l.display_type):
             l.sequence_ref = no
             count = 0
             for sl in l.sale_split_lines:
