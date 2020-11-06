@@ -6,6 +6,10 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//form//sheet//group//group[2]//field[@name='website']" position="before">
+                <field name="email_cc"/>
+                <field name="email_bcc"/>
+            </xpath>
             <xpath expr="//h1" position="after">
                 <h3 attrs="{'invisible': [('parent_id', '!=', False)]}">
                     <field name="sequence_name" readonly="1" attrs="{'invisible': [('parent_id', '!=', False)]}"/>
