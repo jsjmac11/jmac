@@ -16,6 +16,16 @@ class ResPartner(models.Model):
     vendor_stock_master_line = fields.One2many("vendor.stock.master.line", "res_partner_id",
                                                "Vendor Stock Line")
     sequence_name = fields.Char(string="Unique No.")
+    email_cc = fields.Char(string="Email CC")
+    email_bcc = fields.Char(string="Email BCC")
+
+    def read(self, fields=None, load='_classic_read'):
+        res =  super(ResPartner, self).read(fields=fields, load=load)
+        if self.env.context.get('send_by_email'):
+            for data in res:
+                if data.get('display_name'):
+                    data['display_name'] = data['email']
+        return res
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
@@ -73,7 +83,17 @@ class ResPartner(models.Model):
             vals['sequence_name'] = self.env['ir.sequence'].next_by_code('res.partner') or _('New')
         return super(ResPartner, self).create(vals)
 
+class MailComposer(models.TransientModel):
+    _inherit = 'mail.compose.message'
 
+    @api.model
+    def default_get(self, fields):
+        result = super(MailComposer, self).default_get(fields)
+        active_id=self.env.context.get('active_id')
+        order_id = self.env['sale.order'].browse(active_id)
+        result["email_cc"]= order_id.partner_id.email_cc
+        result["email_bcc"]= order_id.partner_id.email_bcc
+        return result
 class VendorStockMasterLine(models.Model):
     _name = 'vendor.stock.master.line'
     _description = 'Vendor Stock Line'
