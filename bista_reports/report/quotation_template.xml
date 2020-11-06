@@ -49,7 +49,7 @@
                                 <lable class="mx-2 tr_td">Email</lable>
                             </td>
                             <td class="text-left">
-                                <span class="tr_td" style="width: 90%; display:block;border-bottom: 1px solid #808080;" t-field="doc.partner_id.email" />
+                                <span class="tr_td" style="width: 90%; display:block;border-bottom: 1px solid #808080;" t-field="doc.email" />
                             </td>
                         </tr>
                         <tr style="height:35px">
@@ -57,7 +57,7 @@
                                 <lable class="mx-2 tr_td">Phone Number</lable>
                             </td>
                             <td class="text-left">
-                                <span class="tr_td" style="width: 90%;display:block;border-bottom: 1px solid #808080;" t-field="doc.partner_id.phone" />
+                                <span class="tr_td" style="width: 90%;display:block;border-bottom: 1px solid #808080;" t-field="doc.phone" />
                             </td>
                         </tr>
                     </table>
@@ -66,8 +66,7 @@
                         <th class="text-left tr_td" style="height:12px;border: 1px solid black;"><span class="mx-2"> Shipping Address:</span></th>
                         <tr>
                             <td class="text-left">
-                                <div class="mx-2 pt-2 tr_td" t-field="doc.partner_shipping_id"
-                                     t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
+                                <div class="mx-2 pt-2 tr_td" t-field="doc.partner_shipping_id" t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True}'/>
                             </td>
                         </tr>
                     </table>
@@ -120,7 +119,18 @@
                                               groups="account.group_show_line_subtotals_tax_included" />
                                     </td>
                                 </t>
+                                <t t-if="line.display_type == 'line_section'">
+                                    <td name="td_section_line" colspan="99" style="border: 1px solid black;">
+                                        <span t-field="line.name"/>
+                                    </td>
+                                </t>
+                                <t t-if="line.display_type == 'line_note'">
+                                    <td name="td_note_line" colspan="99" style="border: 1px solid black;">
+                                        <span t-field="line.name"/>
+                                    </td>
+                                </t>
                             </tr>
+                            
                         </t>
                     </tbody>
 
