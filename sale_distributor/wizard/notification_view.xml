@@ -36,5 +36,35 @@
             </field>
         </record>
 
+        <record id="notification_message_form_view_review_reject" model="ir.ui.view">
+            <field name="name">notification.message.form.reject</field>
+            <field name="model">notification.message</field>
+            <field name="arch" type="xml">
+                <form string="Message">
+                    <sheet>
+                    <group>
+                        <field name="message" nolabel="1"/>
+                        <br/>
+                        <div class="o_row">
+                            <label for="user_id" invisible="context.get('reject',False)"/>
+                            <field name="user_id" nolabel="1" required="context.get('review',False)" invisible="context.get('reject',False)"/>
+                        </div>
+                        <br/>
+                        <div class="o_row">
+                            <label for="note"/>
+                            <field name="note" nolabel="1" required="1"/>
+                        </div>
+                    </group>
+                    <footer>
+                        <button name="submit" string="Submit" type="object"
+                            class="oe_highlight"/>
+                        <button string="Cancel" class="oe_default"
+                            special="cancel" />
+                    </footer>
+                </sheet>
+                </form>
+            </field>
+        </record>
+
     </data>
 </odoo>

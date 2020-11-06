@@ -46,8 +46,9 @@ class SaleOrder(models.Model):
     priority = fields.Selection(ORDER_PRIORITY, string='Priority', default='0')
     po_count = fields.Integer(string='Purchase Orders', compute='_compute_po_ids')
     state = fields.Selection(selection_add=[('new', 'Quotation'),
+        ('sent', 'Quotation Sent'),
+        ('review', 'Review'),
         ('draft', 'Sales Order'),
-        ('sent', 'Sent'),
         ('sale', 'Processed Order'),
         ('done', 'Locked'),
         ('cancel', 'Cancelled')], string='Status', readonly=True, copy=False, index=True, tracking=3, default='new')
@@ -90,14 +91,25 @@ class SaleOrder(models.Model):
         "product lead time. Otherwise, it will be based on the shortest.")
     date_order = fields.Datetime(string='Order Date', required=True, readonly=True, index=True, states={'new': [('readonly', False)], 'draft': [('readonly', False)], 'sent': [('readonly', False)]}, copy=False, default=fields.Datetime.now, help="Creation date of draft/sent orders,\nConfirmation date of confirmed orders.")
     description_note = fields.Html('Note', compute='_compute_description_note')
+    email = fields.Char("Email")
+    phone = fields.Char("Phone")
 
     def _compute_description_note(self):
         for record in self: 
             discription = record.note
             html = '<i id="sale-order" data-html="true" title="'+ discription +'" class="fa fa-info-circle text-primary"/>'
             record.description_note = html
+
     def set_to_unprocess(self):
         return self.write({'state': 'draft'})
+
+    @api.returns('mail.message', lambda value: value.id)
+    def message_post(self, **kwargs):
+        if self.env.context.get('mark_so_as_sent'):
+            self.filtered(lambda o: o.state == 'new').with_context(tracking_disable=True).write({'state': 'sent'})
+            # self.env.company.sudo().set_onboarding_step_done('sale_onboarding_sample_quotation_state')
+        return super(SaleOrder, self.with_context(mail_post_autofollow=True)).message_post(**kwargs)
+
 
     def action_view_purchase(self):
         '''
@@ -148,11 +160,16 @@ class SaleOrder(models.Model):
             record.split_line_ids = record.order_line.sale_split_lines
 
 
-    # @api.onchange('partner_id')
-    # def onchange_partner_id(self):
-    #     res = super(SaleOrder, self).onchange_partner_id()
-    #     return res
-
+    @api.onchange('partner_id')
+    def onchange_partner_id(self):
+        res = super(SaleOrder, self).onchange_partner_id()
+        if not self.partner_id:
+            self.update({
+                'email': '',
+                'phone': '',
+            })
+            return
+        self.update({'email':self.partner_id.email, 'phone':self.partner_id.phone})
 
     def allocate_inbound_po(self):
         pol_allocate_ids = self.split_line_ids.filtered(lambda sl: sl.line_type == 'allocate_po')
@@ -244,7 +261,7 @@ class SaleOrder(models.Model):
 
     def _genrate_line_sequence(self):
         no = 1
-        for l in self.order_line:
+        for l in self.order_line.filtered(lambda l: not l.display_type):
             l.sequence_ref = no
             count = 0
             for sl in l.sale_split_lines:
@@ -300,6 +317,29 @@ class SaleOrder(models.Model):
         elif ctx.get('allocate',False):
             wiz_name = 'Allocate'
             msg += 'Allocate'
+        ctx.update({'default_message': msg})
+        return {
+            'name': (wiz_name),
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': model,
+            'view_id': view_id,
+            'target': 'new',
+            'context': ctx,
+        }
+
+    def to_review(self):
+        ctx = self._context.copy()
+        ctx.update({'default_order_id': self.id})
+        model = 'notification.message'
+        view_id = self.env.ref('sale_distributor.notification_message_form_view_review_reject').id
+        wiz_name = ''
+        if ctx.get('review',False):
+            msg = 'Please select user for review'
+            wiz_name = "Review"
+        if ctx.get('reject',False):
+            msg = 'Please enter reson for reject'
+            wiz_name = "Reject"
         ctx.update({'default_message': msg})
         return {
             'name': (wiz_name),
