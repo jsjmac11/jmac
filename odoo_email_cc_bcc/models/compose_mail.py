@@ -28,11 +28,11 @@ class ResCompany(models.Model):
     _inherit = 'res.company'
 
     display_cc_recipients = fields.Boolean(
-        string="Display Recipients Cc (Partners)", default=True)
+        string="Display Recipients Cc (Partners)", default=False)
     display_bcc_recipients = fields.Boolean(
-        string="Display Recipients Bcc (Partners)", default=True)
-    display_cc = fields.Boolean(string="Display Cc (Emails)")
-    display_bcc = fields.Boolean(string="Display Bcc (Emails)")
+        string="Display Recipients Bcc (Partners)", default=False)
+    display_cc = fields.Boolean(string="Display Cc (Emails)", default=True)
+    display_bcc = fields.Boolean(string="Display Bcc (Emails)", default=True)
     display_reply_to = fields.Boolean(string="Display Reply To")
     default_cc = fields.Char(
         'Default Cc (Emails)', help='Carbon copy message recipients (Emails)')
@@ -122,6 +122,27 @@ class MailComposer(models.TransientModel):
                 'email_to': self.email_to,
             })
         return results
+
+    def generate_email_for_composer(self, template_id, res_ids, fields=None):
+        """ Call email_template.generate_email(), get fields relevant for
+            mail.compose.message, transform email_cc and email_to into partner_ids """
+        multi_mode = True
+        if isinstance(res_ids, int):
+            multi_mode = False
+            res_ids = [res_ids]
+
+        if fields is None:
+            fields = ['subject', 'body_html', 'email_from', 'email_to', 'partner_to', 'email_cc',  'reply_to', 'attachment_ids', 'mail_server_id']
+        returned_fields = fields + ['partner_ids', 'attachments']
+        values = dict.fromkeys(res_ids, False)
+
+        template_values = self.env['mail.template'].with_context(tpl_partners_only=True).browse(template_id).generate_email(res_ids, fields=fields)
+        for res_id in res_ids:
+            res_id_values = dict((field, template_values[res_id][field]) for field in returned_fields if template_values[res_id].get(field))
+            res_id_values['body'] = res_id_values.pop('body_html', '')
+            values[res_id] = res_id_values
+
+        return multi_mode and values or values[res_ids[0]]
 
 
 class Message(models.Model):
