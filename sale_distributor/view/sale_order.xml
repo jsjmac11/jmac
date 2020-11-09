@@ -26,11 +26,12 @@
             <xpath expr="//header/button[@name='action_quotation_send' and @states='sent,sale']" position="attributes">
                 <attribute name="name">Send Order</attribute>
                 <attribute name="states">sale</attribute>
+                <attribute name="context">{'send_by_email': True}</attribute>
             </xpath>
 
             <xpath expr="//header/button[@name='action_quotation_send'  and @states='draft']" position="replace">
                 <button name="action_quotation_send" string="Send by Email" type="object" states="draft" class="btn-primary" invisible="1"/>
-                <button name="action_quotation_send" string="Send Quotation" type="object" states="new" class="btn-primary"/>
+                <button name="action_quotation_send" string="Send Quotation" type="object" states="new" class="btn-primary" context="{'send_by_email': True}"/>
             </xpath>
 
             <xpath expr="//header/button[@name='action_confirm'][2]" position="attributes">
