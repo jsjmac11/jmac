@@ -101,6 +101,7 @@ class SaleOrder(models.Model):
             record.description_note = html
 
     def set_to_unprocess(self):
+        self._genrate_line_sequence() 
         return self.write({'state': 'draft'})
 
     @api.returns('mail.message', lambda value: value.id)
@@ -438,7 +439,7 @@ class SaleOrder(models.Model):
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
-    _order = 'order_id, id, sequence_ref'
+    _order = 'order_id, sequence, id, sequence_ref'
 
     @api.model
     def default_get(self, fields):
