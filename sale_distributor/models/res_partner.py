@@ -103,11 +103,12 @@ class MailComposer(models.TransientModel):
     @api.model
     def default_get(self, fields):
         result = super(MailComposer, self).default_get(fields)
-        active_id=self.env.context.get('active_id')
+        active_id = self.env.context.get('active_id')
         order_id = self.env['sale.order'].browse(active_id)
-        result["email_cc"]= order_id.partner_id.email_cc
-        result["email_bcc"]= order_id.partner_id.email_bcc
+        result["email_cc"] = order_id.partner_id.email_cc
+        result["email_bcc"] = order_id.partner_id.email_bcc
         return result
+
 class VendorStockMasterLine(models.Model):
     _name = 'vendor.stock.master.line'
     _description = 'Vendor Stock Line'
