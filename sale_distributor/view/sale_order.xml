@@ -112,9 +112,9 @@
             </xpath>
             <xpath expr="//field[@name='order_line']/tree/field[@name='sequence']"
                    position="replace">
-                <field name="sequence_ref"/>
-                <!-- <field name="sequence_ref" widget="handle" attrs="{'column_invisible': [('parent.state', 'not in', ('new','sent','review'))]}"/> -->
-                <!-- <field name="sequence_ref" attrs="{'column_invisible': [('parent.state', 'in', ('new','sent','review'))]}"/>  -->
+                <!-- <field name="sequence_ref"/> -->
+                <field name="sequence" widget="handle" attrs="{'column_invisible': [('parent.state', 'not in', ('new','sent','review'))]}"/>
+                <field name="sequence_ref" attrs="{'column_invisible': [('parent.state', 'in', ('new','sent','review'))]}"/> 
 
             </xpath>
 
