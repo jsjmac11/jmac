@@ -6,6 +6,26 @@ odoo.define('sale.distributor', function (require) {
 
     var QWeb = core.qweb;
     var _t = core._t;
+
+    var Dialog = require('web.Dialog');
+    var ListRenderer = require('web.ListRenderer');
+
+    // Confirm Dialog on Delete Record
+    ListRenderer.include({
+        _onRemoveIconClick: function (event) {
+            var self = this;
+            var _super = this._super.bind(this, event);
+            event.stopPropagation();
+            if (this.state && this.state.model == 'sale.order.line'){
+                Dialog.confirm(self, _t("Are you sure you want to delete this record ?"), {
+                    confirm_callback: _super,
+                });
+            } else {
+                _super();
+            }
+        },
+    });
+
     var FormViewDialog = FormDialog.FormViewDialog.include({
         init: function (parent, options) {
             var res = this._super(parent, options);
