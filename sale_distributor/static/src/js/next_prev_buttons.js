@@ -25,7 +25,7 @@ odoo.define('sale.distributor', function (require) {
             }
         },
     });
-
+    // Next & Previous Functionality
     var FormViewDialog = FormDialog.FormViewDialog.include({
         init: function (parent, options) {
             var res = this._super(parent, options);
@@ -33,9 +33,10 @@ odoo.define('sale.distributor', function (require) {
                 var options = this.options;
                 var parent = this.getParent();
                 var local_array = parent.model.localData[this.parentID]._cache;
-                var array_child_ids = Object.keys(local_array)
+                var array_child_ids1 = Object.keys(local_array)
+                var array_child_ids = _.pluck(parent.renderer.state.data.order_line.data, 'res_id')
                 if (this.res_id){
-                    var index = array_child_ids.indexOf(this.res_id.toString())
+                    var index = array_child_ids.indexOf(this.res_id)
                 }
                 var total_length = array_child_ids.length - 1
                 if ('buttons' in this) {
@@ -73,13 +74,14 @@ odoo.define('sale.distributor', function (require) {
             }
             return res
         },
+        // Next Button
         on_click_form_dialog_next: function(){
             var options = this.options;
             var parent = this.getParent();
             var local_array = parent.model.localData[this.parentID];
-            var array_child_ids = Object.keys(local_array._cache)
+            var array_child_ids = _.pluck(parent.renderer.state.data.order_line.data, 'res_id')
             if (this.res_id){
-                var index = array_child_ids.indexOf(this.res_id.toString())
+                var index = array_child_ids.indexOf(this.res_id)
             }
             else{
                 var index = array_child_ids.length
@@ -94,14 +96,14 @@ odoo.define('sale.distributor', function (require) {
             }
 
         },
-
+        // Previous Button
         on_click_form_dialog_previous: function(){
             var options = this.options;
             var parent = this.getParent();
             var local_array = parent.model.localData[this.parentID];
-            var array_child_ids = Object.keys(local_array._cache)
+            var array_child_ids = _.pluck(parent.renderer.state.data.order_line.data, 'res_id')
             if (this.res_id){
-                var index = array_child_ids.indexOf(this.res_id.toString())
+                var index = array_child_ids.indexOf(this.res_id)
             }
             else{
                 var index = array_child_ids.length -1
