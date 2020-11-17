@@ -252,7 +252,7 @@ class SaleOrder(models.Model):
                                             })
                 for move_line in lines_by_type['stock']:
                     move_line.picking_id = new_picking
-                    move_line.move_line_ids.picking_id = new_picking    
+                    move_line.move_line_ids.picking_id = new_picking
         return res
 
     def action_cancel(self):
@@ -805,6 +805,8 @@ class SaleOrderLine(models.Model):
     substitute_product_template_id = fields.Many2one(
         'product.template', string='Substitute Product Template',
         related="substitute_product_id.product_tmpl_id", domain=[('sale_ok', '=', True)])
+    product_pack_id = fields.Many2one("product.pack.uom",string="Product Pack")
+    total_pack_quantity = fields.Float("Total Quantity")
 
     @api.onchange('adi_actual_cost','nv_actual_cost','ss_actual_cost','sl_actual_cost'
         ,'jne_actual_cost','bnr_actual_cost','wr_actual_cost','dfm_actual_cost','bks_actual_cost')
@@ -885,6 +887,13 @@ class SaleOrderLine(models.Model):
         if self.inbound_stock_lines:
             res = "There are inbound orders from vendors for this product."
         self.message_inbound_orders = res
+
+    @api.onchange('product_pack_id')
+    def product_pack_id_change(self):
+        self.product_id = False
+        if self.product_pack_id:
+            self.product_id = self.product_pack_id.product_tmpl_id.product_variant_id.id
+            self.total_pack_quantity = self.product_pack_id.quantity * self.product_uom_qty
 
     @api.onchange('product_id','substitute_product_id')
     def product_id_change(self):

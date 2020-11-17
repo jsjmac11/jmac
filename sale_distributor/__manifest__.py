@@ -28,6 +28,7 @@
         'security/ir.model.access.csv',
         'wizard/notification_view.xml',
         'view/purchase_view.xml',
+        'view/product_view.xml',
     ],
     'demo': [
         ],
