@@ -806,7 +806,35 @@ class SaleOrderLine(models.Model):
         'product.template', string='Substitute Product Template',
         related="substitute_product_id.product_tmpl_id", domain=[('sale_ok', '=', True)])
     product_pack_id = fields.Many2one("product.pack.uom",string="Product Pack")
-    total_pack_quantity = fields.Float("Total Quantity")
+    pack_quantity = fields.Float(string='Pack Quantity', digits='Product Unit of Measure', required=True, default=1.0)
+
+    @api.onchange('product_pack_id')
+    def product_pack_id_change(self):
+        self.product_id = False
+        if self.product_pack_id:
+            self.product_id = self.product_pack_id.product_tmpl_id.product_variant_id.id
+            self.product_uom_qty = self.product_pack_id.quantity
+            self.pack_quantity = 1.0
+
+    @api.onchange('pack_quantity')
+    def pack_quantity_change(self):
+        self.product_uom_qty = self.product_pack_id.quantity * self.pack_quantity
+
+    # no trigger product_id.invoice_policy to avoid retroactively changing SO
+    @api.depends('qty_invoiced', 'qty_delivered', 'product_uom_qty', 'order_id.state')
+    def _get_to_invoice_qty(self):
+        """
+        Compute the quantity to invoice. If the invoice policy is order, the quantity to invoice is
+        calculated from the ordered quantity. Otherwise, the quantity delivered is used.
+        """
+        for line in self:
+            if line.order_id.state in ['sale', 'done']:
+                if line.product_id.invoice_policy == 'order':
+                    line.qty_to_invoice = line.pack_quantity - line.qty_invoiced
+                else:
+                    line.qty_to_invoice = line.qty_delivered - line.qty_invoiced
+            else:
+                line.qty_to_invoice = 0
 
     @api.onchange('adi_actual_cost','nv_actual_cost','ss_actual_cost','sl_actual_cost'
         ,'jne_actual_cost','bnr_actual_cost','wr_actual_cost','dfm_actual_cost','bks_actual_cost')
@@ -887,14 +915,7 @@ class SaleOrderLine(models.Model):
         if self.inbound_stock_lines:
             res = "There are inbound orders from vendors for this product."
         self.message_inbound_orders = res
-
-    @api.onchange('product_pack_id')
-    def product_pack_id_change(self):
-        self.product_id = False
-        if self.product_pack_id:
-            self.product_id = self.product_pack_id.product_tmpl_id.product_variant_id.id
-            self.total_pack_quantity = self.product_pack_id.quantity * self.product_uom_qty
-
+    
     @api.onchange('product_id','substitute_product_id')
     def product_id_change(self):
         self.lowest_cost_source = ''
@@ -1231,6 +1252,17 @@ class SaleOrderLine(models.Model):
                 name = name + ' - ' + str(s.sequence_ref)
             result.append((s.id, name))                
         return result
+
+    def _prepare_invoice_line(self):
+        """
+        Prepare the dict of values to create the new invoice line for a sales order line.
+        :param qty: float quantity to invoice
+        """
+        res = super(SaleOrderLine, self)._prepare_invoice_line()
+        res.update({'product_pack_id': self.product_pack_id,
+                    'pack_quantity': self.product_uom_qty,
+                    })
+        return res
 
 
 class InboundStock(models.Model):

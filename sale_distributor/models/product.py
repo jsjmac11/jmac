@@ -19,8 +19,18 @@ class ProductProduct(models.Model):
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
-    product_pack_line = fields.One2many("product.pack.uom","product_tmpl_id",string="Product Pack's", help="Define product packs.")
+    product_pack_line = fields.One2many("product.pack.uom", "product_tmpl_id",
+    									string="Product Pack's",
+    									domain="[('is_auto_created','=',True)]",
+    									help="Define product packs.")
 
+    @api.model
+    def create(self, vals):
+        if vals.get('name'):
+            vals['product_pack_line'] = [(0, 0, {
+                 'quantity': 1.0,
+                 'is_auto_created': True})]
+        return super(ProductTemplate, self).create(vals)
 
 class ProductSupplierinfo(models.Model):
     _inherit = "product.supplierinfo"
@@ -39,7 +49,8 @@ class ProductPackUom(models.Model):
 	name = fields.Char("Name")
 	product_id = fields.Many2one("product.product",'Product')
 	product_tmpl_id = fields.Many2one("product.template","Product Template")
-	quantty = fields.Float("Quantty")
+	quantity = fields.Float("Quantity")
+	is_auto_created = fields.Boolean("Auto Created", default=False)
 
 	def name_get(self):
 		result = []
