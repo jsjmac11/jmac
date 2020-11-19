@@ -21,15 +21,19 @@ class ProductTemplate(models.Model):
 
     product_pack_line = fields.One2many("product.pack.uom", "product_tmpl_id",
     									string="Product Pack's",
-    									domain="[('is_auto_created','=',True)]",
+    									domain=[('is_auto_created','!=',True)],
     									help="Define product packs.")
 
     @api.model
     def create(self, vals):
         if vals.get('name'):
-            vals['product_pack_line'] = [(0, 0, {
-                 'quantity': 1.0,
-                 'is_auto_created': True})]
+        	pack_auto_line = (0, 0, {
+	                 'quantity': 1.0,
+	                 'is_auto_created': True})
+        	if vals.get('product_pack_line'):
+	            vals['product_pack_line'].append(pack_auto_line)
+	        else:
+	        	vals['product_pack_line'] = [pack_auto_line]
         return super(ProductTemplate, self).create(vals)
 
 class ProductSupplierinfo(models.Model):
@@ -45,12 +49,14 @@ class ProductSupplierinfo(models.Model):
 class ProductPackUom(models.Model):
 	_name="product.pack.uom"
 	_description = "Product Pack Uom"
+	_order="product_tmpl_id, name"
 
 	name = fields.Char("Name")
 	product_id = fields.Many2one("product.product",'Product')
 	product_tmpl_id = fields.Many2one("product.template","Product Template")
-	quantity = fields.Float("Quantity")
+	quantity = fields.Float("Quantity", digits='Product Unit of Measure')
 	is_auto_created = fields.Boolean("Auto Created", default=False)
+	price = fields.Float("Price")
 
 	def name_get(self):
 		result = []

@@ -10,8 +10,10 @@
         		<page name="product_pack" string="Product Pack">
         		<field name="product_pack_line" nolabel="1">
         			<tree editable="bottom">
-	        			<field name="name"/>
-	        			<field name="quantity"/>
+	        			<field name="name" attrs="{'required':[('is_auto_created','!=', True)]}"/>
+	        			<field name="quantity" required="1"/>
+                        <field name="price" required="1"/>
+                        <field name="is_auto_created" invisible="1"/>
 	        			<field name="product_tmpl_id" invisible="1"/>
 	        			<field name="product_id" invisible="1"/>
 	        		</tree>
