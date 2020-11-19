@@ -275,6 +275,12 @@ class SaleOrder(models.Model):
     @api.model
     def create(self, vals):
         res = super(SaleOrder, self).create(vals)
+        message = self.env['mail.message'].search(
+            [('model', '=', 'sale.order'),('res_id', '=', res.id)], limit=1)
+        if message and res.state == 'new':
+            message.body = message.body.replace(
+            "Sales Order created", "Quotation Created")
+
         if vals.get('order_line'):
             child_lines = res.mapped('order_line').mapped('sale_split_lines').filtered(lambda cl: not cl.order_id)
             if child_lines:

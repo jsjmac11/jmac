@@ -59,7 +59,7 @@ class ResPartner(models.Model):
         result = []
         name = ''
         for s in self:
-            if s._context.get('bista_show_address'):
+            if s._context.get('bista_show_address') and not self.env.context.get('force_email'):
                 street = str(s.street) + ", " if s.street else ""
                 street2 = str(s.street2) + ", " if s.street2 else ""
                 city = str(s.city) + ", " if s.city else ""
@@ -71,9 +71,17 @@ class ResPartner(models.Model):
                     name = s.name
                 result.append((s.id, name))
             else:
-                if s.sequence_name:
+                if s.sequence_name and not self.env.context.get('force_email'):
                     name = '[' + str(s.sequence_name) + '] ' + str(s.name)
                     result.append((s.id, name))
+                else:
+                    if not self.env.context.get('force_email'):
+                        name = str(s.name)
+                        result.append((s.id, name))
+            if self.env.context.get('force_email'):
+                if s.email:
+                    email = str(s.email)
+                    result.append((s.id, email))
                 else:
                     name = str(s.name)
                     result.append((s.id, name))
