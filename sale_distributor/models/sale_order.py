@@ -252,7 +252,7 @@ class SaleOrder(models.Model):
                                             })
                 for move_line in lines_by_type['stock']:
                     move_line.picking_id = new_picking
-                    move_line.move_line_ids.picking_id = new_picking    
+                    move_line.move_line_ids.picking_id = new_picking
         return res
 
     def action_cancel(self):
@@ -805,6 +805,55 @@ class SaleOrderLine(models.Model):
     substitute_product_template_id = fields.Many2one(
         'product.template', string='Substitute Product Template',
         related="substitute_product_id.product_tmpl_id", domain=[('sale_ok', '=', True)])
+    product_pack_id = fields.Many2one("product.pack.uom",string="Product Pack")
+    pack_quantity = fields.Float(string='Pack Quantity', digits='Product Unit of Measure', required=True, default=1.0)
+
+    @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id', 'pack_quantity')
+    def _compute_amount(self):
+        """
+        Compute the amounts of the SO line.
+        """
+        if self.product_pack_id:
+            for line in self:
+                price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
+                taxes = line.tax_id.compute_all(price, line.order_id.currency_id, line.pack_quantity, product=line.product_id, partner=line.order_id.partner_shipping_id)
+                line.update({
+                    'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
+                    'price_total': taxes['total_included'],
+                    'price_subtotal': taxes['total_excluded'],
+                })
+                if self.env.context.get('import_file', False) and not self.env.user.user_has_groups('account.group_account_manager'):
+                    line.tax_id.invalidate_cache(['invoice_repartition_line_ids'], [line.tax_id.id])
+        else:
+            super(SaleOrderLine, self)._compute_amount()
+            
+    @api.onchange('product_pack_id')
+    def product_pack_id_change(self):
+        self.product_id = False
+        if self.product_pack_id:
+            self.product_id = self.product_pack_id.product_tmpl_id.product_variant_id.id
+            self.product_uom_qty = self.product_pack_id.quantity
+            self.pack_quantity = 1.0
+
+    @api.onchange('pack_quantity')
+    def pack_quantity_change(self):
+        self.product_uom_qty = self.product_pack_id.quantity * self.pack_quantity
+
+    # no trigger product_id.invoice_policy to avoid retroactively changing SO
+    @api.depends('qty_invoiced', 'qty_delivered', 'product_uom_qty', 'order_id.state')
+    def _get_to_invoice_qty(self):
+        """
+        Compute the quantity to invoice. If the invoice policy is order, the quantity to invoice is
+        calculated from the ordered quantity. Otherwise, the quantity delivered is used.
+        """
+        for line in self:
+            if line.order_id.state in ['sale', 'done']:
+                if line.product_id.invoice_policy == 'order':
+                    line.qty_to_invoice = line.pack_quantity - line.qty_invoiced
+                else:
+                    line.qty_to_invoice = line.qty_delivered - line.qty_invoiced
+            else:
+                line.qty_to_invoice = 0
 
     @api.onchange('adi_actual_cost','nv_actual_cost','ss_actual_cost','sl_actual_cost'
         ,'jne_actual_cost','bnr_actual_cost','wr_actual_cost','dfm_actual_cost','bks_actual_cost')
@@ -885,7 +934,7 @@ class SaleOrderLine(models.Model):
         if self.inbound_stock_lines:
             res = "There are inbound orders from vendors for this product."
         self.message_inbound_orders = res
-
+    
     @api.onchange('product_id','substitute_product_id')
     def product_id_change(self):
         self.lowest_cost_source = ''
@@ -1024,6 +1073,8 @@ class SaleOrderLine(models.Model):
             else:
                 result['value'].update({'lowest_cost_source': '',
                                         'lowest_cost': 0.0})
+            if self.product_pack_id and not self.product_pack_id.is_auto_created:
+                result['value'].update({'price_unit': self.product_pack_id.price})
         return result
 
     @api.onchange('product_uom', 'product_uom_qty')
@@ -1087,6 +1138,8 @@ class SaleOrderLine(models.Model):
             else:
                 result['value'].update({'lowest_cost_source': '',
                                         'lowest_cost': 0.0})
+            if self.product_pack_id and not self.product_pack_id.is_auto_created:
+                result['value'].update({'price_unit': self.product_pack_id.price})
         return result
 
     def split_line(self):
@@ -1222,6 +1275,17 @@ class SaleOrderLine(models.Model):
                 name = name + ' - ' + str(s.sequence_ref)
             result.append((s.id, name))                
         return result
+
+    def _prepare_invoice_line(self):
+        """
+        Prepare the dict of values to create the new invoice line for a sales order line.
+        :param qty: float quantity to invoice
+        """
+        res = super(SaleOrderLine, self)._prepare_invoice_line()
+        res.update({'product_pack_id': self.product_pack_id,
+                    'pack_quantity': self.product_uom_qty,
+                    })
+        return res
 
 
 class InboundStock(models.Model):
