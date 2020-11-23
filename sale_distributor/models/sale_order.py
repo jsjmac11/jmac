@@ -853,7 +853,7 @@ class SaleOrderLine(models.Model):
         calculated from the ordered quantity. Otherwise, the quantity delivered is used.
         """
         for line in self:
-            if line.order_id.state in ['sale', 'done']:
+            if line.order_id.state not in ['cancel']: # ['sale', 'done', 'new']
                 if line.product_id.invoice_policy == 'order':
                     line.qty_to_invoice = line.pack_quantity - line.qty_invoiced
                 else:
