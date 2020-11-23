@@ -96,10 +96,13 @@ odoo.define('sale.distributor', function (require) {
             }else{
                 options.res_id = array_child_ids[index +1];
                 options.recordID = local_array._cache[options.res_id];
-                this.close();
-                new FormDialog.FormViewDialog(parent, options).open();
+                var old_dialog = _.extend({}, this);
+                var new_dialog = new FormDialog.FormViewDialog(parent, options);
+                new_dialog.open();
+                new_dialog.opened().then(function(){
+                    old_dialog.close();
+                })
             }
-
         },
         // Previous Button
         on_click_form_dialog_previous: function(){
@@ -120,8 +123,12 @@ odoo.define('sale.distributor', function (require) {
             }else{
                 options.res_id = array_child_ids[index - 1];
                 options.recordID = local_array._cache[options.res_id];
-                this.close();
-                new FormDialog.FormViewDialog(parent, options).open();
+                var old_dialog = _.extend({}, this);
+                var new_dialog = new FormDialog.FormViewDialog(parent, options);
+                new_dialog.open();
+                new_dialog.opened().then(function(){
+                    old_dialog.close();
+                })
             }
         },
     })
