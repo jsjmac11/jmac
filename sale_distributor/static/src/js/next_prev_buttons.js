@@ -16,7 +16,7 @@ odoo.define('sale.distributor', function (require) {
             var self = this;
             var _super = this._super.bind(this, event);
             event.stopPropagation();
-            if (this.state && this.state.model == 'sale.order.line'){
+            if ((this.state && this.state.model == 'sale.order.line') && this.state.data[0].context.confirm_delete){
                 Dialog.confirm(self, _t("Are you sure you want to delete this record ?"), {
                     confirm_callback: _super,
                 });
@@ -33,9 +33,10 @@ odoo.define('sale.distributor', function (require) {
                 var options = this.options;
                 var parent = this.getParent();
                 var local_array = parent.model.localData[this.parentID]._cache;
-                var array_child_ids1 = Object.keys(local_array)
+                // var array_child_ids = Object.keys(local_array)
                 var array_child_ids = _.pluck(parent.renderer.state.data.order_line.data, 'res_id')
                 if (this.res_id){
+                    // var index = array_child_ids.indexOf(this.res_id.toString())
                     var index = array_child_ids.indexOf(this.res_id)
                 }
                 var total_length = array_child_ids.length - 1
@@ -56,6 +57,7 @@ odoo.define('sale.distributor', function (require) {
                             },
                         });
                     }
+
                     if(this.res_id){
                         this.buttons.splice(this.buttons.length, 3, {
                             text: array_child_ids.length,
@@ -78,9 +80,12 @@ odoo.define('sale.distributor', function (require) {
         on_click_form_dialog_next: function(){
             var options = this.options;
             var parent = this.getParent();
+            // this._save().then(this.close.bind(this));
             var local_array = parent.model.localData[this.parentID];
+            // var array_child_ids = Object.keys(local_array._cache)
             var array_child_ids = _.pluck(parent.renderer.state.data.order_line.data, 'res_id')
             if (this.res_id){
+                // var index = array_child_ids.indexOf(this.res_id.toString())
                 var index = array_child_ids.indexOf(this.res_id)
             }
             else{
@@ -101,8 +106,10 @@ odoo.define('sale.distributor', function (require) {
             var options = this.options;
             var parent = this.getParent();
             var local_array = parent.model.localData[this.parentID];
+            // var array_child_ids = Object.keys(local_array._cache)
             var array_child_ids = _.pluck(parent.renderer.state.data.order_line.data, 'res_id')
             if (this.res_id){
+                // var index = array_child_ids.indexOf(this.res_id.toString())
                 var index = array_child_ids.indexOf(this.res_id)
             }
             else{
