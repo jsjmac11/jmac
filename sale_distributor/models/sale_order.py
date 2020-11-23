@@ -275,6 +275,12 @@ class SaleOrder(models.Model):
     @api.model
     def create(self, vals):
         res = super(SaleOrder, self).create(vals)
+        message = self.env['mail.message'].search(
+            [('model', '=', 'sale.order'),('res_id', '=', res.id)], limit=1)
+        if message and res.state == 'new':
+            message.body = message.body.replace(
+            "Sales Order created", "Quotation Created")
+
         if vals.get('order_line'):
             child_lines = res.mapped('order_line').mapped('sale_split_lines').filtered(lambda cl: not cl.order_id)
             if child_lines:
@@ -1148,11 +1154,21 @@ class SaleOrderLine(models.Model):
             process_qty = sum(self.sale_split_lines.filtered(lambda l: l.line_type != 'allocate_po').mapped('product_uom_qty'))
             for inl in self.inbound_stock_lines.filtered(lambda l:l.select_pol):
                 process_qty += inl.allocate_qty
+            # Process Pack qty insted of total quantity
+            # if self.product_pack_id and self.product_pack_id.quantity:
+            #     unprocess_qty = self.pack_quantity - process_qty / self.product_pack_id.quantity
+            # else:
+            #     unprocess_qty = self.product_uom_qty - process_qty
             unprocess_qty = self.product_uom_qty - process_qty
             if unprocess_qty < 0:
                 raise ValidationError(_("More quantity allocated then unprocess quantity!"))
         else:
             process_qty = sum(self.sale_split_lines.mapped('product_uom_qty'))
+            # Process Pack qty insted of total quantity
+            # if self.product_pack_id and self.product_pack_id.quantity:
+            #     unprocess_qty = self.pack_quantity - process_qty / self.product_pack_id.quantity
+            # else:
+            #     unprocess_qty = self.product_uom_qty - process_qty
             unprocess_qty = self.product_uom_qty - process_qty
             if not unprocess_qty:
                 raise ValidationError(_("There is no quantity for process!"))
@@ -1196,24 +1212,26 @@ class SaleOrderLine(models.Model):
             vendor_price_unit = self.otv_cost
         wiz_name = ''
         msg = ''
-        product_id = self.product_id
+        product_name = self.product_id.name
+        # if self.product_pack_id:
+        #     product_name += '-' + self.product_pack_id.name if self.product_pack_id.name else ''
         if self.substitute_product_id:
-            product_id = self.substitute_product_id
+            product_name = self.substitute_product_id
         if ctx.get('ship_from_here',False):
             wiz_name = 'Ship from here'
-            msg = 'Ship %s from here?' % product_id.name
+            msg = 'Ship %s from here?' % product_name
         elif ctx.get('add_to_buy',False):
             wiz_name = 'Add to Buy'
-            msg = 'Add %s to buy' % product_id.name
+            msg = 'Add %s to buy' % product_name
         elif ctx.get('dropship',False):
             wiz_name = 'Dropship'
-            msg =  'Dropship %s' % product_id.name
+            msg =  'Dropship %s' % product_name
         elif ctx.get('allocate',False):
             wiz_name = 'Allocate'
-            msg = 'Allocate %s?' % product_id.name
+            msg = 'Allocate %s?' % product_name
         elif ctx.get('allocate_po',False):
             wiz_name = 'Allocate From Inbound PO'
-            msg = 'Allocate %s from selected Inbound Purchase order?' % product_id.name
+            msg = 'Allocate %s from selected Inbound Purchase order?' % product_name
 
         if name :
             ctx.update({'default_partner_id': name.id})
