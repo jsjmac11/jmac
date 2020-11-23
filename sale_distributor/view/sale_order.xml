@@ -111,7 +111,7 @@
                 </group>
             </xpath>
             <xpath expr="//field[@name='order_line']" position="attributes">
-                <attribute name="context">{'is_next_prev': True}</attribute>
+                <attribute name="context">{'is_next_prev': True, 'confirm_delete': True}</attribute>
             </xpath>
             <xpath expr="//field[@name='order_line']/tree/field[@name='sequence']"
                    position="replace">
@@ -249,22 +249,22 @@
                     <div>
                         <label for="list_price"/>
                         <field name="list_price"
-                               style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
+                               style="border: 1px solid black; border-collapse: collapse; text-align:center;height: 21px;"/>
                     </div>
                     <div>
                         <label for="lowest_cost"/>
                         <field name="lowest_cost"
-                               style="border: 1px solid black; border-collapse: collapse; text-align:center;" readonly="1" force_save="1"/>
+                               style="border: 1px solid black; border-collapse: collapse; text-align:center;height: 21px;" readonly="1" force_save="1"/>
                     </div>
                     <div>
                         <label for="lowest_cost_source"/>
                         <field name="lowest_cost_source"
-                        style="border: 1px solid black; border-collapse: collapse; text-align:center;" readonly="1" force_save="1"/>
+                        style="border: 1px solid black; border-collapse: collapse; text-align:center;height: 21px;" readonly="1" force_save="1"/>
                     </div>
                     <div style="margin-left:300px;">
                         <label for="total_stock"/>
                         <field name="total_stock"
-                        style="border: 1px solid black; border-collapse: collapse; text-align:center;"
+                        style="border: 1px solid black; border-collapse: collapse; text-align:center;height: 21px;"
                         readonly="1" force_save="1"/>
                     </div>
                 </div>
