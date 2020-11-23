@@ -63,8 +63,11 @@ class NotificationMessage(models.TransientModel):
                     raise ValidationError(_("Quantity must be greater than 0!"))
                 elif self.qty > self.remaining_qty:
                     raise ValidationError(_("Quantity must not be greater than unprocess quantity %s!" % self.remaining_qty))
-                
-                dict.update({'product_uom_qty': self.qty,
+                order_qty = self.qty
+                # Multipier Quantity based on Pack selected
+                # if self.sale_line_id.product_pack_id:
+                #     order_qty = self.qty * self.sale_line_id.product_pack_id.quantity
+                dict.update({'product_uom_qty': order_qty,
                     'parent_line_id': self.sale_line_id.id,
                     'vendor_price_unit': self.unit_price,
                     'product_id': product_id.id,

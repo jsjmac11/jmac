@@ -17,3 +17,11 @@ class StockMove(models.Model):
                 'vendor_price_unit': self.sale_line_id.vendor_price_unit,
                 })
         return values
+
+
+# class StockPicking(models.Model):
+#     _inherit = "stock.picking"
+
+#     def button_validate(self):
+#         super(StockPicking, self).button_validate()
+#         return
