@@ -61,7 +61,10 @@ class ProductPackUom(models.Model):
 	def name_get(self):
 		result = []
 		for prod in self:
-			name = "[%s] %s" % (prod.product_tmpl_id.default_code, prod.product_tmpl_id.name)
+			default_code = ''
+			if prod.product_tmpl_id.default_code:
+				default_code = "[%s] " % (prod.product_tmpl_id.default_code)
+			name = "%s%s" % (default_code, prod.product_tmpl_id.name)
 			if prod.name:
 				name = name + '-%s' % prod.name or ''
 			result.append((prod.id, name))
