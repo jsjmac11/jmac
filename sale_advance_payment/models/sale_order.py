@@ -86,7 +86,7 @@ class SaleAdvancePaymentInv(models.TransientModel):
     @api.depends('to_invoice_amount', 'advance_total')
     def check_amount(self):
         for rec in self:
-            if rec.to_invoice_amount > rec.advance_total:
-                rec.display_msg = True
-            else:
-                rec.display_msg = False
+            # if rec.to_invoice_amount > rec.advance_total:
+            #     rec.display_msg = True
+            # else:
+            rec.display_msg = False

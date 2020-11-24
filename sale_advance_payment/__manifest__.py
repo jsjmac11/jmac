@@ -6,15 +6,15 @@
 ##############################################################################
 
 {
-    'name': 'Bista Fab Speed Advance Payment Sale',
+    'name': 'Bista Advance Payment Sale',
     'version': '13.0.0.0.1',
     'category': 'Stock',
     'depends': ['account', 'sale', 'stock'],
-    'license': 'AGPL-3',
-    'author': 'Bista Solutions.',
+    'author': 'Shawaz Jahangiri',
     'maintainer': 'Bista Solutions.',
     'summary': 'Advance Payment for Sale',
-    'description': '''you can take advance payment regarding Sale and generate vender bill later
+    'website': 'https://www.bistasolutions.com'
+    'description': '''you can take advance payment regarding Sale and generate customer invoice
             ''',
     'website': 'www.bistasolutions.com',
     'data': [
