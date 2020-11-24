@@ -13,9 +13,8 @@
     'author': 'Shawaz Jahangiri',
     'maintainer': 'Bista Solutions.',
     'summary': 'Advance Payment for Sale',
-    'website': 'https://www.bistasolutions.com'
-    'description': '''you can take advance payment regarding Sale and generate customer invoice
-            ''',
+    'website': 'https://www.bistasolutions.com',
+    'description': '''you can take advance payment regarding Sale and generate customer invoice''',
     'website': 'www.bistasolutions.com',
     'data': [
          'wizard/advance_payment.xml',
