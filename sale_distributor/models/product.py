@@ -23,6 +23,15 @@ class ProductTemplate(models.Model):
     									string="Product Pack's",
     									domain=[('is_auto_created','!=',True)],
     									help="Define product packs.")
+    phone_number = fields.Char(string="Phone Number")
+    dropship_selection = fields.Selection([('Yes', 'Yes'), ('No', 'No')], string='Dropships')
+    dropship_fee = fields.Float(string="Dropship Fee")
+    order_min = fields.Char(string="Order Minimum")
+    below_min_fee = fields.Float(string="Below Minimum Fee")
+    free_freight_level = fields.Char(string="Free Freight Level")
+    ships_from = fields.Char(string="Ship From")
+    ship_cutoff_time = fields.Char(string="Shipping Cutoff Time")
+    note = fields.Text(string="Note")
 
     @api.model
     def create(self, vals):

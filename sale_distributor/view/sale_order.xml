@@ -1,17 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<!--    &lt;!&ndash; Inherit Search view for My Quotations and My Order Menu &ndash;&gt;-->
-<!--    <record id="update_sale_order_view_search_inherit_quotation" model="ir.ui.view">-->
-<!--            <field name="name">sale.order.search.inherit.quotation</field>-->
-<!--            <field name="model">sale.order</field>-->
-<!--            <field name="mode">primary</field>-->
-<!--            <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>-->
-<!--            <field name="arch" type="xml">-->
-<!--                <xpath expr="//filter[@name='my_quotation']" position="attributes">-->
-<!--                    <attribute name="domain">['|', ('user_id', '=', uid), ('state', 'not in', ('sale','done','cancel'))]</attribute>-->
-<!--                </xpath>-->
-<!--            </field>-->
-<!--    </record>-->
 
     <!-- Multiple Distributor Tabs -->
     <record id="view_sale_order_form_inherit" model="ir.ui.view">
@@ -20,7 +8,6 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//header/button[@id='action_confirm']" position="attributes">
-                <!-- <attribute name="attrs">{'invisible': ['|',('state', 'not in', ['sent']),('qty_all','=',False)]}</attribute> -->
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//header/button[@name='action_quotation_send' and @states='sent,sale']" position="attributes">
@@ -115,7 +102,6 @@
             </xpath>
             <xpath expr="//field[@name='order_line']/tree/field[@name='sequence']"
                    position="replace">
-                <!-- <field name="sequence_ref"/> -->
                 <field name="sequence" widget="handle" attrs="{'column_invisible': [('parent.state', 'not in', ('new','sent','review'))]}"/>
                 <field name="sequence_ref" attrs="{'column_invisible': [('parent.state', 'in', ('new','sent','review'))]}"/> 
                 <field name="product_pack_id"
@@ -208,7 +194,7 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//field[@name='order_line']/form/label[@for='name']" position="attributes">
-                <attribute name="string">Note</attribute>
+                <attribute name="string">Description</attribute>
             </xpath>
             <xpath expr="//field[@name='order_line']/tree" position="attributes">
                 <attribute name="editable"></attribute>
@@ -217,7 +203,13 @@
                 <field name="message_inbound_orders" decoration-danger="1" colspan="2" nolabel="1" attrs="{'invisible': [('message_inbound_orders', '=', '')]}"/>
             </xpath>
             <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="after">
-                <field name="product_pack_id" string="Product" options="{'no_open': True,'no_create': True}" context="{'tree_view_ref':'sale_distributor.product_pack_uom_tree_view'}"/>
+                <field 
+                    name="product_pack_id" 
+                    string="Product" 
+                    options="{'no_open': True,'no_create': True}" 
+                    context="{'tree_view_ref':'sale_distributor.product_pack_uom_tree_view'}" 
+                    attrs="{'readonly': [('product_updatable', '=', False)],
+                            'required': [('display_type', '=', False)]}"/>
                 <field name="substitute_product_id" options="{'no_open': True,'no_create': True}"/>
                 <field name="substitute_product_template_id" invisible="1"/>
             </xpath>
@@ -231,18 +223,35 @@
                     string="Quantity"/>
             </xpath>
             <!-- Manufacturer Info -->
-            <xpath expr="//field[@name='order_line']/form/group/group/div[@name='lead']" position="after">
-                <field name="note" string="Note" attrs="{'invisible': [('display_type', '!=', False)]}"/>
-                <separator string="Manufacturer Info" attrs="{'invisible': [('display_type', '!=', False)]}"/>
-                <field name="phone_number" attrs="{'invisible': [('display_type', '!=', False)]}"/>
-                <field name="dropship_selection" widget="radio" attrs="{'invisible': [('display_type', '!=', False)]}"/>
-                <field name="dropship_fee" attrs="{'invisible': [('display_type', '!=', False)]}"/>
-                <field name="order_min" attrs="{'invisible': [('display_type', '!=', False)]}"/>
-                <field name="below_min_fee" attrs="{'invisible': [('display_type', '!=', False)]}"/>
-                <field name="free_freight_level" attrs="{'invisible': [('display_type', '!=', False)]}"/>
-                <field name="ships_from" attrs="{'invisible': [('display_type', '!=', False)]}"/>
-                <field name="ship_cutoff_time" attrs="{'invisible': [('display_type', '!=', False)]}"/>
-                <field name="order_id" invisible="1"/>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='route_id']"
+                   position="attributes">
+                   <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/form//field[@name='route_id']"
+                   position="attributes">
+                   <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/form//field[@name='analytic_tag_ids']"
+                   position="attributes">
+                   <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='analytic_tag_ids']"
+                   position="attributes">
+                   <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/form/group/group/label[@for='customer_lead']" position="before">
+                <group string="Manufacturer Info" colspan="2" style="border: 1px solid black;" attrs="{'invisible': [('display_type', '!=', False)]}">
+                    <field name="phone_number" attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                    <field name="dropship_selection" widget="radio" attrs="{'invisible': [('display_type', '!=', False)]}" options="{'horizontal': true}"/>
+                    <field name="dropship_fee" attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                    <field name="order_min" attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                    <field name="below_min_fee" attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                    <field name="free_freight_level" attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                    <field name="ships_from" attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                    <field name="ship_cutoff_time" attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                    <field name="note" string="Notes" attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                    <field name="order_id" invisible="1"/>
+            </group>
             </xpath>
             <xpath expr="//field[@name='order_line']/form/field[@name='name']" position="after">
                 <div class="o_row" attrs="{'invisible': [('display_type', '!=', False)]}">
@@ -273,20 +282,15 @@
                     <page name="adi_page_grey" string="ADI" class="grey_tab" attrs="{'invisible': [('adi_tab_color', '!=', 'grey')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="adi_part_number" string="Part Number"  readonly="1" force_save="1"/>
                                     <field name="adi_case_qty" string="Case Qty"  readonly="1" force_save="1"/>
                                     <field name="adi_mo_qty" string="MOQ"  readonly="1" force_save="1"/>
+                                    <field name="adi_note" string="Description"/>
                                     <field name="adi_partner_id" invisible="1"/>
                                     <field name="adi_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="adi_note" string="Description"/>
-                                        <field name="adi_note"/>
-                                    </div>
-                                </group>
-                                <field name="adi_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="adi_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -299,9 +303,9 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="adi_actual_cost" string="Actual Cost"/>
+                                <field name="adi_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="adi_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="adi_price_match" string="Price Match"/>
+                                <field name="adi_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="adi_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
                                 <field name="adi_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="adi_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
@@ -319,20 +323,15 @@
                     <page name="adi_page_green" string="ADI" class="green_tab" attrs="{'invisible': [('adi_tab_color', '!=', 'green')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="adi_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="adi_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="adi_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="adi_note" string="Description"/>
                                     <field name="adi_partner_id" invisible="1"/>
                                     <field name="adi_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="adi_note" string="Description"/>
-                                        <field name="adi_note"/>
-                                    </div>
-                                </group>
-                                <field name="adi_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="adi_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -345,9 +344,9 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="adi_actual_cost" string="Actual Cost"/>
+                                <field name="adi_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="adi_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="adi_price_match" string="Price Match"/>
+                                <field name="adi_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="adi_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
                                 <field name="adi_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="adi_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
@@ -365,20 +364,15 @@
                     <page name="adi_page_greenblue" string="ADI" class="green_blue_tab" attrs="{'invisible': [('adi_tab_color', '!=', 'green_blue')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="adi_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="adi_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="adi_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="adi_note" string="Description"/>
                                     <field name="adi_partner_id" invisible="1"/>
                                     <field name="adi_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="adi_note" string="Description"/>
-                                        <field name="adi_note"/>
-                                    </div>
-                                </group>
-                                <field name="adi_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="adi_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -391,7 +385,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="adi_actual_cost" string="Actual Cost"/>
+                                <field name="adi_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="adi_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="adi_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="adi_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -401,8 +395,8 @@
                                 <field name="adi_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="adi_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'adi','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
-                                    <button name="split_line" context="{'vendor':'adi','dropship':True}" type="object" class="oe_highlight" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'adi','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'adi','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
                                 </div>
                             </group>
                         </group>
@@ -413,20 +407,15 @@
                     <page name="nv_page_grey" string="NV" class="grey_tab" attrs="{'invisible': [('nv_tab_color', '!=', 'grey')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="nv_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="nv_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="nv_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="nv_note" string="Description"/>
                                     <field name="nv_partner_id" invisible="1"/>
                                     <field name="nv_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="nv_note" string="Description"/>
-                                        <field name="nv_note"/>
-                                    </div>
-                                </group>
-                                <field name="nv_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="nv_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -439,7 +428,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="nv_actual_cost" string="Actual Cost"/>
+                                <field name="nv_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="nv_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="nv_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="nv_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -449,8 +438,8 @@
                                 <field name="nv_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="nv_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'nv','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
-                                    <button name="split_line" context="{'vendor':'nv','dropship':True}" type="object" class="oe_highlight" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'nv','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'nv','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
                                 </div>
                             </group>
                         </group>
@@ -458,20 +447,15 @@
                     <page name="nv_page_green" string="NV" class="green_tab" attrs="{'invisible': [('nv_tab_color', '!=', 'green')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="nv_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="nv_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="nv_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="nv_note" string="Description"/>
                                     <field name="nv_partner_id" invisible="1"/>
                                     <field name="nv_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="nv_note" string="Description"/>
-                                        <field name="nv_note"/>
-                                    </div>
-                                </group>
-                                <field name="nv_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="nv_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -484,7 +468,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="nv_actual_cost" string="Actual Cost"/>
+                                <field name="nv_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="nv_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="nv_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="nv_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -494,8 +478,8 @@
                                 <field name="nv_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="nv_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'nv','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
-                                    <button name="split_line" context="{'vendor':'nv','dropship':True}" type="object" class="oe_highlight" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'nv','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'nv','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
                                 </div>
                             </group>
                         </group>
@@ -503,20 +487,15 @@
                     <page name="nv_page_greenblue" string="NV" class="green_blue_tab" attrs="{'invisible': [('nv_tab_color', '!=', 'green_blue')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="nv_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="nv_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="nv_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="nv_note" string="Description"/>
                                     <field name="nv_partner_id" invisible="1"/>
                                     <field name="nv_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="nv_note" string="Description"/>
-                                        <field name="nv_note"/>
-                                    </div>
-                                </group>
-                                <field name="nv_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="nv_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -529,7 +508,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="nv_actual_cost" string="Actual Cost"/>
+                                <field name="nv_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="nv_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="nv_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="nv_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -551,20 +530,15 @@
                     <page name="sl_page_grey" string="SL" class="grey_tab" attrs="{'invisible': [('sl_tab_color', '!=', 'grey')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="sl_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="sl_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="sl_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="sl_note" string="Description"/>
                                     <field name="sl_partner_id" invisible="1"/>
                                     <field name="sl_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="sl_note" string="Description"/>
-                                        <field name="sl_note"/>
-                                    </div>
-                                </group>
-                                <field name="sl_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="sl_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -577,7 +551,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="sl_actual_cost" string="Actual Cost"/>
+                                <field name="sl_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="sl_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="sl_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="sl_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -587,8 +561,8 @@
                                 <field name="sl_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="sl_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'sl','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
-                                    <button name="split_line" context="{'vendor':'sl','dropship':True}" type="object" class="oe_highlight" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'sl','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'sl','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
                                 </div>
                             </group>
                         </group>
@@ -596,20 +570,15 @@
                     <page name="sl_page_green" string="SL" class="green_tab" attrs="{'invisible': [('sl_tab_color', '!=', 'green')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="sl_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="sl_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="sl_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="sl_note" string="Description"/>
                                     <field name="sl_partner_id" invisible="1"/>
                                     <field name="sl_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="sl_note" string="Description"/>
-                                        <field name="sl_note"/>
-                                    </div>
-                                </group>
-                                <field name="sl_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="sl_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -622,7 +591,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="sl_actual_cost" string="Actual Cost"/>
+                                <field name="sl_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="sl_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="sl_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="sl_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -632,8 +601,8 @@
                                 <field name="sl_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="sl_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'sl','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
-                                    <button name="split_line" context="{'vendor':'sl','dropship':True}" type="object" class="oe_highlight" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'sl','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'sl','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
                                 </div>
                             </group>
                         </group>
@@ -641,20 +610,15 @@
                     <page name="sl_page_greenblue" string="SL" class="green_blue_tab" attrs="{'invisible': [('sl_tab_color', '!=', 'green_blue')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="sl_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="sl_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="sl_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="sl_note" string="Description"/>
                                     <field name="sl_partner_id" invisible="1"/>
                                     <field name="sl_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="sl_note" string="Description"/>
-                                        <field name="sl_note"/>
-                                    </div>
-                                </group>
-                                <field name="sl_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="sl_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -667,7 +631,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="sl_actual_cost" string="Actual Cost"/>
+                                <field name="sl_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="sl_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="sl_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="sl_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -677,8 +641,8 @@
                                 <field name="sl_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="sl_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'sl','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
-                                    <button name="split_line" context="{'vendor':'sl','dropship':True}" type="object" class="oe_highlight" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'sl','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'sl','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
                                 </div>
                             </group>
                         </group>
@@ -689,20 +653,15 @@
                     <page name="ss_page_grey" string="SS" class="grey_tab" attrs="{'invisible': [('ss_tab_color', '!=', 'grey')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="ss_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="ss_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="ss_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="ss_note" string="Description"/>
                                     <field name="ss_partner_id" invisible="1"/>
                                     <field name="ss_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="ss_note" string="Description"/>
-                                        <field name="ss_note"/>
-                                    </div>
-                                </group>
-                                <field name="ss_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="ss_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -715,7 +674,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="ss_actual_cost" string="Actual Cost"/>
+                                <field name="ss_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="ss_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="ss_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="ss_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -725,8 +684,8 @@
                                 <field name="ss_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="ss_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'ss','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
-                                    <button name="split_line" context="{'vendor':'ss','dropship':True}" type="object" class="oe_highlight" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'ss','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'ss','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
                                 </div>
                             </group>
                         </group>
@@ -734,20 +693,15 @@
                     <page name="ss_pagee_green" string="SS" class="green_tab" attrs="{'invisible': [('ss_tab_color', '!=', 'green')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="ss_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="ss_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="ss_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="ss_note" string="Description"/>
                                     <field name="ss_partner_id" invisible="1"/>
                                     <field name="ss_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="ss_note" string="Description"/>
-                                        <field name="ss_note"/>
-                                    </div>
-                                </group>
-                                <field name="ss_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="ss_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -760,7 +714,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="ss_actual_cost" string="Actual Cost"/>
+                                <field name="ss_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="ss_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="ss_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="ss_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -770,8 +724,8 @@
                                 <field name="ss_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="ss_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'ss','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
-                                    <button name="split_line" context="{'vendor':'ss','dropship':True}" type="object" class="oe_highlight" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'ss','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'ss','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
                                 </div>
                             </group>
                         </group>
@@ -779,20 +733,15 @@
                     <page name="ss_page_greenblue" string="SS" class="green_blue_tab" attrs="{'invisible': [('ss_tab_color', '!=', 'green_blue')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="ss_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="ss_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="ss_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="ss_note" string="Description"/>
                                     <field name="ss_partner_id" invisible="1"/>
                                     <field name="ss_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="ss_note" string="Description"/>
-                                        <field name="ss_note"/>
-                                    </div>
-                                </group>
-                                <field name="ss_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="ss_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -805,7 +754,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="ss_actual_cost" string="Actual Cost"/>
+                                <field name="ss_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="ss_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="ss_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="ss_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -815,8 +764,8 @@
                                 <field name="ss_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="ss_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'ss','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
-                                    <button name="split_line" context="{'vendor':'ss','dropship':True}" type="object" class="oe_highlight" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'ss','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'ss','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
                                 </div>
                             </group>
                         </group>
@@ -826,20 +775,15 @@
                     <page name="jne_page_grey" string="JNE" class="grey_tab" attrs="{'invisible': [('jne_tab_color', '!=', 'grey')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="jne_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="jne_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="jne_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="jne_note" string="Description"/>
                                     <field name="jne_partner_id" invisible="1"/>
                                     <field name="jne_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="jne_note" string="Description"/>
-                                        <field name="jne_note"/>
-                                    </div>
-                                </group>
-                                <field name="jne_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="jne_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -852,7 +796,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="jne_actual_cost" string="Actual Cost"/>
+                                <field name="jne_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="jne_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="jne_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="jne_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -862,8 +806,8 @@
                                 <field name="jne_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="jne_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'jne','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
-                                    <button name="split_line" context="{'vendor':'jne','dropship':True}" type="object" class="oe_highlight" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'jne','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'jne','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
                                 </div>
                             </group>
                         </group>
@@ -871,20 +815,15 @@
                     <page name="jne_pagee_green" string="JNE" class="green_tab" attrs="{'invisible': [('jne_tab_color', '!=', 'green')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="jne_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="jne_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="jne_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="jne_note" string="Description"/>
                                     <field name="jne_partner_id" invisible="1"/>
                                     <field name="jne_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="jne_note" string="Description"/>
-                                        <field name="jne_note"/>
-                                    </div>
-                                </group>
-                                <field name="jne_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="jne_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -897,7 +836,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="jne_actual_cost" string="Actual Cost"/>
+                                <field name="jne_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="jne_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="jne_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="jne_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -907,8 +846,8 @@
                                 <field name="jne_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="jne_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'jne','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
-                                    <button name="split_line" context="{'vendor':'jne','dropship':True}" type="object" class="oe_highlight" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'jne','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'jne','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
                                 </div>
                             </group>
                         </group>
@@ -916,18 +855,13 @@
                     <page name="jne_page_greenblue" string="JNE" class="green_blue_tab" attrs="{'invisible': [('jne_tab_color', '!=', 'green_blue')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="jne_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="jne_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="jne_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="jne_note" string="Description"/>
                                     <field name="jne_partner_id" invisible="1"/>
                                     <field name="jne_tab_color" invisible="1"/>
-                                </group>
-                                <group>
-                                    <div>
-                                        <label for="jne_note" string="Description"/>
-                                        <field name="jne_note"/>
-                                    </div>
                                 </group>
                                 <field name="jne_vendor_stock_ids" readonly="1" force_save="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
@@ -942,7 +876,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="jne_actual_cost" string="Actual Cost"/>
+                                <field name="jne_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="jne_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="jne_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="jne_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -952,8 +886,8 @@
                                 <field name="jne_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="jne_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'jne','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
-                                    <button name="split_line" context="{'vendor':'jne','dropship':True}" type="object" class="oe_highlight" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'jne','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'jne','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
                                 </div>
                             </group>
                         </group>
@@ -963,20 +897,15 @@
                     <page name="bnr_page_grey" string="BNR" class="grey_tab" attrs="{'invisible': [('bnr_tab_color', '!=', 'grey')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="bnr_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="bnr_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="bnr_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="bnr_note" string="Description"/>
                                     <field name="bnr_partner_id" invisible="1"/>
                                     <field name="bnr_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="bnr_note" string="Description"/>
-                                        <field name="bnr_note"/>
-                                    </div>
-                                </group>
-                                <field name="bnr_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="bnr_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -989,7 +918,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="bnr_actual_cost" string="Actual Cost"/>
+                                <field name="bnr_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="bnr_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="bnr_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="bnr_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -999,8 +928,8 @@
                                 <field name="bnr_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="bnr_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'bnr','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
-                                    <button name="split_line" context="{'vendor':'bnr','dropship':True}" type="object" class="oe_highlight" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'bnr','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'bnr','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
                                 </div>
                             </group>
                         </group>
@@ -1008,20 +937,15 @@
                     <page name="bnr_pagee_green" string="BNR" class="green_tab" attrs="{'invisible': [('bnr_tab_color', '!=', 'green')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="bnr_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="bnr_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="bnr_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="bnr_note" string="Description"/>
                                     <field name="bnr_partner_id" invisible="1" readonly="1" force_save="1"/>
                                     <field name="bnr_tab_color" invisible="1" readonly="1" force_save="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="bnr_note" string="Description"/>
-                                        <field name="bnr_note"/>
-                                    </div>
-                                </group>
-                                <field name="bnr_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="bnr_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -1034,7 +958,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="bnr_actual_cost" string="Actual Cost"/>
+                                <field name="bnr_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="bnr_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="bnr_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="bnr_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -1044,8 +968,8 @@
                                 <field name="bnr_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="bnr_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'bnr','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
-                                    <button name="split_line" context="{'vendor':'bnr','dropship':True}" type="object" class="oe_highlight" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'bnr','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'bnr','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
                                 </div>
                             </group>
                         </group>
@@ -1053,20 +977,15 @@
                     <page name="bnr_page_greenblue" string="BNR" class="green_blue_tab" attrs="{'invisible': [('bnr_tab_color', '!=', 'green_blue')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="bnr_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="bnr_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="bnr_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="bnr_note" string="Description"/>
                                     <field name="bnr_partner_id" invisible="1"/>
                                     <field name="bnr_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="bnr_note" string="Description"/>
-                                        <field name="bnr_note"/>
-                                    </div>
-                                </group>
-                                <field name="bnr_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="bnr_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -1079,7 +998,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="bnr_actual_cost" string="Actual Cost"/>
+                                <field name="bnr_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="bnr_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="bnr_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="bnr_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -1089,8 +1008,8 @@
                                 <field name="bnr_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="bnr_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'bnr','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
-                                    <button name="split_line" context="{'vendor':'bnr','dropship':True}" type="object" class="oe_highlight" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'bnr','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'bnr','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
                                 </div>
                             </group>
                         </group>
@@ -1100,20 +1019,15 @@
                     <page name="wr_page_grey" string="WR" class="grey_tab" attrs="{'invisible': [('wr_tab_color', '!=', 'grey')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="wr_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="wr_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="wr_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="wr_note" string="Description"/>
                                     <field name="wr_partner_id" invisible="1"/>
                                     <field name="wr_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="wr_note" string="Description"/>
-                                        <field name="wr_note"/>
-                                    </div>
-                                </group>
-                                <field name="wr_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="wr_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -1126,7 +1040,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="wr_actual_cost" string="Actual Cost"/>
+                                <field name="wr_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="wr_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="wr_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="wr_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -1136,8 +1050,8 @@
                                 <field name="wr_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="wr_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'wr','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
-                                    <button name="split_line" context="{'vendor':'wr','dropship':True}" type="object" class="oe_highlight" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'wr','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                    <button name="split_line" context="{'vendor':'wr','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
                                 </div>
                             </group>
                             
@@ -1146,20 +1060,15 @@
                     <page name="wr_pagee_green" string="WR" class="green_tab" attrs="{'invisible': [('wr_tab_color', '!=', 'green')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="wr_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="wr_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="wr_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="wr_note" string="Description"/>
                                     <field name="wr_partner_id" invisible="1"/>
                                     <field name="wr_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="wr_note" string="Description"/>
-                                        <field name="wr_note"/>
-                                    </div>
-                                </group>
-                                <field name="wr_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="wr_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -1172,7 +1081,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="wr_actual_cost" string="Actual Cost"/>
+                                <field name="wr_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="wr_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="wr_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="wr_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -1192,20 +1101,15 @@
                     <page name="wr_page_greenblue" string="WR" class="green_blue_tab" attrs="{'invisible': [('wr_tab_color', '!=', 'green_blue')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="wr_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="wr_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="wr_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="wr_note" string="Description"/>
                                     <field name="wr_partner_id" invisible="1"/>
                                     <field name="wr_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="wr_note" string="Description"/>
-                                        <field name="wr_note"/>
-                                    </div>
-                                </group>
-                                <field name="wr_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="wr_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -1218,7 +1122,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="wr_actual_cost" string="Actual Cost"/>
+                                <field name="wr_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="wr_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="wr_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="wr_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -1241,20 +1145,15 @@
                     <page name="dfm_page_grey" string="DFM" class="grey_tab" attrs="{'invisible': [('dfm_tab_color', '!=', 'grey')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="dfm_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="dfm_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="dfm_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="dfm_note" string="Description"/>
                                     <field name="dfm_partner_id" invisible="1" readonly="1" force_save="1"/>
                                     <field name="dfm_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="dfm_note" string="Description"/>
-                                        <field name="dfm_note"/>
-                                    </div>
-                                </group>
-                                <field name="dfm_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="dfm_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -1267,7 +1166,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="dfm_actual_cost" string="Actual Cost"/>
+                                <field name="dfm_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="dfm_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="dfm_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="dfm_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -1287,20 +1186,15 @@
                     <page name="dfm_pagee_green" string="DFM" class="green_tab" attrs="{'invisible': [('dfm_tab_color', '!=', 'green')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="dfm_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="dfm_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="dfm_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="dfm_note" string="Description"/>
                                     <field name="dfm_partner_id" invisible="1"/>
                                     <field name="dfm_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="dfm_note" string="Description"/>
-                                        <field name="dfm_note"/>
-                                    </div>
-                                </group>
-                                <field name="dfm_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="dfm_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -1313,7 +1207,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="dfm_actual_cost" string="Actual Cost"/>
+                                <field name="dfm_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="dfm_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="dfm_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="dfm_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -1327,26 +1221,20 @@
                                     <button name="split_line" context="{'vendor':'wr','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
                                 </div>
                             </group>
-                            
                         </group>
                     </page>
                     <page name="dfm_page_greenblue" string="DFM" class="green_blue_tab" attrs="{'invisible': [('dfm_tab_color', '!=', 'green_blue')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="dfm_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="dfm_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="dfm_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="dfm_note" string="Description"/>
                                     <field name="dfm_partner_id" invisible="1"/>
                                     <field name="dfm_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="dfm_note" string="Description"/>
-                                        <field name="dfm_note"/>
-                                    </div>
-                                </group>
-                                <field name="dfm_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="dfm_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -1359,7 +1247,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="dfm_actual_cost" string="Actual Cost"/>
+                                <field name="dfm_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="dfm_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="dfm_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="dfm_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -1373,7 +1261,6 @@
                                     <button name="split_line" context="{'vendor':'dfm','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
                                 </div>
                             </group>
-                            
                         </group>
                     </page>
 
@@ -1398,7 +1285,6 @@
                                 <field name="jmac_onhand" readonly="1" force_save="1"
                                        style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
                             </div>
-                            <div></div>
                             <div></div>
                             <div></div>
                         </div>
@@ -1462,29 +1348,27 @@
                         </notebook>
                     </page>
                     <page name="jmac_page_greenblue" class="green_blue_tab" string="JMAC" attrs="{'invisible': [('jmac_tab_color', '!=', 'green_blue')]}">
-                        <div class="o_row">
-                            <div>
-                                <label for="jmac_allocated"/>
-                                <field name="jmac_allocated" readonly="1" force_save="1"
-                                       style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
-                                <field name="jmac_tab_color" invisible="1"/>
+                            <div class="o_row">
+                                <div>
+                                    <label for="jmac_allocated"/>
+                                    <field name="jmac_allocated" readonly="1" force_save="1"
+                                           style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
+                                    <field name="jmac_tab_color" invisible="1"/>
 
+                                </div>
+                                <div>
+                                    <label for="jmac_available"/>
+                                    <field name="jmac_available" readonly="1" force_save="1"
+                                           style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
+                                </div>
+                                <div>
+                                    <label for="jmac_onhand"/>
+                                    <field name="jmac_onhand" readonly="1" force_save="1"
+                                           style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
+                                </div>
+                                <div></div>
+                                <div></div>
                             </div>
-                            <div>
-                                <label for="jmac_available"/>
-                                <field name="jmac_available" readonly="1" force_save="1"
-                                       style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
-                            </div>
-                            <div>
-                                <label for="jmac_onhand"/>
-                                <field name="jmac_onhand" readonly="1" force_save="1"
-                                       style="border: 1px solid black; border-collapse: collapse; text-align:center;"/>
-                            </div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                        </div>
-
                         <notebook>
                             <page name="inventory_log" string="Inventory Log">
                                 <field name="jmac_stock_ids" readonly="1" force_save="1" nolabel="1" class="oe_inline">
@@ -1549,20 +1433,15 @@
                     <page name="bks_page_grey" string="BKS" class="grey_tab" attrs="{'invisible': [('bks_tab_color', '!=', 'grey')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="bks_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="bks_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="bks_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="bks_note" string="Description"/>
                                     <field name="bks_partner_id" invisible="1"/>
                                     <field name="bks_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="bks_note" string="Description"/>
-                                        <field name="bks_note"/>
-                                    </div>
-                                </group>
-                                <field name="bks_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="bks_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -1575,7 +1454,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="bks_actual_cost" string="Actual Cost"/>
+                                <field name="bks_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="bks_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="bks_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="bks_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -1585,8 +1464,8 @@
                                 <field name="bks_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="bks_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                <button name="split_line" context="{'vendor':'bks','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
-                                <button name="split_line" context="{'vendor':'bks','dropship':True}" type="object" class="oe_highlight" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                <button name="split_line" context="{'vendor':'bks','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                <button name="split_line" context="{'vendor':'bks','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
                             </div>
                             </group>
                         </group>
@@ -1594,20 +1473,15 @@
                     <page name="bks_pagee_green" string="BKS" class="green_tab" attrs="{'invisible': [('bks_tab_color', '!=', 'green')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="bks_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="bks_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="bks_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="bks_note" string="Description"/>
                                     <field name="bks_partner_id" invisible="1"/>
                                     <field name="bks_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="bks_note" string="Description"/>
-                                        <field name="bks_note"/>
-                                    </div>
-                                </group>
-                                <field name="bks_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="bks_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -1620,7 +1494,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="bks_actual_cost" string="Actual Cost"/>
+                                <field name="bks_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="bks_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="bks_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="bks_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
@@ -1630,8 +1504,8 @@
                                 <field name="bks_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="bks_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                <button name="split_line" context="{'vendor':'bks','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
-                                <button name="split_line" context="{'vendor':'bks','dropship':True}" type="object" class="oe_highlight" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                <button name="split_line" context="{'vendor':'bks','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
+                                <button name="split_line" context="{'vendor':'bks','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft'))]}"/>
                             </div>
                             </group>
                         </group>
@@ -1639,20 +1513,15 @@
                     <page name="bks_page_greenblue" string="BKS" class="green_blue_tab" attrs="{'invisible': [('bks_tab_color', '!=', 'green_blue')]}">
                         <group>
                             <group>
-                                <group>
+                                <group colspan="2">
                                     <field name="bks_part_number" string="Part Number" readonly="1" force_save="1"/>
                                     <field name="bks_case_qty" string="Case Qty" readonly="1" force_save="1"/>
                                     <field name="bks_mo_qty" string="MOQ" readonly="1" force_save="1"/>
+                                    <field name="bks_note" string="Description"/>
                                     <field name="bks_partner_id" invisible="1"/>
                                     <field name="bks_tab_color" invisible="1"/>
                                 </group>
-                                <group>
-                                    <div>
-                                        <label for="bks_note" string="Description"/>
-                                        <field name="bks_note"/>
-                                    </div>
-                                </group>
-                                <field name="bks_vendor_stock_ids" readonly="1" force_save="1">
+                                <field name="bks_vendor_stock_ids" readonly="1" force_save="1" nolabel="1">
                                     <tree decoration-danger="case_qty&lt;6" decoration-primary="case_qty&gt;5 and case_qty&lt;11" decoration-success="case_qty&gt;10" >
                                         <field name="abbreviation" />
                                         <field name="location_id" required="1"/>
@@ -1665,7 +1534,7 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="bks_actual_cost" string="Actual Cost"/>
+                                <field name="bks_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
                                 <field name="bks_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
                                 <field name="bks_price_match" string="Price Match" readonly="1" force_save="1"/>
                                 <field name="bks_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
