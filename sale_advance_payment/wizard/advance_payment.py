@@ -63,6 +63,9 @@ class SaleAdvancePaymentWizard(models.TransientModel):
 
     
     def action_create_payment(self):
+        """
+        Create Payment from Sale quotation with invoice.
+        """
         payment_obj = self.env['account.payment'].sudo()
         type = 'inbound'
         payment_method_id = self.env[
@@ -84,12 +87,10 @@ class SaleAdvancePaymentWizard(models.TransientModel):
             }
         payment=payment_obj.create(vals)
         payment.post()
-        so.advance_payment_done=True
+        so.write({'advance_payment_done':True, 'state': 'draft'})
         moves_id = so._create_invoices(final=True)
         moves_id.action_post()
-        # moves_id.update({'transaction_ids':[(6,0,[payment.id])]})
         for invoice in moves_id.filtered(lambda move: move.is_invoice()):
             move_lines = payment.mapped('move_line_ids').filtered(lambda line: not line.reconciled and line.credit > 0.0)
             for line in move_lines:
                 invoice.js_assign_outstanding_line(line.id)
-        

@@ -1155,21 +1155,21 @@ class SaleOrderLine(models.Model):
             for inl in self.inbound_stock_lines.filtered(lambda l:l.select_pol):
                 process_qty += inl.allocate_qty
             # Process Pack qty insted of total quantity
-            # if self.product_pack_id and self.product_pack_id.quantity:
-            #     unprocess_qty = self.pack_quantity - process_qty / self.product_pack_id.quantity
-            # else:
-            #     unprocess_qty = self.product_uom_qty - process_qty
-            unprocess_qty = self.product_uom_qty - process_qty
+            if self.product_pack_id and self.product_pack_id.quantity:
+                unprocess_qty = self.pack_quantity - process_qty / self.product_pack_id.quantity
+            else:
+                unprocess_qty = self.product_uom_qty - process_qty
+            # unprocess_qty = self.product_uom_qty - process_qty
             if unprocess_qty < 0:
                 raise ValidationError(_("More quantity allocated then unprocess quantity!"))
         else:
             process_qty = sum(self.sale_split_lines.mapped('product_uom_qty'))
             # Process Pack qty insted of total quantity
-            # if self.product_pack_id and self.product_pack_id.quantity:
-            #     unprocess_qty = self.pack_quantity - process_qty / self.product_pack_id.quantity
-            # else:
-            #     unprocess_qty = self.product_uom_qty - process_qty
-            unprocess_qty = self.product_uom_qty - process_qty
+            if self.product_pack_id and self.product_pack_id.quantity:
+                unprocess_qty = self.pack_quantity - process_qty / self.product_pack_id.quantity
+            else:
+                unprocess_qty = self.product_uom_qty - process_qty
+            # unprocess_qty = self.product_uom_qty - process_qty
             if not unprocess_qty:
                 raise ValidationError(_("There is no quantity for process!"))
 
@@ -1213,8 +1213,8 @@ class SaleOrderLine(models.Model):
         wiz_name = ''
         msg = ''
         product_name = self.product_id.name
-        # if self.product_pack_id:
-        #     product_name += '-' + self.product_pack_id.name if self.product_pack_id.name else ''
+        if self.product_pack_id:
+            product_name += '-' + self.product_pack_id.name if self.product_pack_id.name else ''
         if self.substitute_product_id:
             product_name = self.substitute_product_id
         if ctx.get('ship_from_here',False):
