@@ -541,7 +541,7 @@ class Thread(models.AbstractModel):
         self._notify_thread(new_message, values, **notif_kwargs)
         return new_message
 
-    def _notify_record_by_email(self, message, recipients_data, msg_vals=None,
+    def _notify_record_by_email(self, message, recipients_data, msg_vals=False,
                                 model_description=False, mail_auto_delete=True, check_existing=False,
                                 force_send=True, send_after_commit=True,
                                 **kwargs):
@@ -567,7 +567,7 @@ class Thread(models.AbstractModel):
 
         model = msg_vals.get('model') if msg_vals else message.model
         model_name = model_description or (self.with_lang().env['ir.model']._get(model).display_name if model else False) # one query for display name
-        recipients_groups_data = self._notify_classify_recipients(partners_data, model_name, msg_vals=msg_vals)
+        recipients_groups_data = self._notify_classify_recipients(partners_data, model_name)
 
         if not recipients_groups_data:
             return True
