@@ -122,13 +122,12 @@ odoo.define('sale.distributor', function (require) {
             }else{
                 options.res_id = array_child_ids[index +1];
                 options.recordID = local_array._cache[options.res_id];
-                // this.form_view.trigger_up('open_record', {id: options.res_id})
-
                 var old_dialog = _.extend({}, this);
                 var new_dialog = new FormDialog.FormViewDialog(parent, options);
                 new_dialog.open();
                 new_dialog.opened().then(function(){
                     old_dialog._save().then(old_dialog.close());
+
                 })
             }
         },

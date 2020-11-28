@@ -8,17 +8,34 @@
         <field name="arch" type="xml">
         	<xpath expr="//notebook" position="inside">
         		<page name="product_pack" string="Product Pack">
-        		<field name="product_pack_line" nolabel="1">
-        			<tree editable="bottom">
-	        			<field name="name" attrs="{'required':[('is_auto_created','!=', True)]}"/>
-	        			<field name="quantity" required="1"/>
-                        <field name="price" required="1"/>
-                        <field name="is_auto_created" invisible="1"/>
-	        			<field name="product_tmpl_id" invisible="1"/>
-	        			<field name="product_id" invisible="1"/>
-	        		</tree>
-        		</field>
-        	</page>
+            		<field name="product_pack_line" nolabel="1">
+            			<tree editable="bottom">
+    	        			<field name="name" attrs="{'required':[('is_auto_created','!=', True)]}"/>
+    	        			<field name="quantity" required="1"/>
+                            <field name="price" required="1"/>
+                            <field name="is_auto_created" invisible="1"/>
+    	        			<field name="product_tmpl_id" invisible="1"/>
+    	        			<field name="product_id" invisible="1"/>
+    	        		</tree>
+            		</field>
+            	</page>
+                <page name="manufacturer" string="Manufacturer Info">
+                    <group>
+                        <group>
+                            <field name="phone_number"/>
+                            <field name="dropship_selection" widget="radio" options="{'horizontal': true}"/>
+                            <field name="dropship_fee"/>
+                            <field name="order_min"/>
+                            <field name="below_min_fee"/>
+                        </group>
+                        <group>
+                            <field name="free_freight_level"/>
+                            <field name="ships_from"/>
+                            <field name="ship_cutoff_time"/>
+                            <field name="note" string="Notes"/>
+                        </group>
+                    </group>
+                </page>
         	</xpath> 
             
         </field>

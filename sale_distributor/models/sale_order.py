@@ -477,9 +477,9 @@ class SaleOrderLine(models.Model):
     phone_number = fields.Char(string="Phone Number")
     dropship_selection = fields.Selection([('Yes', 'Yes'), ('No', 'No')], string='Dropships')
     dropship_fee = fields.Float(string="Dropship Fee")
-    order_min = fields.Date(string="Order Minimum")
+    order_min = fields.Char(string="Order Minimum")
     below_min_fee = fields.Float(string="Below Minimum Fee")
-    free_freight_level = fields.Float(string="Free Freight Level")
+    free_freight_level = fields.Char(string="Free Freight Level")
     ships_from = fields.Char(string="Ship From")
     ship_cutoff_time = fields.Char(string="Shipping Cutoff Time")
     note = fields.Text(string="Note")
@@ -836,10 +836,11 @@ class SaleOrderLine(models.Model):
     @api.onchange('product_pack_id')
     def product_pack_id_change(self):
         self.product_id = False
+        self.product_uom_qty = 0.0
+        self.pack_quantity = 1.0
         if self.product_pack_id:
             self.product_id = self.product_pack_id.product_tmpl_id.product_variant_id.id
             self.product_uom_qty = self.product_pack_id.quantity
-            self.pack_quantity = 1.0
 
     @api.onchange('pack_quantity')
     def pack_quantity_change(self):
@@ -853,7 +854,7 @@ class SaleOrderLine(models.Model):
         calculated from the ordered quantity. Otherwise, the quantity delivered is used.
         """
         for line in self:
-            if line.order_id.state in ['sale', 'done']:
+            if line.order_id.state not in ['cancel']: # ['sale', 'done', 'new']
                 if line.product_id.invoice_policy == 'order':
                     line.qty_to_invoice = line.pack_quantity - line.qty_invoiced
                 else:
@@ -967,6 +968,10 @@ class SaleOrderLine(models.Model):
         self.adi_total_stock = self.nv_total_stock = self.jne_total_stock = self.sl_total_stock = 0.0
         self.ss_total_stock = self.bnr_total_stock = self.wr_total_stock = self.dfm_total_stock = self.bks_total_stock = 0.0
         self.sale_split_lines = [(6,0,[])]
+        self.phone_number = self.order_min = self.free_freight_level = self.ships_from = self.ship_cutoff_time = self.note = ''
+        self.dropship_selection = False
+        self.dropship_fee = self.below_min_fee = 0.0
+        
         result = super(SaleOrderLine, self).product_id_change()
         product_id = self.product_id
         title = False
@@ -1081,6 +1086,15 @@ class SaleOrderLine(models.Model):
                                         'lowest_cost': 0.0})
             if self.product_pack_id and not self.product_pack_id.is_auto_created:
                 result['value'].update({'price_unit': self.product_pack_id.price})
+            result['value'].update({'phone_number': product_id.phone_number,
+                                    'dropship_selection':product_id.dropship_selection,
+                                    'dropship_fee':product_id.dropship_fee,
+                                    'order_min':product_id.order_min,
+                                    'below_min_fee':product_id.below_min_fee,
+                                    'free_freight_level':product_id.free_freight_level,
+                                    'ships_from':product_id.ships_from,
+                                    'ship_cutoff_time':product_id.ship_cutoff_time,
+                                    'note':product_id.note})
         return result
 
     @api.onchange('product_uom', 'product_uom_qty')
@@ -1155,21 +1169,21 @@ class SaleOrderLine(models.Model):
             for inl in self.inbound_stock_lines.filtered(lambda l:l.select_pol):
                 process_qty += inl.allocate_qty
             # Process Pack qty insted of total quantity
-            # if self.product_pack_id and self.product_pack_id.quantity:
-            #     unprocess_qty = self.pack_quantity - process_qty / self.product_pack_id.quantity
-            # else:
-            #     unprocess_qty = self.product_uom_qty - process_qty
-            unprocess_qty = self.product_uom_qty - process_qty
+            if self.product_pack_id and self.product_pack_id.quantity:
+                unprocess_qty = self.pack_quantity - process_qty / self.product_pack_id.quantity
+            else:
+                unprocess_qty = self.product_uom_qty - process_qty
+            # unprocess_qty = self.product_uom_qty - process_qty
             if unprocess_qty < 0:
                 raise ValidationError(_("More quantity allocated then unprocess quantity!"))
         else:
             process_qty = sum(self.sale_split_lines.mapped('product_uom_qty'))
             # Process Pack qty insted of total quantity
-            # if self.product_pack_id and self.product_pack_id.quantity:
-            #     unprocess_qty = self.pack_quantity - process_qty / self.product_pack_id.quantity
-            # else:
-            #     unprocess_qty = self.product_uom_qty - process_qty
-            unprocess_qty = self.product_uom_qty - process_qty
+            if self.product_pack_id and self.product_pack_id.quantity:
+                unprocess_qty = self.pack_quantity - process_qty / self.product_pack_id.quantity
+            else:
+                unprocess_qty = self.product_uom_qty - process_qty
+            # unprocess_qty = self.product_uom_qty - process_qty
             if not unprocess_qty:
                 raise ValidationError(_("There is no quantity for process!"))
 
@@ -1213,8 +1227,8 @@ class SaleOrderLine(models.Model):
         wiz_name = ''
         msg = ''
         product_name = self.product_id.name
-        # if self.product_pack_id:
-        #     product_name += '-' + self.product_pack_id.name if self.product_pack_id.name else ''
+        if self.product_pack_id:
+            product_name += '-' + self.product_pack_id.name if self.product_pack_id.name else ''
         if self.substitute_product_id:
             product_name = self.substitute_product_id
         if ctx.get('ship_from_here',False):
