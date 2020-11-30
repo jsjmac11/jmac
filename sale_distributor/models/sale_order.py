@@ -832,6 +832,13 @@ class SaleOrderLine(models.Model):
                     line.tax_id.invalidate_cache(['invoice_repartition_line_ids'], [line.tax_id.id])
         else:
             super(SaleOrderLine, self)._compute_amount()
+
+    def _compute_qty_to_deliver(self):
+        """Don't show inventory widget for rental order lines."""
+        super(SaleOrderLine, self)._compute_qty_to_deliver()
+        self.write({
+            'display_qty_widget': True,
+        })
             
     @api.onchange('product_pack_id')
     def product_pack_id_change(self):

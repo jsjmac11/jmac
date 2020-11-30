@@ -240,7 +240,9 @@
                    <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//field[@name='order_line']/form/group/group/label[@for='customer_lead']" position="before">
-                <group string="Manufacturer Info" colspan="2" style="border: 1px solid black;" attrs="{'invisible': [('display_type', '!=', False)]}">
+                
+                <div name="manufacturer_info" colspan="2" style="border: 1px solid black;padding-left:10px" attrs="{'invisible': [('display_type', '!=', False)]}">
+                    <group string="Manufacturer Info" colspan="2">
                     <field name="phone_number" attrs="{'invisible': [('display_type', '!=', False)]}"/>
                     <field name="dropship_selection" widget="radio" attrs="{'invisible': [('display_type', '!=', False)]}" options="{'horizontal': true}"/>
                     <field name="dropship_fee" attrs="{'invisible': [('display_type', '!=', False)]}"/>
@@ -251,7 +253,9 @@
                     <field name="ship_cutoff_time" attrs="{'invisible': [('display_type', '!=', False)]}"/>
                     <field name="note" string="Notes" attrs="{'invisible': [('display_type', '!=', False)]}"/>
                     <field name="order_id" invisible="1"/>
-            </group>
+                    </group>
+            </div>
+        
             </xpath>
             <xpath expr="//field[@name='order_line']/form/field[@name='name']" position="after">
                 <div class="o_row" attrs="{'invisible': [('display_type', '!=', False)]}">
