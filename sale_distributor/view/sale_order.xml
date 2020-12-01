@@ -200,18 +200,32 @@
                 <attribute name="editable"></attribute>
             </xpath>
             <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="before">
-                <field name="message_inbound_orders" decoration-danger="1" colspan="2" nolabel="1" attrs="{'invisible': [('message_inbound_orders', '=', '')]}"/>
+                <div style="color: #DC6965" colspan="2" attrs="{'invisible': [('inbound_stock_lines', '=', [])]}">There are inbound orders from vendors for this product.</div>
+                <!-- <field name="message_inbound_orders" decoration-danger="1" colspan="2" nolabel="1" attrs="{'invisible': [('message_inbound_orders', '=', '')]}"/> -->
             </xpath>
             <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="after">
-                <field 
-                    name="product_pack_id" 
-                    string="Product" 
-                    options="{'no_open': True,'no_create': True}" 
-                    context="{'tree_view_ref':'sale_distributor.product_pack_uom_tree_view'}" 
-                    attrs="{'readonly': [('product_updatable', '=', False)],
-                            'required': [('display_type', '=', False)]}"/>
-                <field name="substitute_product_id" options="{'no_open': True,'no_create': True}"/>
-                <field name="substitute_product_template_id" invisible="1"/>
+                <label for="product_pack_id" string="Product"/>
+                <div>
+                    <field 
+                        name="product_pack_id" 
+                        string="Product" 
+                        options="{'no_open': True,'no_create': True}" 
+                        context="{'tree_view_ref':'sale_distributor.product_pack_uom_tree_view'}" 
+                        attrs="{'readonly': [('product_updatable', '=', False)],
+                                'required': [('display_type', '=', False)]}"/>
+                    <br/>
+                    <div role="alert" class="alert-info"
+                         attrs="{'invisible': [('is_pack_product', '!=', True)]}">
+                        <span>This is a Pack Product.</span>
+                    </div>
+                </div>
+                
+                <label for="substitute_product_id"/>
+                <div>
+                    <field name="substitute_product_id" options="{'no_open': True,'no_create': True}"/>
+                    <field name="substitute_product_template_id" invisible="1"/>
+                    <field name="is_pack_product" invisible="1"/>
+                </div>
             </xpath>
             <xpath expr="//field[@name='order_line']/form//field[@name='product_uom_qty']" position="replace">
                 <field
@@ -281,6 +295,7 @@
                         readonly="1" force_save="1"/>
                     </div>
                 </div>
+                
                 <notebook attrs="{'invisible': [('display_type', '!=', False)]}">
                     <!-- ADI Tabs -->
                     <page name="adi_page_grey" string="ADI" class="grey_tab" attrs="{'invisible': [('adi_tab_color', '!=', 'grey')]}">

@@ -813,6 +813,7 @@ class SaleOrderLine(models.Model):
         related="substitute_product_id.product_tmpl_id", domain=[('sale_ok', '=', True)])
     product_pack_id = fields.Many2one("product.pack.uom",string="Product Pack")
     pack_quantity = fields.Float(string='Pack Quantity', digits='Product Unit of Measure', required=True, default=1.0)
+    is_pack_product = fields.Boolean("Is Pack Product", default=False)
 
     @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id', 'pack_quantity')
     def _compute_amount(self):
@@ -845,9 +846,12 @@ class SaleOrderLine(models.Model):
         self.product_id = False
         self.product_uom_qty = 0.0
         self.pack_quantity = 1.0
+        self.is_pack_product = False
         if self.product_pack_id:
             self.product_id = self.product_pack_id.product_tmpl_id.product_variant_id.id
             self.product_uom_qty = self.product_pack_id.quantity
+            if not self.product_pack_id.is_auto_created:
+                self.is_pack_product = True
 
     @api.onchange('pack_quantity')
     def pack_quantity_change(self):

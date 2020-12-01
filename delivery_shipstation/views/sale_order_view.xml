@@ -15,7 +15,7 @@
                     <div class="o_row">
                         <field name="rule_id" nolabel="1" readonly="1"/>
                         <br/>
-                        <div role="alert" class="alert alert-info"
+                        <div role="alert" class="alert alert-danger"
                              attrs="{'invisible': [('rule_message', '=', False)]}">
                             <field name="rule_message" nolabel="1"/>
                         </div>
