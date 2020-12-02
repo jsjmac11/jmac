@@ -79,3 +79,6 @@ button.button-previous-form-dialog {
 .o_form_view.o_form_readonly .o_row:not(.o_row_readonly) > div {
     display: inline-table;
 }
+.o_form_view.o_form_readonly .shipping_row:not(.o_row_readonly) {
+    display: flex !important;
+}

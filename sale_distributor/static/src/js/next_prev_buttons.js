@@ -1,4 +1,4 @@
-odoo.define('sale.distributor', function (require) {
+ odoo.define('sale.distributor', function (require) {
 "use strict";
 
     var core = require('web.core');
@@ -9,7 +9,36 @@ odoo.define('sale.distributor', function (require) {
 
     var Dialog = require('web.Dialog');
     var ListRenderer = require('web.ListRenderer');
+    var FormRenderer = require('web.FormRenderer');
 
+    // Copy Address
+    FormRenderer.include({
+        events:  {
+            'click .invoice_button': '_onClickInvoiceAdd',
+            'click .delivery_button': '_onClickDeliveryAdd',
+        },
+
+        _onClickInvoiceAdd: function () {
+            var mv = this.state.data.partner_invoice_id.data.display_name
+            var $ClipboardButton = this.$('.invoice_button');
+            var $temp = $("<input>");
+            $("body").append($temp);
+            $temp.val(mv).select();
+            document.execCommand("copy");
+            this.do_notify(_t("Copied Invoice Address"));
+            $temp.remove();
+        },
+        _onClickDeliveryAdd: function () {
+            var mv = this.state.data.partner_shipping_id.data.display_name
+            var $temp = $("<input>");
+            $("body").append($temp);
+            $temp.val(mv).select();
+            document.execCommand("copy");
+            this.do_notify(_t("Copied Delivery Address"));
+            $temp.remove();
+        },
+
+    });
     // Confirm Dialog on Delete Record
     ListRenderer.include({
         _onRemoveIconClick: function (event) {
