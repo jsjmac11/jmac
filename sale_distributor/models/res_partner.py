@@ -59,32 +59,34 @@ class ResPartner(models.Model):
         result = []
         name = ''
         for s in self:
-            if s._context.get('bista_show_address') and not self.env.context.get('force_email'):
-                street = str(s.street) + ", " if s.street else ""
-                street2 = str(s.street2) + ", " if s.street2 else ""
-                city = str(s.city) + ", " if s.city else ""
-                state = str(s.state_id.code) + " " if s.state_id else ""
-                zipcode = str(s.zip) if s.zip else ""
-                country = ", " + str(s.country_id.name) if s.country_id else ""
-                name = street + street2 + city + state + zipcode + country
-                if not name:
-                    name = s.name
-                result.append((s.id, name))
-            else:
-                if s.sequence_name and not self.env.context.get('force_email'):
-                    name = '[' + str(s.sequence_name) + '] ' + str(s.name)
-                    result.append((s.id, name))
-                else:
-                    if not self.env.context.get('force_email'):
-                        name = str(s.name)
-                        result.append((s.id, name))
-            if self.env.context.get('force_email'):
-                if s.email:
-                    email = str(s.email)
-                    result.append((s.id, email))
-                else:
-                    name = str(s.name)
-                    result.append((s.id, name))
+            name = s.with_context({'show_address':1})._get_name()
+            result.append((s.id, name))
+            # if s._context.get('bista_show_address') and not self.env.context.get('force_email'):
+            #     street = str(s.street) + ", " if s.street else ""
+            #     street2 = str(s.street2) + ", " if s.street2 else ""
+            #     city = str(s.city) + ", " if s.city else ""
+            #     state = str(s.state_id.code) + " " if s.state_id else ""
+            #     zipcode = str(s.zip) if s.zip else ""
+            #     country = ", " + str(s.country_id.name) if s.country_id else ""
+            #     name = street + street2 + city + state + zipcode + country
+            #     if not name:
+            #         name = s.name
+            #     result.append((s.id, name))
+            # else:
+            #     if s.sequence_name and not self.env.context.get('force_email'):
+            #         name = '[' + str(s.sequence_name) + '] ' + str(s.name)
+            #         result.append((s.id, name))
+            #     else:
+            #         if not self.env.context.get('force_email'):
+            #             name = str(s.name)
+            #             result.append((s.id, name))
+            # if self.env.context.get('force_email'):
+            #     if s.email:
+            #         email = str(s.email)
+            #         result.append((s.id, email))
+            #     else:
+            #         name = str(s.name)
+            #         result.append((s.id, name))
         return result
 
     @api.model

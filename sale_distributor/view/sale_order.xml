@@ -174,7 +174,8 @@
                 <div class="o_row invoice_row">
                     <field  name="partner_invoice_id"
                     context="{'default_type':'invoice', 'show_address': True, 'bista_show_address': True}"
-                    domain="['|',('id', '=', partner_id), ('parent_id', '=', partner_id)]"/>
+                    domain="['|',('id', '=', partner_id), ('parent_id', '=', partner_id)]"
+                    options='{"always_reload": True}'/>
                     <button colspan="1" class="fa fa-copy invoice_button" data-clipboard-target="[name='partner_invoice_id']"/>
                 </div>
             </xpath>
@@ -183,10 +184,12 @@
                 <div class="o_row shipping_row">
                     <field  name="partner_shipping_id"
                     context="{'default_type':'delivery', 'show_address': True, 'bista_show_address': True}"
-                    domain="['|',('id', '=', partner_id), ('parent_id', '=', partner_id)]" />
+                    domain="['|',('id', '=', partner_id), ('parent_id', '=', partner_id)]"
+                    options='{"always_reload": True}'/>
                     <button colspan="1" class="fa fa-copy delivery_button" data-clipboard-target="[name='partner_shipping_id']"/>
                 </div>
             </xpath>
+
             <xpath expr="//form/sheet/group/group/field[@name='payment_term_id']" position="after">
                 <label for="commitment_date" string="Delivery Date"/>
                 <div class="o_row">
