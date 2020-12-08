@@ -49,45 +49,20 @@ class ResPartner(models.Model):
         return super(ResPartner, self)._search(args, offset=offset, limit=limit, order=order, count=count,
                                                    access_rights_uid=access_rights_uid)
 
-    def name_get(self):
-        """
-        Overriding the name_get function from res.partner so that the "invoice address" 
-        and "shipping address" fields on the quotes form display the full address, not 
-        the standard contact name. Requires that the contact type be set as 'delivery' 
-        or 'invoice'. If there is no address set, simply returns the customer name.
-        """
-        result = []
-        name = ''
-        for s in self:
-            name = s.with_context({'show_address':1})._get_name()
-            result.append((s.id, name))
-            # if s._context.get('bista_show_address') and not self.env.context.get('force_email'):
-            #     street = str(s.street) + ", " if s.street else ""
-            #     street2 = str(s.street2) + ", " if s.street2 else ""
-            #     city = str(s.city) + ", " if s.city else ""
-            #     state = str(s.state_id.code) + " " if s.state_id else ""
-            #     zipcode = str(s.zip) if s.zip else ""
-            #     country = ", " + str(s.country_id.name) if s.country_id else ""
-            #     name = street + street2 + city + state + zipcode + country
-            #     if not name:
-            #         name = s.name
-            #     result.append((s.id, name))
-            # else:
-            #     if s.sequence_name and not self.env.context.get('force_email'):
-            #         name = '[' + str(s.sequence_name) + '] ' + str(s.name)
-            #         result.append((s.id, name))
-            #     else:
-            #         if not self.env.context.get('force_email'):
-            #             name = str(s.name)
-            #             result.append((s.id, name))
-            # if self.env.context.get('force_email'):
-            #     if s.email:
-            #         email = str(s.email)
-            #         result.append((s.id, email))
-            #     else:
-            #         name = str(s.name)
-            #         result.append((s.id, name))
-        return result
+    def _get_name(self):
+        partner = self
+        name = super(ResPartner, self)._get_name()
+        full_name = ''
+        if partner.sequence_name:
+            full_name = '[' + str(partner.sequence_name) + '] '
+        address = partner._display_address(without_company=True)
+        if not address.strip() and self._context.get('show_address_only'):
+            name = full_name + str(partner.name)   
+        if not self._context.get('show_address_only'):
+            name = full_name + name      
+        if self.env.context.get('force_email') and partner.email:
+            name = str(partner.email)
+        return name
 
     @api.model
     def name_search(self, name, args=None, operator='ilike', limit=100):
