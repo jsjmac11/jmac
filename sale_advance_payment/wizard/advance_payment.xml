@@ -18,6 +18,7 @@
 					<field name="company_id" readonly="1" />
 					<field name="currency_id" readonly="1" />
 					<field name="payment_term_id" readonly="1" />
+					<field name="minimum_amount" invisible="1"/>
 				</group>
 
 				<footer>

@@ -12,7 +12,10 @@
 					position="after">
 					<button name="sale_open_advance_payment_wizard"
 						string="advance payment" type="object"
-						attrs="{'invisible': ['|',('state', 'in', ['done','cancel']),('advance_payment_done','=',True)]}" />
+						attrs="{'invisible': ['|','|',('state', 'not in', ['new','sent','review']),('advance_payment_done','=',True),('payment_term_id','=',False)]}" />
+				</xpath>
+				<xpath expr="//field[@name='payment_term_id']" position="attributes">
+					<attribute name="required">1</attribute>
 				</xpath>
 				<xpath expr="//page[1]" position="after">
 					<page name='advance_payment' string="Advance Payment">

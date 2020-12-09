@@ -7,7 +7,7 @@
 #
 
 from odoo import models, fields, api, _
-from odoo.exceptions import Warning
+from odoo.exceptions import Warning, ValidationError
 
 
 class SaleAdvancePaymentWizard(models.TransientModel):
@@ -26,6 +26,7 @@ class SaleAdvancePaymentWizard(models.TransientModel):
     currency_id = fields.Many2one(related="company_id.currency_id",
                                   string="Currency", readonly=True)
     payment_term_id = fields.Many2one('account.payment.term', 'Payment Term')
+    minimum_amount = fields.Float("Minimum Amount")
     
     @api.model
     def default_get(self, fields):
@@ -41,6 +42,7 @@ class SaleAdvancePaymentWizard(models.TransientModel):
         account_payment_term_line_obj = self.env["account.payment.term.line"].search([('payment_id','=',so.payment_term_id.id),('value','=','percent')],limit=1)
         advance_amount = (so.amount_total * account_payment_term_line_obj.value_amount) / 100
         adv_percent = account_payment_term_line_obj.value_amount
+        minimum_amount = advance_amount
         if not advance_amount:
             advance_amount = so.amount_total
             adv_percent = 100
@@ -49,6 +51,7 @@ class SaleAdvancePaymentWizard(models.TransientModel):
         res['total_amount'] = so.amount_total
         res['advance_percent'] = adv_percent
         res['advance_amount'] = advance_amount
+        res['minimum_amount'] = minimum_amount
         return res
     
     @api.onchange('advance_percent')
@@ -66,6 +69,9 @@ class SaleAdvancePaymentWizard(models.TransientModel):
         """
         Create Payment from Sale quotation with invoice.
         """
+        if self.advance_amount < self.minimum_amount:
+            amt_str = str(self.currency_id.symbol) + str(self.minimum_amount) if self.currency_id.position == 'before' else str(self.minimum_amount) + str(self.currency_id.symbol) 
+            raise ValidationError(_("As per payment term advance payment should not be less then %s!" % amt_str))
         payment_obj = self.env['account.payment'].sudo()
         type = 'inbound'
         payment_method_id = self.env[

@@ -15,6 +15,16 @@ class SaleOrder(models.Model):
     advance_total = fields.Monetary(string='Advance Total', store=True, readonly=True, compute='_advance_all')
     
     to_invoice_amount = fields.Monetary(string='invoice amount Total', store=True, readonly=True, compute='_to_invoice_amt')
+    
+    advance_payment = fields.Boolean("Is Advance Payment", copy=False, default=False)
+
+    @api.onchange('payment_term_id')
+    def onchange_payment_term_id(self):
+        payment_term_line_obj = self.payment_term_id.line_ids.filtered(lambda l : l.value == 'percent')
+        if payment_term_line_obj:
+            self.advance_payment = True
+        else:
+            self.advance_payment = False
 
     @api.depends('order_line.qty_to_invoice')
     def _to_invoice_amt(self):
