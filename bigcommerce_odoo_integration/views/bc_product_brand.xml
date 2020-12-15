@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+	<data>
+		<record id="view_bigcommerce_bc_product_brand_tree_view" model="ir.ui.view">
+			<field name="name">BigCommerce Product Brand</field>
+			<field name="model">bc.product.brand</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Product Brand" create='false'>
+					<field name="name" />
+					<field name="bc_brand_id" />
+					<field name="bigcommerce_store_id" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="view_form_bigcommerce_product_brand" model="ir.ui.view">
+			<field name="name">Product Brand</field>
+			<field name="model">bc.product.brand</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Product Brand" create='false'>
+					<sheet>
+						<group>
+							<group>
+								<field name="name" readonly="1"></field>
+								<field name="bc_brand_id" />
+							</group>
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+		
+		<record id="action_bigcommerce_product_brand" model="ir.actions.act_window">
+			<field name="name">Product Brand</field>
+			<field name="res_model">bc.product.brand</field>
+			<field name="view_id" ref="view_bigcommerce_bc_product_brand_tree_view" />
+		</record>
+
+		<menuitem id="menu_bigcommerce_product_brand" name="Product Brand"
+			parent="bigcommerce_odoo_integration_store_menuitem" sequence="10"
+			action="action_bigcommerce_product_brand" />
+	</data>
+</odoo>

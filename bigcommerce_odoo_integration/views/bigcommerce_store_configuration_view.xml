@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="bigcommerce_store_configuration_form_view" model="ir.ui.view">
+        <field name="name">Big commerce Store Configuration Form View</field>
+        <field name="model">bigcommerce.store.configuration</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;active&quot;}"/>
+                        </button>
+                     </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="e.g. Store Name.."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="bigcommerce_store_hash" required="1"/>
+                            <field name="bigcommerce_x_auth_client" required="1"/>
+                            <field name="bigcommerce_x_auth_token" required="1"/>
+                            <field name="bigcommerce_api_url" widget="url" required="1"/>
+                            <field name="bigcommerce_order_status" required="1"/>
+                            <field name="bigcommerce_product_skucode" />
+                            <field name="warehouse_id" required="1" />
+                            <field name="last_modification_date" />
+                            <field name="bigcommerce_operation_message"  readonly="1"/>
+			    <field name="auto_import_orders" />
+                        </group>
+                        <group>
+                        	<field name="bigcommerce_product_id" />
+                        	<button name="import_product_manually_from_bigcommerce" string="Import Single Product"  type="object"  class="fa fa-arrow-right oe_link"/>
+                        </group>
+                        <group>
+                            <field name="source_of_import_data" />
+                            <field name="destination_of_import_data" />
+                            <field name="bigcommerce_product_import_status" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                      <page string="Bigcommerce To Odoo Import">
+                      <table style="margin-top:35px">
+                        <tr>
+                          <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_product_categories_main" string="Import Product Categories" type="object" class="oe_highlight" /></td>
+                          <td style="padding-left:60px"><button name="import_product_from_bigcommerce_main" string="Import Products" type="object" class="oe_highlight"/></td>
+                        </tr>
+                        <br/>
+                        <tr>
+                          <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_customers_main" string="Import Customers" type="object" class="oe_highlight" /></td>
+                           <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_orders_main" string="Import Orders" type="object" class="oe_highlight" /></td>
+                        </tr>
+                          <br/>
+                         <tr>
+                          <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_product_brands_main" string="Import Product Brand" type="object" class="oe_highlight" /></td>
+                        </tr>
+                          <br/>
+                      </table>
+                      </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+	<record id="bigcommerce_store_configuraion_tree_view" model="ir.ui.view">
+				<field name="name">Bigcommerce Store Configuration</field>
+				<field name="model">bigcommerce.store.configuration</field>
+				<field name="type">tree</field>
+				<field name="arch" type="xml">
+					<tree>
+						<field name='name'/>
+						<field name="bigcommerce_store_hash" />
+					</tree>
+				</field>
+	</record>
+    
+    <record id="bigcommerce_store_configuration_action" model="ir.actions.act_window">
+        <field name="name">Bigcommerce Store Configuration</field>
+        <field name="res_model">bigcommerce.store.configuration</field>
+        <field name='view_mode'>tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Configure Store.
+		    </p>
+        </field>
+    </record>
+    <menuitem name="Bigcommerce Configuration" id="bigcommerce_store_configuration"
+              parent="bigcommerce_odoo_integration_menu" sequence="25"/>
+
+    <menuitem name="Bigcommerce Store Configuration" id="bigcommerce_store_configuration_menu"
+              parent="bigcommerce_store_configuration" action="bigcommerce_store_configuration_action"
+              sequence="2"/>
+</odoo>

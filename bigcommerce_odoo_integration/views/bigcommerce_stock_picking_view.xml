@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="bc_stock_picking_form_view" model="ir.ui.view">
+            <field name="name">Bigcommerce Stock Picking</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <header>
+                    <button name="get_order_shipment" string="Get Shipment Info" type="object" class="oe_stat_button" attrs="{'invisible':[('bigcommerce_shimpment_id', '!=', False)]}"></button>
+                </header>
+                <xpath expr="//sheet/notebook/page[@name='extra']" position="inside">
+                    <group>
+                        <field name="bigcommerce_shimpment_id" readonly="1"/>
+                        <field name="bc_shipping_provider"  readonly="1"/>
+                    </group>
+
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

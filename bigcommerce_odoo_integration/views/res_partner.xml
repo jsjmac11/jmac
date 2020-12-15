@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="bigcommerce_customer_action_form" model="ir.actions.act_window">
+            <field name="name">Bigcommerce Customer</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="domain">[('is_available_in_bigcommerce','=',True)]</field>
+            <field name="search_view_id" ref="base.view_res_partner_filter"/>
+            <field name="view_id" ref="base.res_partner_kanban_view"/>
+        </record>
+        <record id="bigcommerce_customer_form_view" model="ir.ui.view">
+            <field name="name">Bigcommerce Customer</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[last()]" position="after">
+                    <page name="bigcommerce_info" string="BigCommerce Info">
+                        <group>
+                            <field name="bigcommerce_store_id" readonly="1"/>
+                            <field name="bigcommerce_customer_id"/>
+                            <field name="is_available_in_bigcommerce" readonly="1"/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+        <menuitem id="bigcommerce_store_customer_menuitem" name="Customer"
+                  sequence="9" parent="bigcommerce_odoo_integration_store_menuitem"
+                  action="bigcommerce_customer_action_form"/>
+
+    </data>
+</odoo>

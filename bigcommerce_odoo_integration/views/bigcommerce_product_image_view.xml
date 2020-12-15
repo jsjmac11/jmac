@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="bigcommerce_view_product_template_field" model="ir.ui.view">
+            <field name="name">product.template.fields</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/notebook/page[last()]" position="after">
+                    <page string="Gallery Images">
+                        <group>
+                            <field name="bigcommerce_product_image_ids" mode="kanban" nolabel="1">
+                                <kanban class="o_res_partner_kanban">
+                                    <templates>
+                                        <field name="bigcommerce_product_image"></field>
+                                        <t t-name="kanban-box">
+                                            <div class="oe_kanban_global_click">
+                                                <a t-if="!read_only_mode" type="delete" class="fa fa-times pull-right"/>
+                                                <div class="o_kanban_image " style="box-shadow: 2px 2px 10px #888888;">
+                                                    <img t-if="record.bigcommerce_product_image.raw_value"
+                                                         t-att-src="'data:image/png;base64,'+record.bigcommerce_product_image.raw_value"
+                                                         style="heigh:50px;width:50px;"/>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </templates>
+                                </kanban>
+                            </field>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

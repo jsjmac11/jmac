@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+    	<record id="bigcommerce_product_category_action_form" model="ir.actions.act_window">
+            <field name="name">Bigcommerce Product Categories</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.category</field>
+            <field name="domain">[('is_exported_to_bigcommerce','=',True)]</field>
+            <field name="search_view_id" ref="product.product_category_search_view"/>
+            <field name="view_id" ref="product.product_category_list_view"/>
+        </record>
+        <record id="bigcommerce_product_categoryform_view" model="ir.ui.view">
+            <field name="name">Bigcommerce Product Category</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_form_view"/>
+            <field name="arch" type="xml">
+            	<xpath expr="//sheet" position="inside">
+            		<notebook>
+            			<page name="bigcommerce_info" string="BigCommerce Info">
+            				<group>
+            						<field name="bigcommerce_store_id" readonly="1"/>
+                     				<field name="bigcommerce_parent_category_id" />
+                     				<field name="bigcommerce_product_category_id" readonly="1"/>
+                     				<field name="custom_url" />
+                     				<field name="is_visible" />
+                     				<field name="is_exported_to_bigcommerce" />
+            				</group>
+            			</page>
+            		</notebook>
+            	</xpath>
+            </field>
+        </record>
+        <menuitem id="bigcommerce_store_product_category_menuitem" name="Product Category"
+			sequence="8"  parent="bigcommerce_odoo_integration_store_menuitem" action="bigcommerce_product_category_action_form"/>
+			 <record id="action_exported_category_to_bigcommerce" model="ir.actions.server">
+		            <field name="name">Export Product Category to BigCommerce</field>
+		            <field name="type">ir.actions.server</field>
+		            <field name="state">code</field>
+		            <field name="model_id" ref="product.model_product_category"/>
+		            <field name="binding_model_id" ref="product.model_product_category"/>
+		            <field name="code">
+		records.export_product_category_to_bigcommerce()
+		            </field>
+        </record>
+    </data>
+</odoo>
