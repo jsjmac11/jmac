@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+	<data>
+		<menuitem id="bigcommerce_odoo_integration_menu" name="BigCommerce"
+			sequence="5" web_icon="bigcommerce_odoo_integration,static/description/bc.jpg"/>
+		<menuitem id="bigcommerce_odoo_integration_store_menuitem" name="BigCommerce Store"
+			sequence="16"  parent="bigcommerce_odoo_integration_menu"/>
+	</data>
+</odoo>

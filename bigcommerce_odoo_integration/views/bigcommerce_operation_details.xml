@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+	<data>
+		<record id="view_bigcommerce_operation_tree_view" model="ir.ui.view">
+			<field name="name">BigCommerce Operation</field>
+			<field name="model">bigcommerce.operation</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="bigcommerce Operation Detail" create='false'>
+					<field name="name" />
+					<field name="bigcommerce_store" />
+					<field name="bigcommerce_operation" />
+					<field name="bigcommerce_operation_type" />
+					<field name="create_date" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="view_form_bigcommerce_operation_detail" model="ir.ui.view">
+			<field name="name">BigCommerce Operation</field>
+			<field name="model">bigcommerce.operation</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="BigCommerce Operation Detail" create='false'>
+					<sheet>
+						<group>
+							<group>
+								<field name="name" readonly="1"></field>
+								<field name="bigcommerce_store" readonly="1" />
+								<field name="bigcommerce_operation" readonly="1" />
+								<field name="bigcommerce_operation_type" readonly="1" />
+							</group>
+							<group>
+								<field name="create_date" readonly="1" />
+								<field name="company_id" readonly="1" />
+								<field name="bigcommerce_message" readonly="1" />
+							</group>
+						</group>
+						<group string="BigCommerce Operation Details" colspan="4">
+							<field name="operation_ids" nolabel="1" readonly="1">
+								<tree decoration-danger="fault_operation==True">
+									<field name="bigcommerce_operation_type" invisible="1" />
+
+									<field name="bigcommerce_operation" invisible="1" />
+									<field name="company_id" readonly="1" />
+	
+
+									<field name="fault_operation" />
+									<field name ="process_message"/>
+<!--									<field name="bigcommerce_request_message" />-->
+<!--									<field name="bigcommerce_response_message" />-->
+								</tree>
+							</field>
+						</group>
+
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<!--<record id="search_form_bigcommerce_operation_detail" model="ir.ui.view"> <field 
+			name="name">bigcommerce Operation Detail</field> <field name="model">bigcommerce.operation.detail</field> 
+			<field name="type">search</field> <field name="arch" type="xml"> <search 
+			string="bigcommerce Operation Detail"> <field name="name" filter_domain="[('name','ilike',self)]"/> 
+			<field name="bigcommerce_operation"/> <field name="bigcommerce_operation_type"/> <field name="warehouse_id" 
+			filter_domain="[('warehouse_id','ilike',self)]"/> <field name="bigcommerce_message" 
+			filter_domain="[('bigcommerce_message','ilike',self)]"/> <newline/> <filter name="filter_operation_export" 
+			string="Export" domain="[('bigcommerce_operation_type','=','export')]"/> <filter 
+			name="filter_operation_import" string="Import" domain="[('bigcommerce_operation_type','=','import')]"/> 
+			<filter name="filter_operation_update" string="Update" domain="[('bigcommerce_operation_type','=','update')]"/> 
+			<group expand="0" string="Group By..."> <filter string="Create Date" icon="terp-personal" 
+			context="{'group_by':'create_date'}"/> <filter string="Operation" icon="terp-personal" 
+			context="{'group_by':'bigcommerce_operation'}"/> <filter string="Operation Type" 
+			icon="terp-personal" context="{'group_by':'bigcommerce_operation_type'}"/> <filter 
+			string="Warehouse" icon="terp-personal" context="{'group_by':'warehouse_id'}"/> 
+			</group> </search> </field> </record> -->
+
+		<record id="view_bigcommerce_operation_details" model="ir.ui.view">
+			<field name="name">BigCommerce Operation Details</field>
+			<field name="model">bigcommerce.operation.details</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="BigCommerce Operation Details" create='false'>
+					<field name="bigcommerce_operation" />
+					<field name="operation_id" />
+					<field name="bigcommerce_operation_type" />
+
+					<field name="bigcommerce_request_message" />
+					<field name="bigcommerce_response_message" />
+					<field name="create_date" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="view_form_bigcommerce_operation_details" model="ir.ui.view">
+			<field name="name">BigCommerce Operation Details</field>
+			<field name="model">bigcommerce.operation.details</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Bigcommerce Operation Details" create='false'>
+					<sheet>
+						<group readonly="1">
+							<group>
+
+								<field name="bigcommerce_request_message" />
+								<field name="bigcommerce_response_message" />
+
+							</group>
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<!-- <record id="search_form_bigcommerce_operation_details" model="ir.ui.view"> 
+			<field name="name">bigcommerce Operation Details</field> <field name="model">bigcommerce.operation.details</field> 
+			<field name="type">search</field> <field name="arch" type="xml"> <search 
+			string="bigcommerce Process Job"> <field name="operation_id" filter_domain="[('operation_id','ilike',self)]"/> 
+			<field name="warehouse_id" filter_domain="[('warehouse_id','ilike',self)]"/> 
+			<field name="bigcommerce_request_message" filter_domain="[('bigcommerce_request_message','ilike',self)]"/> 
+			<field name="bigcommerce_response_message" filter_domain="[('bigcommerce_response_message','ilike',self)]"/> 
+			<newline/> <filter name="filter_operation_export" string="Export" domain="[('bigcommerce_operation_type','=','export')]"/> 
+			<filter name="filter_operation_import" string="Import" domain="[('bigcommerce_operation_type','=','import')]"/> 
+			<filter name="filter_operation_update" string="Update" domain="[('bigcommerce_operation_type','=','update')]"/> 
+			<group expand="0" string="Group By..."> <filter string="Create Date" icon="terp-personal" 
+			context="{'group_by':'create_date'}"/> <filter string="Operation" icon="terp-personal" 
+			context="{'group_by':'application'}"/> <filter string="Operation Type" icon="terp-personal" 
+			context="{'group_by':'bigcommerce_operation_type'}"/> <filter string="Warehouse" 
+			icon="terp-personal" context="{'group_by':'warehouse_id'}"/> </group> </search> 
+			</field> </record> -->
+
+		<record id="action_bigcommerce_operation" model="ir.actions.act_window">
+			<field name="name">BigCommerce Operation</field>
+			<field name="res_model">bigcommerce.operation</field>
+			<field name="view_id" ref="view_bigcommerce_operation_tree_view" />
+			<!--<field name="search_view_id" ref="search_form_bigcommerce_operation_detail"/> -->
+		</record>
+
+		<record id="action_bigcommerce_operation_details" model="ir.actions.act_window">
+			<field name="name">Fault Data</field>
+			<field name="res_model">bigcommerce.operation.details</field>
+			<field name="view_mode">tree,form</field>
+			<field name="domain">[('fault_operation','=',True)]</field>
+			<!--<field name="search_view_id" ref="search_form_bigcommerce_operation_details"/> -->
+		</record>
+
+
+		<menuitem id="menu_bigcommerce_operation_detail" name="Bigcommerce Process Details"
+			parent="bigcommerce_store_configuration" sequence="4"
+			action="action_bigcommerce_operation" />
+
+
+		<menuitem id="menu_bigcommerce_operation_details" name="Fault Details"
+			parent="bigcommerce_store_configuration" sequence="5"
+			action="action_bigcommerce_operation_details" />
+	</data>
+	<data noupdate="1">
+		<record id="seq_bigcommerce_operation_detail" model="ir.sequence">
+			<field name="name">Bigcommerce Operation</field>
+			<field name="code">bigcommerce.operation</field>
+			<field name="padding">5</field>
+			<field name="prefix">BigCommerce-</field>
+			<field name="company_id" eval="False" />
+		</record>
+	</data>
+</odoo>

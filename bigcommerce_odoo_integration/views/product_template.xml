@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="bigcommerce_product_template_action_form" model="ir.actions.act_window">
+            <field name="name">Bigcommerce Product Template</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.template</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+            <field name="view_id" ref="product.product_template_kanban_view"/>
+            <field name="search_view_id" ref="product.product_template_search_view"/>
+            <field name="domain">
+                ["|",('is_exported_to_bigcommerce','=',True),('is_imported_from_bigcommerce','=',True)]
+            </field>
+            <field name="context">{'is_exported_to_bigcommerce':True}</field>
+        </record>
+        <record id="add_bigcommerce_detail_view_product_template_field" model="ir.ui.view">
+            <field name="name">product.template.fields</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/notebook/page[last()]" position="after">
+                    <page string="BigCommerce Information">
+                        <group>
+                            <group>
+                                <field name="is_exported_to_bigcommerce" readonly="1"/>
+                                <field name="bigcommerce_product_id" readonly="1"/>
+                                <field name="bigcommerce_store_id" readonly="1"/>
+                                <field name="inventory_tracking"/>
+                                <field name="is_imported_from_bigcommerce"/>
+                            </group>
+                            <group>
+                                <field name="inventory_warning_level"/>
+                                <field name="is_visible"/>
+                                <field name="warranty"/>
+                            </group>
+                        </group>
+                         <button type='object' class="fa fa-arrow-right oe_link" name="export_stock_from_odoo_to_bigcommerce"
+                            string="Export Stock From Odoo To Bigcommerce"/>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+        <record id="view_form_product_product_bigcommerce_info" model="ir.ui.view">
+            <field name="name">view.form.product.product.bigcommerce.info</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/notebook/page[last()]" position="after">
+                    <page string="BigCommerce Variant Information">
+                        <group>
+                            <group>
+                                <field name="bigcommerce_product_variant_id" readonly="1"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+        <menuitem id="bigcommerce_store_product_menuitem" name="Product"
+                  sequence="9" parent="bigcommerce_odoo_integration_store_menuitem"
+                  action="bigcommerce_product_template_action_form"/>
+        <record id="bigcommerce_product_action_form" model="ir.actions.server">
+            <field name="name">Export Product to BigCommerce</field>
+            <field name="type">ir.actions.server</field>
+            <field name="state">code</field>
+            <field name="model_id" ref="product.model_product_template"/>
+            <field name="binding_model_id" ref="product.model_product_template"/>
+            <field name="code">
+                records.is_export_product_to_bigcommerce()
+            </field>
+        </record>
+           <record id="added_x_studio_manufacturer_product_template_form_view" model="ir.ui.view">
+            <field name="name">added.x_studio.manufacturer.product.template.product.view</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='categ_id']" position="after">
+                    <field name="x_studio_manufacturer" />
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Carrier -->
+        <record id="product_product_bigcommerce_delivery_fixed" model="product.product">
+            <field name="name">Bigcommerce Shipping Service</field>
+            <field name="default_code">Delivery_009</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="delivery.product_category_deliveries"/>
+            <field name="sale_ok" eval="False"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="list_price">0.0</field>
+        </record>
+
+        <record id="delivery_carrier_bigcommerce_delivery_fixed" model="delivery.carrier">
+            <field name="name">Bigcommerce Shipping Service</field>
+            <field name="fixed_price">0.0</field>
+            <field name="sequence">2</field>
+            <field name="delivery_type">fixed</field>
+            <field name="is_bigcommerce_shipping_method">True</field>
+            <field name="product_id" ref="bigcommerce_odoo_integration.product_product_bigcommerce_delivery_fixed"/>
+        </record>
+         <record id="product_product_bigcommerce_discount" model="product.product">
+            <field name="name">Bigcommerce Discount</field>
+            <field name="default_code">bc_discount</field>
+            <field name="type">service</field>
+            <field name="sale_ok" eval="False"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="list_price">0.0</field>
+        </record>
+    </data>
+</odoo>
