@@ -73,7 +73,7 @@ button.button-previous-form-dialog {
 .modal {
     background: #0006 !important;
 }
-.o_field_empty {
+[name='lowest_cost_source'].o_field_empty{
     display: inline-block !important;
 }
 .o_form_view.o_form_readonly .o_row:not(.o_row_readonly) > div {
