@@ -29,6 +29,14 @@ class SaleOrder(models.Model):
             po_line_ids = pol_obj.search([('sale_line_id','in', sol_ids.ids)])
             order.po_count = len(po_line_ids.mapped('order_id'))
 
+    @api.depends('split_line_ids')
+    def _compute_dropship_line(self):
+        dropship_line_id = self.split_line_ids.filtered(lambda l: l.line_type == 'dropship')
+        if dropship_line_id:
+            self.is_dropship_line = True
+        else:
+            self.is_dropship_line = False
+
     order_line = fields.One2many('sale.order.line', 'order_id', string='Order Lines',
         states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=False, auto_join=True,
         domain=[('line_split','=',False)])
@@ -66,7 +74,8 @@ class SaleOrder(models.Model):
         'res.partner', string='Delivery Address', readonly=True, required=True,
         states={'new': [('readonly', False)], 'draft': [('readonly', False)], 'sent': [('readonly', False)], 'sale': [('readonly', False)]},
         domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",)
-    
+    is_dropship_line = fields.Boolean(string='Is Dropship Line', compute='_compute_dropship_line', store=True)
+
     def _default_validity_date(self):
         if self.env['ir.config_parameter'].sudo().get_param('sale.use_quotation_validity_days'):
             days = self.env.company.quotation_validity_days
@@ -101,7 +110,10 @@ class SaleOrder(models.Model):
             record.description_note = html
 
     def set_to_unprocess(self):
-        self._genrate_line_sequence() 
+        if not self.order_line:
+            raise ValidationError(_("You need to add a line before set to sale order."))
+        else:
+            self._genrate_line_sequence()
         return self.write({'state': 'draft'})
 
     @api.returns('mail.message', lambda value: value.id)

@@ -9,6 +9,7 @@
         <field name="arch" type="xml">
             <xpath expr="//header/button[@id='action_confirm']" position="attributes">
                 <attribute name="invisible">1</attribute>
+                <attribute name="string">Process</attribute>
             </xpath>
             <xpath expr="//header/button[@name='action_quotation_send' and @states='sent,sale']" position="attributes">
                 <attribute name="name">Send Order</attribute>
@@ -23,12 +24,14 @@
 
             <xpath expr="//header/button[@name='action_confirm'][2]" position="attributes">
                 <attribute name="attrs">{'invisible': ['|',('state', 'not in', ['draft']),('qty_all','=',False)]}</attribute>
+                <attribute name="string">Process</attribute>
             </xpath>
             <xpath expr="//header/button[@name='action_cancel']" position="before">
-                <button name="set_to_unprocess" string="Set to Sale Order" type="object" class="btn-primary" attrs="{'invisible': ['|',('state', 'not in', ['new','sent','review']),('advance_payment','=',True)]}" confirm="Are you sure you want to proceed?"/>
-                <button name="confirm_purchase" string="Confirm All" type="object" 
+                <button name="set_to_unprocess" string="Set to Sale Order" type="object" class="btn-primary" attrs="{'invisible': ['|', '|',('state', 'not in', ['new','sent','review']),('advance_payment','=',True), ('order_line','!=',[])]}" />
+                <button name="set_to_unprocess" string="Set to Sale Order" type="object" class="btn-primary" attrs="{'invisible': ['|', '|', ('state', 'not in', ['new','sent','review']),('advance_payment','=',True),('order_line','=',[])]}" confirm="Are you sure you want to proceed?"/>
+                <button name="confirm_purchase" string="Submit" type="object"
                         groups="sale_distributor.group_manager_confirm" 
-                        attrs="{'invisible': ['|',('state', 'not in', ['draft']),('qty_all','=',False)]}"/>
+                        attrs="{'invisible': ['|', '|',('state', 'not in', ['draft']),('qty_all','=',False), ('is_dropship_line','!=', True)]}"/>
                 <button name="order_process" string="Dropship" context="{'dropship':True}" type="object" attrs="{'invisible': ['|',('state', 'not in', ['draft']),('is_process_line','=',True)]}"/>
                 <button name="order_process" string="Add to Buy" context="{'add_to_buy':True}" type="object" attrs="{'invisible': ['|',('state', 'not in', ['draft']),('is_process_line','=',True)]}"/>
                 <button name="to_review" string="To Review" context="{'review':True}" type="object" attrs="{'invisible': [('state', 'not in', ['new','sent'])]}"/>
@@ -67,6 +70,9 @@
                     attrs="{'invisible': ['|',('po_count', '=', 0),('state', 'not in', ['sale','done'])]}" groups="base.group_user">
                     <field name="po_count" widget="statinfo" string="Purchase"/>
                 </button>
+            </xpath>
+            <xpath expr="//field[@name='team_id']" position="after">
+                <field name="is_dropship_line"/>
             </xpath>
             <xpath expr="//field[@name='note']" position="before">
                 <group string="Process Qty" name="process_qty" colspan="4" attrs="{'invisible': [('state', 'in', ('new','sent','review'))]}">
