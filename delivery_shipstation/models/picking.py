@@ -31,12 +31,26 @@ class StockPicking(models.Model):
     @api.depends('package_ids', 'weight_bulk', 'move_lines')
     def _compute_shipping_weight(self):
         for picking in self:
+            length = 0.0
+            width = 0.0
+            height = 0.0
             if picking.package_ids:
                 picking.shipping_weight = picking.weight_bulk + sum(
                     [pack.shipping_weight for pack in picking.package_ids])
             else:
-                picking.shipping_weight = sum(move.weight for move in picking.move_lines if move.state != 'cancel')
-
+                # picking.shipping_weight = sum(move.weight for move in picking.move_lines if move.state != 'cancel')
+                for line in picking.move_lines:
+                    dimension_id = line.product_id.product_tmpl_id.product_dimension_line.filtered(lambda d: d.quantity == line.product_uom_qty)
+                if dimension_id:
+                    length = dimension_id.length
+                    width = dimension_id.width
+                    height = dimension_id.height
+                    picking.shipping_weight = dimension_id.weight_lbs
+                    picking.shipping_weight_oz = dimension_id.weight_oz
+            picking.length = length
+            picking.width = width
+            picking.height = height
+                
     def _inverse_shipping_weight(self):
         pass
 
@@ -49,9 +63,12 @@ class StockPicking(models.Model):
     shipping_provider_id = fields.Selection([('shipstation', 'Shipstation')], default='shipstation')
     shipping_rate = fields.Float('Shipping Rate', copy=False)
     ship_package_id = fields.Many2one('shipstation.package', 'Package')
-    length = fields.Float('L (in)', copy=False)
-    width = fields.Float('W (in)', copy=False)
-    height = fields.Float('H (in)', copy=False)
+    length = fields.Float('L (in)', copy=False, compute='_compute_shipping_weight',
+                                   inverse='_inverse_shipping_weight',store=True, compute_sudo=True)
+    width = fields.Float('W (in)', copy=False, compute='_compute_shipping_weight',
+                                   inverse='_inverse_shipping_weight', store=True, compute_sudo=True)
+    height = fields.Float('H (in)', copy=False, compute='_compute_shipping_weight',
+                                   inverse='_inverse_shipping_weight', store=True, compute_sudo=True)
     # weight = fields.Float(compute='_cal_weight',inverse='_inverse_cal_weight', digits='Stock Weight', store=True, help="Total weight of the products in the picking.", compute_sudo=True)
     quote_lines = fields.One2many('shipping.quote.line', 'picking_id',
                                   string="Shipping Quotes")
@@ -67,7 +84,9 @@ class StockPicking(models.Model):
          ('carrier', 'Carrier'),
          ('provider', 'Other/External')],
         copy=False, string="Insure Type")
-    shipping_weight_oz = fields.Float("Weight(oz)")
+    shipping_weight_oz = fields.Float("Weight(oz)", compute='_compute_shipping_weight',
+                                   inverse='_inverse_shipping_weight',
+                                   digits='Stock Weight', store=True, compute_sudo=True)
     rule_id = fields.Many2one("automation.rule", string="Rule")
     confirmation = fields.Selection(
         [('none', 'None'),

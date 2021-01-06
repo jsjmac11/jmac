@@ -32,6 +32,8 @@ class ProductTemplate(models.Model):
     ships_from = fields.Char(string="Ship From")
     ship_cutoff_time = fields.Char(string="Shipping Cutoff Time")
     note = fields.Text(string="Note")
+    product_dimension_line = fields.One2many(
+        "product.dimension.line", 'name', string="Dimensions")
 
     @api.model
     def create(self, vals):
@@ -88,3 +90,19 @@ class ProductPackUom(models.Model):
 			domain = ['|','|', ('name', 'ilike', name), ('product_tmpl_id.default_code', 'ilike', name), ('product_tmpl_id.name', 'ilike', name)]
 		sat_code_ids = self._search(expression.AND([domain, args]), limit=limit, access_rights_uid=name_get_uid)
 		return models.lazy_name_get(self.browse(sat_code_ids).with_user(name_get_uid))
+
+
+class ProductDimensionLine(models.Model):
+    """This class store dimension of products with weight."""
+
+    _name = "product.dimension.line"
+    _description = "Product Dimensions Details"
+
+    name = fields.Many2one("product.template", 'Product Template')
+    product_id = fields.Many2one("product.product", 'Product')
+    quantity = fields.Float("Qty")
+    weight_lbs = fields.Float("Weight lbs")
+    weight_oz = fields.Float("Weight Oz")
+    length = fields.Float("Length(in)")
+    width = fields.Float("Width(in)")
+    height = fields.Float("Height(in)")

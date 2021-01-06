@@ -36,6 +36,20 @@
                         </group>
                     </group>
                 </page>
+                <page name="product_dimension" string="Product Dimensions">
+                    <field name="product_dimension_line" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="quantity" required="1"/>
+                            <field name="weight_lbs"/>
+                            <field name="weight_oz"/>
+                            <field name="length"/>
+                            <field name="width"/>
+                            <field name="height"/>
+                            <field name="product_id" invisible="1"/>
+                            <field name="name" invisible="1"/>
+                        </tree>
+                    </field>
+                </page>
         	</xpath> 
             
         </field>
