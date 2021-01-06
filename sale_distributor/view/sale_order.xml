@@ -10,6 +10,7 @@
             <xpath expr="//header/button[@id='action_confirm']" position="attributes">
                 <attribute name="invisible">1</attribute>
                 <attribute name="string">Process</attribute>
+                <attribute name="context">{'send_by_item_code': True}</attribute>
             </xpath>
             <xpath expr="//header/button[@name='action_quotation_send' and @states='sent,sale']" position="attributes">
                 <attribute name="name">Send Order</attribute>
@@ -25,15 +26,16 @@
             <xpath expr="//header/button[@name='action_confirm'][2]" position="attributes">
                 <attribute name="attrs">{'invisible': ['|',('state', 'not in', ['draft']),('qty_all','=',False)]}</attribute>
                 <attribute name="string">Process</attribute>
+                <attribute name="context">{'send_by_item_code': True}</attribute>
             </xpath>
             <xpath expr="//header/button[@name='action_cancel']" position="before">
-                <button name="set_to_unprocess" string="Set to Sale Order" type="object" class="btn-primary" attrs="{'invisible': ['|', '|',('state', 'not in', ['new','sent','review']),('advance_payment','=',True), ('order_line','!=',[])]}" />
+                 <button name="set_to_unprocess" string="Set to Sale Order" type="object" class="btn-primary" attrs="{'invisible': ['|', '|',('state', 'not in', ['new','sent','review']),('advance_payment','=',True), ('order_line','!=',[])]}" />
                 <button name="set_to_unprocess" string="Set to Sale Order" type="object" class="btn-primary" attrs="{'invisible': ['|', '|', ('state', 'not in', ['new','sent','review']),('advance_payment','=',True),('order_line','=',[])]}" confirm="Are you sure you want to proceed?"/>
                 <button name="confirm_purchase" string="Submit" type="object"
-                        groups="sale_distributor.group_manager_confirm" 
-                        attrs="{'invisible': ['|', '|',('state', 'not in', ['draft']),('qty_all','=',False), ('is_dropship_line','!=', True)]}"/>
-                <button name="order_process" string="Dropship" context="{'dropship':True}" type="object" attrs="{'invisible': ['|',('state', 'not in', ['draft']),('is_process_line','=',True)]}"/>
-                <button name="order_process" string="Add to Buy" context="{'add_to_buy':True}" type="object" attrs="{'invisible': ['|',('state', 'not in', ['draft']),('is_process_line','=',True)]}"/>
+                        groups="sale_distributor.group_manager_confirm" context="{'send_by_item_code': True}"
+                        attrs="{'invisible': ['|',('state', 'not in', ['draft']),('qty_all','=',False)]}"/>
+                <button name="order_process" string="Dropship" context="{'dropship':True, 'send_by_item_code': True}" type="object" attrs="{'invisible': ['|',('state', 'not in', ['draft']),('is_process_line','=',True)]}"/>
+                <button name="order_process" string="Add to Buy" context="{'add_to_buy':True, 'send_by_item_code': True}" type="object" attrs="{'invisible': ['|',('state', 'not in', ['draft']),('is_process_line','=',True)]}"/>
                 <button name="to_review" string="To Review" context="{'review':True}" type="object" attrs="{'invisible': [('state', 'not in', ['new','sent'])]}"/>
                 <button name="to_review" string="Reject" context="{'reject':True}" type="object" attrs="{'invisible': [('state', 'not in', ['review'])]}"/>
                 <field name="is_process_line" invisible="1"/>
@@ -88,6 +90,7 @@
                             <field name="route_id" invisible="1"/>
                             <field name="vendor_price_unit" string="Vendor Price"/>
                             <field name="product_uom_qty"/>
+                            <field name="item_note" string="Note"/>
                         </tree>
                         <form>
                             <group>
@@ -99,6 +102,7 @@
                                 <field name="route_id" invisible="1"/>
                                 <field name="vendor_price_unit" string="Vendor Price"/>
                                 <field name="product_uom_qty"/>
+                                <field name="item_note" string="Note"/>
                             </group>
                         </form>
                     </field>
@@ -1629,6 +1633,7 @@
                             <field name="route_id" invisible="1"/>
                             <field name="vendor_price_unit" string="Vendor Price"/>
                             <field name="product_uom_qty"/>
+                            <field name="item_note" string="Note"/>
                         </tree>
                         <form create="0" edit="0">
                             <group>
@@ -1639,6 +1644,7 @@
                                 <field name="route_id" invisible="1"/>
                                 <field name="vendor_price_unit" string="Vendor Price"/>
                                 <field name="product_uom_qty"/>
+                                <field name="item_note" string="Note"/>
                             </group>
                         </form>
                     </field>

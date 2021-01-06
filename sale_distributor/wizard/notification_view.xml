@@ -22,7 +22,12 @@
                                 <field name="unit_price" invisible="not(context.get('add_to_buy',False) or context.get('dropship',False))"/>
                             </div>
                         </div>
-
+                        <div class="o_row" name="partner" invisible="context.get('allocate_po',False)">
+                            <div>
+                                <label for="item_note" string="Item Note" invisible="not(context.get('add_to_buy',False) or context.get('dropship',False))"/>
+                                <field name="item_note" invisible="not(context.get('add_to_buy',False) or context.get('dropship',False))"/>
+                            </div>
+                        </div>
                         <field name="sale_line_id" invisible="1"/>
                         <field name="order_id" invisible="1"/>
                     </group>

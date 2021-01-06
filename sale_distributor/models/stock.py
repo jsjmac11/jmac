@@ -16,7 +16,6 @@ from dateutil.relativedelta import relativedelta
 class StockRule(models.Model):
     _inherit = 'stock.rule'
 
-
     @api.model
     def _prepare_purchase_order_line(self, product_id, product_qty, product_uom, company_id, values, po):
         res = super(StockRule, self)._prepare_purchase_order_line(product_id, product_qty, product_uom, company_id, values, po)
@@ -41,7 +40,10 @@ class StockRule(models.Model):
                 price_unit = seller.currency_id._convert(
                     price_unit, po.currency_id, po.company_id, po.date_order or fields.Date.today())
             res['price_unit'] = price_unit
+            res['item_note'] = values['split_sale_line_id'].item_note
             res['line_split'] = self._context.get('line_split',False)
+
+            po_line_list = []
             if not self._context.get('line_split',False):
                 split_line = self.with_context(line_split=True)._prepare_purchase_order_line(
                     product_id, product_qty,
@@ -50,7 +52,17 @@ class StockRule(models.Model):
                 if split_line:
                     sale_line = values.get('split_sale_line_id',False)
                     split_line.update({'sale_line_id': sale_line.id if sale_line else False})
-                    res['split_line_ids'] = [(0,0,split_line)]
+                    po_line_list.append((0,0,split_line))
+            if values['split_sale_line_id'].item_note and not self._context.get('line_split',False):
+                item_note_dict = {'name': values['split_sale_line_id'].item_note,'display_type': 'line_note',
+                                        'line_split': False,
+                                        'price_unit': 0.0,
+                                        'product_qty': 0.0,
+                                        'product_id': False,
+                                        'order_id': po.id,}
+                po_line_list.append((0,0,item_note_dict))
+            if po_line_list:
+                res['split_line_ids'] = po_line_list
         return res
 
     def _update_purchase_order_line(self, product_id, product_qty, product_uom, company_id, values, line):
@@ -145,4 +157,3 @@ class StockRule(models.Model):
                     continue
             other_procurements.append((procurement, rule))
         return super(StockRule, self)._run_buy(other_procurements)
-

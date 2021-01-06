@@ -16,15 +16,16 @@ class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
     _order = 'order_id, sequence_ref, id'
 
-    line_split = fields.Boolean('Split')
+    line_split = fields.Boolean('Split', default=False)
     parent_line_id = fields.Many2one('purchase.order.line', string="Parent Line")
     split_line_ids = fields.One2many('purchase.order.line', 'parent_line_id', string='Allocated Lines', domain=[('line_split','=',True)], states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=False)
     sequence_ref = fields.Char('No.')
+    item_note = fields.Text(string="Item Note")
 
     @api.model
     def create(self, vals):
         res = super(PurchaseOrderLine, self).create(vals)
-        res.order_id._genrate_line_sequence()     
+        res.order_id._genrate_line_sequence()
         return res
 
     # def write(self, values):

@@ -150,6 +150,11 @@
                                     <t t-set="current_section" t-value="line" />
                                     <t t-set="current_subtotal" t-value="0" />
                                 </t>
+                                <t t-if="order_line.display_type == 'line_note'">
+                                    <td name="td_note_line" colspan="99" style="border: 1px solid black;">
+                                        <span t-field="order_line.name"/>
+                                    </td>
+                                </t>
                             </tr>
                         </t>
                     </tbody>

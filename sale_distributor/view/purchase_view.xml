@@ -40,6 +40,9 @@
             <xpath expr="//field[@name='order_line']/tree/field[@name='sequence']" position="replace">
                 <field name="sequence_ref" readonly="1" force_save="1"/>
             </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="after">
+                <field name="item_note" invisible="1"/>
+            </xpath>
         </field>
     </record>
 </odoo>

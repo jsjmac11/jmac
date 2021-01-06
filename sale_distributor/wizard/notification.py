@@ -19,6 +19,7 @@ class NotificationMessage(models.TransientModel):
     # purchase_id = fields.Many2one("purchase.order", string="Purchase Order")
     note = fields.Text("Note")
     user_id = fields.Many2one("res.users", string="User")
+    item_note = fields.Text("Item Note")
 
     def update_quantity(self):
         dict = {'line_split': True,
@@ -71,6 +72,7 @@ class NotificationMessage(models.TransientModel):
                     'parent_line_id': self.sale_line_id.id,
                     'vendor_price_unit': self.unit_price,
                     'product_id': product_id.id,
+                    'item_note': self.item_note,
                     })
                 split_line_id = self.sale_line_id.copy(dict)
             self.sale_line_id.order_id._genrate_line_sequence()
@@ -98,6 +100,7 @@ class NotificationMessage(models.TransientModel):
                 elif self.partner_id.id == line.partner_id.id:
                     vendor_price_unit = line.otv_cost
                 product_id = line.product_id
+
                 if line.substitute_product_id:
                     product_id = line.substitute_product_id
                 dict.update({
@@ -105,6 +108,7 @@ class NotificationMessage(models.TransientModel):
                     'parent_line_id': line.id,
                     'vendor_price_unit': vendor_price_unit,
                     'product_id': product_id.id,
+                    'item_note': self.item_note,
                     })
                 split_line_id = line.copy(dict)
             self.order_id._genrate_line_sequence()

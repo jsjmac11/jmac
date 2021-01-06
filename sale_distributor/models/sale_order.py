@@ -250,7 +250,6 @@ class SaleOrder(models.Model):
         type of "stock". For each of the Ship To Here split lines, creates a new pick and moves that line
         to the new pick.
         """
-        
         res = super(SaleOrder, self).action_confirm()
         for picking in self.picking_ids.filtered(lambda r: len(r.move_lines) > 1):
             lines_by_type = {type: picking.move_lines.filtered(lambda r: r.sale_line_id.line_type == type) 
@@ -265,6 +264,18 @@ class SaleOrder(models.Model):
                 for move_line in lines_by_type['stock']:
                     move_line.picking_id = new_picking
                     move_line.move_line_ids.picking_id = new_picking
+        if self.env.context.get('send_by_item_code'):
+            pol_obj = self.env['purchase.order.line']
+            po_line_ids = pol_obj.search([('sale_order_id','=', self.id)])
+            purchase_order_id = po_line_ids.mapped('order_id')
+            for po in purchase_order_id:
+                ir_model_data = self.env['ir.model.data']
+                template_id = ir_model_data.get_object_reference('sale_distributor', 'email_template_edi_purchase_inherit')[1]
+                ctx = po.action_rfq_send().get('context')
+                ctx.update({'default_template_id': template_id,})
+                mail = self.env['mail.compose.message'].with_context(ctx).create({})
+                mail.onchange_template_id_wrapper()
+                mail.action_send_mail()
         return res
 
     def action_cancel(self):
@@ -745,6 +756,7 @@ class SaleOrderLine(models.Model):
     jmac_tab_color = fields.Char(string="JMAC Tab Color", compute='_compute_jmac_tab_color')
     allocated_pol_id = fields.Many2one("purchase.order.line", string="Purchase Line #")
     allocated_po_id = fields.Many2one("purchase.order", string="Purchase #")
+    item_note = fields.Text(string="Item Note")
 
     @api.depends('product_id', 'jmac_onhand')
     def _compute_jmac_tab_color(self):
