@@ -5,6 +5,9 @@
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="is_note_line" invisible="1"/>
+            </xpath>
             <xpath expr="//field[@name='notes']" position="before">
                 <group string="Process Qty" attrs="{'invisible': [('split_line', '=', False)]}" name="process_qty" colspan="4">
                     <field name="split_line" nolabel="1" readonly="1" widget="section_and_note_one2many" mode="tree" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}">

@@ -37,8 +37,15 @@ class PurchaseOrderLine(models.Model):
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
+    @api.depends('order_line')
+    def _compute_item_note_line(self):
+        for line in self.order_line.filtered(lambda l: l.display_type == 'line_note'):
+            if line:
+                self.is_note_line = True
+
     order_line = fields.One2many('purchase.order.line', 'order_id', string='Order Lines', domain=[('line_split','=',False)], states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True)
     split_line = fields.One2many('purchase.order.line', 'order_id', string='Allocated Lines', domain=[('line_split','=',True)], states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=False)
+    is_note_line = fields.Boolean(string="Is Item Note", compute='_compute_item_note_line', store=True)
     
     @api.depends('order_line.move_ids.returned_move_ids',
                  'order_line.move_ids.state',
