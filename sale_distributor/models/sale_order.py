@@ -205,7 +205,7 @@ class SaleOrder(models.Model):
                             'parent_line_id': pol.parent_line_id.id if pol.parent_line_id else pol.id
                         })]
                     })
-                    pol.product_qty = diff_qty
+                    # pol.product_qty = diff_qty
                 else:
                     pol.sale_line_id = sol.id
                 # Update PO origin
@@ -858,13 +858,20 @@ class SaleOrderLine(models.Model):
         else:
             super(SaleOrderLine, self)._compute_amount()
 
+    @api.depends('product_id', 'product_uom_qty', 'qty_delivered', 'state', 'product_uom', 'pack_quantity')
     def _compute_qty_to_deliver(self):
         """Don't show inventory widget for rental order lines."""
         super(SaleOrderLine, self)._compute_qty_to_deliver()
-        self.write({
-            'display_qty_widget': True,
-        })
-            
+        for line in self:
+            if line.product_id.type == 'product' and  line.pack_quantity > 0:
+                line.write({
+                    'display_qty_widget': True,
+                })
+            else:
+                line.write({
+                    'display_qty_widget': False,
+                })
+
     @api.onchange('product_pack_id')
     def product_pack_id_change(self):
         self.product_id = False
@@ -1380,6 +1387,11 @@ class InboundStock(models.Model):
     allocate_qty = fields.Float(string="Allocate Qty", digits='Product Unit of Measure')
     po_sale_line_id = fields.Many2one("sale.order.line", string="Sale Order Line")
     po_sale_id = fields.Many2one("sale.order", string="Sale Order")
+
+    @api.onchange('select_pol')
+    def onchange_select_po(self):
+        if not self.select_pol:
+            self.allocate_qty = 0
 
     @api.onchange('allocate_qty')
     def onchange_allocate_qty(self):
