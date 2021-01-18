@@ -39,7 +39,13 @@ class PurchaseOrder(models.Model):
 
     order_line = fields.One2many('purchase.order.line', 'order_id', string='Order Lines', domain=[('line_split','=',False)], states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True)
     split_line = fields.One2many('purchase.order.line', 'order_id', string='Allocated Lines', domain=[('line_split','=',True)], states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=False)
-    
+    add_to_buy = fields.Boolean(string="Add To Buy", default=False, copy=False)
+
+    @api.constrains('add_to_buy')
+    def _create_paurchase_order(self):
+        if len(self.search([('partner_id', '=', self.partner_id.id),('add_to_buy', '=', True)])) > 1:
+            raise ValidationError(_("Purchase Order Already exist For %s Vendor ...!" % self.partner_id.name))
+
     @api.depends('order_line.move_ids.returned_move_ids',
                  'order_line.move_ids.state',
                  'order_line.move_ids.picking_id',

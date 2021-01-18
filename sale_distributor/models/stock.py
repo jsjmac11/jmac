@@ -5,7 +5,6 @@
 # Copyright (C) 2020 (https://www.bistasolutions.com)
 #
 ##############################################################################
-
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from datetime import datetime
@@ -156,4 +155,28 @@ class StockRule(models.Model):
                 if procurement.values.get("split_sale_line_id").line_type == 'allocate_po':
                     continue
             other_procurements.append((procurement, rule))
+
         return super(StockRule, self)._run_buy(other_procurements)
+
+    def _prepare_purchase_order(self, company_id, origins, values):
+        res = super(StockRule, self)._prepare_purchase_order(company_id, origins, values)
+        if self.env.context.get('add_to_buy'):
+            res['add_to_buy'] = True
+        return res
+
+    def _make_po_get_domain(self, company_id, values, partner):
+        gpo = self.group_propagation_option
+        group = (gpo == 'fixed' and self.group_id) or \
+                (gpo == 'propagate' and 'group_id' in values and values['group_id']) or False
+
+        domain = (
+            ('partner_id', '=', partner.id),
+            ('picking_type_id', '=', self.picking_type_id.id),
+            ('company_id', '=', company_id.id),
+            ('state', 'in', ('draft', 'sent')),
+        )
+        if self.env.context.get('add_to_buy'):
+            domain += (('add_to_buy', '=', True),)
+        if group:
+            domain += (('group_id', '=', group.id),)
+        return domain
