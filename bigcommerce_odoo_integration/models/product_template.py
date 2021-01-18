@@ -31,7 +31,7 @@ class ProductTemplate(models.Model):
     is_visible = fields.Boolean(string="Product Should Be Visible to Customer",default=True)
     warranty = fields.Char(string="Warranty Information")
     is_imported_from_bigcommerce = fields.Boolean(string="Is Imported From Big Commerce ?")
-    x_studio_manufacturer = fields.Many2one('bc.product.brand',string='Manufacturer')
+    x_studio_manufacturer = fields.Many2one('bc.product.brand',string='Manufacturer Brand')
 
     def create_bigcommerce_operation(self,operation,operation_type,bigcommerce_store_id,log_message,warehouse_id):
         vals = {

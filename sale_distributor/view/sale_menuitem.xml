@@ -43,6 +43,12 @@
         <field name="domain">[('state', 'in', ('sale','done','cancel'))]</field>
     </record>
 
+    <menuitem id="amazon_sale_order"
+            name="Amazon Orders"
+            action="sale.action_orders"
+            parent="sale.sale_order_menu"
+            sequence="2" groups="sales_team.group_sale_salesman"/>
+
     <menuitem id="sale.menu_sale_order"
             name="Processed Orders"
             action="sale.action_orders"

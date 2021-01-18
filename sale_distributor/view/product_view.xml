@@ -1,24 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-	<record id="product_template_form_view_inherit_pack" model="ir.ui.view">
+    <record id="product_template_form_view_inherit_pack" model="ir.ui.view">
         <field name="name">product.template.form.inhe.pack</field>
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_only_form_view"/>
         <field name="arch" type="xml">
-        	<xpath expr="//notebook" position="inside">
-        		<page name="product_pack" string="Product Pack">
-            		<field name="product_pack_line" nolabel="1">
-            			<tree editable="bottom">
-    	        			<field name="name" attrs="{'required':[('is_auto_created','!=', True)]}"/>
-    	        			<field name="quantity" required="1"/>
+            <xpath expr="//label[@for='name']" position="replace">
+            </xpath>
+            <xpath expr="//field[@name='default_code']" position="replace">
+                <field name="name" />
+            </xpath>
+            <xpath expr="//field[@name='name']" position="replace">
+                <label class="oe_edit_only" for="ref" string="Internal Reference"/>
+                <h1><field name="default_code" placeholder="Internal Reference"/></h1>
+            </xpath>
+            <xpath expr="//field[@name='categ_id']" position="after">
+                <field name="parent_manufacture" />
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page name="product_pack" string="Product Pack">
+                    <field name="product_pack_line" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="name" attrs="{'required':[('is_auto_created','!=', True)]}"/>
+                            <field name="quantity" required="1"/>
                             <field name="price" required="1"/>
                             <field name="is_auto_created" invisible="1"/>
-    	        			<field name="product_tmpl_id" invisible="1"/>
-    	        			<field name="product_id" invisible="1"/>
-    	        		</tree>
-            		</field>
-            	</page>
+                            <field name="product_tmpl_id" invisible="1"/>
+                            <field name="product_id" invisible="1"/>
+                        </tree>
+                    </field>
+                </page>
                 <page name="manufacturer" string="Manufacturer Info">
                     <group>
                         <group>
@@ -50,7 +61,7 @@
                         </tree>
                     </field>
                 </page>
-        	</xpath> 
+            </xpath>
             
         </field>
     </record>

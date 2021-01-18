@@ -34,6 +34,15 @@ class ProductTemplate(models.Model):
     note = fields.Text(string="Note")
     product_dimension_line = fields.One2many(
         "product.dimension.line", 'name', string="Dimensions")
+    parent_manufacture = fields.Many2one("res.partner", string="Parent Manufacture")
+
+    @api.model
+    def default_get(self, fields_list):
+        res = super(ProductTemplate, self).default_get(fields_list)
+        res.update({
+                    'type': 'product'
+                   })
+        return res
 
     @api.model
     def create(self, vals):
