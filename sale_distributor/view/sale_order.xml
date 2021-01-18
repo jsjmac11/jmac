@@ -1374,7 +1374,7 @@
                                         <field name="qty_received" readonly="1" force_save="1"/>
                                         <field name="date_submitted" readonly="1" force_save="1"/>
                                         <field name="select_pol"/>
-                                        <field name="allocate_qty" attrs="{'readonly':[('select_pol','=', False)]}"/>
+                                        <field name="allocate_qty" attrs="{'readonly':[('select_pol','=', False)]}" force_save="1"/>
                                         <field name="po_line_id" invisible="1"/>
                                         <field name="picking_id" invisible="1"/>
                                         <field name="move_id" invisible="1"/>
