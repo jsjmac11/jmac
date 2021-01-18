@@ -44,7 +44,7 @@ class PurchaseOrder(models.Model):
     @api.constrains('add_to_buy')
     def _create_paurchase_order(self):
         if len(self.search([('partner_id', '=', self.partner_id.id),('add_to_buy', '=', True)])) > 1:
-            raise ValidationError(_("Purchase Order Already exist For %s Vendor ...!" % self.partner_id.name))
+            raise ValidationError(_("Add to buy Purchase Order Already exist For %s Vendor ...!" % self.partner_id.name))
 
     @api.depends('order_line.move_ids.returned_move_ids',
                  'order_line.move_ids.state',
