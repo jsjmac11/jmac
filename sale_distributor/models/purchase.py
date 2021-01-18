@@ -8,22 +8,31 @@
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
-from datetime import datetime
+# from datetime import datetime
 import string
 
 
 class PurchaseOrderLine(models.Model):
+    """Update split line for SO process Qty."""
+
     _inherit = 'purchase.order.line'
     _order = 'order_id, sequence_ref, id'
 
     line_split = fields.Boolean('Split', default=False)
-    parent_line_id = fields.Many2one('purchase.order.line', string="Parent Line")
-    split_line_ids = fields.One2many('purchase.order.line', 'parent_line_id', string='Allocated Lines', domain=[('line_split','=',True)], states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=False)
+    parent_line_id = fields.Many2one('purchase.order.line',
+                                     string="Parent Line")
+    split_line_ids = fields.One2many('purchase.order.line', 'parent_line_id',
+                                     string='Allocated Lines',
+                                     domain=[('line_split', '=', True)],
+                                     states={'cancel': [('readonly', True)],
+                                             'done': [('readonly', True)]},
+                                     copy=False)
     sequence_ref = fields.Char('No.')
     item_note = fields.Text(string="Item Note")
 
     @api.model
     def create(self, vals):
+        """Generate purchase order line sequence."""
         res = super(PurchaseOrderLine, self).create(vals)
         res.order_id._genrate_line_sequence()
         return res
@@ -34,17 +43,36 @@ class PurchaseOrderLine(models.Model):
     #         line.order_id._genrate_line_sequence()
     #     return res
 
+
 class PurchaseOrder(models.Model):
+    """Update customization fileds for process line."""
+
     _inherit = 'purchase.order'
 
-    order_line = fields.One2many('purchase.order.line', 'order_id', string='Order Lines', domain=[('line_split','=',False)], states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True)
-    split_line = fields.One2many('purchase.order.line', 'order_id', string='Allocated Lines', domain=[('line_split','=',True)], states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=False)
-    add_to_buy = fields.Boolean(string="Add To Buy", default=False, copy=False)
+    order_line = fields.One2many('purchase.order.line', 'order_id',
+                                 string='Order Lines',
+                                 domain=[('line_split', '=', False)],
+                                 states={'cancel': [('readonly', True)],
+                                         'done': [('readonly', True)]},
+                                 copy=True)
+    split_line = fields.One2many('purchase.order.line', 'order_id',
+                                 string='Allocated Lines',
+                                 domain=[('line_split', '=', True)],
+                                 states={'cancel': [('readonly', True)],
+                                         'done': [('readonly', True)]},
+                                 copy=False)
+    add_to_buy = fields.Boolean(string="Add To Buy", default=False, copy=False,
+                                states={'cancel': [('readonly', True)],
+                                        'purchase': [('readonly', True)],
+                                        'done': [('readonly', True)]},)
 
     @api.constrains('add_to_buy')
     def _create_paurchase_order(self):
-        if len(self.search([('partner_id', '=', self.partner_id.id),('add_to_buy', '=', True)])) > 1:
-            raise ValidationError(_("Add to buy Purchase Order Already exist For %s Vendor ...!" % self.partner_id.name))
+        if len(self.search([('partner_id', '=', self.partner_id.id),
+                            ('add_to_buy', '=', True),
+                            ('state', 'in', ('draft', 'sent'))])) > 1:
+            raise ValidationError(_("Add to buy Purchase Order Already exist \
+                                For %s Vendor ...!" % self.partner_id.name))
 
     @api.depends('order_line.move_ids.returned_move_ids',
                  'order_line.move_ids.state',
@@ -56,13 +84,15 @@ class PurchaseOrder(models.Model):
         for order in self:
             pickings = self.env['stock.picking']
             for line in order.order_line:
-                # We keep a limited scope on purpose. Ideally, we should also use move_orig_ids and
-                # do some recursive search, but that could be prohibitive if not done correctly.
+                # We keep a limited scope on purpose. Ideally, we should also
+                # use move_orig_ids and do some recursive search,
+                # but that could be prohibitive if not done correctly.
                 moves = line.move_ids | line.move_ids.mapped('returned_move_ids')
                 pickings |= moves.mapped('picking_id')
             for sline in order.split_line:
-                # We keep a limited scope on purpose. Ideally, we should also use move_orig_ids and
-                # do some recursive search, but that could be prohibitive if not done correctly.
+                # We keep a limited scope on purpose. Ideally, we should also
+                # use move_orig_ids and do some recursive search,
+                # but that could be prohibitive if not done correctly.
                 moves = sline.move_ids | sline.move_ids.mapped('returned_move_ids')
                 pickings |= moves.mapped('picking_id')
             order.picking_ids = pickings
@@ -76,38 +106,45 @@ class PurchaseOrder(models.Model):
             for sl in l.split_line_ids:
                 res = string.ascii_uppercase[count]
                 sl.sequence_ref = str(no) + res
-                count +=1
+                count += 1
             no += 1
         return True
 
     def write(self, values):
+        """Generate sequence."""
         res = super(PurchaseOrder, self).write(values)
         if values.get('order_line'):
             self._genrate_line_sequence()
         return res
 
     def _create_picking(self):
-        StockPicking = self.env['stock.picking']
+        stockpicking = self.env['stock.picking']
         for order in self:
-            if any([ptype in ['product', 'consu'] for ptype in order.order_line.mapped('product_id.type')]):
-                pickings = order.picking_ids.filtered(lambda x: x.state not in ('done', 'cancel'))
+            if any([ptype in ['product', 'consu'] for ptype in
+                    order.order_line.mapped('product_id.type')]):
+                pickings = order.picking_ids.filtered(lambda x: x.state not in
+                                                      ('done', 'cancel'))
                 if not pickings:
                     res = order._prepare_picking()
-                    picking = StockPicking.create(res)
+                    picking = stockpicking.create(res)
                 else:
                     picking = pickings[0]
-                # If split line found then create receipt for that line else order line.
+                # If split line found then create receipt for that line
+                # else order line.
                 if order.split_line:
                     moves = order.split_line._create_stock_moves(picking)
                 else:
                     moves = order.order_line._create_stock_moves(picking)
-                moves = moves.filtered(lambda x: x.state not in ('done', 'cancel'))._action_confirm()
+                moves = moves.filtered(lambda x: x.state not in
+                                       ('done', 'cancel'))._action_confirm()
                 seq = 0
                 for move in sorted(moves, key=lambda move: move.date_expected):
                     seq += 5
                     move.sequence = seq
                 moves._action_assign()
-                picking.message_post_with_view('mail.message_origin_link',
-                    values={'self': picking, 'origin': order},
+                picking.message_post_with_view(
+                    'mail.message_origin_link',
+                    values={'self': picking,
+                            'origin': order},
                     subtype_id=self.env.ref('mail.mt_note').id)
         return True
