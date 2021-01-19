@@ -160,7 +160,7 @@ class StockRule(models.Model):
 
     def _prepare_purchase_order(self, company_id, origins, values):
         res = super(StockRule, self)._prepare_purchase_order(company_id, origins, values)
-        if self.env.context.get('add_to_buy'):
+        if values[0].get('split_sale_line_id').line_type == "buy":
             res['add_to_buy'] = True
         return res
 
@@ -175,7 +175,7 @@ class StockRule(models.Model):
             ('company_id', '=', company_id.id),
             ('state', 'in', ('draft', 'sent')),
         )
-        if self.env.context.get('add_to_buy'):
+        if values.get('split_sale_line_id').line_type == "buy":
             domain += (('add_to_buy', '=', True),)
         if group:
             domain += (('group_id', '=', group.id),)
