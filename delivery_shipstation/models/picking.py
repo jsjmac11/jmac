@@ -34,6 +34,7 @@ class StockPicking(models.Model):
             length = 0.0
             width = 0.0
             height = 0.0
+            dimension_id = False
             if picking.package_ids:
                 picking.shipping_weight = picking.weight_bulk + sum(
                     [pack.shipping_weight for pack in picking.package_ids])

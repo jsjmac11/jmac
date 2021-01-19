@@ -87,13 +87,15 @@ class PurchaseOrder(models.Model):
                 # We keep a limited scope on purpose. Ideally, we should also
                 # use move_orig_ids and do some recursive search,
                 # but that could be prohibitive if not done correctly.
-                moves = line.move_ids | line.move_ids.mapped('returned_move_ids')
+                moves = line.move_ids | line.move_ids.mapped(
+                    'returned_move_ids')
                 pickings |= moves.mapped('picking_id')
             for sline in order.split_line:
                 # We keep a limited scope on purpose. Ideally, we should also
                 # use move_orig_ids and do some recursive search,
                 # but that could be prohibitive if not done correctly.
-                moves = sline.move_ids | sline.move_ids.mapped('returned_move_ids')
+                moves = sline.move_ids | sline.move_ids.mapped(
+                    'returned_move_ids')
                 pickings |= moves.mapped('picking_id')
             order.picking_ids = pickings
             order.picking_count = len(pickings)
@@ -148,3 +150,37 @@ class PurchaseOrder(models.Model):
                             'origin': order},
                     subtype_id=self.env.ref('mail.mt_note').id)
         return True
+
+    def _activity_cancel_on_sale(self):
+        """Update SO with activity perform in PO.
+
+        If some PO are cancelled, we need to put an activity on their
+        origin SO (only the open ones). Since a PO can have
+        been modified by several SO, when cancelling one PO,
+        many next activities can be schedulded on different SO.
+        """
+        # super(PurchaseOrder, self)._activity_cancel_on_sale()
+        sol_ids = self.env["sale.order.line"]
+        # map SO -> recordset of PO as {sale.order: set(purchase.order.line)}
+        sale_to_notify_map = {}
+        for order in self:
+            for purchase_line in order.split_line:
+                if purchase_line.sale_line_id:
+                    sale_order = purchase_line.sale_line_id.order_id
+                    sol_ids |= purchase_line.sale_line_id
+                    sale_to_notify_map.setdefault(
+                        sale_order, self.env['purchase.order.line'])
+                    sale_to_notify_map[sale_order] |= purchase_line
+        move_ids = self.env['stock.move'].search(
+            [('sale_line_id', 'in', sol_ids.ids)])
+        move_ids._action_cancel()
+        sol_ids.write({'po_cancel_note': '', 'active': False})
+        for sale_order, purchase_order_lines in sale_to_notify_map.items():
+            sale_order.activity_schedule_with_view(
+                'mail.mail_activity_data_warning',
+                user_id=sale_order.user_id.id or self.env.uid,
+                views_or_xmlid='sale_purchase.\
+                exception_sale_on_purchase_cancellation',
+                render_context={
+                    'purchase_orders': purchase_order_lines.mapped('order_id'),
+                    'purchase_lines': purchase_order_lines})
