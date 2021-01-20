@@ -367,8 +367,8 @@
                                 <field name="adi_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="adi_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'adi','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'adi','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'adi','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('adi_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'adi','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('adi_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                         </group>
@@ -408,8 +408,8 @@
                                 <field name="adi_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="adi_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'adi','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'adi','dropship':True}" type="object" class="oe_highlight" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'adi','add_to_buy':True}" type="object" class="oe_highlight" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('adi_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'adi','dropship':True}" type="object" class="oe_highlight" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('adi_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                         </group>
@@ -449,8 +449,8 @@
                                 <field name="adi_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="adi_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'adi','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'adi','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'adi','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('adi_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'adi','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('adi_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                         </group>
@@ -492,8 +492,8 @@
                                 <field name="nv_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="nv_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'nv','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'nv','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'nv','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('nv_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'nv','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('nv_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                         </group>
@@ -532,8 +532,8 @@
                                 <field name="nv_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="nv_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'nv','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'nv','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'nv','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('nv_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'nv','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('nv_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                         </group>
@@ -572,8 +572,8 @@
                                 <field name="nv_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="nv_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'nv','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'nv','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'nv','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('nv_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'nv','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('nv_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                         </group>
@@ -615,8 +615,8 @@
                                 <field name="sl_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="sl_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'sl','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'sl','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'sl','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('sl_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'sl','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('sl_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                         </group>
@@ -655,8 +655,8 @@
                                 <field name="sl_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="sl_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'sl','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'sl','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'sl','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('sl_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'sl','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('sl_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                         </group>
@@ -695,8 +695,8 @@
                                 <field name="sl_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="sl_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'sl','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'sl','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'sl','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('sl_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'sl','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('sl_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                         </group>
@@ -738,8 +738,8 @@
                                 <field name="ss_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="ss_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'ss','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'ss','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'ss','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('ss_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'ss','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|',  ('parent.state', 'not in', ('draft','sale')), ('ss_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                         </group>
@@ -778,8 +778,8 @@
                                 <field name="ss_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="ss_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'ss','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'ss','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'ss','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('ss_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'ss','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('ss_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                         </group>
@@ -818,8 +818,8 @@
                                 <field name="ss_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="ss_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'ss','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'ss','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'ss','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('ss_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'ss','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('ss_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                         </group>
@@ -860,8 +860,8 @@
                                 <field name="jne_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="jne_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'jne','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'jne','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'jne','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('jne_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'jne','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('jne_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                         </group>
@@ -900,8 +900,8 @@
                                 <field name="jne_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="jne_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'jne','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'jne','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'jne','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('jne_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'jne','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('jne_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                         </group>
@@ -940,8 +940,8 @@
                                 <field name="jne_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="jne_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'jne','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'jne','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'jne','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('jne_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'jne','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('jne_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                         </group>
@@ -982,8 +982,8 @@
                                 <field name="bnr_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="bnr_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'bnr','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'bnr','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'bnr','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('bnr_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'bnr','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('bnr_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                         </group>
@@ -1022,8 +1022,8 @@
                                 <field name="bnr_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="bnr_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'bnr','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'bnr','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'bnr','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('bnr_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'bnr','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('bnr_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                         </group>
@@ -1062,8 +1062,8 @@
                                 <field name="bnr_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="bnr_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'bnr','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'bnr','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'bnr','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('bnr_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'bnr','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('bnr_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                         </group>
@@ -1104,8 +1104,8 @@
                                 <field name="wr_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="wr_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'wr','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'wr','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'wr','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('wr_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'wr','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('wr_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                             
@@ -1145,8 +1145,8 @@
                                 <field name="wr_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="wr_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'ss','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'ss','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'ss','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('wr_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'ss','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('wr_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                             
@@ -1186,8 +1186,8 @@
                                 <field name="wr_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="wr_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'jne','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'jne','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'jne','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('wr_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'jne','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('wr_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                             
@@ -1230,8 +1230,8 @@
                                 <field name="dfm_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="dfm_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'bnr','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'bnr','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'bnr','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('dfm_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'bnr','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('dfm_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                             
@@ -1271,8 +1271,8 @@
                                 <field name="dfm_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="dfm_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'wr','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'wr','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'wr','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('dfm_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'wr','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('dfm_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                         </group>
@@ -1311,8 +1311,8 @@
                                 <field name="dfm_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="dfm_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'vendor':'dfm','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'vendor':'dfm','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'vendor':'dfm','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('dfm_total_stock', '=', 0)]}"/>
+                                    <button name="split_line" context="{'vendor':'dfm','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('dfm_total_stock', '=', 0)]}"/>
                                 </div>
                             </group>
                         </group>
@@ -1358,8 +1358,8 @@
                                     </form>
                                 </field>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'ship_from_here':True}" type="object" class="oe_highlight oe_edit_only" string="Ship from Here" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'allocate':True}" type="object" class="oe_highlight oe_edit_only" string="Allocate" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'ship_from_here':True}" type="object" class="oe_highlight oe_edit_only" string="Ship from Here" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('jmac_stock_ids', '=', [])]}"/>
+                                    <button name="split_line" context="{'allocate':True}" type="object" class="oe_highlight oe_edit_only" string="Allocate" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('jmac_stock_ids', '=', [])]}"/>
                                 </div>
                             </page>
                             <page name="inbound_stock" string="Inbound Stock">
@@ -1397,7 +1397,7 @@
                                         </group>
                                     </form>
                                 </field>
-                                <button name="split_line" context="{'allocate_po':True}" type="object" class="oe_highlight oe_edit_only" string="Allocate" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                <button name="split_line" context="{'allocate_po':True}" type="object" class="oe_highlight oe_edit_only" string="Allocate" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('inbound_stock_lines', '=', [])]}"/>
                             </page>
                         </notebook>
                     </page>
@@ -1438,8 +1438,8 @@
                                     </form>
                                 </field>
                                 <div class="o_row">
-                                    <button name="split_line" context="{'ship_from_here':True}" type="object" class="oe_highlight oe_edit_only" string="Ship from Here" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                    <button name="split_line" context="{'allocate':True}" type="object" class="oe_highlight oe_edit_only" string="Allocate" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                    <button name="split_line" context="{'ship_from_here':True}" type="object" class="oe_highlight oe_edit_only" string="Ship from Here" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('jmac_stock_ids', '=', [])]}"/>
+                                    <button name="split_line" context="{'allocate':True}" type="object" class="oe_highlight oe_edit_only" string="Allocate" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('jmac_stock_ids', '=', [])]}"/>
                                 </div>
                             </page>
                             <page name="inbound_stock" string="Inbound Stock">
@@ -1477,7 +1477,7 @@
                                         </group>
                                     </form>
                                 </field>
-                                <button name="split_line" context="{'allocate_po':True}" type="object" class="oe_highlight oe_edit_only" string="Allocate" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                <button name="split_line" context="{'allocate_po':True}" type="object" class="oe_highlight oe_edit_only" string="Allocate" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('inbound_stock_lines', '=', [])]}"/>
                             </page>
                         </notebook>
                     </page>
@@ -1518,8 +1518,8 @@
                                 <field name="bks_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="bks_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                <button name="split_line" context="{'vendor':'bks','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                <button name="split_line" context="{'vendor':'bks','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                <button name="split_line" context="{'vendor':'bks','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('bks_total_stock', '=', 0)]}"/>
+                                <button name="split_line" context="{'vendor':'bks','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('bks_total_stock', '=', 0)]}"/>
                             </div>
                             </group>
                         </group>
@@ -1558,8 +1558,8 @@
                                 <field name="bks_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="bks_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                <button name="split_line" context="{'vendor':'bks','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                <button name="split_line" context="{'vendor':'bks','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                <button name="split_line" context="{'vendor':'bks','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('bks_total_stock', '=', 0)]}"/>
+                                <button name="split_line" context="{'vendor':'bks','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('bks_total_stock', '=', 0)]}"/>
                             </div>
                             </group>
                         </group>
@@ -1598,8 +1598,8 @@
                                 <field name="bks_cost_last_updated" string="Cost Last Updated" readonly="1" force_save="1"/>
                                 <field name="bks_stock_last_updated" string="Stock Last Updated" readonly="1" force_save="1"/>
                                 <div class="o_row">
-                                <button name="split_line" context="{'vendor':'bks','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
-                                <button name="split_line" context="{'vendor':'bks','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': [('parent.state', 'not in', ('draft','sale'))]}"/>
+                                <button name="split_line" context="{'vendor':'bks','add_to_buy':True}" type="object" class="oe_highlight oe_edit_only" string="Add to Buy" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('bks_total_stock', '=', 0)]}"/>
+                                <button name="split_line" context="{'vendor':'bks','dropship':True}" type="object" class="oe_highlight oe_edit_only" string="Dropship" attrs="{'invisible': ['|', ('parent.state', 'not in', ('draft','sale')), ('bks_total_stock', '=', 0)]}"/>
                             </div>
                             </group>
                         </group>
