@@ -60,10 +60,10 @@ class SaleOrder(models.Model):
                                      compute='_compute_is_process_qty',
                                      help='Technical field used to see if we\
                                      have process qty.')
-    qty_all = fields.Boolean(string="All Qty",
+    is_unprocessed_order = fields.Boolean(string="Is Unprocessed Order",
                              compute='_compute_is_process_qty',
                              help='Technical field used to see if we have\
-                             process qty.')
+                             process qty.', store=True, copy=False)
     priority = fields.Selection(ORDER_PRIORITY, string='Priority', default='0')
     po_count = fields.Integer(string='Purchase Orders',
                               compute='_compute_po_ids')
@@ -96,6 +96,7 @@ class SaleOrder(models.Model):
         domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",)
     is_dropship_line = fields.Boolean(
         string='Is Dropship Line', compute='_compute_dropship_line', store=True)
+    qty_all = fields.Boolean(string="Qty all")
 
     def _default_validity_date(self):
         if self.env['ir.config_parameter'].sudo().get_param('sale.use_quotation_validity_days'):
@@ -191,12 +192,12 @@ class SaleOrder(models.Model):
             processed_qty = sum(lines.mapped(
                 'sale_split_lines').mapped('product_uom_qty'))
             if processed_qty == ordered_qty:
-                qty_all = True
+                is_unprocessed_order = False
             else:
-                qty_all = False
+                is_unprocessed_order = True
             order.is_process_line = any(
                 order.order_line.mapped('sale_split_lines'))
-            order.qty_all = qty_all
+            order.is_unprocessed_order = is_unprocessed_order
 
     @api.depends('order_line', 'order_line.sale_split_lines')
     def _compute_split_lines(self):
@@ -946,6 +947,16 @@ class SaleOrderLine(models.Model):
     is_pack_product = fields.Boolean("Is Pack Product", default=False)
     active = fields.Boolean("Active", default=True)
     po_cancel_note = fields.Text("PO Cancel Note")
+    unprocess_qty = fields.Float(string='Unprocess Quantity', compute="_compute_unprocess_qty", store=False, default=0.0)
+
+    @api.depends('sale_split_lines', 'pack_quantity', 'order_id.is_unprocessed_order')
+    def _compute_unprocess_qty(self):
+        for record in self:
+            process_qty = 0.0
+            pack_quantity = record.product_pack_id.quantity or 1.0
+            for line in record.sale_split_lines:
+                process_qty += line.product_uom_qty
+            record.unprocess_qty = (record.pack_quantity - (process_qty / pack_quantity)) or 0.0
 
     @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id', 'pack_quantity')
     def _compute_amount(self):

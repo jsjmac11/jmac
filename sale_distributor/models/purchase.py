@@ -29,6 +29,20 @@ class PurchaseOrderLine(models.Model):
                                      copy=False)
     sequence_ref = fields.Char('No.')
     item_note = fields.Text(string="Item Note")
+    allocated_qty = fields.Float(string='Allocated Quantity', compute='_compute_allocated_qty')
+    invetory_qty = fields.Float(string='Invetory Quantity', compute='_compute_allocated_qty')
+
+    @api.depends('order_id.split_line', 'product_qty', 'order_id.order_line')
+    def _compute_allocated_qty(self):
+        for record in self:
+            allocate_qty = 0.0
+            invetory_qty = 0.0
+            product_qty = record.product_qty
+            for line in record.order_id.split_line:
+                if line.sale_line_id:
+                    allocate_qty += line.product_qty
+            record.allocated_qty = allocate_qty or 0.0
+            record.invetory_qty = product_qty - allocate_qty or 0.0
 
     @api.model
     def create(self, vals):
@@ -171,10 +185,6 @@ class PurchaseOrder(models.Model):
                     sale_to_notify_map.setdefault(
                         sale_order, self.env['purchase.order.line'])
                     sale_to_notify_map[sale_order] |= purchase_line
-        move_ids = self.env['stock.move'].search(
-            [('sale_line_id', 'in', sol_ids.ids)])
-        move_ids._action_cancel()
-        sol_ids.write({'po_cancel_note': '', 'active': False})
         for sale_order, purchase_order_lines in sale_to_notify_map.items():
             sale_order.activity_schedule_with_view(
                 'mail.mail_activity_data_warning',
@@ -184,3 +194,7 @@ class PurchaseOrder(models.Model):
                 render_context={
                     'purchase_orders': purchase_order_lines.mapped('order_id'),
                     'purchase_lines': purchase_order_lines})
+        move_ids = self.env['stock.move'].search(
+            [('sale_line_id', 'in', sol_ids.ids)])
+        move_ids._action_cancel()
+        sol_ids.write({'po_cancel_note': '', 'active': False})

@@ -46,6 +46,10 @@
             <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="after">
                 <field name="item_note" invisible="1"/>
             </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="before">
+                <field name="allocated_qty" string="Allocated Qty"/>
+                <field name="invetory_qty" string="Invetory Qty"/>
+            </xpath>
         </field>
     </record>
 </odoo>
