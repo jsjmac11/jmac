@@ -29,17 +29,19 @@ class PurchaseOrderLine(models.Model):
                                      copy=False)
     sequence_ref = fields.Char('No.')
     item_note = fields.Text(string="Item Note")
-    allocated_qty = fields.Float(string='Allocated Quantity', compute='_compute_allocated_qty')
-    invetory_qty = fields.Float(string='Invetory Quantity', compute='_compute_allocated_qty')
+    allocated_qty = fields.Float(string='Allocated Quantity',
+                                 compute='_compute_allocated_qty')
+    invetory_qty = fields.Float(string='Invetory Quantity',
+                                compute='_compute_allocated_qty')
+    active = fields.Boolean("Active", default=True)
 
     @api.depends('order_id.split_line', 'product_qty', 'order_id.order_line')
     def _compute_allocated_qty(self):
         for record in self:
             allocate_qty = 0.0
-            invetory_qty = 0.0
             product_qty = record.product_qty
             for line in record.order_id.split_line:
-                if line.sale_line_id:
+                if line.sale_line_id and line.product_id.id == record.product_id.id:
                     allocate_qty += line.product_qty
             record.allocated_qty = allocate_qty or 0.0
             record.invetory_qty = product_qty - allocate_qty or 0.0
@@ -56,6 +58,38 @@ class PurchaseOrderLine(models.Model):
     #     for line in self:
     #         line.order_id._genrate_line_sequence()
     #     return res
+
+    def action_cancel_pol(self):
+        """Remove purchase order line and corresponding sale line."""
+        if self.sale_line_id:
+            st_move_ids = self.env['stock.move'].search(
+                [('sale_line_id', '=', self.sale_line_id.id)])
+            st_move_ids._action_cancel()
+            self.sale_line_id.write({'active': False})
+
+        po_st_move_ids = self.env['stock.move'].search(
+            [('purchase_line_id', '=', self.id)])
+        po_st_move_ids._action_cancel()
+        pl = self.order_id.split_line.filtered(lambda l: l.id != self.id)
+        order_id = False
+        if not pl:
+            order_id = self.order_id
+        if self.parent_line_id.product_qty == self.product_qty:
+            if self.order_id.state not in ('purchase', 'done'):
+                self.parent_line_id.unlink()
+                self.unlink()
+            else:
+                self.parent_line_id.active = False
+                self.active = False
+        else:
+            self.parent_line_id.product_qty = self.parent_line_id.product_qty - self.product_qty
+            if self.order_id.state not in ('purchase', 'done'):
+                self.unlink()
+            else:
+                self.active = False
+        if order_id:
+            order_id.button_cancel()
+        return True
 
 
 class PurchaseOrder(models.Model):
