@@ -40,9 +40,9 @@ class PurchaseOrderLine(models.Model):
         super(PurchaseOrderLine, self)._compute_qty_received()
         for line in self:
             if line.parent_line_id:
-                if line.parent_line_id:
-                    qty_received = line.qty_received
-                line.parent_line_id.qty_received += qty_received
+                qty_received = sum(line.parent_line_id.split_line_ids.mapped('qty_received'))
+                line.parent_line_id.qty_received = qty_received
+            
 
     @api.depends('order_id.split_line', 'product_qty', 'order_id.order_line')
     def _compute_allocated_qty(self):

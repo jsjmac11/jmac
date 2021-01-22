@@ -996,11 +996,14 @@ class SaleOrderLine(models.Model):
         super(SaleOrderLine, self)._compute_qty_delivered()
         for line in self:
             if line.parent_line_id:
-                if line.parent_line_id.is_pack_product:
-                    qty_delivered = line.qty_delivered / line.product_pack_id.quantity
-                else:
-                    qty_delivered = line.qty_delivered
-                line.parent_line_id.qty_delivered += qty_delivered
+                qty_delivered = sum(line.parent_line_id.sale_split_lines.mapped('qty_delivered'))
+                qty_delivered = qty_delivered / line.parent_line_id.product_pack_id.quantity
+                line.parent_line_id.qty_delivered = qty_delivered
+                # if line.parent_line_id.is_pack_product:
+                #     qty_delivered = line.qty_delivered / line.product_pack_id.quantity
+                # else:
+                #     qty_delivered = line.qty_delivered
+                
 
     # @api.onchange('qty_delivered', 'sale_split_lines')
     # def _inverse_qty_delivered(self):
