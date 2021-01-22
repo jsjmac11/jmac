@@ -35,6 +35,15 @@ class PurchaseOrderLine(models.Model):
                                 compute='_compute_allocated_qty')
     active = fields.Boolean("Active", default=True)
 
+    @api.depends('qty_received_method', 'qty_received_manual')
+    def _compute_qty_received(self):
+        super(PurchaseOrderLine, self)._compute_qty_received()
+        for line in self:
+            if line.parent_line_id:
+                if line.parent_line_id:
+                    qty_received = line.qty_received
+                line.parent_line_id.qty_received += qty_received
+
     @api.depends('order_id.split_line', 'product_qty', 'order_id.order_line')
     def _compute_allocated_qty(self):
         for record in self:

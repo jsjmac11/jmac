@@ -59,11 +59,12 @@ class SaleOrder(models.Model):
     is_process_line = fields.Boolean(string="Is Process Qty",
                                      compute='_compute_is_process_qty',
                                      help='Technical field used to see if we\
-                                     have process qty.')
+                                     have process qty.', compute_sudo=True)
     is_unprocessed_order = fields.Boolean(string="Is Unprocessed Order",
-                             compute='_compute_is_process_qty',
-                             help='Technical field used to see if we have\
-                             process qty.', store=True, copy=False)
+                                          compute='_compute_is_process_qty',
+                                          help='Technical field used to see if we have\
+                                          process qty.', store=True,
+                                          copy=False)
     priority = fields.Selection(ORDER_PRIORITY, string='Priority', default='0')
     po_count = fields.Integer(string='Purchase Orders',
                               compute='_compute_po_ids')
@@ -77,25 +78,31 @@ class SaleOrder(models.Model):
                              string='Status', readonly=True,
                              copy=False, index=True,
                              tracking=3, default='new')
-    partner_id = fields.Many2one(
-        'res.partner', string='Customer', readonly=True,
-        states={'new': [('readonly', False)], 'draft': [
-            ('readonly', False)], 'sent': [('readonly', False)]},
-        required=True, change_default=True, index=True, tracking=1,
-        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",)
+    partner_id = fields.Many2one('res.partner', string='Customer',
+                                 readonly=True,
+                                 states={'new': [('readonly', False)],
+                                         'draft': [('readonly', False)],
+                                         'sent': [('readonly', False)]},
+                                 required=True, change_default=True,
+                                 index=True, tracking=1,
+                                 domain="['|', ('company_id', '=', False),\
+                                         ('company_id', '=', company_id)]",)
     partner_invoice_id = fields.Many2one(
         'res.partner', string='Invoice Address',
         readonly=True, required=True,
-        states={'new': [('readonly', False)], 'draft': [('readonly', False)], 'sent': [
-            ('readonly', False)], 'sale': [('readonly', False)]},
-        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",)
+        states={'new': [('readonly', False)], 'draft': [('readonly', False)],
+                'sent': [('readonly', False)], 'sale': [('readonly', False)]},
+        domain="['|', ('company_id', '=', False), \
+                ('company_id', '=', company_id)]")
     partner_shipping_id = fields.Many2one(
         'res.partner', string='Delivery Address', readonly=True, required=True,
-        states={'new': [('readonly', False)], 'draft': [('readonly', False)], 'sent': [
-            ('readonly', False)], 'sale': [('readonly', False)]},
-        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",)
-    is_dropship_line = fields.Boolean(
-        string='Is Dropship Line', compute='_compute_dropship_line', store=True)
+        states={'new': [('readonly', False)], 'draft': [('readonly', False)],
+                'sent': [('readonly', False)], 'sale': [('readonly', False)]},
+        domain="['|', ('company_id', '=', False), \
+                ('company_id', '=', company_id)]",)
+    is_dropship_line = fields.Boolean(string='Is Dropship Line',
+                                      compute='_compute_dropship_line',
+                                      store=True)
     qty_all = fields.Boolean(string="Qty all")
 
     def _default_validity_date(self):
@@ -948,7 +955,8 @@ class SaleOrderLine(models.Model):
     active = fields.Boolean("Active", default=True)
     po_cancel_note = fields.Text("PO Cancel Note")
     unprocess_qty = fields.Float(string='Unprocess Quantity', compute="_compute_unprocess_qty", store=False, default=0.0)
-
+    # qty_delivered = fields.Float('Delivered Quantity', copy=False, compute='_compute_qty_delivered', inverse='_inverse_qty_delivered', compute_sudo=True, store=True, digits='Product Unit of Measure', default=0.0)
+    
     @api.depends('sale_split_lines', 'pack_quantity', 'order_id.is_unprocessed_order')
     def _compute_unprocess_qty(self):
         for record in self:
@@ -958,18 +966,20 @@ class SaleOrderLine(models.Model):
                 process_qty += line.product_uom_qty
             record.unprocess_qty = (record.pack_quantity - (process_qty / pack_quantity)) or 0.0
 
-    @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id', 'pack_quantity')
+    @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id',
+                 'pack_quantity')
     def _compute_amount(self):
-        """
-        Compute the amounts of the SO line.
-        """
+        """Compute the amounts of the SO line."""
         if self.product_pack_id:
             for line in self:
                 price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
-                taxes = line.tax_id.compute_all(price, line.order_id.currency_id, line.pack_quantity,
-                                                product=line.product_id, partner=line.order_id.partner_shipping_id)
+                taxes = line.tax_id.compute_all(
+                    price, line.order_id.currency_id, line.pack_quantity,
+                    product=line.product_id,
+                    partner=line.order_id.partner_shipping_id)
                 line.update({
-                    'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
+                    'price_tax': sum(t.get('amount', 0.0) for t in taxes.get(
+                        'taxes', [])),
                     'price_total': taxes['total_included'],
                     'price_subtotal': taxes['total_excluded'],
                 })
@@ -979,7 +989,25 @@ class SaleOrderLine(models.Model):
         else:
             super(SaleOrderLine, self)._compute_amount()
 
-    @api.depends('product_id', 'product_uom_qty', 'qty_delivered', 'state', 'product_uom', 'pack_quantity')
+    @api.depends('move_ids.state', 'move_ids.scrapped',
+                 'move_ids.product_uom_qty', 'move_ids.product_uom',
+                 'sale_split_lines')
+    def _compute_qty_delivered(self):
+        super(SaleOrderLine, self)._compute_qty_delivered()
+        for line in self:
+            if line.parent_line_id:
+                if line.parent_line_id.is_pack_product:
+                    qty_delivered = line.qty_delivered / line.product_pack_id.quantity
+                else:
+                    qty_delivered = line.qty_delivered
+                line.parent_line_id.qty_delivered += qty_delivered
+
+    # @api.onchange('qty_delivered', 'sale_split_lines')
+    # def _inverse_qty_delivered(self):
+    #     super(SaleOrderLine, self)._inverse_qty_delivered()
+
+    @api.depends('product_id', 'product_uom_qty', 'qty_delivered', 'state',
+                 'product_uom', 'pack_quantity')
     def _compute_qty_to_deliver(self):
         """Don't show inventory widget for rental order lines."""
         super(SaleOrderLine, self)._compute_qty_to_deliver()

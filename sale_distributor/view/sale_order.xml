@@ -136,6 +136,7 @@
             </xpath>
             <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom_qty']"
                    position="replace">
+                
                 <field
                     name="product_uom_qty"
                     context="{
@@ -155,15 +156,12 @@
                                 'company_id': parent.company_id
                                 }" 
                        string="Quantity"/>
-            </xpath>
-            <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']"
-                   position="before">
                 <field name="unprocess_qty" string="Unprocess Qty" attrs="{'column_invisible': [('parent.state', '=', 'new')]}"/>
             </xpath>
-            <!-- <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom_qty']"
-                   position="attributes">
-                <attribute name="invisible">1</attribute>               
-            </xpath> -->
+            <xpath expr="//field[@name='order_line']/form/group/group/label[@for='qty_delivered']"
+                   position="before">
+                <field name="unprocess_qty" string="Unprocess Qty" attrs="{'invisible': [('parent.state', '=', 'new')]}"/>
+            </xpath>
             <xpath expr="//field[@name='order_line']/tree/field[@name='product_id']"
                    position="attributes">
                 <attribute name="invisible">1</attribute>

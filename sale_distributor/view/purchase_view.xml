@@ -30,8 +30,11 @@
                                     <field name="product_qty"/>
                                     <field name="qty_received_manual" invisible="1"/>
                                     <field name="qty_received_method" invisible="1"/>
-                                    <field name="qty_received" string="Received" attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))], 'readonly': [('qty_received_method', '!=', 'manual')]}"/>
-                                    <field name="qty_invoiced" string="Billed" attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))]}"/>
+                                    <!-- attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))], 'readonly': [('qty_received_method', '!=', 'manual')]}" -->
+                                    <field name="qty_received" string="Received" invisible="1"/>
+                                    <!-- attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))]}" -->
+                                    <field name="qty_invoiced" string="Billed" invisible="1"/>
+
                                     <field name="product_uom" string="UoM" groups="uom.group_uom" attrs="{                                             'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))],                                             'required': [('display_type', '=', False)]                                         }" force_save="1" optional="show"/>
                                     <field name="price_unit" attrs="{'readonly': [('invoice_lines', '!=', [])]}" invisible="1"/>
                                     <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','purchase'), ('company_id', '=', parent.company_id)]" context="{'default_type_tax_use': 'purchase', 'search_view_ref': 'account.account_tax_view_search'}" options="{'no_create': True}" optional="show" invisible="1"/>
@@ -47,7 +50,7 @@
             <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="after">
                 <field name="item_note" invisible="1"/>
             </xpath>
-            <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="before">
+            <xpath expr="//field[@name='order_line']/tree/field[@name='product_qty']" position="after">
                 <field name="allocated_qty" string="Allocated Qty"/>
                 <field name="invetory_qty" string="Invetory Qty"/>
             </xpath>
