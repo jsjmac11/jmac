@@ -329,6 +329,12 @@ class SaleOrder(models.Model):
 
     def action_cancel(self):
         res = super(SaleOrder, self).action_cancel()
+        sol_ids = self.split_line_ids.filtered(
+            lambda l: l.line_type == 'allocate_po')
+        purchase_lines = self.env['purchase.order.line'].search(
+            [('sale_line_id', 'in', sol_ids.ids)])
+        for line in purchase_lines:
+            line.action_cancel_pol()
         self.split_line_ids.unlink()
         return res
 

@@ -20,6 +20,7 @@
     'data': [
         'security/ir.model.access.csv',
         'data/res_partner_demo.xml',
+        'data/stock_picking_demo.xml',
         'data/mail_template_data.xml',
         'view/sale_menuitem.xml',
         'view/sale_order.xml',
