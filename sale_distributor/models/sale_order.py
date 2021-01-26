@@ -1076,6 +1076,20 @@ class SaleOrderLine(models.Model):
         self.bks_standard_cost = self.bks_actual_cost * self.bks_case_qty
         return {}
 
+    def remove_sale_split_line(self):
+        if self.order_id.state == 'sale':
+            purchase_lines = self.env['purchase.order.line'].search(
+                                                [('sale_line_id', 'in', self.ids)])
+            for line in purchase_lines:
+                line.action_cancel_pol()
+            if self.line_type in ('stock', 'allocate'):
+                st_move_ids = self.env['stock.move'].search(
+                    [('sale_line_id', '=', self.sale_line_id.id)])
+                st_move_ids._action_cancel()
+                self.write({'active': False})
+        else:
+            self.active = False
+
     def _action_launch_stock_rule(self, previous_product_uom_qty=False):
         """
         Launch procurement group run method with required/custom fields genrated by a

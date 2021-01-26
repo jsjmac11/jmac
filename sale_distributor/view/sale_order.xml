@@ -1625,8 +1625,8 @@
                 </notebook>
                 <separator string="Process Qty" attrs="{'invisible': ['|',('display_type', '!=', False),('parent.state', 'in', ('new','sent','review'))]}"/>
                 <div class="o_row" attrs="{'invisible': [('parent.state', 'in', ('new','sent','review'))]}">
-                    <field name="sale_split_lines" attrs="{'invisible': [('display_type', '!=', False)]}">
-                        <tree create="0" edit="0">
+                    <field name="sale_split_lines" attrs="{'invisible': [('display_type', '!=', False)]}" >
+                        <tree create="0" edit="0" delete="0">
                             <field name="sequence_ref" invisible="1"/>
                             <field name="name" invisible="1"/>
                             <field name="vendor_id" string="Vendor"/>
@@ -1637,6 +1637,7 @@
                             <field name="vendor_price_unit" string="Vendor Price"/>
                             <field name="product_uom_qty"/>
                             <field name="item_note" string="Note"/>
+                            <button name="remove_sale_split_line" type="object" class="fa fa-trash-o" confirm="Are you sure you want to remove this line?"/>
                         </tree>
                         <form create="0" edit="0">
                             <group>
