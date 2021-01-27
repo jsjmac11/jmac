@@ -33,7 +33,7 @@
                 <button name="set_to_unprocess" string="Set to Sale Order" type="object" class="btn-primary" attrs="{'invisible': ['|', '|', ('state', 'not in', ['new','sent','review']),('advance_payment','=',True),('order_line','=',[])]}" confirm="Are you sure you want to proceed without payment?"/>
                 <button name="confirm_purchase" string="Submit" type="object"
                         groups="sale_distributor.group_manager_confirm" context="{'send_by_item_code': True}"
-                        attrs="{'invisible': ['|',('state', 'not in', ['draft']),('is_unprocessed_order','=',True)]}"/>
+                        attrs="{'invisible': ['|', '|', ('state', 'not in', ['draft']),('is_unprocessed_order','=',True), ('is_dropship_line','!=',True)]}"/>
                 <button name="order_process" string="Dropship" context="{'dropship':True, 'send_by_item_code': True}" type="object" attrs="{'invisible': ['|',('state', 'not in', ['draft']),('is_process_line','=',True)]}"/>
                 <button name="order_process" string="Add to Buy" context="{'add_to_buy':True, 'send_by_item_code': True}" type="object" attrs="{'invisible': ['|',('state', 'not in', ['draft']),('is_process_line','=',True)]}"/>
                 <button name="to_review" string="To Review" context="{'review':True}" type="object" attrs="{'invisible': [('state', 'not in', ['new','sent'])]}"/>
@@ -260,7 +260,7 @@
                 
                 <label for="substitute_product_id"/>
                 <div>
-                    <field name="substitute_product_id" options="{'no_open': True,'no_create': True}"/>
+                    <field name="substitute_product_id" options="{'no_open': True,'no_create': True}" domain="[('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', company_id), ('id', '!=', product_id)]"/>
                     <field name="substitute_product_template_id" invisible="1"/>
                     <field name="is_pack_product" invisible="1"/>
                 </div>

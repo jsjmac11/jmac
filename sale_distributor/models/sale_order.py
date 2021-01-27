@@ -101,8 +101,7 @@ class SaleOrder(models.Model):
         domain="['|', ('company_id', '=', False), \
                 ('company_id', '=', company_id)]",)
     is_dropship_line = fields.Boolean(string='Is Dropship Line',
-                                      compute='_compute_dropship_line',
-                                      store=True)
+                                      compute='_compute_dropship_line')
     qty_all = fields.Boolean(string="Qty all")
 
     def _default_validity_date(self):
@@ -948,8 +947,7 @@ class SaleOrderLine(models.Model):
         string='Vendor Unit Price', digits='Product Price')
     sequence_ref = fields.Char('No.')
     substitute_product_id = fields.Many2one(
-        'product.product', string='Substitute Product', domain="[('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', company_id)]",
-        change_default=True, ondelete='restrict', check_company=True)  # Unrequired company
+        'product.product', string='Substitute Product', change_default=True, ondelete='restrict', check_company=True)  # Unrequired company
     substitute_product_template_id = fields.Many2one(
         'product.template', string='Substitute Product Template',
         related="substitute_product_id.product_tmpl_id", domain=[('sale_ok', '=', True)])

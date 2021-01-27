@@ -7,6 +7,7 @@
             <field name="is_default">True</field>
             <field name="domain">[("is_unprocessed_order","=","True")]</field>
             <field name="user_id" eval="False"/>
+            <field name="action_id" ref="sale.action_orders"/>
             <field name="context">{}</field>
         </record>
 
