@@ -267,7 +267,7 @@
                 
                 <label for="substitute_product_id"/>
                 <div>
-                    <field name="substitute_product_id" options="{'no_open': True,'no_create': True}" domain="[('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', company_id), ('id', '!=', product_id)]"/>
+                    <field name="substitute_product_id" options="{'no_open': True,'no_create': True}" domain="[('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', company_id), ('id', '!=', product_id)]" attrs="{'readonly': [('product_pack_id', '=', False)]}"/>
                     <field name="substitute_product_template_id" invisible="1"/>
                     <field name="is_pack_product" invisible="1"/>
                 </div>
