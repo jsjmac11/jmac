@@ -10,6 +10,7 @@ from odoo import fields, models, api, _
 from odoo.exceptions import AccessError, UserError, ValidationError
 from datetime import datetime
 import string
+from odoo.osv import expression
 
 ORDER_PRIORITY = [
     ('0', 'Low'),
@@ -245,7 +246,7 @@ class SaleOrder(models.Model):
                             'parent_line_id': pol.parent_line_id.id if pol.parent_line_id else pol.id
                         })]
                     })
-                    # pol.product_qty = diff_qty
+                    pol.product_qty = diff_qty
                 else:
                     pol.sale_line_id = sol.id
                 # Update PO origin
@@ -330,7 +331,7 @@ class SaleOrder(models.Model):
     def action_cancel(self):
         res = super(SaleOrder, self).action_cancel()
         sol_ids = self.split_line_ids.filtered(
-            lambda l: l.line_type == 'allocate_po')
+            lambda l: l.line_type in ('buy', 'dropship', 'allocate_po'))
         purchase_lines = self.env['purchase.order.line'].search(
             [('sale_line_id', 'in', sol_ids.ids)])
         for line in purchase_lines:
@@ -534,6 +535,7 @@ class SaleOrder(models.Model):
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
     _order = 'order_id, sequence, id, sequence_ref'
+    # _rec_name = 'sol_name'
 
     @api.model
     def default_get(self, fields):
@@ -946,7 +948,7 @@ class SaleOrderLine(models.Model):
                                     copy=False)
     vendor_price_unit = fields.Float(
         string='Vendor Unit Price', digits='Product Price')
-    sequence_ref = fields.Char('No.')
+    sequence_ref = fields.Char('No.', store=True)
     substitute_product_id = fields.Many2one(
         'product.product', string='Substitute Product', domain="[('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', company_id)]",
         change_default=True, ondelete='restrict', check_company=True)  # Unrequired company
@@ -960,17 +962,21 @@ class SaleOrderLine(models.Model):
     is_pack_product = fields.Boolean("Is Pack Product", default=False)
     active = fields.Boolean("Active", default=True)
     po_cancel_note = fields.Text("PO Cancel Note")
-    unprocess_qty = fields.Float(string='Unprocess Quantity', compute="_compute_unprocess_qty", store=False, default=0.0)
-    # qty_delivered = fields.Float('Delivered Quantity', copy=False, compute='_compute_qty_delivered', inverse='_inverse_qty_delivered', compute_sudo=True, store=True, digits='Product Unit of Measure', default=0.0)
-    
+    unprocess_qty = fields.Float(string='Unprocess Quantity',
+                                 compute="_compute_unprocess_qty",
+                                 store=False, default=0.0)
+
     @api.depends('sale_split_lines', 'pack_quantity', 'order_id.is_unprocessed_order')
     def _compute_unprocess_qty(self):
         for record in self:
             process_qty = 0.0
-            pack_quantity = record.product_pack_id.quantity or 1.0
-            for line in record.sale_split_lines:
-                process_qty += line.product_uom_qty
-            record.unprocess_qty = (record.pack_quantity - (process_qty / pack_quantity)) or 0.0
+            if not record.parent_line_id:
+                pack_quantity = record.product_pack_id.quantity or 1.0
+                for line in record.sale_split_lines:
+                    process_qty += line.product_uom_qty
+                record.unprocess_qty = (record.pack_quantity - (process_qty / pack_quantity)) or 0.0
+            else:
+                record.unprocess_qty = 0.0
 
     @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id',
                  'pack_quantity')
@@ -1556,20 +1562,37 @@ class SaleOrderLine(models.Model):
         return 'grey'
 
     def name_get(self):
-        """
-        Overriding the name_get function from res.partner so that the "invoice address" 
-        and "shipping address" fields on the quotes form display the full address, not 
-        the standard contact name. Requires that the contact type be set as 'delivery' 
-        or 'invoice'. If there is no address set, simply returns the customer name.
+        """Inherit name get for custom.
+
+        Overriding the name_get function from sale.order.line so that
+        sale order number and sequence display.
         """
         result = []
-        name = ''
-        for s in self:
-            name = s.order_id.name
-            if s.sequence_ref:
-                name = name + ' - ' + str(s.sequence_ref)
-            result.append((s.id, name))
+        for so_line in self.sudo():
+            # name = '%s - %s' % (so_line.order_id.name, so_line.name and
+            # so_line.name.split('\n')[0] or so_line.product_id.name)
+            name = '%s' % (so_line.order_id.name)
+            # if so_line.order_partner_id.ref:
+            #     name = '%s (%s)' % (name, so_line.order_partner_id.ref)
+            if so_line.sequence_ref:
+                name = '%s - %s' % (name, so_line.sequence_ref)
+            result.append((so_line.id, name))
         return result
+
+    @api.model
+    def _name_search(self, name, args=None, operator='ilike', limit=100,
+                     name_get_uid=None):
+        if operator in ('ilike', 'like', '=', '=like', '=ilike'):
+            args = expression.AND([
+                args or [],
+                ['|', '|', ('order_id.name', operator, name),
+                 ('name', operator, name),
+                 ('sequence_ref', operator, name)]
+            ])
+        return super(SaleOrderLine, self)._name_search(
+            name, args=args, operator=operator, limit=limit,
+            name_get_uid=name_get_uid)
+
 
     def _prepare_invoice_line(self):
         """
