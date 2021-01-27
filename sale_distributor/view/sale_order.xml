@@ -54,7 +54,14 @@
             <xpath expr="//sheet/group/group[2]/field[@name='date_order'][2]" position="attributes">
                 <attribute name="attrs">{'required': [('state', 'in', ['sale', 'done'])], 'invisible': [('state', 'in', ['new','draft', 'sent'])]}</attribute>
             </xpath>
-
+            <xpath expr="//div[@name='button_box']" position="after">
+                <!-- <div class="badge-pill badge-danger float-right"
+                     attrs="{'invisible': [('is_unprocessed_order', '=', False)]}">
+                    Unprocessed Order
+                </div> -->
+                <widget name="web_ribbon" text="Unprocessed" bg_color="bg-danger"
+                        attrs="{'invisible': ['|', ('is_unprocessed_order', '=', False),('state', 'not in', ('sale','done'))]}"/>
+            </xpath>
             <xpath expr="//field[@name='partner_shipping_id']" position="after">
                 <field name="email" widget="email"/>
                 <field name="phone" widget="phone"/>
@@ -1721,6 +1728,24 @@
             <xpath expr="//button[@name='action_open_delivery_wizard'][3]" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+        </field>
+    </record>
+
+    <record id="view_order_line_tree_custom" model="ir.ui.view">
+        <field name="name">sale.order.line.tree</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <tree string="Sales Order Lines" create="false">
+                <field name="sequence_ref"/>
+                <field name="order_id"/>
+                <field name="name"/>
+                <field name="product_uom_qty" string="Qty"/>
+                <field name="unprocess_qty"/>
+                <field name="qty_delivered"/>
+                <field name="qty_invoiced"/>
+                <field name="product_uom" string="Unit of Measure" groups="uom.group_uom"/>
+                <field name="price_subtotal" sum="Total" widget="monetary"/>
+            </tree>
         </field>
     </record>
 

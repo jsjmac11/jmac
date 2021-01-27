@@ -60,6 +60,7 @@ class PurchaseOrderLine(models.Model):
         """Generate purchase order line sequence."""
         res = super(PurchaseOrderLine, self).create(vals)
         res.order_id._genrate_line_sequence()
+
         return res
 
     # def write(self, values):
@@ -100,6 +101,39 @@ class PurchaseOrderLine(models.Model):
             order_id.button_cancel()
         return True
 
+    def change_sol_qty(self):
+        """Re-allocate purchase quantity to sale line."""
+        ctx = self._context.copy()
+        # po_so_line = {'qty': self.product_qty}
+        # if self.sale_line_id:
+        #     po_so_line.update({'sale_line_id': self.sale_line_id.id,
+        #                        'sale_id': self.sale_line_id.order_id.id,
+        #                        'name': self.id})
+        ctx.update({'default_purchase_line_id': self.id,
+                    'default_purchase_id': self.order_id.id,
+                    'default_remaining_qty': self.product_qty,
+                    'default_qty': self.product_qty,
+                    'default_sale_line_id': self.sale_line_id.id,
+                    # 'default_po_so_line': [(0, 0, po_so_line)]
+                    })
+        model = 'notification.message'
+        view_id = self.env.ref(
+            'sale_distributor.notification_message_form_view_pol_cancel').id
+        wiz_name = ''
+        # if ctx.get('purchase', False):
+        msg = 'Please Re-allocate sale order!'
+        wiz_name = "Allocate"
+        ctx.update({'default_message': msg})
+        return {
+            'name': (wiz_name),
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': model,
+            'view_id': view_id,
+            'target': 'new',
+            'context': ctx,
+        }
+
 
 class PurchaseOrder(models.Model):
     """Update customization fileds for process line."""
@@ -121,7 +155,7 @@ class PurchaseOrder(models.Model):
     add_to_buy = fields.Boolean(string="Add To Buy", default=False, copy=False,
                                 states={'cancel': [('readonly', True)],
                                         'purchase': [('readonly', True)],
-                                        'done': [('readonly', True)]},)
+                                        'done': [('readonly', True)]})
 
     @api.constrains('add_to_buy')
     def _create_paurchase_order(self):
@@ -169,12 +203,47 @@ class PurchaseOrder(models.Model):
             no += 1
         return True
 
+    def create_split_line(self):
+        for pline in self.order_line:
+            p_qty = pline.product_qty
+            c_qty = sum(pline.split_line_ids.mapped('product_qty'))
+            if p_qty != c_qty:
+                cline = pline.split_line_ids.filtered(lambda l: not l.sale_line_id)
+                if cline:
+                    cline.product_qty += p_qty - c_qty
+                else:
+                    pline.copy({'product_qty': p_qty - c_qty,
+                                'line_split': True,
+                                'parent_line_id': pline.id})
+        return True
+
+    @api.model
+    def create(self, vals):
+        """Generate purchase order line sequence."""
+        res = super(PurchaseOrder, self).create(vals)
+        if vals.get('order_line'):
+            res.create_split_line()
+        return res
+
     def write(self, values):
         """Generate sequence."""
         res = super(PurchaseOrder, self).write(values)
         if values.get('order_line'):
             self._genrate_line_sequence()
+            self.create_split_line()
         return res
+
+    # def write(self, vals):
+    #     res = super(PurchaseOrder, self).write(vals)
+    #     if vals.get('order_line') and self.state == 'purchase':
+    #         for order in self:
+    #             to_log = {}
+    #             for order_line in order.split_line:
+    #                 if pre_order_line_qty.get(order_line, False) and float_compare(pre_order_line_qty[order_line], order_line.product_qty, precision_rounding=order_line.product_uom.rounding) > 0:
+    #                     to_log[order_line] = (order_line.product_qty, pre_order_line_qty[order_line])
+    #             if to_log:
+    #                 order._log_decrease_ordered_quantity(to_log)
+    #     return res
 
     def _create_picking(self):
         stockpicking = self.env['stock.picking']
@@ -190,10 +259,10 @@ class PurchaseOrder(models.Model):
                     picking = pickings[0]
                 # If split line found then create receipt for that line
                 # else order line.
-                if order.split_line:
-                    moves = order.split_line._create_stock_moves(picking)
-                else:
-                    moves = order.order_line._create_stock_moves(picking)
+                # if order.split_line:
+                moves = order.split_line._create_stock_moves(picking)
+                # else:
+                #     moves = order.order_line._create_stock_moves(picking)
                 moves = moves.filtered(lambda x: x.state not in
                                        ('done', 'cancel'))._action_confirm()
                 seq = 0

@@ -71,5 +71,53 @@
             </field>
         </record>
 
+        <record id="notification_message_form_view_pol_cancel" model="ir.ui.view">
+            <field name="name">notification.message.form.reject.pol.cancel</field>
+            <field name="model">notification.message</field>
+            <field name="arch" type="xml">
+                <form string="Message">
+                    <sheet>
+                    <group>
+                        <field name="message" nolabel="1"/>
+                        
+                        <group>
+                        <field name="sale_line_id"
+                               readonly="0"
+                               string="Sale Order #"
+                               options='{"always_reload": True}'
+                               domain="[('line_type', 'in', ('buy','dropship'))]"
+                               context="{'tree_view_ref':'sale_distributor.view_order_line_tree_custom'}"/>
+                        </group>
+                        <group>
+                        <field name="qty" readonly="0" 
+                               string="Quantity"/>
+                        <field name="remaining_qty" readonly="1" 
+                               string="Allocated Quantity" invisible="1"/>
+                        <field name="purchase_line_id" invisible="1"/>
+                    </group>
+                    </group>
+                    <!-- <div class="o_row">
+                        <field name="po_so_line" nolabel="1">
+                            <tree editable="bottom">
+                                <field name="sale_line_id"
+                                       context="{'tree_view_ref':'sale_distributor.view_order_line_tree_custom'}"
+                                       domain="['|',('line_type', 'in', ('buy','allocate_po')),
+                                                ('unprocess_qty','!=', 0)]" 
+                                       options='{"always_reload": True}'/>
+                                <field name="qty"/>
+                            </tree>
+                        </field>
+                    </div> -->
+                    <footer>
+                        <button name="reallocate_so_in_po" string="Submit" type="object"
+                            class="oe_highlight"/>
+                        <button string="Cancel" class="oe_default"
+                            special="cancel" />
+                    </footer>
+                </sheet>
+                </form>
+            </field>
+        </record>
+
     </data>
 </odoo>
