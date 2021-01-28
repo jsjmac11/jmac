@@ -133,6 +133,17 @@ class SaleOrder(models.Model):
     email = fields.Char("Email")
     phone = fields.Char("Phone")
 
+    def _create_delivery_line(self, carrier, price_unit):
+        sol = super(SaleOrder, self)._create_delivery_line(carrier, price_unit)
+        pack_product_id = sol.product_id.product_pack_line.filtered(lambda p: p.is_auto_created)
+        if not pack_product_id:
+            pack_product_id = self.env['product.pack.uom'].sudo().create({
+                     'quantity': 1.0,
+                     'is_auto_created': True,
+                     'product_tmpl_id': sol.product_id.product_tmpl_id.id})
+        sol.product_pack_id = pack_product_id.id
+        return sol
+
     def _compute_description_note(self):
         for record in self:
             discription = record.note
