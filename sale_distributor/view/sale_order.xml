@@ -84,7 +84,7 @@
             </xpath>
             <xpath expr="//field[@name='note']" position="before">
                 <group string="Process Qty" name="process_qty" colspan="4" attrs="{'invisible': [('state', 'in', ('new','sent','review'))]}">
-                    <field name="split_line_ids" readonly="1" nolabel="1" options="{'post_refresh': 'always'}">
+                    <field name="split_line_ids" readonly="1" nolabel="1" options="{'post_refresh': 'always'}" force_save="1" >
                         <tree>
                             <field name="sequence_ref"/>
                             <field name="product_id"/>

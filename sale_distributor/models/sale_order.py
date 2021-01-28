@@ -1099,7 +1099,7 @@ class SaleOrderLine(models.Model):
                 line.action_cancel_pol()
             if self.line_type in ('stock', 'allocate'):
                 st_move_ids = self.env['stock.move'].search(
-                    [('sale_line_id', '=', self.sale_line_id.id)])
+                    [('sale_line_id', '=', self.id)])
                 st_move_ids._action_cancel()
                 self.write({'active': False})
         else:
