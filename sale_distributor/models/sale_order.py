@@ -220,8 +220,11 @@ class SaleOrder(models.Model):
     @api.depends('order_line', 'order_line.sale_split_lines')
     def _compute_split_lines(self):
         for record in self:
-            record.split_line_ids = record.order_line.sale_split_lines
-
+            record.split_line_ids = False
+            if record.order_line.sale_split_lines:
+                record.split_line_ids = record.order_line.sale_split_lines.ids
+            else:
+                record.split_line_ids = False
     @api.onchange('partner_id')
     def onchange_partner_id(self):
         res = super(SaleOrder, self).onchange_partner_id()

@@ -84,7 +84,7 @@
             </xpath>
             <xpath expr="//field[@name='note']" position="before">
                 <group string="Process Qty" name="process_qty" colspan="4" attrs="{'invisible': [('state', 'in', ('new','sent','review'))]}">
-                    <field name="split_line_ids" readonly="1" nolabel="1" options="{'post_refresh': 'always'}" force_save="1" >
+                    <field name="split_line_ids" readonly="1" nolabel="1" options="{'post_refresh': 'always'}" force_save="1">
                         <tree>
                             <field name="sequence_ref"/>
                             <field name="product_id"/>
@@ -1632,7 +1632,7 @@
                 </notebook>
                 <separator string="Process Qty" attrs="{'invisible': ['|',('display_type', '!=', False),('parent.state', 'in', ('new','sent','review'))]}"/>
                 <div class="o_row" attrs="{'invisible': [('parent.state', 'in', ('new','sent','review'))]}">
-                    <field name="sale_split_lines" attrs="{'invisible': [('display_type', '!=', False)]}" >
+                    <field name="sale_split_lines" attrs="{'invisible': [('display_type', '!=', False)]}">
                         <tree create="0" edit="0" delete="0">
                             <field name="sequence_ref" invisible="1"/>
                             <field name="name" invisible="1"/>
