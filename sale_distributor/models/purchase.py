@@ -86,10 +86,12 @@ class PurchaseOrderLine(models.Model):
             order_id = self.order_id
         if self.parent_line_id.product_qty == self.product_qty:
             if self.order_id.state not in ('purchase', 'done'):
-                self.parent_line_id.unlink()
+                if not order_id:
+                    self.parent_line_id.unlink()
                 self.unlink()
             else:
-                self.parent_line_id.active = False
+                if not order_id:
+                    self.parent_line_id.active = False
                 self.active = False
         else:
             self.parent_line_id.product_qty = self.parent_line_id.product_qty - self.product_qty
@@ -306,7 +308,10 @@ class PurchaseOrder(models.Model):
                 render_context={
                     'purchase_orders': purchase_order_lines.mapped('order_id'),
                     'purchase_lines': purchase_order_lines})
-        move_ids = self.env['stock.move'].search(
-            [('sale_line_id', 'in', sol_ids.ids)])
-        move_ids._action_cancel()
-        sol_ids.write({'po_cancel_note': '', 'active': False})
+        for order in self:
+            for purchase_line in order.split_line:
+                purchase_line.action_cancel_pol()
+        # move_ids = self.env['stock.move'].search(
+        #     [('sale_line_id', 'in', sol_ids.ids)])
+        # move_ids._action_cancel()
+        # sol_ids.write({'po_cancel_note': '', 'active': False})

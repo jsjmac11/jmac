@@ -102,8 +102,7 @@ class SaleOrder(models.Model):
         domain="['|', ('company_id', '=', False), \
                 ('company_id', '=', company_id)]",)
     is_dropship_line = fields.Boolean(string='Is Dropship Line',
-                                      compute='_compute_dropship_line',
-                                      store=True)
+                                      compute='_compute_dropship_line')
     qty_all = fields.Boolean(string="Qty all")
 
     def _default_validity_date(self):
@@ -133,6 +132,17 @@ class SaleOrder(models.Model):
     description_note = fields.Html('Note', compute='_compute_description_note')
     email = fields.Char("Email")
     phone = fields.Char("Phone")
+
+    def _create_delivery_line(self, carrier, price_unit):
+        sol = super(SaleOrder, self)._create_delivery_line(carrier, price_unit)
+        pack_product_id = sol.product_id.product_pack_line.filtered(lambda p: p.is_auto_created)
+        if not pack_product_id:
+            pack_product_id = self.env['product.pack.uom'].sudo().create({
+                     'quantity': 1.0,
+                     'is_auto_created': True,
+                     'product_tmpl_id': sol.product_id.product_tmpl_id.id})
+        sol.product_pack_id = pack_product_id.id
+        return sol
 
     def _compute_description_note(self):
         for record in self:
@@ -950,8 +960,7 @@ class SaleOrderLine(models.Model):
         string='Vendor Unit Price', digits='Product Price')
     sequence_ref = fields.Char('No.', store=True)
     substitute_product_id = fields.Many2one(
-        'product.product', string='Substitute Product', domain="[('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', company_id)]",
-        change_default=True, ondelete='restrict', check_company=True)  # Unrequired company
+        'product.product', string='Substitute Product', change_default=True, ondelete='restrict', check_company=True)  # Unrequired company
     substitute_product_template_id = fields.Many2one(
         'product.template', string='Substitute Product Template',
         related="substitute_product_id.product_tmpl_id", domain=[('sale_ok', '=', True)])
