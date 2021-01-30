@@ -86,11 +86,11 @@ class PurchaseOrderLine(models.Model):
             order_id = self.order_id
         if self.parent_line_id.product_qty == self.product_qty:
             if self.order_id.state not in ('purchase', 'done'):
-                if not order_id:
+                if not self.env.context.get('po_cancel'):
                     self.parent_line_id.unlink()
                 self.unlink()
             else:
-                if not order_id:
+                if not self.env.context.get('po_cancel'):
                     self.parent_line_id.active = False
                 self.active = False
         else:
@@ -216,7 +216,8 @@ class PurchaseOrder(models.Model):
                 else:
                     pline.copy({'product_qty': p_qty - c_qty,
                                 'line_split': True,
-                                'parent_line_id': pline.id})
+                                'parent_line_id': pline.id,
+                                'sale_line_id': False})
         return True
 
     @api.model
@@ -235,6 +236,11 @@ class PurchaseOrder(models.Model):
             self.create_split_line()
         return res
 
+    def button_draft(self):
+        res = super(PurchaseOrder, self).button_draft()
+        if self.order_line:
+            self.create_split_line()
+        return res
     # def write(self, vals):
     #     res = super(PurchaseOrder, self).write(vals)
     #     if vals.get('order_line') and self.state == 'purchase':
@@ -310,7 +316,7 @@ class PurchaseOrder(models.Model):
                     'purchase_lines': purchase_order_lines})
         for order in self:
             for purchase_line in order.split_line:
-                purchase_line.action_cancel_pol()
+                purchase_line.with_context(po_cancel=True).action_cancel_pol()
         # move_ids = self.env['stock.move'].search(
         #     [('sale_line_id', 'in', sol_ids.ids)])
         # move_ids._action_cancel()
