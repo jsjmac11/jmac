@@ -251,7 +251,8 @@ class NotificationMessage(models.TransientModel):
                                         ])
                         purchase_lines.sale_line_id = False
                         purchase_lines.action_cancel_pol()
-                if not self.purchase_line_id.sale_line_id.id and self.sale_line_id.id:
+                if (not self.purchase_line_id.sale_line_id.id and self.sale_line_id.id) or (self.purchase_line_id.sale_line_id.id != self.sale_line_id.id):
+                # if not self.purchase_line_id.sale_line_id.id and self.sale_line_id.id:
                     self.purchase_line_id.sale_line_id = self.sale_line_id.id
                 if po_inventory_qty:
                     """Checking and update remaining qty as inventory qty."""
