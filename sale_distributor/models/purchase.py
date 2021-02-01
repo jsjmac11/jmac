@@ -55,6 +55,12 @@ class PurchaseOrderLine(models.Model):
             record.allocated_qty = allocate_qty or 0.0
             record.invetory_qty = product_qty - allocate_qty or 0.0
 
+    def _create_or_update_picking(self):
+        for line in self:
+            if not line.parent_line_id:
+                return False
+        super(PurchaseOrderLine, self)._create_or_update_picking()
+
     @api.model
     def create(self, vals):
         """Generate purchase order line sequence."""
@@ -63,11 +69,14 @@ class PurchaseOrderLine(models.Model):
 
         return res
 
-    # def write(self, values):
-    #     res = super(PurchaseOrderLine, self).write(values)
-    #     for line in self:
-    #         line.order_id._genrate_line_sequence()
-    #     return res
+    def write(self, values):
+        res = super(PurchaseOrderLine, self).write(values)
+        sol_list = []
+        line = self.mapped('order_id').mapped('split_line')
+        so_name = line.mapped('sale_line_id').mapped('order_id').mapped('name')
+        po_name = ", ".join(so_name)
+        self.order_id.origin = po_name
+        return res
 
     def action_cancel_pol(self):
         """Remove purchase order line and corresponding sale line."""
