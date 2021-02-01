@@ -85,7 +85,7 @@
                                readonly="0"
                                string="Sale Order #"
                                options='{"always_reload": True}'
-                               domain="[('line_type', 'in', ('buy','dropship'))]"
+                               domain="[('line_type', 'in', ('buy','allocate_po'))]"
                                context="{'tree_view_ref':'sale_distributor.view_order_line_tree_custom'}"/>
                         </group>
                         <group>
