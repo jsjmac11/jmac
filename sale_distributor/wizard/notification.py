@@ -278,6 +278,15 @@ class NotificationMessage(models.TransientModel):
                 #                                     'sale_line_id': False})
             self.sale_line_id.order_id._compute_is_process_qty()
         else:
+            if self.purchase_line_id.sale_line_id:
+                so_move_id = self.purchase_line_id.sale_line_id.move_ids.filtered(
+                    lambda l: l.picking_id.state not in ('done', 'cancel'))
+                so_move_id._action_cancel()
+                self.purchase_line_id.sale_line_id.write({'active': False})
+                self.purchase_line_id.sale_line_id.order_id._compute_is_process_qty()
+                self.purchase_line_id.sale_line_id = False
+                st_move_id = self.purchase_line_id.move_ids.filtered(lambda l: l.picking_id.state not in ('done','cancel'))
+                st_move_id.sale_line_id = False
             diff_qty = self.purchase_line_id.product_qty - self.qty
             inventory_qty = self.purchase_line_id.parent_line_id.product_qty - diff_qty
             self._cr.execute("""update purchase_order_line
