@@ -1601,10 +1601,11 @@ class SaleOrderLine(models.Model):
                  ('name', operator, name),
                  ('sequence_ref', operator, name)]
             ])
+            records = self.search(args)
+            return records.name_get()
         return super(SaleOrderLine, self)._name_search(
             name, args=args, operator=operator, limit=limit,
             name_get_uid=name_get_uid)
-
 
     def _prepare_invoice_line(self):
         """
