@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models, _
+from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
 
@@ -137,6 +137,8 @@ class NotificationMessage(models.TransientModel):
         return True
 
     def reallocate_so_in_po(self):
+        if self.qty == 0.0:
+            raise ValidationError(("You cannot process zero quantity!"))
         """For re-allcate sale order in purchase line."""
         if self.sale_line_id and self.qty > self.remaining_qty:
             raise ValidationError(
