@@ -391,6 +391,15 @@ class SaleOrder(models.Model):
             self._genrate_line_sequence()
         return res
 
+    def copy(self, default=None):
+        new_so = super(SaleOrder, self).copy(default=default)
+        for line in new_so.order_line:
+            line.product_pack_id_change()
+            line.onchange_inbound_stock_lines()
+            line.product_id_change()
+            line.pack_quantity_change()
+        return new_so
+
     def confirm_purchase(self):
         self.action_confirm()
         purchase_line_data = self.env['purchase.order.line'].search(
