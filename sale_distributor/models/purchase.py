@@ -175,6 +175,7 @@ class PurchaseOrder(models.Model):
                                         'purchase': [('readonly', True)],
                                         'done': [('readonly', True)]})
     shipping_method = fields.Text(string="Shipping Method", copy=False)
+    is_dropship_po = fields.Boolean(string="Is Dropship Po", default=False, copy=False)
 
     @api.constrains('add_to_buy')
     def _create_paurchase_order(self):

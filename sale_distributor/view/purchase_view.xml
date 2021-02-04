@@ -7,9 +7,10 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='fiscal_position_id']" position="after">
                 <field name="add_to_buy"/>
+                <field name="is_dropship_po" invisible="1"/>
             </xpath>
             <xpath expr="//field[@name='origin']" position="after">
-                <field name="shipping_method" attrs="{'invisible': [('add_to_buy', '!=', False)]}"/>
+                <field name="shipping_method" attrs="{'invisible': [('is_dropship_po', '!=', True)]}"/>
             </xpath>
             <xpath expr="//field[@name='notes']" position="before">
                 <group string="Process Qty" attrs="{'invisible': [('split_line', '=', False)]}" name="process_qty" colspan="4">
