@@ -95,6 +95,7 @@ class PurchaseOrderLine(models.Model):
         po_st_move_ids = self.env['stock.move'].search(
             [('purchase_line_id', '=', self.id)])
         po_st_move_ids._action_cancel()
+        po_st_move_ids.unlink()
         pl = self.order_id.split_line.filtered(lambda l: l.id != self.id)
         order_id = False
         if not pl:
