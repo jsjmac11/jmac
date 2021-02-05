@@ -159,6 +159,12 @@ class PurchaseOrder(models.Model):
 
     _inherit = 'purchase.order'
 
+    @api.depends('order_line')
+    def _compute_item_note_line(self):
+        for line in self.order_line.filtered(lambda l: l.display_type == 'line_note'):
+            if line:
+                self.is_note_line = True
+
     order_line = fields.One2many('purchase.order.line', 'order_id',
                                  string='Order Lines',
                                  domain=[('line_split', '=', False)],
@@ -176,6 +182,7 @@ class PurchaseOrder(models.Model):
                                         'purchase': [('readonly', True)],
                                         'done': [('readonly', True)]})
     shipping_method = fields.Text(string="Shipping Method", copy=False)
+    is_note_line = fields.Boolean(string="Is Item Note", compute='_compute_item_note_line', store=True)
 
     @api.constrains('add_to_buy')
     def _create_paurchase_order(self):
