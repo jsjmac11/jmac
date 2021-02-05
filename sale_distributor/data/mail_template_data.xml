@@ -20,7 +20,9 @@
                         % endif
                         from ${object.company_id.name}.
                         <br/><br/>
-                        <strong> Note: </strong>
+                        % if object.is_note_line:
+                            <strong> Note: </strong>
+                        % endif
                         % for aline in object.order_line:
                             % if aline.display_type == 'line_note':
                                 % if aline.name:

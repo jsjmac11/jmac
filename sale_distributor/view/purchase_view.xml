@@ -10,6 +10,7 @@
             </xpath>
             <xpath expr="//field[@name='origin']" position="after">
                 <field name="shipping_method" attrs="{'invisible': [('default_location_dest_id_usage', '!=', 'customer')]}"/>
+                <field name="is_note_line" invisible="1"/>
             </xpath>
             <xpath expr="//field[@name='notes']" position="before">
                 <group string="Process Qty" attrs="{'invisible': [('split_line', '=', False)]}" name="process_qty" colspan="4">
