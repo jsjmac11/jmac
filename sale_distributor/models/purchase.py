@@ -48,12 +48,15 @@ class PurchaseOrderLine(models.Model):
     def _compute_allocated_qty(self):
         for record in self:
             allocate_qty = 0.0
+            invetory_qty = 0.0
             product_qty = record.product_qty
             for line in record.order_id.split_line:
                 if line.sale_line_id and line.product_id.id == record.product_id.id:
                     allocate_qty += line.product_qty
+                if not line.sale_line_id and line.product_id.id == record.product_id.id:
+                    invetory_qty += line.product_qty
             record.allocated_qty = allocate_qty or 0.0
-            record.invetory_qty = product_qty - allocate_qty or 0.0
+            record.invetory_qty = invetory_qty or 0.0
 
     def _create_or_update_picking(self):
         for line in self:
