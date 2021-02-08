@@ -82,6 +82,16 @@ button.button-previous-form-dialog {
 [name='remove_sale_split_line'] {
     float: right;
 }
-/*.o_form_view.o_form_readonly .shipping_row:not(.o_row_readonly) {
-    display: flex !important;
-}*/
+.custom_ribbon span{
+    left: -23px;
+    top: 38px;
+    transform: rotate(45deg);
+    font-size: 13px;
+}
+.partial-custom_ribbon span {
+    left: -36px;
+    top: 38px;
+    transform: rotate(45deg);
+    font-size: 12px;
+    width: 250px !important;
+}
