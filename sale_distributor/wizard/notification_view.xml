@@ -84,7 +84,7 @@
                         <field name="sale_line_id"
                                readonly="0"
                                string="Sale Order #"
-                               options='{"always_reload": True}'
+                               options="{'always_reload': True, 'no_create': True, 'no_open': True}"
                                domain="[('line_type', 'in', ('buy','allocate_po'))]"
                                context="{'tree_view_ref':'sale_distributor.view_order_line_tree_custom'}"/>
                         </group>

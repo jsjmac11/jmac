@@ -42,7 +42,6 @@ class PurchaseOrderLine(models.Model):
             if line.parent_line_id:
                 qty_received = sum(line.parent_line_id.split_line_ids.mapped('qty_received'))
                 line.parent_line_id.qty_received = qty_received
-            
 
     @api.depends('order_id.split_line', 'product_qty', 'order_id.order_line')
     def _compute_allocated_qty(self):
@@ -56,7 +55,10 @@ class PurchaseOrderLine(models.Model):
                 if not line.sale_line_id and line.product_id.id == record.product_id.id:
                     invetory_qty += line.product_qty
             record.allocated_qty = allocate_qty or 0.0
-            record.invetory_qty = invetory_qty or 0.0
+            if record.order_id.state != 'cancel':
+                record.invetory_qty = invetory_qty or 0.0
+            else:
+                record.invetory_qty = 0.0
 
     def _create_or_update_picking(self):
         for line in self:
@@ -84,6 +86,10 @@ class PurchaseOrderLine(models.Model):
     def action_cancel_pol(self):
         """Remove purchase order line and corresponding sale line."""
         if self.sale_line_id:
+            if self.order_id.state in ('purchase'):
+                self.copy({'line_split': True,
+                            'sale_line_id': False})
+                self.parent_line_id.product_qty += self.product_qty
             st_move_ids = self.env['stock.move'].search(
                 [('sale_line_id', '=', self.sale_line_id.id)])
             st_move_ids._action_cancel()
@@ -92,6 +98,7 @@ class PurchaseOrderLine(models.Model):
         po_st_move_ids = self.env['stock.move'].search(
             [('purchase_line_id', '=', self.id)])
         po_st_move_ids._action_cancel()
+        po_st_move_ids.unlink()
         pl = self.order_id.split_line.filtered(lambda l: l.id != self.id)
         order_id = False
         if not pl:
@@ -113,6 +120,7 @@ class PurchaseOrderLine(models.Model):
                 self.active = False
         if order_id:
             order_id.button_cancel()
+
         return True
 
     def change_sol_qty(self):
@@ -170,6 +178,8 @@ class PurchaseOrder(models.Model):
                                 states={'cancel': [('readonly', True)],
                                         'purchase': [('readonly', True)],
                                         'done': [('readonly', True)]})
+    shipping_method = fields.Text(string="Shipping Method", copy=False)
+    is_dropship_po = fields.Boolean(string="Is Dropship Po", default=False, copy=False)
 
     @api.constrains('add_to_buy')
     def _create_paurchase_order(self):

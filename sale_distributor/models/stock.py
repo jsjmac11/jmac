@@ -162,6 +162,8 @@ class StockRule(models.Model):
         res = super(StockRule, self)._prepare_purchase_order(company_id, origins, values)
         if values[0].get('split_sale_line_id').line_type == "buy":
             res['add_to_buy'] = True
+        if values[0].get('split_sale_line_id').line_type == "dropship":
+            res['is_dropship_po'] = True
         return res
 
     def _make_po_get_domain(self, company_id, values, partner):

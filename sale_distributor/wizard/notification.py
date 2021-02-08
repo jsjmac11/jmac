@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models, _
+from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
 
@@ -137,12 +137,13 @@ class NotificationMessage(models.TransientModel):
         return True
 
     def reallocate_so_in_po(self):
+        if self.qty == 0.0:
+            raise ValidationError(("You cannot process zero quantity!"))
         """For re-allcate sale order in purchase line."""
         if self.sale_line_id and self.qty > self.remaining_qty:
             raise ValidationError(
                 _("Cannot allocate more quantity!"))
         purchase_line = self.env['purchase.order.line']
-        import ipdb;ipdb.set_trace()
         old_sol_remaining_qty = 0.0
         new_pol = False
         if self.purchase_line_id.sale_line_id and (self.sale_line_id.id != self.purchase_line_id.sale_line_id.id):
@@ -315,13 +316,13 @@ class NotificationMessage(models.TransientModel):
                             domain += [('id', 'not in', (self.purchase_line_id.id,new_pol.id))]
                         else:
                             domain += [('id', '!=', self.purchase_line_id.id)]
-                        import ipdb;ipdb.set_trace()
                         purchase_lines = self.env['purchase.order.line'].search(domain)
 
                         if purchase_lines:
                             purchase_lines.sale_line_id = False
                             purchase_lines.action_cancel_pol()
-                if not self.purchase_line_id.sale_line_id.id and self.sale_line_id.id:
+                if (not self.purchase_line_id.sale_line_id.id and self.sale_line_id.id) or (self.purchase_line_id.sale_line_id.id != self.sale_line_id.id):
+                # if not self.purchase_line_id.sale_line_id.id and self.sale_line_id.id:
                     self.purchase_line_id.sale_line_id = self.sale_line_id.id
                 if po_inventory_qty and not old_sol_remaining_qty:
                     """Checking and update remaining qty as inventory qty."""
