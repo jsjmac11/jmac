@@ -190,7 +190,7 @@ class NotificationMessage(models.TransientModel):
 
                 if not self.sale_line_id:
                     inventory_line = self.purchase_id.split_line.filtered(
-                    lambda l: l.product_id == self.purchase_line_id.product_id and not l.sale_line_id and l.picking_type_id.code == 'incoming')
+                    lambda l: l.product_id == self.purchase_line_id.product_id and not l.sale_line_id)
                     if inventory_line: # and self.purchase_line_id.state in ('draft', 'sent')
                         update_inv_qty = inventory_line.product_qty + self.qty
                         inventory_line.product_qty = update_inv_qty
@@ -262,7 +262,7 @@ class NotificationMessage(models.TransientModel):
                 if po_inventory_qty:
                     """Checking and update remaining qty as inventory qty."""
                     inventory_line = self.purchase_id.split_line.filtered(
-                        lambda l: l.product_id == self.purchase_line_id.product_id and not l.sale_line_id and l.picking_type_id.code == 'incoming')
+                        lambda l: l.product_id == self.purchase_line_id.product_id and not l.sale_line_id)
                     if inventory_line: # and self.purchase_line_id.state in ('draft', 'sent')
                         update_inv_qty = inventory_line.product_qty + po_inventory_qty
                         inventory_line.product_qty = update_inv_qty
@@ -327,7 +327,7 @@ class NotificationMessage(models.TransientModel):
                 if po_inventory_qty and not old_sol_remaining_qty:
                     """Checking and update remaining qty as inventory qty."""
                     inventory_line = self.purchase_id.split_line.filtered(
-                        lambda l: l.product_id == self.purchase_line_id.product_id and not l.sale_line_id and l.picking_type_id.code == 'incoming')
+                        lambda l: l.product_id == self.purchase_line_id.product_id and not l.sale_line_id)
                     if inventory_line: # and self.purchase_line_id.state in ('draft', 'sent')
                         inventory_line.product_qty = po_inventory_qty
                         if self.purchase_line_id.state == 'purchase':
