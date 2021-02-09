@@ -136,6 +136,7 @@ class PurchaseOrderLine(models.Model):
                     'default_remaining_qty': self.product_qty,
                     'default_qty': self.product_qty,
                     'default_sale_line_id': self.sale_line_id.id,
+                    'default_product_id':self.product_id.id,
                     # 'default_po_so_line': [(0, 0, po_so_line)]
                     })
         model = 'notification.message'

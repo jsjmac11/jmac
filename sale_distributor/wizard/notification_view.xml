@@ -85,7 +85,7 @@
                                readonly="0"
                                string="Sale Order #"
                                options="{'always_reload': True, 'no_create': True, 'no_open': True}"
-                               domain="[('line_type', 'in', ('buy','allocate_po'))]"
+                               domain="[('product_id','=', product_id),('line_type', 'in', ('buy','allocate_po'))]"
                                context="{'tree_view_ref':'sale_distributor.view_order_line_tree_custom'}"/>
                         </group>
                         <group>
@@ -94,6 +94,7 @@
                         <field name="remaining_qty" readonly="1" 
                                string="Allocated Quantity" invisible="1"/>
                         <field name="purchase_line_id" invisible="1"/>
+                        <field name="product_id" invisible="1"/>
                     </group>
                     </group>
                     <!-- <div class="o_row">
