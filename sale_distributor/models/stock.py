@@ -5,7 +5,9 @@
 # Copyright (C) 2020 (https://www.bistasolutions.com)
 #
 ##############################################################################
-from odoo import fields, models, api, _
+from odoo import fields, models, api, _, SUPERUSER_ID
+from collections import defaultdict
+from itertools import groupby
 from odoo.exceptions import ValidationError
 from datetime import datetime
 import string
@@ -41,7 +43,6 @@ class StockRule(models.Model):
             res['price_unit'] = price_unit
             res['item_note'] = values['split_sale_line_id'].item_note
             res['line_split'] = self._context.get('line_split',False)
-
             po_line_list = []
             if not self._context.get('line_split',False):
                 split_line = self.with_context(line_split=True)._prepare_purchase_order_line(
@@ -65,6 +66,8 @@ class StockRule(models.Model):
         return res
 
     def _update_purchase_order_line(self, product_id, product_qty, product_uom, company_id, values, line):
+        if line.line_split:
+            inv_qty = line.product_qty - product_qty
         res = super(StockRule, self)._update_purchase_order_line(product_id, product_qty, product_uom, company_id, values, line)
         if values.get('vendor_price_unit', False):
             partner = values['supplier'].name
@@ -85,10 +88,14 @@ class StockRule(models.Model):
                 product_uom, company_id,
                 values, line.order_id)
             if split_line:
+                if line.parent_line_id:
+                    split_line.update({'parent_line_id': line.parent_line_id.id})
                 sale_line = values.get('split_sale_line_id',False)
                 split_line.update({'sale_line_id': sale_line.id if sale_line else False})
             # if split_line:
             res['split_line_ids'] = [(0,0,split_line)]
+            if line.line_split:
+                res['product_qty'] = inv_qty
             res['price_unit'] = price_unit
         return res
 
@@ -145,7 +152,6 @@ class StockRule(models.Model):
                         break
         return
 
-
     @api.model
     def _run_buy(self, procurements):
         self.add_vendor_to_product(procurements)
@@ -155,8 +161,124 @@ class StockRule(models.Model):
                 if procurement.values.get("split_sale_line_id").line_type == 'allocate_po':
                     continue
             other_procurements.append((procurement, rule))
+        if other_procurements:
+            procurements = other_procurements
 
-        return super(StockRule, self)._run_buy(other_procurements)
+        procurements_by_po_domain = defaultdict(list)
+        for procurement, rule in procurements:
+            # Get the schedule date in order to find a valid seller
+            procurement_date_planned = fields.Datetime.from_string(procurement.values['date_planned'])
+            schedule_date = (procurement_date_planned - relativedelta(days=procurement.company_id.po_lead))
+
+            supplier = procurement.product_id.with_context(force_company=procurement.company_id.id)._select_seller(
+                partner_id=procurement.values.get("supplier_id"),
+                quantity=procurement.product_qty,
+                date=schedule_date.date(),
+                uom_id=procurement.product_uom)
+
+            # Fall back on a supplier for which no price may be defined. Not ideal, but better than
+            # blocking the user.
+            supplier = supplier or procurement.product_id._prepare_sellers(False).filtered(
+                lambda s: not s.company_id or s.company_id == procurement.company_id
+            )[:1]
+
+            if not supplier:
+                msg = _('There is no matching vendor price to generate the purchase order for product %s (no vendor defined, minimum quantity not reached, dates not valid, ...). Go on the product form and complete the list of vendors.') % (procurement.product_id.display_name)
+                raise UserError(msg)
+
+            partner = supplier.name
+            # we put `supplier_info` in values for extensibility purposes
+            procurement.values['supplier'] = supplier
+            procurement.values['propagate_date'] = rule.propagate_date
+            procurement.values['propagate_date_minimum_delta'] = rule.propagate_date_minimum_delta
+            procurement.values['propagate_cancel'] = rule.propagate_cancel
+
+            domain = rule._make_po_get_domain(procurement.company_id, procurement.values, partner)
+            procurements_by_po_domain[domain].append((procurement, rule))
+
+        for domain, procurements_rules in procurements_by_po_domain.items():
+            # Get the procurements for the current domain.
+            # Get the rules for the current domain. Their only use is to create
+            # the PO if it does not exist.
+            procurements, rules = zip(*procurements_rules)
+
+            # Get the set of procurement origin for the current domain.
+            origins = set([p.origin for p in procurements])
+            # Check if a PO exists for the current domain.
+            po = self.env['purchase.order'].sudo().search([dom for dom in domain], limit=1)
+            company_id = procurements[0].company_id
+            if not po:
+                # We need a rule to generate the PO. However the rule generated
+                # the same domain for PO and the _prepare_purchase_order method
+                # should only uses the common rules's fields.
+                vals = rules[0]._prepare_purchase_order(company_id, origins, [p.values for p in procurements])
+                # The company_id is the same for all procurements since
+                # _make_po_get_domain add the company in the domain.
+                # We use SUPERUSER_ID since we don't want the current user to be follower of the PO.
+                # Indeed, the current user may be a user without access to Purchase, or even be a portal user.
+                po = self.env['purchase.order'].with_context(force_company=company_id.id).with_user(SUPERUSER_ID).create(vals)
+            else:
+                # If a purchase order is found, adapt its `origin` field.
+                if po.origin:
+                    missing_origins = origins - set(po.origin.split(', '))
+                    if missing_origins:
+                        po.write({'origin': po.origin + ', ' + ', '.join(missing_origins)})
+                else:
+                    po.write({'origin': ', '.join(origins)})
+
+            procurements_to_merge = self._get_procurements_to_merge(procurements)
+            procurements = self._merge_procurements(procurements_to_merge)
+            po_lines_by_product = {}
+            grouped_po_lines = groupby(po.order_line.filtered(lambda l: not l.display_type and l.product_uom == l.product_id.uom_po_id).sorted(lambda l: l.product_id.id), key=lambda l: l.product_id.id)
+            for product, po_lines in grouped_po_lines:
+                po_lines_by_product[product] = self.env['purchase.order.line'].concat(*list(po_lines))
+            po_line_values = []
+            for procurement in procurements:
+                po_lines = po_lines_by_product.get(procurement.product_id.id, self.env['purchase.order.line'])
+                po_line = po_lines._find_candidate(*procurement)
+                po_inv_line = po.split_line.filtered(lambda l : l.product_id.id == procurement.product_id.id and not l.sale_line_id)
+                po_inv_cancel = False
+                if po_inv_line:
+                    if po_inv_line.product_qty > procurement.product_qty:
+                        po_line = po_inv_line
+                    elif po_inv_line.product_qty == procurement.product_qty:
+                        po_line = po_inv_line
+                        po_inv_cancel = True
+                    else:
+                        po_inv_cancel = True
+                if po_line:
+                    # If the procurement can be merge in an existing line. Directly
+                    # write the new values on it.
+                    vals = self._update_purchase_order_line(procurement.product_id,
+                        procurement.product_qty, procurement.product_uom, company_id,
+                        procurement.values, po_line)
+                    po_line.write(vals)
+                    if po_inv_cancel:
+                        po_inv_line.action_cancel_pol()
+                else:
+                    # If it does not exist a PO line for current procurement.
+                    # Generate the create values for it and add it to a list in
+                    # order to create it in batch.
+                    partner = procurement.values['supplier'].name
+                    po_line_values.append(self._prepare_purchase_order_line(
+                        procurement.product_id, procurement.product_qty,
+                        procurement.product_uom, procurement.company_id,
+                        procurement.values, po))
+                self.env['purchase.order.line'].sudo().create(po_line_values)
+
+    # @api.model
+    # def _run_buy(self, procurements):
+    #     if self.env.context.get('add_to_buy') or self.env.context.get('add_to_buy_merge_po'):
+    #         self._run_buy_add_to_buy(procurements)
+    #     else:
+    #         self.add_vendor_to_product(procurements)
+    #         other_procurements = []
+    #         for procurement, rule in procurements:
+    #             if procurement.values.get("split_sale_line_id"):
+    #                 if procurement.values.get("split_sale_line_id").line_type == 'allocate_po':
+    #                     continue
+    #             other_procurements.append((procurement, rule))
+    #         return super(StockRule, self)._run_buy(other_procurements)
 
     def _prepare_purchase_order(self, company_id, origins, values):
         res = super(StockRule, self)._prepare_purchase_order(company_id, origins, values)

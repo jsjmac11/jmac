@@ -10,7 +10,7 @@
             <xpath expr="//header/button[@id='action_confirm']" position="attributes">
                 <attribute name="invisible">1</attribute>
                 <attribute name="string">Process</attribute>
-                <attribute name="context">{'send_by_item_code': True}</attribute>
+                <attribute name="context">{'send_by_item_code': True, 'add_to_buy_merge_po':True}</attribute>
             </xpath>
             <xpath expr="//header/button[@name='action_quotation_send' and @states='sent,sale']" position="attributes">
                 <attribute name="name">Send Order</attribute>
@@ -26,7 +26,7 @@
             <xpath expr="//header/button[@name='action_confirm'][2]" position="attributes">
                 <attribute name="attrs">{'invisible': ['|',('state', 'not in', ['draft']),('is_unprocessed_order','=',True)]}</attribute>
                 <attribute name="string">Process</attribute>
-                <attribute name="context">{'send_by_item_code': True}</attribute>
+                <attribute name="context">{'send_by_item_code': True, 'add_to_buy_merge_po':True}</attribute>
             </xpath>
             <xpath expr="//header/button[@name='action_cancel']" position="before">
                  <button name="set_to_unprocess" string="Set to Sale Order" type="object" class="btn-primary" attrs="{'invisible': ['|', '|',('state', 'not in', ['new','sent','review']),('advance_payment','=',True), ('order_line','!=',[])]}" />

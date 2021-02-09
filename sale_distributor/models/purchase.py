@@ -71,7 +71,6 @@ class PurchaseOrderLine(models.Model):
         """Generate purchase order line sequence."""
         res = super(PurchaseOrderLine, self).create(vals)
         res.order_id._genrate_line_sequence()
-
         return res
 
     def write(self, values):
@@ -156,6 +155,16 @@ class PurchaseOrderLine(models.Model):
             'context': ctx,
         }
 
+    def _find_candidate(self, product_id, product_qty, product_uom, location_id, name, origin, company_id, values):
+        # if this is defined, this is a dropshipping line, so no
+        # this is to correctly map delivered quantities to the so lines
+        if self.env.context.get('add_to_buy') or self.env.context.get('add_to_buy_merge_po'):
+            lines = self
+            return lines and lines[0] or self.env['purchase.order.line']
+        else:
+            lines = self.filtered(lambda l: l.propagate_date == values['propagate_date'] and l.propagate_date_minimum_delta == values['propagate_date_minimum_delta'] and l.propagate_cancel == values['propagate_cancel'])
+            return lines and lines[0] or self.env['purchase.order.line']
+        return super(PurchaseOrderLine, lines)._find_candidate(product_id, product_qty, product_uom, location_id, name, origin, company_id, values)
 
 class PurchaseOrder(models.Model):
     """Update customization fileds for process line."""
