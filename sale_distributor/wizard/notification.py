@@ -22,6 +22,7 @@ class NotificationMessage(models.TransientModel):
     note = fields.Text("Note")
     user_id = fields.Many2one("res.users", string="User")
     item_note = fields.Text("Item Note")
+    product_id = fields.Many2one('product.product', string="Product")
     # po_so_line = fields.One2many("purchase.allocate.line", "notification_id",
     #                              string="Allocate Line")
 
@@ -164,6 +165,27 @@ class NotificationMessage(models.TransientModel):
                     st_move_id = self.purchase_line_id.move_ids.filtered(lambda l: l.picking_id.state not in ('done','cancel') and l.picking_type_id.code == 'incoming')
                     st_move_id.product_uom_qty = old_sol_remaining_qty
                     if self.sale_line_id:
+                        # Update OLD PO qty
+                        purchase_lines = self.env['purchase.order.line'].search(
+                                            [('sale_line_id', '=', self.sale_line_id.id),
+                                             ('id', '!=', self.purchase_line_id.id),
+                                            ])
+                        if purchase_lines:
+                            if purchase_lines.product_qty != self.qty:
+                                purchase_lines.product_qty = self.qty
+                                purchase_lines.copy({'product_qty': old_sol_remaining_qty,
+                                                      'sale_line_id': False,
+                                                      'line_split': True})
+                                if purchase_lines.state == 'purchase':
+                                    st_move_id = purchase_lines.move_ids.filtered(lambda l: l.picking_id.state not in ('done','cancel'))
+                                    st_move_id.product_uom_qty = self.qty
+                            else:
+                                purchase_lines.update({'sale_line_id':False, 'active':False})
+                                purchase_lines.move_ids._action_cancel()
+                                purchase_lines.move_ids.unlink()
+                                # purchase_lines.sale_line_id = False
+                                # purchase_lines.action_cancel_pol()
+
                         new_pol = self.purchase_line_id.copy({'product_qty': self.qty,
                                                               'sale_line_id': self.sale_line_id.id,
                                                               'line_split': True})
@@ -190,7 +212,7 @@ class NotificationMessage(models.TransientModel):
 
                 if not self.sale_line_id:
                     inventory_line = self.purchase_id.split_line.filtered(
-                    lambda l: l.product_id == self.purchase_line_id.product_id and not l.sale_line_id and l.picking_type_id.code == 'incoming')
+                    lambda l: l.product_id == self.purchase_line_id.product_id and not l.sale_line_id)
                     if inventory_line: # and self.purchase_line_id.state in ('draft', 'sent')
                         update_inv_qty = inventory_line.product_qty + self.qty
                         inventory_line.product_qty = update_inv_qty
@@ -206,9 +228,12 @@ class NotificationMessage(models.TransientModel):
                         inventory_qty = self.purchase_line_id.parent_line_id.product_qty - diff_qty
                         self._cr.execute("""update purchase_order_line
                             set product_qty = %s where id = %s """ % (inventory_qty, self.purchase_line_id.parent_line_id.id))
-                
-                    self.purchase_line_id.sale_line_id = False
-                    self.purchase_line_id.action_cancel_pol()
+                    
+                    self.purchase_line_id.update({'sale_line_id':False, 'active':False})
+                    self.purchase_line_id.move_ids._action_cancel()
+                    self.purchase_line_id.move_ids.unlink()
+                    # self.purchase_line_id.sale_line_id = False
+                    # self.purchase_line_id.action_cancel_pol()
                 
             self.purchase_line_id.sale_line_id.order_id._compute_is_process_qty()
 
@@ -244,8 +269,11 @@ class NotificationMessage(models.TransientModel):
                         # self.sale_line_id.order_id._compute_unprocess_qty()
                     else:
                         if self.sale_line_id.id != self.purchase_line_id.sale_line_id.id:
-                            self.sale_line_id.allocated_pol_id.sale_line_id = False
-                            self.sale_line_id.allocated_pol_id.action_cancel_pol()
+                            self.sale_line_id.allocated_pol_id.update({'sale_line_id':False, 'active':False})
+                            self.sale_line_id.allocated_pol_id.move_ids._action_cancel()
+                            self.sale_line_id.allocated_pol_id.move_ids.unlink()
+                            # self.sale_line_id.allocated_pol_id.sale_line_id = False
+                            # self.sale_line_id.allocated_pol_id.action_cancel_pol()
                     
                         
                 """Update current purchase line qty and stock move."""
@@ -262,7 +290,7 @@ class NotificationMessage(models.TransientModel):
                 if po_inventory_qty:
                     """Checking and update remaining qty as inventory qty."""
                     inventory_line = self.purchase_id.split_line.filtered(
-                        lambda l: l.product_id == self.purchase_line_id.product_id and not l.sale_line_id and l.picking_type_id.code == 'incoming')
+                        lambda l: l.product_id == self.purchase_line_id.product_id and not l.sale_line_id)
                     if inventory_line: # and self.purchase_line_id.state in ('draft', 'sent')
                         update_inv_qty = inventory_line.product_qty + po_inventory_qty
                         inventory_line.product_qty = update_inv_qty
@@ -289,45 +317,61 @@ class NotificationMessage(models.TransientModel):
                         lambda l: l.picking_id.state not in ('done', 'cancel') and l.picking_type_id.code == 'incoming')
                     if st_move_id:
                         st_move_id.product_uom_qty = self.qty
+                        st_move_id.sale_line_id = self.sale_line_id.id
 
-                if self.sale_line_id.state == 'sale':
-                    # if inventory_qty:
-                    #     # so_move_id = self.sale_line_id.move_ids.filtered(lambda l: l.picking_id.state not in ('done','cancel'))
-                    #     # so_move_id.product_uom_qty = inventory_qty
-                    #     # Update OLD PO qty
-                    #     if self.sale_line_id.id != self.purchase_line_id.sale_line_id.id:
-                    #         purchase_lines = self.env['purchase.order.line'].search(
-                    #                             [('sale_line_id', '=', self.sale_line_id.id),
-                    #                              ('id', '!=', self.purchase_line_id.id),
-                    #                             ])
+                    if self.sale_line_id.state == 'sale':
+                        # if inventory_qty:
+                        #     # so_move_id = self.sale_line_id.move_ids.filtered(lambda l: l.picking_id.state not in ('done','cancel'))
+                        #     # so_move_id.product_uom_qty = inventory_qty
+                        #     # Update OLD PO qty
+                        #     if self.sale_line_id.id != self.purchase_line_id.sale_line_id.id:
+                        #         purchase_lines = self.env['purchase.order.line'].search(
+                        #                             [('sale_line_id', '=', self.sale_line_id.id),
+                        #                              ('id', '!=', self.purchase_line_id.id),
+                        #                             ])
 
-                    #         purchase_lines.product_qty = self.qty
-                    #         if purchase_lines.state == 'purchase':
-                    #             st_move_id = purchase_lines.move_ids.filtered(lambda l: l.picking_id.state not in ('done','cancel'))
-                    #             st_move_id.product_uom_qty = self.qty
-                    #         purchase_lines.copy({'product_qty': inventory_qty,
-                    #                                                  'sale_line_id': False,
-                    #                                                  'line_split':True})
-                    # else:
-                    if self.sale_line_id.id != self.purchase_line_id.sale_line_id.id:
-                        "Exclude new POL created for update"
-                        domain = [('sale_line_id', '=', self.sale_line_id.id),]
-                        if new_pol:
-                            domain += [('id', 'not in', (self.purchase_line_id.id,new_pol.id))]
-                        else:
-                            domain += [('id', '!=', self.purchase_line_id.id)]
-                        purchase_lines = self.env['purchase.order.line'].search(domain)
+                        #         purchase_lines.product_qty = self.qty
+                        #         if purchase_lines.state == 'purchase':
+                        #             st_move_id = purchase_lines.move_ids.filtered(lambda l: l.picking_id.state not in ('done','cancel'))
+                        #             st_move_id.product_uom_qty = self.qty
+                        #         purchase_lines.copy({'product_qty': inventory_qty,
+                        #                                                  'sale_line_id': False,
+                        #                                                  'line_split':True})
+                        # else:
+                        if self.sale_line_id.id != self.purchase_line_id.sale_line_id.id:
+                            "Exclude new POL created for update"
+                            domain = [('sale_line_id', '=', self.sale_line_id.id),]
+                            if new_pol:
+                                domain += [('id', 'not in', (self.purchase_line_id.id,new_pol.id))]
+                            else:
+                                domain += [('id', '!=', self.purchase_line_id.id)]
+                            purchase_lines = self.env['purchase.order.line'].search(domain)
 
-                        if purchase_lines:
-                            purchase_lines.sale_line_id = False
-                            purchase_lines.action_cancel_pol()
-                if (not self.purchase_line_id.sale_line_id.id and self.sale_line_id.id) or (self.purchase_line_id.sale_line_id.id != self.sale_line_id.id):
-                # if not self.purchase_line_id.sale_line_id.id and self.sale_line_id.id:
-                    self.purchase_line_id.sale_line_id = self.sale_line_id.id
+                            # if purchase_lines:
+                            #     purchase_lines.sale_line_id = False
+                            #     purchase_lines.action_cancel_pol()
+                            if purchase_lines:
+                                if purchase_lines.product_qty == self.qty:
+                                    # purchase_lines.product_qty = self.qty
+                                    purchase_lines.copy({'product_qty': self.qty,
+                                                          'sale_line_id': False,
+                                                          'line_split': True})
+                                
+                                purchase_lines.update({'sale_line_id':False, 'active':False})
+                                purchase_lines.move_ids._action_cancel()
+                                purchase_lines.move_ids.unlink()
+                                # else:
+                                #     purchase_lines.sale_line_id = False
+                                #     purchase_lines.action_cancel_pol()
+
+                    if (not self.purchase_line_id.sale_line_id.id and self.sale_line_id.id) or (self.purchase_line_id.sale_line_id.id != self.sale_line_id.id):
+                    # if not self.purchase_line_id.sale_line_id.id and self.sale_line_id.id:
+                        self.purchase_line_id.sale_line_id = self.sale_line_id.id
+
                 if po_inventory_qty and not old_sol_remaining_qty:
                     """Checking and update remaining qty as inventory qty."""
                     inventory_line = self.purchase_id.split_line.filtered(
-                        lambda l: l.product_id == self.purchase_line_id.product_id and not l.sale_line_id and l.picking_type_id.code == 'incoming')
+                        lambda l: l.product_id == self.purchase_line_id.product_id and not l.sale_line_id)
                     if inventory_line: # and self.purchase_line_id.state in ('draft', 'sent')
                         inventory_line.product_qty = po_inventory_qty
                         if self.purchase_line_id.state == 'purchase':
