@@ -93,7 +93,8 @@ class StockRule(models.Model):
                 sale_line = values.get('split_sale_line_id',False)
                 split_line.update({'sale_line_id': sale_line.id if sale_line else False})
             # if split_line:
-            res['split_line_ids'] = [(0,0,split_line)]
+            self.env['purchase.order.line'].sudo().create(split_line)
+            # res['split_line_ids'] = [(0,0,split_line)]
             if line.line_split:
                 res['product_qty'] = inv_qty
             res['price_unit'] = price_unit
@@ -264,7 +265,7 @@ class StockRule(models.Model):
                         procurement.product_id, procurement.product_qty,
                         procurement.product_uom, procurement.company_id,
                         procurement.values, po))
-                self.env['purchase.order.line'].sudo().create(po_line_values)
+            self.env['purchase.order.line'].sudo().create(po_line_values)
 
     # @api.model
     # def _run_buy(self, procurements):

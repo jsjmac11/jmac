@@ -347,8 +347,7 @@ class SaleOrder(models.Model):
             lambda l: l.line_type in ('buy', 'dropship', 'allocate_po'))
         purchase_lines = self.env['purchase.order.line'].search(
             [('sale_line_id', 'in', sol_ids.ids)])
-        for line in purchase_lines:
-            line.action_cancel_pol()
+        purchase_lines.action_cancel_pol()
         self.split_line_ids.unlink()
         return res
 
@@ -1107,8 +1106,7 @@ class SaleOrderLine(models.Model):
         if self.order_id.state == 'sale':
             purchase_lines = self.env['purchase.order.line'].search(
                                                 [('sale_line_id', 'in', self.ids)])
-            for line in purchase_lines:
-                line.action_cancel_pol()
+            purchase_lines.action_cancel_pol()
             if self.line_type in ('stock', 'allocate'):
                 st_move_ids = self.env['stock.move'].search(
                     [('sale_line_id', '=', self.id)])

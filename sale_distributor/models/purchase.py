@@ -82,43 +82,64 @@ class PurchaseOrderLine(models.Model):
         self.order_id.origin = po_name
         return res
 
+    def unlink(self):
+        if not self.env.context.get("purchase_split_line"):
+            for line in self:
+                if not line.line_split:
+                    split_line = line.order_id.split_line.filtered(
+                                lambda l: l.product_id == line.product_id)
+                    self += split_line
+        return super(PurchaseOrderLine, self).unlink()
+
     def action_cancel_pol(self):
         """Remove purchase order line and corresponding sale line."""
-        if self.sale_line_id:
-            if self.order_id.state in ('purchase'):
-                self.copy({'line_split': True,
-                            'sale_line_id': False})
-                self.parent_line_id.product_qty += self.product_qty
-            st_move_ids = self.env['stock.move'].search(
-                [('sale_line_id', '=', self.sale_line_id.id)])
-            st_move_ids._action_cancel()
-            self.sale_line_id.write({'active': False})
+        for line in self:
+            if line.sale_line_id:
+                if line.order_id.state in ('purchase'):
+                    inv_line = line.order_id.split_line.filtered(
+                        lambda l: l.product_id == line.product_id and not l.sale_line_id)
+                    if inv_line: # and self.purchase_line_id.state in ('draft', 'sent')
+                        update_inv_qty = inv_line.product_qty + line.product_qty
+                        inv_line.product_qty = update_inv_qty
+                        if line.state == 'purchase':
+                            inv_st_move_id = inv_line.move_ids.filtered(lambda l: l.picking_id.state not in ('done','cancel') and l.picking_type_id.code == 'incoming')
+                            inv_st_move_id.product_uom_qty = update_inv_qty
+                    else:
+                        line.copy({'product_qty': line.product_qty,
+                                                'sale_line_id': False,
+                                                'line_split': True})
+                    # self.parent_line_id.product_qty += self.product_qty
+                st_move_ids = self.env['stock.move'].search(
+                    [('sale_line_id', '=', line.sale_line_id.id)])
+                st_move_ids._action_cancel()
+                line.sale_line_id.write({'active': False})
 
-        po_st_move_ids = self.env['stock.move'].search(
-            [('purchase_line_id', '=', self.id)])
-        po_st_move_ids._action_cancel()
-        po_st_move_ids.unlink()
-        pl = self.order_id.split_line.filtered(lambda l: l.id != self.id)
-        order_id = False
-        if not pl:
-            order_id = self.order_id
-        if self.parent_line_id.product_qty == self.product_qty:
-            if self.order_id.state not in ('purchase', 'done'):
-                if not self.env.context.get('po_cancel'):
-                    self.parent_line_id.unlink()
-                self.unlink()
+            po_st_move_ids = self.env['stock.move'].search(
+                [('purchase_line_id', '=', line.id)])
+            po_st_move_ids._action_cancel()
+            po_st_move_ids.unlink()
+            pl = line.order_id.split_line.filtered(lambda l: l.id != line.id)
+            order_id = False
+            if not pl:
+                order_id = line.order_id
+            if line.parent_line_id.product_qty == line.product_qty:
+                if line.order_id.state not in ('purchase', 'done'):
+                    if not self.env.context.get('po_cancel'):
+                        line.parent_line_id.unlink()
+                    line.unlink()
+                else:
+                    if not self.env.context.get('po_cancel'):
+                        line.parent_line_id.active = False
+                    line.active = False
             else:
-                if not self.env.context.get('po_cancel'):
-                    self.parent_line_id.active = False
-                self.active = False
-        else:
-            self.parent_line_id.product_qty = self.parent_line_id.product_qty - self.product_qty
-            if self.order_id.state not in ('purchase', 'done'):
-                self.unlink()
-            else:
-                self.active = False
-        if order_id:
-            order_id.button_cancel()
+                if not (line.state in ('purchase', 'done') and line.sale_line_id):
+                    line.parent_line_id.product_qty = line.parent_line_id.product_qty - line.product_qty
+                if line.order_id.state not in ('purchase', 'done'):
+                    line.unlink()
+                else:
+                    line.active = False
+            if order_id:
+                order_id.button_cancel()
 
         return True
 
@@ -202,8 +223,7 @@ class PurchaseOrder(models.Model):
         if len(self.search([('partner_id', '=', self.partner_id.id),
                             ('add_to_buy', '=', True),
                             ('state', 'in', ('draft', 'sent'))])) > 1:
-            raise ValidationError(_("Add to buy Purchase Order Already exist \
-                                For %s Vendor ...!" % self.partner_id.name))
+            raise ValidationError(_("Add to buy Purchase Order Already exist For %s Vendor ...!" % self.partner_id.name))
 
     @api.depends('order_line.move_ids.returned_move_ids',
                  'order_line.move_ids.state',
@@ -353,8 +373,7 @@ class PurchaseOrder(models.Model):
                     'purchase_orders': purchase_order_lines.mapped('order_id'),
                     'purchase_lines': purchase_order_lines})
         for order in self:
-            for purchase_line in order.split_line:
-                purchase_line.with_context(po_cancel=True).action_cancel_pol()
+            order.split_line.with_context(po_cancel=True).action_cancel_pol()
         # move_ids = self.env['stock.move'].search(
         #     [('sale_line_id', 'in', sol_ids.ids)])
         # move_ids._action_cancel()

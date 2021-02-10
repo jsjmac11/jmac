@@ -44,7 +44,7 @@
                                     <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','purchase'), ('company_id', '=', parent.company_id)]" context="{'default_type_tax_use': 'purchase', 'search_view_ref': 'account.account_tax_view_search'}" options="{'no_create': True}" optional="show" invisible="1"/>
                                     <field name="price_subtotal" widget="monetary" invisible="1"/>
                                     <button name="change_sol_qty" class="oe_edit_only oe_highlight" string="Update" type="object"/>
-                                    <button name="action_cancel_pol" type="object" class="fa fa-trash-o oe_edit_only" aria-label="Delete row 1" confirm="Are you sure you want to delete this record?"/>
+                                    <button name="action_cancel_pol" type="object" class="fa fa-trash-o oe_edit_only" aria-label="Delete row 1" context="{'purchase_split_line':True}" confirm="Are you sure you want to delete this record?"/>
                                 </tree>
                             </field>
                 </group>
