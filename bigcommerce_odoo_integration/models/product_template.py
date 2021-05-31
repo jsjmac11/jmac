@@ -6,6 +6,7 @@ import requests
 import json
 import base64
 from odoo.exceptions import UserError, ValidationError
+import html2text
 
 _logger = logging.getLogger("BigCommerce")
 
@@ -131,20 +132,21 @@ class ProductTemplate(models.Model):
             return False, message
         brand_id = self.env['bc.product.brand'].sudo().search([('bc_brand_id','=',record.get('brand_id'))],limit=1)
         _logger.info("BRAND : {0}".format(brand_id))
+        description_sale = html2text.html2text(record.get('description'))
         vals = {
                 'name':template_title,
                 'type':'product',
                 # 'categ_id':category_id and category_id[0].id,
                 'bigcommerce_category_ids':category_id and [(6,0, category_id.ids)],
                 "weight":record.get("weight"),
-                "list_price":recordsd.get("price"),
+                "list_price":record.get("price"),
                 "is_visible":record.get("is_visible"),
                 "bigcommerce_product_id":record.get('id'),
                 "bigcommerce_store_id":store_id.id,
                 "default_code":record.get("sku"),
                 "is_imported_from_bigcommerce":True,
                 "x_studio_manufacturer":brand_id and brand_id.id,
-                "description_sale":record.get('description')
+                "description_sale":description_sale
                 }
         product_template = product_template_obj.with_user(1).create(vals)
         _logger.info("Product Created: {}".format(product_template))
@@ -332,6 +334,7 @@ class ProductTemplate(models.Model):
                         return False, message
                     brand_id = self.env['bc.product.brand'].sudo().search([('bc_brand_id','=',record.get('brand_id'))],limit=1)
                     _logger.info("BRAND : {0}".format(brand_id))
+                    description_sale = html2text.html2text(record.get('description'))
                     product_template_id.write({
                         "list_price": record.get("price"),
                         "is_visible": record.get("is_visible"),
@@ -343,7 +346,7 @@ class ProductTemplate(models.Model):
                         "is_exported_to_bigcommerce": True,
                         "name":product_name,
                         "x_studio_manufacturer":brand_id and brand_id.id,
-                        "description_sale":record.get('description')
+                        "description_sale":description_sale
                     })
                     _logger.info("{0}".format(process_message))
                     self._cr.commit()
