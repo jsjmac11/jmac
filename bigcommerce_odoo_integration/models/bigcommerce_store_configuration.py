@@ -137,7 +137,7 @@ class BigCommerceStoreConfiguration(models.Model):
         with api.Environment.manage():
             new_cr = registry(self._cr.dbname).cursor()
             self = self.with_env(self.env(cr=new_cr))
-            product_category_obj = self.env['product.category']
+            product_category_obj = self.env['bigcommerce.category']
             import_categories = product_category_obj.bigcommerce_to_odoo_import_product_categories(self.warehouse_id,
                                                                                                    self)
             return import_categories

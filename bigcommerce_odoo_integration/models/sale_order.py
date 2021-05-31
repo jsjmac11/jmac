@@ -97,7 +97,8 @@ class SaleOrderVts(models.Model):
             'product_id': vals.get('product_id', ''),
             'company_id': vals.get('company_id', ''),
             'name': vals.get('description'),
-            'product_uom': vals.get('product_uom')
+            'product_uom': vals.get('product_uom'),
+            'product_pack_id': vals.get('product_pack_id')
         }
         new_order_line = sale_order_line.new(order_line)
         new_order_line.product_id_change()
@@ -353,10 +354,12 @@ class SaleOrderVts(models.Model):
             quantity = order_line.get('quantity')
             price = order_line.get('base_price')
             total_tax = order_line.get('total_tax')
+            pack_product_id = product_id.product_pack_line.filtered(lambda p: p.is_auto_created)
             vals = {'product_id': product_id.id, 'price_unit': price, 'order_qty': quantity,
                     'order_id': order_id and order_id.id, 'description': product_bigcommerce_id,
                     'company_id': self.env.user.company_id.id,
-                    'big_commerce_tax': total_tax}
+                    'big_commerce_tax': total_tax,
+                    'product_pack_id': pack_product_id.id}
             order_line = self.create_sale_order_line_from_bigcommerce(vals)
             order_line = self.env['sale.order.line'].create(order_line)
             if order_line:

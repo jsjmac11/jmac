@@ -32,6 +32,7 @@ class ProductTemplate(models.Model):
     warranty = fields.Char(string="Warranty Information")
     is_imported_from_bigcommerce = fields.Boolean(string="Is Imported From Big Commerce ?")
     x_studio_manufacturer = fields.Many2one('bc.product.brand',string='Manufacturer Brand')
+    bigcommerce_category_ids = fields.Many2many('bigcommerce.category', 'product_big_categ_rel', 'product_id', 'category_id', string="Bigcommerce Category")
 
     def create_bigcommerce_operation(self,operation,operation_type,bigcommerce_store_id,log_message,warehouse_id):
         vals = {
@@ -123,7 +124,7 @@ class ProductTemplate(models.Model):
                 if attribute_val_ids:
                     attribute_line_ids_data = [0, False,{'attribute_id': attribute.id,'value_ids':[[6, False, attribute_val_ids]]}]
                     attrib_line_vals.append(attribute_line_ids_data)
-        category_id = self.env['product.category'].sudo().search([('bigcommerce_product_category_id','in',record.get('categories'))],limit=1)
+        category_id = self.env['bigcommerce.category'].sudo().search([('bigcommerce_product_category_id','in',record.get('categories'))])
         if not category_id:
             message = "Category not found!"
             _logger.info("Category not found: {}".format(category_id))
@@ -133,7 +134,8 @@ class ProductTemplate(models.Model):
         vals = {
                 'name':template_title,
                 'type':'product',
-                'categ_id':category_id and category_id.id,
+                # 'categ_id':category_id and category_id[0].id,
+                'bigcommerce_category_ids':category_id and [(6,0, category_id.ids)],
                 "weight":record.get("weight"),
                 "list_price":record.get("price"),
                 "is_visible":record.get("is_visible"),
