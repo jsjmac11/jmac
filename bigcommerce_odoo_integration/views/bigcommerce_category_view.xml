@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="view_bigcommerce_product_category_tree_view" model="ir.ui.view">
+            <field name="name">Bigcommerce Category</field>
+            <field name="model">bigcommerce.category</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="BigCommerce Category Info">
+                    <field name="name"/>
+                    <field name="bigcommerce_store_id"/>
+                    <field name="bigcommerce_parent_category_id" invisible="1"/>
+                    <field name="bigcommerce_product_category_id" invisible="1"/>
+                    <field name="custom_url" invisible="1"/>
+                    <field name="is_visible" invisible="1"/>
+                    <field name="is_exported_to_bigcommerce" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_bigcommerce_product_category_form_view" model="ir.ui.view">
+            <field name="name">Bigcommerce Category</field>
+            <field name="model">bigcommerce.category</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="BigCommerce Category Info" create='false'>
+                    <sheet>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="bigcommerce_store_id" readonly="1"/>
+                            <field name="bigcommerce_parent_category_id" />
+                            <field name="bigcommerce_product_category_id" readonly="1"/>
+                            <field name="custom_url" />
+                            <field name="is_visible" />
+                            <field name="is_exported_to_bigcommerce" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_bigcommerce_product_category_new" model="ir.actions.act_window">
+            <field name="name">Bigcommerce Category</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">bigcommerce.category</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_bigcommerce_product_category_tree_view"/>
+            <field name="domain">[]</field>
+        </record>
+
+        <menuitem id="menu_bigcommerce_product_category" name="Bigcommerce Product Category"
+            parent="bigcommerce_odoo_integration_store_menuitem" sequence="3"
+            action="action_bigcommerce_product_category_new" />
+    </data>
+</odoo>

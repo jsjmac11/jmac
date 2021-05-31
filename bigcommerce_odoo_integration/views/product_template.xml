@@ -25,6 +25,8 @@
                             <group>
                                 <field name="is_exported_to_bigcommerce" readonly="1"/>
                                 <field name="bigcommerce_product_id" readonly="1"/>
+                                <field name="bigcommerce_category_ids" widget="many2many_tags"/>
+                                <!-- <field name="bigcommerce_category_ids" readonly="1"/> -->
                                 <field name="bigcommerce_store_id" readonly="1"/>
                                 <field name="inventory_tracking"/>
                                 <field name="is_imported_from_bigcommerce"/>
