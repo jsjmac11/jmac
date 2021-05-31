@@ -137,7 +137,7 @@ class ProductTemplate(models.Model):
                 # 'categ_id':category_id and category_id[0].id,
                 'bigcommerce_category_ids':category_id and [(6,0, category_id.ids)],
                 "weight":record.get("weight"),
-                "list_price":record.get("price"),
+                "list_price":recordsd.get("price"),
                 "is_visible":record.get("is_visible"),
                 "bigcommerce_product_id":record.get('id'),
                 "bigcommerce_store_id":store_id.id,
@@ -231,12 +231,18 @@ class ProductTemplate(models.Model):
                                     self._cr.commit()
                                 else:
                                     process_message = "{0} : Product Already Exist In Odoo!".format(product_template_id.name)
+                                    category_id = self.env['bigcommerce.category'].sudo().search([('bigcommerce_product_category_id','in',record.get('categories'))])
+                                    if not category_id:
+                                        message = "Category not found!"
+                                        _logger.info("Category not found: {}".format(category_id))
+                                        return False, message
                                     brand_id = self.env['bc.product.brand'].sudo().search([('bc_brand_id','=',record.get('brand_id'))],limit=1)
                                     _logger.info("BRAND : {0}".format(brand_id))
                                     product_template_id.write({
                                         "list_price": record.get("price"),
                                         "is_visible": record.get("is_visible"),
                                         "bigcommerce_product_id": record.get('id'),
+                                        "bigcommerce_category_ids":category_id and [(6,0, category_id.ids)],
                                         "bigcommerce_store_id": bigcommerce_store_id.id,
                                         "default_code": record.get("sku"),
                                         "is_imported_from_bigcommerce": True,
@@ -319,11 +325,17 @@ class ProductTemplate(models.Model):
                 else:
                     product_name = record.get('name')
                     process_message = "{0} : Product Already Exist In Odoo!".format(product_template_id.name)
+                    category_id = self.env['bigcommerce.category'].sudo().search([('bigcommerce_product_category_id','in',record.get('categories'))])
+                    if not category_id:
+                        message = "Category not found!"
+                        _logger.info("Category not found: {}".format(category_id))
+                        return False, message
                     brand_id = self.env['bc.product.brand'].sudo().search([('bc_brand_id','=',record.get('brand_id'))],limit=1)
                     _logger.info("BRAND : {0}".format(brand_id))
                     product_template_id.write({
                         "list_price": record.get("price"),
                         "is_visible": record.get("is_visible"),
+                        "bigcommerce_category_ids":category_id and [(6,0, category_id.ids)],
                         "bigcommerce_product_id": record.get('id'),
                         "bigcommerce_store_id": bigcommerce_store_id.id,
                         "default_code": record.get("sku"),
