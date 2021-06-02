@@ -5,8 +5,14 @@ _logger = logging.getLogger("BigCommerce")
 
 class BigCommerceCategory(models.Model):
     _name = "bigcommerce.category"
+    _parent_name = "parent_id"
+    _rec_name = 'complete_name'
+    _order = 'complete_name'
 
     name = fields.Char(string="Product Category")
+    complete_name = fields.Char(
+        'Complete Name', compute='_compute_complete_name',
+        store=True)
     description = fields.Char(string="Description")
     bigcommerce_store_id = fields.Many2one('bigcommerce.store.configuration',string="Bigcommerce Store",copy=False)
     bigcommerce_product_category_id = fields.Char("Bigcommerce Category ID", copy=False)
@@ -15,6 +21,14 @@ class BigCommerceCategory(models.Model):
     bigcommerce_parent_category_id = fields.Char("Bigcommerce Parent Category ID", copy=False)
     is_exported_to_bigcommerce = fields.Boolean(string='Is Exported to BigCommerce',default=False)
     parent_id = fields.Many2one('bigcommerce.category', string="Parent Category")
+
+    @api.depends('name', 'parent_id.complete_name')
+    def _compute_complete_name(self):
+        for category in self:
+            if category.parent_id:
+                category.complete_name = '%s / %s' % (category.parent_id.complete_name, category.name)
+            else:
+                category.complete_name = category.name
 
     def export_product_category_to_bigcommerce(self):
         if self._context.get('active_model') == 'bigcommerce.category':
@@ -178,6 +192,10 @@ class BigCommerceCategory(models.Model):
                             self.create_bigcommerce_operation_detail('product_category','import',req_data,response_data,category_operation_id,warehouse_id,False,process_message)
                             self._cr.commit()
                     category_operation_id and category_operation_id.write({'bigcommerce_message': category_process_message})
+                    all_catg_id = self.env['bigcommerce.category'].search([])
+                    for category in all_catg_id:
+                        parent_id = self.env['bigcommerce.category'].search([('bigcommerce_product_category_id', '=', category.bigcommerce_parent_category_id)], limit=1)
+                        category.parent_id = parent_id and parent_id.id or False
                     _logger.info("Import Product Category Process Completed")
                 else:
                     _logger.info("Getting an Error In Import Product Category Response {}".format(response_data))
