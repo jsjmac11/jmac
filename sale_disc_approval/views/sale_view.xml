@@ -21,7 +21,11 @@
                     <group name="discount" colspan="2">
                         <field name="amount_undiscounted"/>
                         <field name="discount_type" invisible="1"/>
-                        <field name="discount_rate"/>
+                        <div class="oe_inline o_td_label">
+                            <label for="discount_rate" string="Order Discount %" attrs="{'invisible': [('discount_type', '!=', 'percent')]}"/>
+                            <label for="discount_rate" string="Order Discount $" attrs="{'invisible': [('discount_type', '!=', 'amount')]}"/>
+                        </div>
+                        <field name="discount_rate" nolabel="1"/>
                     </group>
                 </xpath>
             </field>

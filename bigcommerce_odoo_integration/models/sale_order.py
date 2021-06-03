@@ -86,7 +86,8 @@ class SaleOrderVts(models.Model):
             'date_order': vals.get('date_order', ''),
             'state': 'draft',
             'carrier_id': vals.get('carrier_id', ''),
-            'currency_id':vals.get('currency_id',False)
+            'currency_id':vals.get('currency_id',False),
+            'discount_type': 'amount',
         })
         return order_vals
 
@@ -284,8 +285,9 @@ class SaleOrderVts(models.Model):
                                 order_id = self.create(order_vals)
                                 if carrier_id and order_id:
                                     order_id.set_delivery_line(carrier_id, base_shipping_cost)
-                                discount_product_id = self.env.ref('bigcommerce_odoo_integration.product_product_bigcommerce_discount')
-                                self.env['sale.order.line'].sudo().create({'product_id':discount_product_id.id,'price_unit':-float(order.get('discount_amount')),'product_uom_qty':1.0,'state': 'draft','order_id':order_id.id,'company_id':order_id.company_id.id})
+                                # discount_product_id = self.env.ref('bigcommerce_odoo_integration.product_product_bigcommerce_discount')
+                                # if float(order.get('discount_amount')):
+                                #     self.env['sale.order.line'].sudo().create({'product_id':discount_product_id.id,'price_unit':-float(order.get('discount_amount')),'product_uom_qty':1.0,'state': 'draft','order_id':order_id.id,'company_id':order_id.company_id.id})
                             except Exception as e:
                                 process_message = "Getting an Error In Create Order procecss {}".format(e)
                                 self.create_bigcommerce_operation_detail('order', 'import', '', '', operation_id,
@@ -361,6 +363,10 @@ class SaleOrderVts(models.Model):
                     'company_id': self.env.user.company_id.id,
                     'big_commerce_tax': total_tax,
                     'product_pack_id': pack_product_id.id}
+            if order_line.get('applied_discounts'):
+                discount_amt = sum([float(disc.get('amount')) for disc in order_line.get('applied_discounts')])
+                discount_per = (discount_amt * 100) / float(price)
+                vals.update({'discount': discount_per})
             order_line = self.create_sale_order_line_from_bigcommerce(vals)
             order_line = self.env['sale.order.line'].create(order_line)
             if order_line:

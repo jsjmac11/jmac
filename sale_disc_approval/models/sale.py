@@ -29,16 +29,18 @@ class SaleOrder(models.Model):
         """
         for order in self:
             if order.amount_undiscounted:
-                order.discount_rate = ((
-                                               order.amount_undiscounted - order.amount_untaxed) / order.amount_undiscounted) * 100
+                if order.discount_type == 'percent':
+                    order.discount_rate = ((
+                                                   order.amount_undiscounted - order.amount_untaxed) / order.amount_undiscounted) * 100
+                else:
+                    order.discount_rate = sum([(line.discount * line.price_unit) / 100 for line in order.order_line])
             else:
                 order.discount_rate = 0.0
 
     discount_type = fields.Selection([('percent', 'Percentage'), ('amount', 'Amount')], string='Discount type',
                                      readonly=True,
                                      default='percent')
-    discount_rate = fields.Float('Order Discount %',
-                                 readonly=True, store=True, compute='_order_percent',
+    discount_rate = fields.Float(readonly=True, store=True, compute='_order_percent',
                                  track_visibility='always')
     amount_undiscounted = fields.Float('Amount Before Discount', compute='_compute_amount_undiscounted', digits=0)
     state = fields.Selection(selection_add=[('waiting', 'Waiting Approval'), ('approved', 'Quotation Approved')],
