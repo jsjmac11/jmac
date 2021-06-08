@@ -61,7 +61,10 @@ class SaleAdvancePaymentWizard(models.TransientModel):
         sale_order_id = sale_obj.browse(active_id)
         year = self.year
         exp_date = self.month + year[-2:]
-        street = self.street + ', ' + self.street2
+        if self.street2:
+            street = self.street + ', ' + self.street2
+        else:
+            street = self.street
         client = PayflowProClient(partner=payment_acquirers_id.payflow_partner_id, vendor=payment_acquirers_id.payflow_vendor_id, 
                              username=payment_acquirers_id.payflow_unm, password=payment_acquirers_id.payflow_pwd)
         credit_card = CreditCard(acct=self.account_number, expdate=exp_date, cvv2=self.cvv)
