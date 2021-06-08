@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sale_order_form_inherit" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_cancel']" position="before">
+                <button name="capture_payment_action" type="object" class="oe_highlight" string="Capture" groups="base.group_no_one" attrs="{'invisible': [('pending_capture','!=', True)]}"/>
+            </xpath>
+            <xpath expr="//page[@name='customer_signature']" position="before">
+                <page name="paypal_payflow_info" string="Paypal Payflow Info">
+                    <group>
+                        <field name="paypal_transaction_id"/>
+                        <field name="pending_capture" invisible="1"/>
+                        <field name="is_payment" invisible="1"/>
+                        <field name="payment_link" invisible="1"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

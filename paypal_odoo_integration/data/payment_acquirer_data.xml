@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="payment_acquirer_paypal_payflow_pro" model="payment.acquirer">
+            <field name="name">Paypal Payflow Pro</field>
+            <field name="sequence">2</field>
+            <field name="image_128" type="base64" file="paypal_odoo_integration/static/src/img/icon.png"/>
+            <field name="provider">paypal_payflow</field>
+            <field name="state">test</field>
+            <field name="module_id" ref="base.module_paypal_odoo_integration"/>
+            <field name="description" type="html">
+                <p>
+                    PayPal Payflow Pro is the easiest way to accept payments via Paypal or credit cards.
+                </p>
+                <ul class="list-inline">
+                    <li class="list-inline-item"><i class="fa fa-check"/>Online Payment</li>
+                    <li class="list-inline-item"><i class="fa fa-check"/>Payment Status Tracking</li>
+                </ul>
+            </field>
+        </record>
+    </data>
+</odoo>
