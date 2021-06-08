@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sale_advance_payment_wizard_view_form_inherit" model="ir.ui.view">
+        <field name="name">sale.advance.payment.wizard.view.form</field>
+        <field name="model">sale.advance.payment.wizard</field>
+        <field name="inherit_id" ref="sale_advance_payment.sale_advance_payment_wizard_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="replace">
+                <form>
+                    <group col="4">
+                        <field name="journal_id" widget="selection"
+                        domain="[('type','in',('bank','cash')),('company_id','=',company_id)]" />
+                        <field name="company_id" invisible="1" />
+                    </group>
+                    <group col="4" attrs="{'invisible':[('is_payal_payment','!=',False)]}">
+                        <field name="payment_date" />  
+                        <field name="total_amount" readonly="1" widget="monetary"/>
+                        <field name="advance_amount" widget="monetary"/>
+                        <field name="advance_percent" />
+                        <field name="ref" />
+                        <field name="currency_id" readonly="1" />
+                        <field name="payment_term_id" readonly="1" />
+                        <field name="minimum_amount" invisible="1"/>
+                        <field name="is_payal_payment" invisible="1"/>
+                    </group>
+
+                    <footer attrs="{'invisible':[('is_payal_payment','!=',False)]}">
+                        <button string="Payment" name="action_create_payment"
+                            type="object" attrs="{'invisible': [('advance_amount','=',0.0)]}"
+                            class="btn-primary" />
+                        <button string="Cancel" class="btn-secondary"
+                            special="cancel" />
+                    </footer>
+
+                    <group attrs="{'invisible':[('is_payal_payment','!=',True)]}">
+                        <group string="Payment Detail">
+                            <field name="payment_date" invisible="1"/>
+                            <field name="total_amount" widget="monetary" readonly="1"/>
+                            <field name="currency_id"/>
+                            <field name="account_number" placeholder="Credit card number..." attrs="{'required': [('is_payal_payment','=', True)]}"/>
+                            <field name="cvv" placeholder="Card Verification Value..." attrs="{'required': [('is_payal_payment','=', True)]}"/>
+                            <label for="month" string="Expiry Date"/>
+                            <div class="o_address_format">
+                                <field name="month" placeholder="Month" style="width: 15%;margin-right: 5%;" attrs="{'required': [('is_payal_payment','=', True)]}"/>
+                                <field name="year" placeholder="Year" style="width: 20%" attrs="{'required': [('is_payal_payment','=', True)]}"/>
+                            </div> 
+                        </group>
+                        <group string="Address Detail">
+                            <label for="street" string="Address"/>
+                            <div class="o_address_format">
+                                <field name="street" placeholder="Street..." class="o_address_street" attrs="{'required': [('is_payal_payment','=', True)]}"/>
+                                <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                                <field name="city" placeholder="City" class="o_address_city" attrs="{'required': [('is_payal_payment','=', True)]}"/>
+                                <field name="state_id" class="o_address_state" placeholder="State" options="{&quot;no_open&quot;: True}" attrs="{'required': [('is_payal_payment','=', True)]}"/>
+                                <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                                <field name="country_id" placeholder="Country" class="o_address_country" options="{&quot;no_open&quot;: True}" attrs="{'required': [('is_payal_payment','=', True)]}"/>
+                            </div>
+                        </group>
+                    </group>
+                    <footer attrs="{'invisible':[('is_payal_payment','!=',True)]}">
+                        <button name="authorized_with_capture" type="object" string="Authorized And Capture" attrs="{'invisible': [('total_amount','=',0.0)]}" class="btn-primary"/>
+                        <button name="authorized_only" type="object" string="Authorized Only" attrs="{'invisible': [('total_amount','=',0.0)]}" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </xpath>
+            <!-- <xpath expr="//field[@name='advance_percent']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_payal_payment', '!=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='advance_amount']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_payal_payment', '!=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='ref']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_payal_payment', '!=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_payal_payment', '!=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='currency_id']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_payal_payment', '!=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='currency_id']" position="after">
+                <label for="street" string="Address" attrs="{'invisible':[('is_payal_payment','!=',True)]}"/>
+                <div class="o_address_format" attrs="{'invisible':[('is_payal_payment','!=',True)]}">
+                    <field name="street" placeholder="Street..." class="o_address_street"/>
+                    <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                    <field name="city" placeholder="City" class="o_address_city"/>
+                    <field name="state_id" class="o_address_state" placeholder="State" options="{&quot;no_open&quot;: True}"/>
+                    <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                    <field name="country_id" placeholder="Country" class="o_address_country" options="{&quot;no_open&quot;: True}"/>
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='total_amount']" position="after">
+                <field name="account_number" placeholder="Credit card number..."  attrs="{'invisible':[('is_payal_payment','!=',True)]}"/>
+                <field name="cvv" placeholder="Card Verification Value..."  attrs="{'invisible':[('is_payal_payment','!=',True)]}"/>
+                <label for="month" string="Expiry Date"  attrs="{'invisible':[('is_payal_payment','!=',True)]}"/>
+                <div class="o_address_format"  attrs="{'invisible':[('is_payal_payment','!=',True)]}">
+                    <field name="month" placeholder="Month" style="width: 15%;margin-right: 5%;"/>
+                    <field name="year" placeholder="Year" style="width: 20%"/>
+                </div>
+                <field name="is_payal_payment" invisible="1"/>
+            </xpath>
+            <xpath expr="//footer/button[@name='action_create_payment']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_payal_payment', '!=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//footer/button[@name='action_create_payment']" position="after">
+                <button name="authorized_with_capture" type="object" string="Authorized And Capture" attrs="{'invisible': ['|', ('total_amount','=',0.0), ('is_payal_payment','!=',True)]}" class="btn-primary"/>
+                <button name="authorized_only" type="object" string="Authorized Only" attrs="{'invisible': ['|', ('total_amount','=',0.0), ('is_payal_payment','!=',True)]}" class="btn-primary"/>
+            </xpath> -->
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+       <record id="acquirer_form_paypal_payflow" model="ir.ui.view">
+            <field name="name">acquirer.form.paypal</field>
+            <field name="model">payment.acquirer</field>
+            <field name="inherit_id" ref="payment.acquirer_form"/>
+            <field name="arch" type="xml">
+                <xpath expr='//group[@name="acquirer"]' position='inside'>
+                    <group attrs="{'invisible': [('provider', '!=', 'paypal_payflow')]}">
+                        <field name="payflow_partner_id" attrs="{'required':[ ('provider', '=', 'paypal_payflow')]}"/>
+                        <field name="payflow_vendor_id" attrs="{'required':[ ('provider', '=', 'paypal_payflow')]}"/>
+                        <field name="payflow_unm"/>
+                        <field name="payflow_pwd" attrs="{'required':[ ('provider', '=', 'paypal_payflow')]}"/>
+                        <a colspan="2" href="https://developer.paypal.com/docs/payflow/payflow-pro/payflow-pro-credentials" target="_blank">How to configure your paypal payflow  pro account?</a>
+                    </group>
+                </xpath>
+                <xpath expr='//group[@name="payment_form"]' position='attributes'>
+                    <attribute name="attrs">{'invisible': [('provider', '=', 'paypal_payflow')]}</attribute>
+                </xpath>
+                <xpath expr='//group[@name="availability"]' position='attributes'>
+                    <attribute name="attrs">{'invisible': [('provider', '=', 'paypal_payflow')]}</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
