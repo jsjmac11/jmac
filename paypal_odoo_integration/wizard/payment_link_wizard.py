@@ -20,4 +20,4 @@ class PaymentLinkWizard(models.TransientModel):
         record.payment_link = self.link
         ir_model_data = self.env['ir.model.data']
         template = self.env.ref('sale.email_template_edi_sale', False)
-        msg_ids = template.send_mail(res_id, force_send=True)
+        msg_ids = template.send_mail(record.id, force_send=True)

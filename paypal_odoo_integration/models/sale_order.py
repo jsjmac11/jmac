@@ -20,6 +20,16 @@ class SaleOrder(models.Model):
         extras = {'AUTHORIZATIONID': sale_order_id.paypal_transaction_id,'AMT':sale_order_id.amount_total, 'METHOD':'DoCapture'}
         responses, unconsumed_data = client.capture(sale_order_id.paypal_transaction_id, extras=extras)
         sale_order_id.pending_capture = False;
+        
+        
+        move_id = self.env['account.move'].search([('invoice_origin', '=', sale_order_id.name)])
+        if move_id:
+            payment = self.env['account.payment'].search([('sale_order_id', '=', sale_order_id.id)])
+            for invoice in move_id.filtered(lambda move: move.is_invoice()):
+                move_lines = payment.mapped('move_line_ids').filtered(lambda line: not line.reconciled and line.credit > 0.0)
+                for line in move_lines:
+                    invoice.js_assign_outstanding_line(line.id)
+            move_id.write({'pending_capture': False})
 
     # def do_request_call(self):
     #     PARTNER_ID = "PayPal"

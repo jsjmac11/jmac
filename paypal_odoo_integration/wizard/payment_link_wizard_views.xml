@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="payment.payment_link_wizard_view_form"/>
         <field name="arch" type="xml">
         	<xpath expr="//footer//button[1]" position="before">
-                <button name="send_payment_link" type="object" string="Send Mail" class="btn-primary"/>
+                <button name="send_payment_link" type="object" string="Send Email" class="btn-primary"/>
         	</xpath>
         </field>
     </record>

@@ -12,6 +12,14 @@ class AccountMove(models.Model):
     def capture_payment_action(self):
         sale_order_id = self.env['sale.order'].search([('name', '=', self.invoice_origin)])
         self.pending_capture = False
+        if sale_order_id:
+            sale_order_id.write({'pending_capture': False})
+            
+        for invoice in self.filtered(lambda move: move.is_invoice()):
+            payment = self.env['account.payment'].search([('sale_order_id', '=', sale_order_id.id)])
+            move_lines = payment.mapped('move_line_ids').filtered(lambda line: not line.reconciled and line.credit > 0.0)
+            for line in move_lines:
+                invoice.js_assign_outstanding_line(line.id)
 
 class AccountJournal(models.Model):
     _inherit = "account.journal"
