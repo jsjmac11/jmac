@@ -21,3 +21,6 @@ class PaymentLinkWizard(models.TransientModel):
         ir_model_data = self.env['ir.model.data']
         template = self.env.ref('sale.email_template_edi_sale', False)
         msg_ids = template.send_mail(record.id, force_send=True)
+        if record:
+            for order in record:
+                order.message_subscribe(partner_ids=order.partner_id.ids)
