@@ -14,6 +14,7 @@ class AccountMove(models.Model):
         self.pending_capture = False
         if sale_order_id:
             sale_order_id.write({'pending_capture': False})
+            sale_order_id.capture_payment_action()
             
         for invoice in self.filtered(lambda move: move.is_invoice()):
             payment = self.env['account.payment'].search([('sale_order_id', '=', sale_order_id.id)])
