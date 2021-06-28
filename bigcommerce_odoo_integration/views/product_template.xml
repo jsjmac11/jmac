@@ -28,19 +28,64 @@
                                 <field name="bigcommerce_category_ids" widget="many2many_tags"/>
                                 <!-- <field name="bigcommerce_category_ids" readonly="1"/> -->
                                 <field name="bigcommerce_store_id" readonly="1"/>
+                                <field name="brand_id"/>
                                 <field name="inventory_tracking"/>
                                 <field name="is_imported_from_bigcommerce"/>
+                                <field name="related_products"/>
                             </group>
                             <group>
                                 <field name="inventory_warning_level"/>
                                 <field name="is_visible"/>
                                 <field name="warranty"/>
+                                <field name="order_quantity_maximum"/>
+                                <field name="order_quantity_minimum"/>
+                                <field name="price_hidden_label"/>
+                                <field name="retail_price"/>
+                                <field name="tax_class_id"/>
+                            </group>
+                            <group>
+								<field name="allow_purchases"/>
+                                <field name="item_type"/>
+                                <field name="product_depth"/>
+                                <field name="gtin"/>
+                                <field name="height"/>
+                                <field name="width"/>
+                                <field name="map_price"/>
+                                <field name="option_set_align"/>
+                                <field name="product_image_description_1"/>                            
+                            	<field name="product_tax_class"/>
+                            	<field name="product_visible"/>
+                            	<field name="product_weight"/>
+                            	<field name="show_product_condition"/>
+                            	<field name="stop_processing_rules"/>
+                            	<field name="vendor_part_number"/>
+                            	<field name="option_set_display"/>
+                            </group>
+                            <group>
+								<field name="is_free_shipping"/>
+								<field name="is_featured"/>
+								<field name="is_preorder_only"/>
+								<field name="is_price_hidden"/>
+                                <field name="meta_description"/>
+                                <field name="meta_keywords"/>
+                                <field name="page_title"/>                            
+                            	<field name="product_availability"/>
+                            	<field name="product_condition"/>
+                            	<field name="product_URL"/>
+                            	<field name="search_keywords"/>
+                            	<field name="sort_order"/>
+                            	<field name="track_inventory"/>
+                            	<field name="product_type"/>
+                            	<field name="product_custom_fields"/>
                             </group>
                         </group>
                          <button type='object' class="fa fa-arrow-right oe_link" name="export_stock_from_odoo_to_bigcommerce"
                             string="Export Stock From Odoo To Bigcommerce"/>
                     </page>
                 </xpath>
+				<field name = "standard_price" position = "attributes">
+				    <attribute name="string">Cost Price</attribute>
+				</field>
             </field>
         </record>
         <record id="view_form_product_product_bigcommerce_info" model="ir.ui.view">

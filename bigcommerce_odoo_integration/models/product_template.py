@@ -20,21 +20,71 @@ class ProductTemplate(models.Model):
 
     bigcommerce_product_image_ids = fields.One2many('bigcommerce.product.image', 'product_template_id',
                                                     string="Bigcommerce Product Image Ids")
-    bigcommerce_product_id = fields.Char(string='Bigcommerce Product')
+    bigcommerce_product_id = fields.Char(string='Product ID')
     bigcommerce_store_id = fields.Many2one('bigcommerce.store.configuration',string="Bigcommerce Store",copy=False)
     is_exported_to_bigcommerce = fields.Boolean(string="Is Exported to Big Commerce ?")
     inventory_tracking = fields.Selection([
         ('none', 'Inventory Level will not be tracked'),
         ('product', 'Inventory Level Tracked using the Inventory Level'),
         ('variant', 'Inventory Level Tracked Based on variant')
-    ],default="none")
+    ], "Inventory Tracking", default="none")
     inventory_warning_level = fields.Integer(string="Inventory Warning Level")
-    is_visible = fields.Boolean(string="Product Should Be Visible to Customer",default=True)
-    warranty = fields.Char(string="Warranty Information")
+    inventory_level = fields.Integer(string="Inventory Level")
+    is_visible = fields.Boolean(string="Is Visible",default=True)
+    warranty = fields.Char(string="Warranty")
     is_imported_from_bigcommerce = fields.Boolean(string="Is Imported From Big Commerce ?")
-    x_studio_manufacturer = fields.Many2one('bc.product.brand',string='Manufacturer Brand')
+    x_studio_manufacturer = fields.Many2one('bc.product.brand',string='Brand ID')
     bigcommerce_category_ids = fields.Many2many('bigcommerce.category', 'product_big_categ_rel', 'product_id', 'category_id', string="Bigcommerce Category")
-
+    #Added new fields related to big commerce
+    allow_purchases = fields.Boolean('Allow Purchases?')
+    item_type = fields.Char('Item Type')
+    option_set_align = fields.Char('Option Set')
+    discontinued = fields.Boolean('Discontinued')
+    product_image_description_1 = fields.Char('Product Image Description - 1')
+    product_tax_class = fields.Selection([('Default Tax Class', 'Default Tax Class'),
+                                          ('Non-Taxable Products', 'Non-Taxable Products'),
+                                          ('Shipping', 'Shipping'),
+                                          ('Gift Wrapping', 'Gift Wrapping')], 'Product Tax Class')
+    product_visible = fields.Boolean('Product Visible?')
+    product_weight = fields.Float('Weight', default=1.0)
+    show_product_condition = fields.Boolean('Is Condition Shown?',
+                                            default=False)
+    stop_processing_rules = fields.Selection([('Y', 'Y'),
+                                                ('N', 'N')], 'Stop Processing Rules',
+                                            default='N')
+    vendor_part_number = fields.Char('Vendor Part Number')
+    
+    is_free_shipping = fields.Boolean('Free Shipping')
+    
+    meta_description = fields.Text('Meta Description')
+    
+    meta_keywords = fields.Char('Meta Keywords')
+    page_title = fields.Char('Page Title')
+    product_availability = fields.Boolean('Availability')
+    product_condition = fields.Char('Condition')
+    product_URL = fields.Char('URL Is Customized')
+    search_keywords = fields.Char('Search Keywords')
+    sort_order =  fields.Integer('Sort Order')
+    track_inventory = fields.Char('Track Inventory')
+    product_type = fields.Char('Type')
+    product_custom_fields = fields.Char('Product Custom Fields')
+    product_depth = fields.Integer('Depth')
+    gtin = fields.Char('GTIN')
+    height = fields.Integer("Height")
+    is_featured = fields.Boolean('Is Featured')
+    is_preorder_only = fields.Boolean('Is Preorder Only')
+    is_price_hidden = fields.Boolean('Is Price Hidden')
+    map_price = fields.Integer("MAP Price")
+    option_set_display = fields.Char('Option Set Display')
+    order_quantity_maximum = fields.Integer('Order Quantity Maximum', default=0)
+    order_quantity_minimum = fields.Integer('Order Quantity Minimum', default=0)
+    price_hidden_label = fields.Char('Price Hidden Label')
+    related_products = fields.Char('Related Products')
+    retail_price = fields.Float('Retail Price')
+    tax_class_id = fields.Integer('Tax Class ID')
+    width = fields.Integer('Width')
+    brand_id = fields.Integer("Brand ID")
+    
     def create_bigcommerce_operation(self,operation,operation_type,bigcommerce_store_id,log_message,warehouse_id):
         vals = {
                     'bigcommerce_operation': operation,
@@ -133,6 +183,12 @@ class ProductTemplate(models.Model):
         brand_id = self.env['bc.product.brand'].sudo().search([('bc_brand_id','=',record.get('brand_id'))],limit=1)
         _logger.info("BRAND : {0}".format(brand_id))
         description_sale = html2text.html2text(record.get('description'))
+        availability = False
+        condition = 'N'
+        if record.get('availability', False) == 'available':
+            availability = True
+        if record.get('is_condition_shown', False):
+            condition = 'Y'  
         vals = {
                 'name':template_title,
                 'type':'product',
@@ -146,7 +202,45 @@ class ProductTemplate(models.Model):
                 "default_code":record.get("sku"),
                 "is_imported_from_bigcommerce":True,
                 "x_studio_manufacturer":brand_id and brand_id.id,
-                "description_sale":description_sale
+                "description_sale":description_sale,
+                "allow_purchases": availability,
+                "item_type": record.get('type'),
+                "product_visible": record.get('is_visible'),
+                "product_weight": record.get('weight'),
+                "show_product_condition": record.get('condition'),
+                "product_type" : record.get('type'),
+                "vendor_part_numbe" : record.get('mpn'),
+                "track_inventory" : record.get('inventory_tracking'),
+                "sort_order" : record.get('sort_order'),
+                "show_product_condition" : record.get('is_condition_shown'),
+                "search_keywords" : record.get('search_keywords'),
+                "product_visible" : record.get('is_visible'),
+                "product_URL" : record.get('custom_url'),
+                "product_condition" : record.get('condition'),
+                "product_availability" :  record.get('availability'),
+                "page_title" : record.get('page_title'),
+                "meta_keywords" : record.get('meta_keywords'),
+                "meta_description" : record.get('meta_description'),
+                "is_free_shipping" : record.get('is_free_shipping'),
+                "standard_price": record.get('cost_price'),
+                "product_depth": record.get('depth'),
+                "gtin": record.get('gtin'),
+                "height": record.get('height'),
+                "inventory_level": record.get('inventory_level'),
+                "is_featured": record.get('is_featured'),
+                "option_set_align": record.get('option_set_align'),
+                "is_preorder_only": record.get('is_preorder_only'),
+                "is_price_hidden": record.get('is_price_hidden'),
+                "map_price": record.get("map_price"),
+                "option_set_display": record.get('option_set_display'),
+                "order_quantity_maximum": record.get('order_quantity_maximum'),
+                "order_quantity_minimum": record.get('order_quantity_minimum'),
+                "price_hidden_label": record.get('price_hidden_label'),
+                "related_products": record.get('related_products'),
+                "retail_price": record.get('retail_price'),
+                "tax_class_id" : record.get('tax_class_id'),
+                "width" : record.get('width'),
+                "brand_id" : record.get("brand_id")
                 }
         product_template = product_template_obj.with_user(1).create(vals)
         _logger.info("Product Created: {}".format(product_template))
@@ -240,6 +334,12 @@ class ProductTemplate(models.Model):
                                         return False, message
                                     brand_id = self.env['bc.product.brand'].sudo().search([('bc_brand_id','=',record.get('brand_id'))],limit=1)
                                     _logger.info("BRAND : {0}".format(brand_id))
+                                    availability = False
+                                    condition = 'N'
+                                    if record.get('availability', False) == 'available':
+                                        availability = True
+                                    if record.get('is_condition_shown', False):
+                                        condition = 'Y'
                                     product_template_id.write({
                                         "list_price": record.get("price"),
                                         "is_visible": record.get("is_visible"),
@@ -250,7 +350,45 @@ class ProductTemplate(models.Model):
                                         "is_imported_from_bigcommerce": True,
                                         "is_exported_to_bigcommerce": True,
                                         "x_studio_manufacturer":brand_id and brand_id.id,
-                                        "name":record.get('name')
+                                        "name":record.get('name'),
+                                        "allow_purchases": availability,
+                                        "item_type": record.get('type'),
+                                        "product_visible": record.get('is_visible'),
+                                        "product_weight": record.get('weight'),
+                                        "show_product_condition": record.get('condition'),
+                                        "product_type" : record.get('type'),
+                                        "vendor_part_numbe" : record.get('mpn'),
+                                        "track_inventory" : record.get('inventory_tracking'),
+                                        "sort_order" : record.get('sort_order'),
+                                        "show_product_condition" : record.get('is_condition_shown'),
+                                        "search_keywords" : record.get('search_keywords'),
+                                        "product_visible" : record.get('is_visible'),
+                                        "product_URL" : record.get('custom_url'),
+                                        "product_condition" : record.get('condition'),
+                                        "product_availability" :  record.get('availability'),
+                                        "page_title" : record.get('page_title'),
+                                        "meta_keywords" : record.get('meta_keywords'),
+                                        "meta_description" : record.get('meta_description'),
+                                        "is_free_shipping" : record.get('is_free_shipping'),
+                                        "standard_price": record.get('cost_price'),
+                                        "product_depth": record.get('depth'),
+                                        "gtin": record.get('gtin'),
+                                        "height": record.get('height'),
+                                        "inventory_level": record.get('inventory_level'),
+                                        "is_featured": record.get('is_featured'),
+                                        "option_set_align": record.get('option_set_align'),
+                                        "is_preorder_only": record.get('is_preorder_only'),
+                                        "is_price_hidden": record.get('is_price_hidden'),
+                                        "map_price": record.get("map_price"),
+                                        "option_set_display": record.get('option_set_display'),
+                                        "order_quantity_maximum": record.get('order_quantity_maximum'),
+                                        "order_quantity_minimum": record.get('order_quantity_minimum'),
+                                        "price_hidden_label": record.get('price_hidden_label'),
+                                        "related_products": record.get('related_products'),
+                                        "retail_price": record.get('retail_price'),
+                                        "tax_class_id" : record.get('tax_class_id'),
+                                        "width" : record.get('width'),
+                                        "brand_id" : record.get("brand_id")
                                     })
                                     self.with_user(1).create_bigcommerce_operation_detail('product', 'import', req_data, response_data,operation_id, warehouse_id, False, process_message)
                                     _logger.info("{0}".format(process_message))
@@ -335,6 +473,12 @@ class ProductTemplate(models.Model):
                     brand_id = self.env['bc.product.brand'].sudo().search([('bc_brand_id','=',record.get('brand_id'))],limit=1)
                     _logger.info("BRAND : {0}".format(brand_id))
                     description_sale = html2text.html2text(record.get('description'))
+                    availability = False
+                    condition = 'N'
+                    if record.get('availability', False) == 'available':
+                        availability = True
+                    if record.get('is_condition_shown', False):
+                        condition = 'Y'  
                     product_template_id.write({
                         "list_price": record.get("price"),
                         "is_visible": record.get("is_visible"),
@@ -346,7 +490,45 @@ class ProductTemplate(models.Model):
                         "is_exported_to_bigcommerce": True,
                         "name":product_name,
                         "x_studio_manufacturer":brand_id and brand_id.id,
-                        "description_sale":description_sale
+                        "description_sale":description_sale,
+                        "allow_purchases": availability,
+                        "item_type": record.get('type'),
+                        "product_visible": record.get('is_visible'),
+                        "product_weight": record.get('weight'),
+                        "show_product_condition": record.get('condition'),
+                        "product_type" : record.get('type'),
+                        "vendor_part_numbe" : record.get('mpn'),
+                        "track_inventory" : record.get('inventory_tracking'),
+                        "sort_order" : record.get('sort_order'),
+                        "show_product_condition" : record.get('is_condition_shown'),
+                        "search_keywords" : record.get('search_keywords'),
+                        "product_visible" : record.get('is_visible'),
+                        "product_URL" : record.get('custom_url'),
+                        "product_condition" : record.get('condition'),
+                        "product_availability" :  record.get('availability'),
+                        "page_title" : record.get('page_title'),
+                        "meta_keywords" : record.get('meta_keywords'),
+                        "meta_description" : record.get('meta_description'),
+                        "is_free_shipping" : record.get('is_free_shipping'),
+                        "standard_price": record.get('cost_price'),
+                        "product_depth": record.get('depth'),
+                        "gtin": record.get('gtin'),
+                        "height": record.get('height'),
+                        "inventory_level": record.get('inventory_level'),
+                        "is_featured": record.get('is_featured'),
+                        "option_set_align": record.get('option_set_align'),
+                        "is_preorder_only": record.get('is_preorder_only'),
+                        "is_price_hidden": record.get('is_price_hidden'),
+                        "map_price": record.get("map_price"),
+                        "option_set_display": record.get('option_set_display'),
+                        "order_quantity_maximum": record.get('order_quantity_maximum'),
+                        "order_quantity_minimum": record.get('order_quantity_minimum'),
+                        "price_hidden_label": record.get('price_hidden_label'),
+                        "related_products": record.get('related_products'),
+                        "retail_price": record.get('retail_price'),
+                        "tax_class_id" : record.get('tax_class_id'),
+                        "width" : record.get('width'),
+                        "brand_id" : record.get("brand_id")
                     })
                     _logger.info("{0}".format(process_message))
                     self._cr.commit()
