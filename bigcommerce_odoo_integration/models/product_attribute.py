@@ -79,7 +79,46 @@ class product_attribute(models.Model):
         else:
             attribute_data.update({"type": "rectangles","option_values":option_values })
         return attribute_data
-                    
+
+    def export_product_attribute_to_bigcommerce(self, warehouse_id=False, bigcommerce_store_ids=False):
+        for bigcommerce_store_id in bigcommerce_store_ids:
+            product_process_message = "Process Completed Successfully!"
+            bigcommerce_operation_details_obj = self.env['bigcommerce.operation.details']
+            operation_id = self.env['bigcommerce.operation']
+            if not operation_id:
+                operation_id = self.create_bigcommerce_operation('product_attribute','export',bigcommerce_store_id,'Processing...',warehouse_id)
+            try:
+                product_ids = self.env['product.template'].search([('attribute_line_ids','!=',False),('bigcommerce_product_id','!=',False),('is_exported_to_bigcommerce','=',True)])
+                _logger.info("List of Products Need to Export: {0}".format(product_ids))
+                for product_id in product_ids:
+                    for attribute_line in product_id.attribute_line_ids:
+                        variant_option_values = []
+                        attribute_id = attribute_line.attribute_id
+                        if not attribute_id.bigcommerce_attribute_id:
+                            attribute_request_data = self.attribute_request_data(product_id.bigcommerce_product_id,attribute_line)
+                            attribute_api_operation="/v3/catalog/products/{}/options".format(product_id.bigcommerce_product_id)
+                            response_data=bigcommerce_store_id.send_request_from_odoo_to_bigcommerce(attribute_request_data,attribute_api_operation)
+                            if response_data.status_code in [200, 201]:
+                                response_data = response_data.json()
+                                _logger.info("Attribute Response Data : %s" % (response_data))
+                                if response_data.get('data') and response_data.get('data').get("id"):
+                                    bigcommerce_attribute_id = response_data.get('data').get("id")
+                                    attribute_id.bigcommerce_attribute_id = bigcommerce_attribute_id
+                                    for option_value in response_data.get('data').get('option_values'):
+                                        attribute_value = self.env['product.attribute.value'].search([('name','=',option_value.get('label'))],limit=1)
+                                        attribute_value.bigcommerce_value_id = option_value.get('id')
+                                        process_message="{0} : Attribute Added/Changed".format(attribute_value and attribute_value.name)
+                                        self.create_bigcommerce_operation_detail('product_attribute','export',attribute_request_data,response_data,operation_id,warehouse_id,False,process_message)
+                            else:
+                                response_data = response_data.json()
+                                error_msg = response_data.get('errors')
+                                self.create_bigcommerce_operation_detail('product_attribute','export',attribute_request_data,error_msg,operation_id,warehouse_id,True,error_msg)
+            except Exception as e:
+                product_process_message = "Process Is Not Completed Yet!  {}".format(e)
+                self.create_bigcommerce_operation_detail('product_attribute','export',"",e,operation_id,warehouse_id,True,product_process_message)
+            operation_id and operation_id.write({'bigcommerce_message': product_process_message})
+            self._cr.commit()
+
     def import_product_attribute_from_bigcommerce(self,warehouse_id=False, bigcommerce_store_ids=False,product_objs=False,operation_id=False):
         for bigcommerce_store_id in bigcommerce_store_ids:
             process_complete = False

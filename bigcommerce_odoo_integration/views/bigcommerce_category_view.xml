@@ -33,7 +33,7 @@
                             <field name="parent_id"/>
                             <field name="display_name" invisible="1"/>
                             <field name="complete_name" invisible="1"/>
-                            <field name="bigcommerce_store_id" readonly="1"/>
+                            <field name="bigcommerce_store_id" readonly="0"/>
                             <field name="bigcommerce_parent_category_id" />
                             <field name="bigcommerce_product_category_id" readonly="1"/>
                             <field name="custom_url" />
@@ -49,11 +49,22 @@
             <field name="name">Bigcommerce Category</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">bigcommerce.category</field>
+            <field name="domain">[('is_exported_to_bigcommerce','=',True)]</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_bigcommerce_product_category_tree_view"/>
             <field name="domain">[]</field>
         </record>
 
+        <record id="action_exported_category_to_bigcommerce" model="ir.actions.server">
+                <field name="name">Export Product Category to BigCommerce</field>
+                <field name="type">ir.actions.server</field>
+                <field name="state">code</field>
+                <field name="model_id" ref="model_bigcommerce_category"/>
+                <field name="binding_model_id" ref="model_bigcommerce_category"/>
+                <field name="code">
+                      records.export_product_category_to_bigcommerce()
+                </field>
+        </record>
         <menuitem id="menu_bigcommerce_product_category" name="Bigcommerce Product Category"
             parent="bigcommerce_odoo_integration_store_menuitem" sequence="3"
             action="action_bigcommerce_product_category_new" />

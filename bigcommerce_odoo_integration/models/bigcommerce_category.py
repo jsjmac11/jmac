@@ -30,20 +30,28 @@ class BigCommerceCategory(models.Model):
             else:
                 category.complete_name = category.name
 
+    @api.onchange('parent_id')
+    def onchange_parent_id(self):
+        if self.parent_id:
+            self.bigcommerce_parent_category_id = self.parent_id.bigcommerce_product_category_id
+        else:
+            self.bigcommerce_parent_category_id = False
+
     def export_product_category_to_bigcommerce(self):
         if self._context.get('active_model') == 'bigcommerce.category':
             category_ids = self.env.context.get('active_ids')
             category_objs = self.env['bigcommerce.category'].browse(category_ids)
+            self.odoo_to_bigcommerce_export_product_categories(bigcommerce_store_ids= category_objs.bigcommerce_store_id,new_category_id=category_objs)
             category_objs.write({'is_exported_to_bigcommerce':True})
         return
 
     def create_bigcommerce_operation(self,operation,operation_type,bigcommerce_store_id,log_message,warehouse_id):
         vals = {
                     'bigcommerce_operation': operation,
-                   'bigcommerce_operation_type': operation_type,
-                   'bigcommerce_store': bigcommerce_store_id and bigcommerce_store_id.id ,
-                   'bigcommerce_message': log_message,
-                   'warehouse_id': warehouse_id and warehouse_id.id or False
+                    'bigcommerce_operation_type': operation_type,
+                    'bigcommerce_store': bigcommerce_store_id and bigcommerce_store_id.id ,
+                    'bigcommerce_message': log_message,
+                    'warehouse_id': warehouse_id and warehouse_id.id or False
                    }
         operation_id = self.env['bigcommerce.operation'].create(vals)
         return  operation_id
@@ -51,13 +59,13 @@ class BigCommerceCategory(models.Model):
     def create_bigcommerce_operation_detail(self,operation,operation_type,req_data,response_data,operation_id,warehouse_id=False,fault_operation=False,process_message=False):
         bigcommerce_operation_details_obj = self.env['bigcommerce.operation.details']
         vals = {
-                   'bigcommerce_operation': operation,
-                   'bigcommerce_operation_type': operation_type,
-                   'bigcommerce_request_message': '{}'.format(req_data),
-                   'bigcommerce_response_message': '{}'.format(response_data),
-                   'operation_id':operation_id.id,
-                   'warehouse_id': warehouse_id and warehouse_id.id or False,
-                   'fault_operation':fault_operation,
+                    'bigcommerce_operation': operation,
+                    'bigcommerce_operation_type': operation_type,
+                    'bigcommerce_request_message': '{}'.format(req_data),
+                    'bigcommerce_response_message': '{}'.format(response_data),
+                    'operation_id':operation_id.id,
+                    'warehouse_id': warehouse_id and warehouse_id.id or False,
+                    'fault_operation':fault_operation,
                     'process_message':process_message,
                    }
         operation_detail_id = bigcommerce_operation_details_obj.create(vals)
@@ -78,13 +86,16 @@ class BigCommerceCategory(models.Model):
             "default_product_sort": "use_store_settings",
             "custom_url": {"url": "/{}/".format(category_name),"is_customized": False}}
 
-    def odoo_to_bigcommerce_export_product_categories(self, warehouse_id=False, bigcommerce_store_ids=False):
+    def odoo_to_bigcommerce_export_product_categories(self, warehouse_id=False, bigcommerce_store_ids=False, new_category_id=False):
         for bigcommerce_store_id in bigcommerce_store_ids:
             category_process_message = "Process Completed Successfully!"
             category_operation_id = self.create_bigcommerce_operation('product_category','export',bigcommerce_store_id,'Processing...',warehouse_id)
             self._cr.commit()
             try:
-                category_ids = self.search([('bigcommerce_product_category_id', '=', False),('is_exported_to_bigcommerce','=',True)])
+                if not new_category_id:
+                    category_ids = self.search([('bigcommerce_product_category_id', '=', False),('is_exported_to_bigcommerce','=',False)])
+                else:
+                    category_ids = new_category_id
                 _logger.info("List of Product Category Need to Export: {0}".format(category_ids))
                 if not category_ids:
                     category_process_message="Product is not exists in odoo for export odoo to bigCommerce!"
