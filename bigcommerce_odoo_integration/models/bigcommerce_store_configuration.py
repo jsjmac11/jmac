@@ -103,7 +103,22 @@ class BigCommerceStoreConfiguration(models.Model):
         except Exception as e:
             _logger.info("Getting an Error in GET Req odoo to BigCommerce: {0}".format(e))
             return e
-    
+
+    def odoo_to_bigcommerce_export_product_categories_main(self):
+        product_category_obj = self.env['bigcommerce.category']
+        import_categorires = product_category_obj.odoo_to_bigcommerce_export_product_categories(bigcommerce_store_ids= self)
+        return import_categorires
+
+    def export_product_to_bigcommerce_main(self):
+        product_obj = self.env['product.template']
+        export_product =product_obj.export_product_to_bigcommerce(self.warehouse_id, self)
+        return export_product
+
+    def export_product_attribute_to_bigcommerce_main(self):
+        product_attribute_obj = self.env['product.attribute']
+        export_attribute =product_attribute_obj.export_product_attribute_to_bigcommerce(self.warehouse_id,self)
+        return export_attribute
+
     def bigcommerce_to_odoo_import_product_brands_main(self):
         self.bigcommerce_operation_message = "Import Product Brand Process Running..."
         self._cr.commit()
@@ -122,6 +137,11 @@ class BigCommerceStoreConfiguration(models.Model):
             import_brand =  product_brand_obj.bigcommerce_to_odoo_import_product_brands(self.warehouse_id,
                                                                                                    self)
             return import_brand
+
+    def export_product_variant_to_bigcommerce_main(self):
+        product_obj = self.env['product.template']
+        export_variant = product_obj.export_product_variant_to_bigcommerce(self.warehouse_id, self)
+        return export_variant
 
     def bigcommerce_to_odoo_import_product_categories_main(self):
         self.bigcommerce_operation_message = "Import Product Categories Process Running..."
@@ -151,7 +171,6 @@ class BigCommerceStoreConfiguration(models.Model):
             env_thread1 = api.Environment(cr, SUPERUSER_ID, self._context)
             t = Thread(target=self.import_product_from_bigcommerce, args=())
             t.start()
-
 
     def import_product_from_bigcommerce(self):
         with api.Environment.manage():

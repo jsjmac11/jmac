@@ -9,7 +9,6 @@ class ResPartner(models.Model):
     bigcommerce_customer_id = fields.Char("Bigcommerce Customer ID", copy=False)
     is_available_in_bigcommerce = fields.Boolean(string='Is Exported to BigCommerce',default=False)
 
-    
     def create_bigcommerce_operation(self,operation,operation_type,bigcommerce_store_id,log_message,warehouse_id):
         vals = {
                     'bigcommerce_operation': operation,

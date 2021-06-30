@@ -115,7 +115,7 @@
             <field name="model_id" ref="product.model_product_template"/>
             <field name="binding_model_id" ref="product.model_product_template"/>
             <field name="code">
-                records.is_export_product_to_bigcommerce()
+                records.export_product_new_to_bigcommerce()
             </field>
         </record>
            <record id="added_x_studio_manufacturer_product_template_form_view" model="ir.ui.view">

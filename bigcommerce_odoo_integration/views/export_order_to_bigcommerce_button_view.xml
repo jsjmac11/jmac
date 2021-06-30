@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+	<data>
+        <record id="export_order_to_big" model="ir.ui.view">
+            <field name="name">Export Order Button</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                    <header>
+                     <button name="exportordertobigcommerce" type="object" string="Export Order"  />
+                      <button name="get_shipped_qty" type="object" string="BigCommerce Shipped Qty"   />
+                 </header>
+            </field>
+        </record>
+	</data>
+</odoo>

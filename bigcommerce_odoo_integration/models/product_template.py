@@ -15,6 +15,42 @@ class ProductProduct(models.Model):
     
     bigcommerce_product_variant_id = fields.Char(string='Bigcommerce Product Variant ID')
     
+    def export_stock_from_odoo_to_bigcommerce(self):
+        try:
+            if not self.bigcommerce_store_id:
+                raise ValidationError("Big commerce store not found fot this product.")
+            api_operation = "/v3/catalog/products/{0}/variants/{1}".format(self.bigcommerce_product_id,self.bigcommerce_product_variant_id) if self.bigcommerce_product_variant_id else "/v3/catalog/products/{0}".format(self.bigcommerce_product_id)
+            request_data ={"inventory_level": int(self.qty_available)}
+
+            headers = {"Accept": "application/json",
+                       "X-Auth-Client": "{}".format(self.bigcommerce_store_id and self.bigcommerce_store_id.bigcommerce_x_auth_client),
+                       "X-Auth-Token": "{}".format(self.bigcommerce_store_id and self.bigcommerce_store_id.bigcommerce_x_auth_token),
+                       "Content-Type": "application/json"}
+            data = json.dumps(request_data)
+            url = "{0}{1}{2}".format(self.bigcommerce_store_id.bigcommerce_api_url, self.bigcommerce_store_id.bigcommerce_store_hash, api_operation)
+            try:
+                _logger.info("Send POST Request From odoo to BigCommerce: {0}".format(url))
+                response_data =  request(method='PUT', url=url, data=data, headers=headers)
+            except Exception as e:
+                _logger.info("Getting an Error in POST Req odoo to BigCommerce: {0}".format(e))
+                raise ValidationError(e)
+            if response_data.status_code in [200, 201]:
+                response_data = response_data.json()
+                return {
+                    'effect': {
+                        'fadeout': 'slow',
+                        'message': 'Product Stock Exported : %s' % (self.name),
+                        'img_url': '/web/static/src/img/smile.svg',
+                        'type': 'rainbow_man',
+                    }
+                }
+            else:
+                response_data = response_data.json()
+                error_msg = "{0} : {1}".format(self.name, response_data)
+                raise ValidationError(error_msg)
+        except Exception as e:
+            raise ValidationError("Process Is Not Completed Yet!  {}".format(e))
+
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
@@ -85,6 +121,10 @@ class ProductTemplate(models.Model):
     width = fields.Integer('Width')
     brand_id = fields.Integer("Brand ID")
     
+
+    def export_stock_from_odoo_to_bigcommerce(self):
+        raise ValidationError("Kindly Export product using product variant menu!")
+
     def create_bigcommerce_operation(self,operation,operation_type,bigcommerce_store_id,log_message,warehouse_id):
         vals = {
                     'bigcommerce_operation': operation,
@@ -152,6 +192,100 @@ class ProductTemplate(models.Model):
         product_data.update({"option_values":option_values})
         return product_data
             
+    def is_export_product_to_bigcommerce(self):
+        """
+        Description : Set as Export to Bigcommerce True.
+        """
+        if self._context.get('active_model') == 'product.template':
+            product_ids = self.env.context.get('active_ids')
+            product_objs = self.env['product.template'].browse(product_ids)
+            product_objs.write({'is_exported_to_bigcommerce':True})
+        return
+
+    def export_product_new_to_bigcommerce(self):
+        if self._context.get('active_model') == 'product.template':
+            product_ids = self.env.context.get('active_ids')
+            product_objs = self.env['product.template'].browse(product_ids)
+            self.export_product_to_bigcommerce(bigcommerce_store_ids= product_objs.bigcommerce_store_id,new_product_id=product_objs)
+            product_objs.write({'is_exported_to_bigcommerce':True})
+        return
+
+    def export_product_to_bigcommerce(self, warehouse_id=False, bigcommerce_store_ids=False,new_product_id=False):
+        for bigcommerce_store_id in bigcommerce_store_ids:
+            product_process_message = "Process Completed Successfully!"
+            bigcommerce_operation_details_obj = self.env['bigcommerce.operation.details']
+            operation_id = self.env['bigcommerce.operation']
+            if not operation_id:
+                operation_id = self.create_bigcommerce_operation('product','export',bigcommerce_store_id,'Processing...',warehouse_id)
+            try:
+                if not new_product_id:
+                    product_ids = self.search([('bigcommerce_product_id','=',False),('is_exported_to_bigcommerce','=',False)])
+                else:
+                    product_ids = new_product_id
+                _logger.info("List of Products Need to Export: {0}".format(product_ids))
+                for product_id in product_ids:
+                    product_request_data = self.product_request_data(product_id,warehouse_id)
+                    api_operation="/v3/catalog/products"
+                    response_data=bigcommerce_store_id.send_request_from_odoo_to_bigcommerce(product_request_data,api_operation)
+                    _logger.info("Status Code of Export Product : {0}".format(response_data.status_code))
+                    if response_data.status_code in [200, 201]:
+                        response_data = response_data.json()
+                        _logger.info("Product Response Data : %s" % (response_data))
+                        if response_data.get('data') and response_data.get('data').get("id"):
+                            bigcommerce_product_id = response_data.get('data').get("id")
+                            product_id.bigcommerce_product_id=bigcommerce_product_id
+                            product_id.bigcommerce_store_id=bigcommerce_store_id.id
+                            process_message="{0} : Product Operation Sucessfully Completed".format(product_id.name)
+                            self.create_bigcommerce_operation_detail('product','export',product_request_data,response_data,operation_id,warehouse_id,False,process_message)
+                            product_variant_option = "/v3/catalog/products/{}/variants".format(product_id.bigcommerce_product_id)
+                        else:
+                            process_message="{0} : {1}".format(product_id.name, response_data)
+                            self.create_bigcommerce_operation_detail('product','export',product_request_data,response_data,operation_id,warehouse_id,True,response_data)
+                    else:
+                        response_data = response_data.json()
+                        process_message = "{0} : {1}".format(product_id.name ,response_data.get('errors'))
+                        self.create_bigcommerce_operation_detail('product','export',product_request_data,process_message,operation_id,warehouse_id,True,process_message)
+                    self._cr.commit()
+            except Exception as e:
+                product_process_message = "Process Is Not Completed Yet!  {}".format(e)
+                self.create_bigcommerce_operation_detail('product','export',product_request_data,response_data,operation_id,warehouse_id,True,product_process_message)
+            operation_id and operation_id.write({'bigcommerce_message': product_process_message})
+            self._cr.commit()
+
+    def export_product_variant_to_bigcommerce(self, warehouse_id=False, bigcommerce_store_ids=False):
+        for bigcommerce_store_id in bigcommerce_store_ids:
+            product_process_message = "Process Completed Successfully!"
+            operation_id = self.env['bigcommerce.operation']
+            if not operation_id:
+                operation_id = self.create_bigcommerce_operation('product_variant','export',bigcommerce_store_id,'Processing...',warehouse_id)
+            try:
+                product_ids = self.search([('product_variant_ids','!=',False),('bigcommerce_product_id','!=',False),('is_exported_to_bigcommerce','=',True),('product_variant_ids.attribute_value_ids','!=',False)])
+                _logger.info("List of Products Need to Export: {0}".format(product_ids))
+                for product_id in product_ids:
+                    for product_variant in product_id.product_variant_ids:
+                        product_variant_request_data = self.product_variant_request_data(product_variant)
+                        variant_api_operation="/v3/catalog/products/{}/variants".format(product_id.bigcommerce_product_id)
+                        response_data=bigcommerce_store_id.send_request_from_odoo_to_bigcommerce(product_variant_request_data,variant_api_operation)
+                        if response_data.status_code in [200, 201]:
+                            response_data = response_data.json()
+                            _logger.info("Attribute Response Data : %s" % (response_data))
+                            if response_data.get('data') and response_data.get('data').get("id"):
+                                bigcommerce_product_variant_id = response_data.get('data').get("id")
+                                product_variant.bigcommerce_product_variant_id = bigcommerce_product_variant_id
+                                for option_value in response_data.get('data').get('option_values'):
+                                    attribute_value = self.env['product.attribute.value'].search([('name','=',option_value.get('label'))],limit=1)
+                                    attribute_value.bigcommerce_value_id = option_value.get('id')
+                                process_message="{0} : Variant Added/Changed".format(product_variant.name)
+                                self.create_bigcommerce_operation_detail('product_variant','export',product_variant_request_data,response_data,operation_id,warehouse_id,False,process_message)
+                        else:
+                            response_data = response_data.json()
+                            error_msg = "{0} : {1}".format(product_variant.name,response_data.get('errors'))
+                            self.create_bigcommerce_operation_detail('product_variant','export',product_variant_request_data,error_msg,operation_id,warehouse_id,True,error_msg)
+            except Exception as e:
+                product_process_message = "Process Is Not Completed Yet!  {}".format(e)
+                self.create_bigcommerce_operation_detail('product_variant','export',"","",operation_id,warehouse_id,True,product_process_message)
+            operation_id and operation_id.write({'bigcommerce_message': product_process_message})
+            self._cr.commit()
     def create_product_template(self,record,store_id):
         product_attribute_obj = self.env['product.attribute']
         product_attribute_value_obj = self.env['product.attribute.value']

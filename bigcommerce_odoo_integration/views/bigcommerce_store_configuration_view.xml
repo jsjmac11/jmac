@@ -28,11 +28,11 @@
                             <field name="warehouse_id" required="1" />
                             <field name="last_modification_date" />
                             <field name="bigcommerce_operation_message"  readonly="1"/>
-			    <field name="auto_import_orders" />
+                            <field name="auto_import_orders" />
                         </group>
                         <group>
-                        	<field name="bigcommerce_product_id" />
-                        	<button name="import_product_manually_from_bigcommerce" string="Import Single Product"  type="object"  class="fa fa-arrow-right oe_link"/>
+                            <field name="bigcommerce_product_id" />
+                            <button name="import_product_manually_from_bigcommerce" string="Import Single Product"  type="object"  class="fa fa-arrow-right oe_link"/>
                         </group>
                         <group>
                             <field name="source_of_import_data" />
@@ -41,40 +41,53 @@
                         </group>
                     </group>
                     <notebook>
-                      <page string="Bigcommerce To Odoo Import">
-                      <table style="margin-top:35px">
-                        <tr>
-                          <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_product_categories_main" string="Import Product Categories" type="object" class="oe_highlight" /></td>
-                          <td style="padding-left:60px"><button name="import_product_from_bigcommerce_main" string="Import Products" type="object" class="oe_highlight"/></td>
-                        </tr>
-                        <br/>
-                        <tr>
-                          <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_customers_main" string="Import Customers" type="object" class="oe_highlight" /></td>
-                           <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_orders_main" string="Import Orders" type="object" class="oe_highlight" /></td>
-                        </tr>
-                          <br/>
-                         <tr>
-                          <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_product_brands_main" string="Import Product Brand" type="object" class="oe_highlight" /></td>
-                        </tr>
-                          <br/>
-                      </table>
-                      </page>
+                        <page string="Odoo To Bigcommerce Export">
+                            <table style="margin-top:35px">
+                                <tr>
+                                    <td style="padding-left:60px"><button name="odoo_to_bigcommerce_export_product_categories_main" string="Export Product Categories" type="object" class="oe_highlight" /></td>
+                                    <td style="padding-left:60px"><button name="import_product_from_bigcommerce_main" string="Export Products" type="object" class="oe_highlight"/></td>
+                                </tr>
+                                <br/>
+                                <!-- <tr>
+                                  <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_customers_main" string="Export Customers" type="object" class="oe_highlight" /></td>
+                                   <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_orders_main" string="Export Orders" type="object" class="oe_highlight" /></td>
+                                </tr> -->
+                            </table>
+                        </page>
+                        <page string="Bigcommerce To Odoo Import">
+                            <table style="margin-top:35px">
+                                <tr>
+                                    <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_product_categories_main" string="Import Product Categories" type="object" class="oe_highlight" /></td>
+                                    <td style="padding-left:60px"><button name="import_product_from_bigcommerce_main" string="Import Products" type="object" class="oe_highlight"/></td>
+                                </tr>
+                                <br/>
+                                <tr>
+                                    <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_customers_main" string="Import Customers" type="object" class="oe_highlight" /></td>
+                                    <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_orders_main" string="Import Orders" type="object" class="oe_highlight" /></td>
+                                </tr>
+                                <br/>
+                                <tr>
+                                    <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_product_brands_main" string="Import Product Brand" type="object" class="oe_highlight" /></td>
+                                </tr>
+                                <br/>
+                            </table>
+                        </page>
                     </notebook>
                 </sheet>
             </form>
         </field>
     </record>
-	<record id="bigcommerce_store_configuraion_tree_view" model="ir.ui.view">
-				<field name="name">Bigcommerce Store Configuration</field>
-				<field name="model">bigcommerce.store.configuration</field>
-				<field name="type">tree</field>
-				<field name="arch" type="xml">
-					<tree>
-						<field name='name'/>
-						<field name="bigcommerce_store_hash" />
-					</tree>
-				</field>
-	</record>
+    <record id="bigcommerce_store_configuraion_tree_view" model="ir.ui.view">
+        <field name="name">Bigcommerce Store Configuration</field>
+        <field name="model">bigcommerce.store.configuration</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name='name'/>
+                <field name="bigcommerce_store_hash" />
+            </tree>
+        </field>
+    </record>
     
     <record id="bigcommerce_store_configuration_action" model="ir.actions.act_window">
         <field name="name">Bigcommerce Store Configuration</field>
@@ -82,7 +95,7 @@
         <field name='view_mode'>tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Configure Store.
-		    </p>
+            </p>
         </field>
     </record>
     <menuitem name="Bigcommerce Configuration" id="bigcommerce_store_configuration"
