@@ -42,7 +42,7 @@ class BigCommerceCategory(models.Model):
             category_ids = self.env.context.get('active_ids')
             category_objs = self.env['bigcommerce.category'].browse(category_ids)
             self.odoo_to_bigcommerce_export_product_categories(bigcommerce_store_ids= category_objs.bigcommerce_store_id,new_category_id=category_objs)
-            category_objs.write({'is_exported_to_bigcommerce':True})
+            # category_objs.write({'is_exported_to_bigcommerce':True})
         return
 
     def create_bigcommerce_operation(self,operation,operation_type,bigcommerce_store_id,log_message,warehouse_id):
@@ -111,6 +111,7 @@ class BigCommerceCategory(models.Model):
                             bigcommerce_category_id = response_data.get('data').get("id")
                             category_id.bigcommerce_product_category_id=bigcommerce_category_id
                             category_id.bigcommerce_store_id=bigcommerce_store_id.id
+                            category_id.is_exported_to_bigcommerce = True
                             process_message="%s : %s Product Category Exported Successfully."%(bigcommerce_category_id,category_id.name)
                             self.create_bigcommerce_operation_detail('product_category','export',category_request_data,response_data,category_operation_id,warehouse_id,False,process_message)
                         else:
