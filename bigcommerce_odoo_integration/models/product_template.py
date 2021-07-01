@@ -120,7 +120,16 @@ class ProductTemplate(models.Model):
     tax_class_id = fields.Integer('Tax Class ID')
     width = fields.Integer('Width')
     brand_id = fields.Integer("Brand ID")
-    
+    free_shipping_override = fields.Char("Free Shipping Override")
+    photos_cloned_from = fields.Char("Photos Cloned From")
+    description_override = fields.Char("Description Override")
+    image_file_override = fields.Char("Image File Override")
+    search_keywords_override = fields.Char("Search Keywords Override")
+    super_pmo = fields.Char("Super PMO")
+    pmo = fields.Char("PMO")
+    pack_qty = fields.Integer("Pack Qty")
+    image_is_thumbnail = fields.Image("Image Is Thumbnail")
+    image_sort = fields.Image("Image Sort")    
 
     def export_stock_from_odoo_to_bigcommerce(self):
         raise ValidationError("Kindly Export product using product variant menu!")

@@ -28,13 +28,14 @@
                                 <field name="bigcommerce_category_ids" widget="many2many_tags"/>
                                 <!-- <field name="bigcommerce_category_ids" readonly="1"/> -->
                                 <field name="bigcommerce_store_id" readonly="1"/>
-                                <field name="brand_id"/>
+                                <!-- <field name="brand_id"/> -->
                                 <field name="inventory_tracking"/>
                                 <field name="is_imported_from_bigcommerce"/>
                                 <field name="related_products"/>
                             </group>
                             <group>
                                 <field name="inventory_warning_level"/>
+                                <field name="inventory_level"/>
                                 <field name="is_visible"/>
                                 <field name="warranty"/>
                                 <field name="order_quantity_maximum"/>
@@ -60,6 +61,12 @@
                             	<field name="stop_processing_rules"/>
                             	<field name="vendor_part_number"/>
                             	<field name="option_set_display"/>
+                            	<field name="free_shipping_override"/>
+                            	<field name="photos_cloned_from"/>
+                            	<field name="description_override"/>
+                            	<field name="pack_qty"/>
+                            	<field name="image_is_thumbnail"/>
+                            	<field name="image_sort"/>
                             </group>
                             <group>
 								<field name="is_free_shipping"/>
@@ -77,6 +84,10 @@
                             	<field name="track_inventory"/>
                             	<field name="product_type"/>
                             	<field name="product_custom_fields"/>
+                            	<field name="image_file_override"/>
+                            	<field name="search_keywords_override"/>
+                            	<field name="super_pmo"/>
+                            	<field name="pmo"/>
                             </group>
                         </group>
                          <button type='object' class="fa fa-arrow-right oe_link" name="export_stock_from_odoo_to_bigcommerce"
