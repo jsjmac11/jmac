@@ -104,14 +104,16 @@ class BigCommerceStoreConfiguration(models.Model):
             _logger.info("Getting an Error in GET Req odoo to BigCommerce: {0}".format(e))
             return e
 
+    # EXPORT CATEGORY
     def odoo_to_bigcommerce_export_product_categories_main(self):
         product_category_obj = self.env['bigcommerce.category']
         import_categorires = product_category_obj.odoo_to_bigcommerce_export_product_categories(bigcommerce_store_ids= self)
         return import_categorires
 
+    # EXPORT PRODUCT
     def export_product_to_bigcommerce_main(self):
         product_obj = self.env['product.template']
-        export_product =product_obj.export_product_to_bigcommerce(self.warehouse_id, self)
+        export_product =product_obj.export_product_to_bigcommerce(bigcommerce_store_ids=self,new_product_id=product_obj, warehouse_id=self.warehouse_id)
         return export_product
 
     def export_product_attribute_to_bigcommerce_main(self):
@@ -134,8 +136,7 @@ class BigCommerceStoreConfiguration(models.Model):
             new_cr = registry(self._cr.dbname).cursor()
             self = self.with_env(self.env(cr=new_cr))
             product_brand_obj = self.env['bc.product.brand']
-            import_brand =  product_brand_obj.bigcommerce_to_odoo_import_product_brands(self.warehouse_id,
-                                                                                                   self)
+            import_brand =  product_brand_obj.bigcommerce_to_odoo_import_product_brands(self.warehouse_id, self)
             return import_brand
 
     def export_product_variant_to_bigcommerce_main(self):
@@ -158,8 +159,7 @@ class BigCommerceStoreConfiguration(models.Model):
             new_cr = registry(self._cr.dbname).cursor()
             self = self.with_env(self.env(cr=new_cr))
             product_category_obj = self.env['bigcommerce.category']
-            import_categories = product_category_obj.bigcommerce_to_odoo_import_product_categories(self.warehouse_id,
-                                                                                                   self)
+            import_categories = product_category_obj.bigcommerce_to_odoo_import_product_categories(self.warehouse_id, self)
             return import_categories
 
     def import_product_from_bigcommerce_main(self):
@@ -218,7 +218,6 @@ class BigCommerceStoreConfiguration(models.Model):
             env_thread1 = api.Environment(cr, SUPERUSER_ID, self._context)
             t = Thread(target=self.bigcommerce_to_odoo_import_orders, args=())
             t.start()
-
 
     def bigcommerce_to_odoo_import_orders(self):
         with api.Environment.manage():

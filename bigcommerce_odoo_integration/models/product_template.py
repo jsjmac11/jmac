@@ -137,11 +137,11 @@ class ProductTemplate(models.Model):
     def create_bigcommerce_operation(self,operation,operation_type,bigcommerce_store_id,log_message,warehouse_id):
         vals = {
                     'bigcommerce_operation': operation,
-                   'bigcommerce_operation_type': operation_type,
-                   'bigcommerce_store': bigcommerce_store_id and bigcommerce_store_id.id,
-                   'bigcommerce_message': log_message,
-                   'warehouse_id': warehouse_id and warehouse_id.id or False
-                   }
+                    'bigcommerce_operation_type': operation_type,
+                    'bigcommerce_store': bigcommerce_store_id and bigcommerce_store_id.id,
+                    'bigcommerce_message': log_message,
+                    'warehouse_id': warehouse_id and warehouse_id.id or False
+                }
         operation_id = self.env['bigcommerce.operation'].create(vals)
         return  operation_id
 
@@ -149,14 +149,14 @@ class ProductTemplate(models.Model):
         bigcommerce_operation_details_obj = self.env['bigcommerce.operation.details']
         vals = {
                     'bigcommerce_operation': operation,
-                   'bigcommerce_operation_type': operation_type,
-                   'bigcommerce_request_message': '{}'.format(req_data),
-                   'bigcommerce_response_message': '{}'.format(response_data),
-                   'operation_id':operation_id.id,
-                   'warehouse_id': warehouse_id and warehouse_id.id or False,
-                   'fault_operation':fault_operation,
+                    'bigcommerce_operation_type': operation_type,
+                    'bigcommerce_request_message': '{}'.format(req_data),
+                    'bigcommerce_response_message': '{}'.format(response_data),
+                    'operation_id':operation_id.id,
+                    'warehouse_id': warehouse_id and warehouse_id.id or False,
+                    'fault_operation':fault_operation,
                     'process_message':process_message
-                   }
+                }
         operation_detail_id = bigcommerce_operation_details_obj.create(vals)
         return operation_detail_id
 
@@ -166,19 +166,24 @@ class ProductTemplate(models.Model):
         """
         product_variants = []
         product_name = product_id and product_id.name
+        if warehouse_id:
+            qty_available = product_id.with_context(warehouse=warehouse_id.id).qty_available
+        else:
+            qty_available = product_id.qty_available
+
         product_data = {
             "name": product_id.name,
-              "price": product_id.list_price,
-              "categories": [int(product_id.categ_id and product_id.categ_id.bigcommerce_product_category_id)],
-              "weight": product_id.weight or 1.0,
-              "type": "physical",
-              "sku":product_id.default_code or '',
-              "description":product_id.name,
-              "cost_price":product_id.standard_price,
-              "inventory_tracking":product_id.inventory_tracking,
-              "inventory_level":product_id.with_context(warehouse=warehouse_id.id).qty_available,
-              "is_visible":product_id.is_visible,
-              "warranty":product_id.warranty or ''
+            "price": product_id.list_price,
+            "categories": product_id.bigcommerce_category_ids and product_id.bigcommerce_category_ids.mapped("bigcommerce_product_category_id"),
+            "weight": product_id.weight or 1.0,
+            "type": "physical",
+            "sku":product_id.default_code or '',
+            "description":product_id.name,
+            "cost_price":product_id.standard_price,
+            "inventory_tracking":product_id.inventory_tracking,
+            "inventory_level":int(qty_available),
+            "is_visible":product_id.is_visible,
+            "warranty":product_id.warranty or ''
         }
         return  product_data
 
@@ -189,34 +194,24 @@ class ProductTemplate(models.Model):
         """
         option_values = []
         product_data = {
-          "cost_price":product_variant.standard_price,
-          "price": product_variant.lst_price,
-          "weight": product_variant.weight or 1.0,
-          "sku":product_variant.default_code or '',
-          "product_id":product_variant.product_tmpl_id.bigcommerce_product_id
+            "cost_price":product_variant.standard_price,
+            "price": product_variant.lst_price,
+            "weight": product_variant.weight or 1.0,
+            "sku":product_variant.default_code or '',
+            "product_id":product_variant.product_tmpl_id.bigcommerce_product_id
             
         }
         for attribute_value in product_variant.attribute_value_ids:
             option_values.append({'id':attribute_value.bigcommerce_value_id,'option_id':attribute_value.attribute_id.bigcommerce_attribute_id})
         product_data.update({"option_values":option_values})
         return product_data
-            
-    def is_export_product_to_bigcommerce(self):
-        """
-        Description : Set as Export to Bigcommerce True.
-        """
-        if self._context.get('active_model') == 'product.template':
-            product_ids = self.env.context.get('active_ids')
-            product_objs = self.env['product.template'].browse(product_ids)
-            product_objs.write({'is_exported_to_bigcommerce':True})
-        return
 
-    def export_product_new_to_bigcommerce(self):
+    def export_bulk_product_to_bigcommerce(self):
         if self._context.get('active_model') == 'product.template':
             product_ids = self.env.context.get('active_ids')
             product_objs = self.env['product.template'].browse(product_ids)
-            self.export_product_to_bigcommerce(bigcommerce_store_ids= product_objs.bigcommerce_store_id,new_product_id=product_objs)
-            product_objs.write({'is_exported_to_bigcommerce':True})
+            self.export_product_to_bigcommerce(bigcommerce_store_ids= product_objs.bigcommerce_store_id,new_product_id=product_objs, warehouse_id=product_objs.bigcommerce_store_id.warehouse_id)
+            # product_objs.write({'is_exported_to_bigcommerce':True})
         return
 
     def export_product_to_bigcommerce(self, warehouse_id=False, bigcommerce_store_ids=False,new_product_id=False):
@@ -233,7 +228,11 @@ class ProductTemplate(models.Model):
                     product_ids = new_product_id
                 _logger.info("List of Products Need to Export: {0}".format(product_ids))
                 for product_id in product_ids:
-                    product_request_data = self.product_request_data(product_id,warehouse_id)
+                    if warehouse_id:
+                        product_request_data = self.product_request_data(product_id,warehouse_id)
+                    else:
+                        product_request_data = self.product_request_data(product_id)
+
                     api_operation="/v3/catalog/products"
                     response_data=bigcommerce_store_id.send_request_from_odoo_to_bigcommerce(product_request_data,api_operation)
                     _logger.info("Status Code of Export Product : {0}".format(response_data.status_code))
@@ -244,6 +243,7 @@ class ProductTemplate(models.Model):
                             bigcommerce_product_id = response_data.get('data').get("id")
                             product_id.bigcommerce_product_id=bigcommerce_product_id
                             product_id.bigcommerce_store_id=bigcommerce_store_id.id
+                            product_id.is_exported_to_bigcommerce = True
                             process_message="{0} : Product Operation Sucessfully Completed".format(product_id.name)
                             self.create_bigcommerce_operation_detail('product','export',product_request_data,response_data,operation_id,warehouse_id,False,process_message)
                             product_variant_option = "/v3/catalog/products/{}/variants".format(product_id.bigcommerce_product_id)

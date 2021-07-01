@@ -45,7 +45,7 @@
                             <table style="margin-top:35px">
                                 <tr>
                                     <td style="padding-left:60px"><button name="odoo_to_bigcommerce_export_product_categories_main" string="Export Product Categories" type="object" class="oe_highlight" /></td>
-                                    <td style="padding-left:60px"><button name="import_product_from_bigcommerce_main" string="Export Products" type="object" class="oe_highlight"/></td>
+                                    <td style="padding-left:60px"><button name="export_product_to_bigcommerce_main" string="Export Products" type="object" class="oe_highlight"/></td>
                                 </tr>
                                 <br/>
                                 <!-- <tr>
