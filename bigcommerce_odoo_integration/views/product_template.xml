@@ -94,9 +94,12 @@
                             string="Export Stock From Odoo To Bigcommerce"/>
                     </page>
                 </xpath>
-				<field name = "standard_price" position = "attributes">
-				    <attribute name="string">Cost Price</attribute>
-				</field>
+				<xpath expr="//label[@for='standard_price']" position="replace">
+                    <label for="standard_price"  string="Cost Price"/>
+				</xpath>
+                <xpath expr="//label[@for='list_price']" position="replace">
+                    <label for="list_price"  string="Sale Price"/>
+                </xpath>
             </field>
         </record>
         <record id="view_form_product_product_bigcommerce_info" model="ir.ui.view">
