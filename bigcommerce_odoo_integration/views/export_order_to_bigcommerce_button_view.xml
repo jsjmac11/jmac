@@ -7,7 +7,7 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                     <header>
-                     <button name="exportordertobigcommerce" type="object" string="Export Order"  />
+                     <button name="exportordertobigcommerce" type="object" string="Export Order"  attrs="{'invisible': ['|',('state', '!=','sale'),('big_commerce_order_id','!=',False)]}" />
                       <button name="get_shipped_qty" type="object" string="BigCommerce Shipped Qty"   />
                  </header>
             </field>
