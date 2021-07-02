@@ -69,7 +69,7 @@ class ProductTemplate(models.Model):
     is_visible = fields.Boolean(string="Is Visible",default=True)
     warranty = fields.Char(string="Warranty")
     is_imported_from_bigcommerce = fields.Boolean(string="Is Imported From Big Commerce ?")
-    x_studio_manufacturer = fields.Many2one('bc.product.brand',string='Brand ID')
+    x_studio_manufacturer = fields.Many2one('bc.product.brand',string='Brand Name')
     bigcommerce_category_ids = fields.Many2many('bigcommerce.category', 'product_big_categ_rel', 'product_id', 'category_id', string="Bigcommerce Category")
     #Added new fields related to big commerce
     allow_purchases = fields.Boolean('Allow Purchases?')
@@ -119,7 +119,7 @@ class ProductTemplate(models.Model):
     retail_price = fields.Float('Retail Price')
     tax_class_id = fields.Integer('Tax Class ID')
     width = fields.Integer('Width')
-    brand_id = fields.Integer("Brand ID")
+    # brand_id = fields.Integer("Brand ID")
     free_shipping_override = fields.Char("Free Shipping Override")
     photos_cloned_from = fields.Char("Photos Cloned From")
     description_override = fields.Char("Description Override")
