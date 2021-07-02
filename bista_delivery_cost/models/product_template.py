@@ -22,6 +22,7 @@ class ProductTemplate(models.Model):
     def onchange_product_manufacturer_id(self):
         if self.product_manufacturer_id:
             self.product_manufacturer = self.product_manufacturer_id.ref
+            self.phone_number = self.product_manufacturer_id.phone
         else:
             self.product_manufacturer = ''
 
