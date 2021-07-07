@@ -8,6 +8,7 @@
             <field name="arch" type="xml">
                 <header>
                     <button name="get_order_shipment" string="Get Shipment Info" type="object" class="oe_stat_button" attrs="{'invisible':[('bigcommerce_shimpment_id', '!=', False)]}"></button>
+                    <button name="export_tracking_odoo_to_bigcommerce" string="Export Tracking" type="object" class="oe_stat_button" attrs="{'invisible':[('carrier_tracking_ref', '!=', True)]}"></button>
                 </header>
                 <xpath expr="//sheet/notebook/page[@name='extra']" position="inside">
                     <group>
