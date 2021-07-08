@@ -15,8 +15,9 @@
     'summary': """ User Signup""",
     'description': """ User Signup
     """,
-    'depends': ['base'],
+    'depends': ['base', 'sale', 'product', 'mail', 'account'],
     'data': [
+        'data/mail_template_data.xml'
     ],
     'auto_install': False
 }
