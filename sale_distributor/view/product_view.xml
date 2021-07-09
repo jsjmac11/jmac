@@ -11,8 +11,8 @@
                 <field name="name" />
             </xpath>
             <xpath expr="//field[@name='name']" position="replace">
-                <label class="oe_edit_only" for="ref" string="Internal Reference"/>
-                <h1><field name="default_code" placeholder="Internal Reference"/></h1>
+                <label class="oe_edit_only" for="ref" string="Product Code"/>
+                <h1><field name="default_code" placeholder="Product Code"/></h1>
             </xpath>
             <xpath expr="//field[@name='categ_id']" position="after">
                 <field name="parent_manufacture" />
