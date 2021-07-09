@@ -1,5 +1,10 @@
 from odoo import fields, models, api
+from odoo.exceptions import ValidationError
+from requests import request
+import requests
+import json
 import logging
+_logger = logging.getLogger("Bigcommerce")
 
 _logger = logging.getLogger("BigCommerce")
 
@@ -85,6 +90,54 @@ class BigCommerceCategory(models.Model):
             "is_visible": True,
             "default_product_sort": "use_store_settings",
             "custom_url": {"url": "/{}/".format(category_name),"is_customized": False}}
+
+    def export_update_product_categories_odoo_to_bigcommerce(self):
+        bigcommerce_store_id = self.bigcommerce_store_id
+        bigcommerce_product_category_id = self.bigcommerce_product_category_id
+        if self.is_exported_to_bigcommerce:
+            try:
+                if not bigcommerce_store_id:
+                    raise ValidationError("Big commerce store not found fot this order.")
+                api_url ='%s%s/v3/catalog/categories/%s'%(bigcommerce_store_id.bigcommerce_api_url,bigcommerce_store_id.bigcommerce_store_hash, bigcommerce_product_category_id)
+                category_id = self
+                request_data = {
+                    "parent_id": int(category_id and category_id.parent_id and category_id.parent_id.bigcommerce_product_category_id) or 0,
+                    "name": category_id and category_id.name or "",
+                    "description": "",
+                    "sort_order": category_id and category_id.id or "",
+                    "meta_keywords": [],
+                    "is_visible": True,
+                }
+                headers = {"Accept": "application/json",
+                           "X-Auth-Client": "{}".format(bigcommerce_store_id and bigcommerce_store_id.bigcommerce_x_auth_client),
+                           "X-Auth-Token": "{}".format(bigcommerce_store_id and bigcommerce_store_id.bigcommerce_x_auth_token),
+                           "Content-Type": "application/json"}
+                data = json.dumps(request_data)
+                url = "{0}".format(api_url)
+                try:
+                    _logger.info("Send PUT Request From odoo to BigCommerce: {0}".format(url))
+                    response_data =  request(method='PUT', url=api_url, data=data, headers=headers)
+                except Exception as e:
+                    _logger.info("Getting an Error in PUT Req odoo to BigCommerce: {0}".format(e))
+                    raise ValidationError(e)
+                if response_data.status_code in [200, 201]:
+                    response_data = response_data.json()
+                    return {
+                        'effect': {
+                            'fadeout': 'slow',
+                            'message': 'Update Categories Exported : %s' % (self.name),
+                            'img_url': '/web/static/src/img/smile.svg',
+                            'type': 'rainbow_man',
+                        }
+                    }
+                else:
+                    response_data = response_data.json()
+                    error_msg = "{0} : {1}".format(response_data)
+                    raise ValidationError(error_msg)
+            except Exception as e:
+                raise ValidationError("Process Is Not Completed Yet!  {}".format(e))
+        else:
+            raise ValidationError("Please First Export This Categories Then Try To Update Categories.!!!!")
 
     def odoo_to_bigcommerce_export_product_categories(self, warehouse_id=False, bigcommerce_store_ids=False, new_category_id=False):
         for bigcommerce_store_id in bigcommerce_store_ids:
@@ -222,3 +275,41 @@ class BigCommerceCategory(models.Model):
             category_operation_id and category_operation_id.write({'bigcommerce_message': category_process_message})
             bigcommerce_store_ids.bigcommerce_operation_message = " Import Product Categories Process Complete "
             self._cr.commit()
+
+    def delete_product_categories_odoo_to_bigcommerce(self):
+        bigcommerce_store_id = self.bigcommerce_store_id
+        bigcommerce_product_category_id = self.bigcommerce_product_category_id
+        if self.is_exported_to_bigcommerce:
+            try:
+                if not bigcommerce_store_id:
+                    raise ValidationError("Big commerce store not found fot this order.")
+                api_url ='%s%s/v3/catalog/categories/%s'%(bigcommerce_store_id.bigcommerce_api_url,bigcommerce_store_id.bigcommerce_store_hash, bigcommerce_product_category_id)
+                category_id = self
+                request_data = {
+                    "category_id": category_id.bigcommerce_product_category_id
+                }
+                headers = {"Accept": "application/json",
+                           "X-Auth-Client": "{}".format(bigcommerce_store_id and bigcommerce_store_id.bigcommerce_x_auth_client),
+                           "X-Auth-Token": "{}".format(bigcommerce_store_id and bigcommerce_store_id.bigcommerce_x_auth_token),
+                           "Content-Type": "application/json"}
+                data = json.dumps(request_data)
+                url = "{0}".format(api_url)
+                category_id.bigcommerce_product_category_id = False
+                category_id.is_exported_to_bigcommerce = False
+                try:
+                    _logger.info("Send DELETE Request From odoo to BigCommerce: {0}".format(url))
+                    response_data =  request(method='DELETE', url=api_url, data=data, headers=headers)
+                except Exception as e:
+                    _logger.info("Getting an Error in DELETE Req odoo to BigCommerce: {0}".format(e))
+                    raise ValidationError(e)
+                if response_data.status_code == 204:
+                    return {
+                        'effect': {
+                            'fadeout': 'slow',
+                            'message': 'Delete Categories : %s' % (self.name),
+                            'img_url': '/web/static/src/img/smile.svg',
+                            'type': 'rainbow_man',
+                        }
+                    }
+            except Exception as e:
+                raise ValidationError("Process Is Not Completed Yet!  {}".format(e))
