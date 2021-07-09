@@ -19,6 +19,10 @@
             <field name="inherit_id" ref="product.product_template_form_view"/>
             <field name="type">form</field>
             <field name="arch" type="xml">
+                <header>
+                    <button name="export_update_product_to_bigcommerce" string="Update Product To Bigcommerce" type="object" class="oe_stat_button" attrs="{'invisible':[('is_exported_to_bigcommerce', '!=', True)]}"></button>
+                    <button name="delete_product_odoo_to_bigcommerce" string="Remove Product To Bigcommerce" type="object" class="oe_stat_button" attrs="{'invisible':[('is_exported_to_bigcommerce', '!=', True)]}"></button>
+                </header>
                 <xpath expr="//sheet/notebook/page[last()]" position="after">
                     <page string="BigCommerce Information">
                         <group>
@@ -28,7 +32,7 @@
                                 <field name="bigcommerce_category_ids" widget="many2many_tags"/>
                                 <field name="x_studio_manufacturer"/>
                                 <!-- <field name="bigcommerce_category_ids" readonly="1"/> -->
-                                <field name="bigcommerce_store_id" readonly="1"/>
+                                <field name="bigcommerce_store_id" readonly="0"/>
                                 <!-- <field name="brand_id"/> -->
                                 <field name="inventory_tracking"/>
                                 <field name="is_imported_from_bigcommerce"/>
@@ -132,7 +136,19 @@
                 records.export_bulk_product_to_bigcommerce()
             </field>
         </record>
-           <record id="added_x_studio_manufacturer_product_template_form_view" model="ir.ui.view">
+
+        <record id="bigcommerce_update_product_action_form" model="ir.actions.server">
+            <field name="name">Export Update Product to BigCommerce</field>
+            <field name="type">ir.actions.server</field>
+            <field name="state">code</field>
+            <field name="model_id" ref="product.model_product_template"/>
+            <field name="binding_model_id" ref="product.model_product_template"/>
+            <field name="code">
+                records.export_update_product_to_bigcommerce()
+            </field>
+        </record>
+
+        <record id="added_x_studio_manufacturer_product_template_form_view" model="ir.ui.view">
             <field name="name">added.x_studio.manufacturer.product.template.product.view</field>
             <field name="model">product.template</field>
             <field name="inherit_id" ref="product.product_template_only_form_view" />

@@ -27,6 +27,10 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="BigCommerce Category Info" create='false'>
+                    <header>
+                        <button name="export_update_product_categories_odoo_to_bigcommerce" string="Update Category To Bigcommerce" type="object" class="oe_stat_button" attrs="{'invisible':[('is_exported_to_bigcommerce', '!=', True)]}"></button>
+                        <button name="delete_product_categories_odoo_to_bigcommerce" string="Remove Category To Bigcommerce" type="object" class="oe_stat_button" attrs="{'invisible':[('is_exported_to_bigcommerce', '!=', True)]}"></button>
+                    </header>
                     <sheet>
                         <group>
                             <field name="name"/>
@@ -55,6 +59,7 @@
             <field name="domain">[]</field>
         </record>
 
+        <!-- Export categories action -->
         <record id="action_exported_category_to_bigcommerce" model="ir.actions.server">
                 <field name="name">Export Product Category to BigCommerce</field>
                 <field name="type">ir.actions.server</field>
@@ -65,6 +70,19 @@
                       records.export_product_category_to_bigcommerce()
                 </field>
         </record>
+
+        <!-- Export update categories action -->
+        <record id="action_exported_update_category_to_bigcommerce" model="ir.actions.server">
+                <field name="name">Export Update Product Category to BigCommerce</field>
+                <field name="type">ir.actions.server</field>
+                <field name="state">code</field>
+                <field name="model_id" ref="model_bigcommerce_category"/>
+                <field name="binding_model_id" ref="model_bigcommerce_category"/>
+                <field name="code">
+                      records.export_update_product_categories_odoo_to_bigcommerce()
+                </field>
+        </record>
+
         <menuitem id="menu_bigcommerce_product_category" name="Bigcommerce Product Category"
             parent="bigcommerce_odoo_integration_store_menuitem" sequence="3"
             action="action_bigcommerce_product_category_new" />
