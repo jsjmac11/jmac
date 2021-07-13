@@ -7,6 +7,7 @@ import json
 import base64
 from odoo.exceptions import UserError, ValidationError
 import html2text
+import re
 
 _logger = logging.getLogger("BigCommerce")
 
@@ -98,7 +99,10 @@ class ProductTemplate(models.Model):
     page_title = fields.Char('Page Title')
     product_availability = fields.Boolean('Availability')
     product_condition = fields.Char('Condition')
-    product_URL = fields.Char('URL Is Customized')
+    product_URL = fields.Char('URL Is Customized', compute='_compute_product_url',
+        store=True)
+    manufacturer_URL = fields.Char('Manufacturer URL')
+    mpn_URL = fields.Char('MPN URL')
     search_keywords = fields.Char('Search Keywords')
     sort_order =  fields.Integer('Sort Order')
     track_inventory = fields.Char('Track Inventory')
@@ -130,6 +134,36 @@ class ProductTemplate(models.Model):
     pack_qty = fields.Integer("Pack Qty")
     image_is_thumbnail = fields.Image("Image Is Thumbnail")
     image_sort = fields.Image("Image Sort")    
+
+    @api.onchange('x_studio_manufacturer')
+    def onchange_x_studio_manufacturer(self):
+        brand_id = self.x_studio_manufacturer.name
+        if brand_id:
+            res = re.sub('[^A-Za-z0-9]+', '-', brand_id)
+            if not res[-1].isalnum():
+               self.manufacturer_URL = re.sub('[^A-Za-z0-9]+', '-', brand_id)[:-1]
+            else:
+                self.manufacturer_URL = re.sub('[^A-Za-z0-9]+', '-', brand_id)
+        else:
+            self.manufacturer_URL = False
+
+    @api.onchange('vendor_part_number')
+    def onchange_vendor_part_number(self):
+        vendor_part_number = self.vendor_part_number
+        if vendor_part_number:
+            res = re.sub('[^A-Za-z0-9]+', '-', vendor_part_number)
+            if not res[-1].isalnum():
+               self.mpn_URL = re.sub('[^A-Za-z0-9]+', '-', vendor_part_number)[:-1]
+            else:
+                self.mpn_URL = re.sub('[^A-Za-z0-9]+', '-', vendor_part_number)
+        else:
+            self.mpn_URL = False
+
+    @api.depends('manufacturer_URL', 'mpn_URL')
+    def _compute_product_url(self):
+        if self.manufacturer_URL and self.mpn_URL:
+            url = self.manufacturer_URL + '-' + self.mpn_URL
+            self.product_URL = "/{}/".format(url)
 
     def export_stock_from_odoo_to_bigcommerce(self):
         raise ValidationError("Kindly Export product using product variant menu!")
