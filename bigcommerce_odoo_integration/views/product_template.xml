@@ -83,6 +83,8 @@
                             	<field name="product_availability"/>
                             	<field name="product_condition"/>
                             	<field name="product_URL"/>
+                                <field name="manufacturer_URL"/>
+                                <field name="mpn_URL"/>
                             	<field name="search_keywords"/>
                             	<field name="sort_order"/>
                             	<field name="track_inventory"/>
