@@ -164,7 +164,22 @@ class ProductTemplate(models.Model):
         if self.manufacturer_URL and self.mpn_URL:
             url = self.manufacturer_URL + '-' + self.mpn_URL
             self.product_URL = "/{}/".format(url)
-
+            
+    @api.model
+    def create(self, vals):
+        if not vals.get('manufacturer_URL'):
+            raise ValidationError("Manufacturer URL IS MISSING.!")
+        elif  not vals.get('mpn_URL'):
+            raise ValidationError("MPN URL IS  MISSING.!")
+        return super(ProductTemplate, self).create(vals)
+    
+    def write(self, values):
+        if not values.get('manufacturer_URL'):
+            raise ValidationError("Manufacturer URL IS MISSING.!")
+        elif  not values.get('mpn_URL'):
+            raise ValidationError("MPN URL IS  MISSING.!")
+        return super(ProductTemplate, self).write(values)
+    
     def export_stock_from_odoo_to_bigcommerce(self):
         raise ValidationError("Kindly Export product using product variant menu!")
 

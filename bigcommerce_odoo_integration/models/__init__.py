@@ -6,6 +6,7 @@ from . import bc_product_brand
 from . import bigcommerce_category
 from . import product_attribute
 from . import product_template
+from . import product_template_hook
 from . import res_partner
 from . import sale_order
 from . import delivery_carrier
