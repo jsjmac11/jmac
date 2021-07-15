@@ -99,7 +99,7 @@ class ProductTemplate(models.Model):
     page_title = fields.Char('Page Title')
     product_availability = fields.Boolean('Availability')
     product_condition = fields.Char('Condition')
-    product_URL = fields.Char('URL Is Customized', compute='_compute_product_url',
+    product_URL = fields.Char('Product URL', compute='_compute_product_url',
         store=True)
     manufacturer_URL = fields.Char('Manufacturer URL')
     mpn_URL = fields.Char('MPN URL')
@@ -135,6 +135,10 @@ class ProductTemplate(models.Model):
     image_is_thumbnail = fields.Image("Image Is Thumbnail")
     image_sort = fields.Image("Image Sort")    
 
+    product_URL_final = fields.Char('Product URL Final', compute='_compute_product_url',
+        store=True)
+    mpn_URL_final = fields.Char('MPN URL Final')
+    
     @api.onchange('x_studio_manufacturer')
     def onchange_x_studio_manufacturer(self):
         brand_id = self.x_studio_manufacturer.name
@@ -150,21 +154,54 @@ class ProductTemplate(models.Model):
     @api.onchange('vendor_part_number')
     def onchange_vendor_part_number(self):
         vendor_part_number = self.vendor_part_number
+        v_part_number =''
         if vendor_part_number:
-            res = re.sub('[^A-Za-z0-9]+', '-', vendor_part_number)
+            res = re.sub('[^+A-Za-z0-9]', '-', vendor_part_number)
             if not res[-1].isalnum():
-               self.mpn_URL = re.sub('[^A-Za-z0-9]+', '-', vendor_part_number)[:-1]
+               v_part_number = re.sub('[^+A-Za-z0-9]', '-', vendor_part_number)[:-1]
             else:
-                self.mpn_URL = re.sub('[^A-Za-z0-9]+', '-', vendor_part_number)
+                v_part_number = re.sub('[^+A-Za-z0-9]', '-', vendor_part_number)
+            
+            if v_part_number:
+                res_1= re.sub('[+]', '-PLUS-', vendor_part_number)
+                v_part_number = res_1
+            self.mpn_URL = v_part_number
+            self.mpn_URL_final = v_part_number
         else:
             self.mpn_URL = False
+            self.mpn_URL_final = False
 
+    @api.onchange('mpn_URL_final')
+    def onchange_mpn_URL_final(self):
+        mpn_URL_final = self.mpn_URL_final
+        v_mpn_URL_final =''
+        if mpn_URL_final:
+            res = re.sub('[^+A-Za-z0-9]', '-', mpn_URL_final)
+            if not res[-1].isalnum():
+               v_mpn_URL_final = re.sub('[^+A-Za-z0-9]', '-', mpn_URL_final)[:-1]
+            else:
+                v_mpn_URL_final = re.sub('[^+A-Za-z0-9]', '-', mpn_URL_final)
+            
+            if v_mpn_URL_final:
+                res_1= re.sub('[+]', '-PLUS-', mpn_URL_final)
+                v_mpn_URL_final = res_1
+            self.mpn_URL = v_mpn_URL_final
+            
     @api.depends('manufacturer_URL', 'mpn_URL')
     def _compute_product_url(self):
-        if self.manufacturer_URL and self.mpn_URL:
-            url = self.manufacturer_URL + '-' + self.mpn_URL
-            self.product_URL = "/{}/".format(url)
+        for rec in self:
+            if rec.manufacturer_URL and rec.mpn_URL:
+                url = rec.manufacturer_URL + '-' + rec.mpn_URL
+                rec.product_URL = "/{}/".format(url)
+                rec.product_URL_final = "/{}/".format(url)
             
+    @api.constrains('manufacturer_URL', 'mpn_URL')
+    def _check_url_fields(self):
+        if not self.manufacturer_URL:
+            raise ValidationError("Manufacturer URL IS MISSING.!")
+        elif  not self.mpn_URL:
+            raise ValidationError("MPN URL IS  MISSING.!")
+        
     @api.model
     def create(self, vals):
         if not vals.get('manufacturer_URL'):
@@ -173,12 +210,13 @@ class ProductTemplate(models.Model):
             raise ValidationError("MPN URL IS  MISSING.!")
         return super(ProductTemplate, self).create(vals)
     
-    def write(self, values):
-        if not values.get('manufacturer_URL'):
-            raise ValidationError("Manufacturer URL IS MISSING.!")
-        elif  not values.get('mpn_URL'):
-            raise ValidationError("MPN URL IS  MISSING.!")
-        return super(ProductTemplate, self).write(values)
+    # def write(self, values):
+    #     if 'manufacturer_URL' not in values:
+    #         print("======Calling from here")
+    #         raise ValidationError("Manufacturer URL IS MISSING.!")
+    #     elif  not values.get('mpn_URL'):
+    #         raise ValidationError("MPN URL IS  MISSING.!")
+    #     return super(ProductTemplate, self).write(values)
     
     def export_stock_from_odoo_to_bigcommerce(self):
         raise ValidationError("Kindly Export product using product variant menu!")
