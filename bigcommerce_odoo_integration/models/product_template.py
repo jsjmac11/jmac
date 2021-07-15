@@ -137,7 +137,7 @@ class ProductTemplate(models.Model):
 
     product_URL_final = fields.Char('Product URL Final', compute='_compute_product_url',
         store=True)
-    mpn_URL_final = fields.Char('MPN URL Final')
+    mpn_URL_final = fields.Char('MPN URL Override')
     
     @api.onchange('x_studio_manufacturer')
     def onchange_x_studio_manufacturer(self):
@@ -163,7 +163,7 @@ class ProductTemplate(models.Model):
                 v_part_number = re.sub('[^+A-Za-z0-9]', '-', vendor_part_number)
             
             if v_part_number:
-                res_1= re.sub('[+]', '-PLUS-', vendor_part_number)
+                res_1= re.sub('[+]', '-PLUS-', v_part_number)
                 v_part_number = res_1
             self.mpn_URL = v_part_number
             self.mpn_URL_final = v_part_number
@@ -183,7 +183,7 @@ class ProductTemplate(models.Model):
                 v_mpn_URL_final = re.sub('[^+A-Za-z0-9]', '-', mpn_URL_final)
             
             if v_mpn_URL_final:
-                res_1= re.sub('[+]', '-PLUS-', mpn_URL_final)
+                res_1= re.sub('[+]', '-PLUS-', v_mpn_URL_final)
                 v_mpn_URL_final = res_1
             self.mpn_URL = v_mpn_URL_final
             
