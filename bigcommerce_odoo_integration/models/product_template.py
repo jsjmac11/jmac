@@ -194,12 +194,15 @@ class ProductTemplate(models.Model):
                 url = rec.manufacturer_URL + '-' + rec.mpn_URL
                 rec.product_URL = "/{}/".format(url)
                 rec.product_URL_final = "/{}/".format(url)
+            else:
+                rec.product_URL = False
+                rec.product_URL_final = False             
             
     @api.constrains('manufacturer_URL', 'mpn_URL')
     def _check_url_fields(self):
         if not self.manufacturer_URL:
             raise ValidationError("Manufacturer URL IS MISSING.!")
-        elif  not self.mpn_URL:
+        elif not self.mpn_URL:
             raise ValidationError("MPN URL IS  MISSING.!")
         
     @api.model
@@ -209,14 +212,6 @@ class ProductTemplate(models.Model):
         elif  not vals.get('mpn_URL'):
             raise ValidationError("MPN URL IS  MISSING.!")
         return super(ProductTemplate, self).create(vals)
-    
-    # def write(self, values):
-    #     if 'manufacturer_URL' not in values:
-    #         print("======Calling from here")
-    #         raise ValidationError("Manufacturer URL IS MISSING.!")
-    #     elif  not values.get('mpn_URL'):
-    #         raise ValidationError("MPN URL IS  MISSING.!")
-    #     return super(ProductTemplate, self).write(values)
     
     def export_stock_from_odoo_to_bigcommerce(self):
         raise ValidationError("Kindly Export product using product variant menu!")
