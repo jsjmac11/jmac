@@ -50,7 +50,7 @@
                                 <field name="tax_class_id"/>
                             </group>
                             <group>
-								<field name="allow_purchases"/>
+                                <field name="allow_purchases"/>
                                 <field name="product_depth"/>
                                 <field name="gtin"/>
                                 <field name="height"/>
@@ -58,53 +58,53 @@
                                 <field name="map_price"/>
                                 <field name="option_set_align"/>
                                 <field name="product_image_description_1"/>                            
-                            	<field name="product_tax_class"/>
-                            	<field name="product_visible"/>
-                            	<field name="product_weight"/>
-                            	<field name="show_product_condition"/>
-                            	<field name="stop_processing_rules"/>
-                            	<field name="vendor_part_number"/>
-                            	<field name="option_set_display"/>
-                            	<field name="free_shipping_override"/>
-                            	<field name="photos_cloned_from"/>
-                            	<field name="description_override"/>
-                            	<field name="pack_qty"/>
-                            	<field name="image_is_thumbnail"/>
-                            	<field name="image_sort"/>
+                                <field name="product_tax_class"/>
+                                <field name="product_visible"/>
+                                <field name="product_weight"/>
+                                <field name="show_product_condition"/>
+                                <field name="stop_processing_rules"/>
+                                <field name="vendor_part_number"/>
+                                <field name="option_set_display"/>
+                                <field name="free_shipping_override"/>
+                                <field name="photos_cloned_from"/>
+                                <field name="description_override"/>
+                                <field name="pack_qty"/>
+                                <field name="image_is_thumbnail"/>
+                                <field name="image_sort"/>
                             </group>
                             <group>
-								<field name="is_free_shipping"/>
-								<field name="is_featured"/>
-								<field name="is_preorder_only"/>
-								<field name="is_price_hidden"/>
+                                <field name="is_free_shipping"/>
+                                <field name="is_featured"/>
+                                <field name="is_preorder_only"/>
+                                <field name="is_price_hidden"/>
                                 <field name="meta_description"/>
                                 <field name="meta_keywords"/>
                                 <field name="page_title"/>                            
-                            	<field name="product_availability"/>
-                            	<field name="product_condition"/>
-                            	<field name="product_URL"/>
-                            	<field name="product_URL_final"/>
-                                <field name="manufacturer_URL"/>
-                                <field name="mpn_URL_final"/>
+                                <field name="product_availability"/>
+                                <field name="product_condition"/>
+                                <field name="manufacturer_URL" readonly="1" force_save="1"/>
                                 <field name="mpn_URL" readonly="1" force_save="1"/>
-                            	<field name="search_keywords"/>
-                            	<field name="sort_order"/>
-                            	<field name="track_inventory"/>
-                            	<field name="product_type"/>
-                            	<field name="product_custom_fields"/>
-                            	<field name="image_file_override"/>
-                            	<field name="search_keywords_override"/>
-                            	<field name="super_pmo"/>
-                            	<field name="pmo"/>
+                                <field name="mpn_URL_final"/>
+                                <field name="product_URL" force_save="1"/>
+                                <field name="product_URL_final" attrs="{'readonly': [('product_URL', '!=', False)]}"/>
+                                <field name="search_keywords"/>
+                                <field name="sort_order"/>
+                                <field name="track_inventory"/>
+                                <field name="product_type"/>
+                                <field name="product_custom_fields"/>
+                                <field name="image_file_override"/>
+                                <field name="search_keywords_override"/>
+                                <field name="super_pmo"/>
+                                <field name="pmo"/>
                             </group>
                         </group>
                          <button type='object' class="fa fa-arrow-right oe_link" name="export_stock_from_odoo_to_bigcommerce"
                             string="Export Stock From Odoo To Bigcommerce"/>
                     </page>
                 </xpath>
-				<xpath expr="//label[@for='standard_price']" position="replace">
+                <xpath expr="//label[@for='standard_price']" position="replace">
                     <label for="standard_price"  string="Cost Price"/>
-				</xpath>
+                </xpath>
                 <xpath expr="//label[@for='list_price']" position="replace">
                     <label for="list_price"  string="Sale Price"/>
                 </xpath>
