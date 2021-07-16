@@ -135,10 +135,9 @@ class ProductTemplate(models.Model):
     image_is_thumbnail = fields.Image("Image Is Thumbnail")
     image_sort = fields.Image("Image Sort")    
 
-    product_URL_final = fields.Char('Product URL Final', compute='_compute_product_url',
-        store=True)
+    product_URL_final = fields.Char('Product URL Final')
     mpn_URL_final = fields.Char('MPN URL Override')
-    
+
     @api.onchange('x_studio_manufacturer')
     def onchange_x_studio_manufacturer(self):
         brand_id = self.x_studio_manufacturer.name
@@ -149,26 +148,27 @@ class ProductTemplate(models.Model):
             else:
                 self.manufacturer_URL = re.sub('[^A-Za-z0-9]+', '-', brand_id)
         else:
-            self.manufacturer_URL = False
+            self.manufacturer_URL = "MFG-URL-MISSING"
 
     @api.onchange('vendor_part_number')
     def onchange_vendor_part_number(self):
         vendor_part_number = self.vendor_part_number
-        v_part_number =''
+        v_part_number = ''
         if vendor_part_number:
-            res = re.sub('[^+A-Za-z0-9]', '-', vendor_part_number)
-            if not res[-1].isalnum():
-               v_part_number = re.sub('[^+A-Za-z0-9]', '-', vendor_part_number)[:-1]
-            else:
-                v_part_number = re.sub('[^+A-Za-z0-9]', '-', vendor_part_number)
-            
+            v_part_number = re.sub('[^+A-Za-z0-9]', '-', vendor_part_number)
             if v_part_number:
                 res_1= re.sub('[+]', '-PLUS-', v_part_number)
-                v_part_number = res_1
+                res = re.sub('\W+','-', res_1)
+                v_part_number = res
+
+            if not v_part_number[-1].isalnum():
+                v_part_number  = v_part_number[:-1]
+            if not v_part_number[0].isalnum():
+                v_part_number  = v_part_number[1:]
             self.mpn_URL = v_part_number
             self.mpn_URL_final = v_part_number
         else:
-            self.mpn_URL = False
+            self.mpn_URL = "MPN-URL-MISSING"
             self.mpn_URL_final = False
 
     @api.onchange('mpn_URL_final')
@@ -186,7 +186,7 @@ class ProductTemplate(models.Model):
                 res_1= re.sub('[+]', '-PLUS-', v_mpn_URL_final)
                 v_mpn_URL_final = res_1
             self.mpn_URL = v_mpn_URL_final
-            
+
     @api.depends('manufacturer_URL', 'mpn_URL')
     def _compute_product_url(self):
         for rec in self:
@@ -194,25 +194,31 @@ class ProductTemplate(models.Model):
                 url = rec.manufacturer_URL + '-' + rec.mpn_URL
                 rec.product_URL = "/{}/".format(url)
                 rec.product_URL_final = "/{}/".format(url)
-            else:
-                rec.product_URL = False
-                rec.product_URL_final = False             
-            
-    @api.constrains('manufacturer_URL', 'mpn_URL')
+
+    @api.constrains('manufacturer_URL', 'mpn_URL', 'x_studio_manufacturer','vendor_part_number')
     def _check_url_fields(self):
-        if not self.manufacturer_URL:
-            raise ValidationError("Manufacturer URL IS MISSING.!")
+        if self.manufacturer_URL == "MFG-URL-MISSING" and self.mpn_URL == "MPN-URL-MISSING":
+            self.product_URL = False
+            self.product_URL_final = False
+        elif self.manufacturer_URL == "MFG-URL-MISSING" and self.mpn_URL:
+            self.product_URL = False
+            self.product_URL_final = False
+        elif self.manufacturer_URL and self.mpn_URL == "MPN-URL-MISSING":
+            self.product_URL = False
+            self.product_URL_final = False
+        elif not self.manufacturer_URL:
+            self.manufacturer_URL = "MFG-URL-MISSING"
         elif not self.mpn_URL:
-            raise ValidationError("MPN URL IS  MISSING.!")
-        
-    @api.model
-    def create(self, vals):
-        if not vals.get('manufacturer_URL'):
-            raise ValidationError("Manufacturer URL IS MISSING.!")
-        elif  not vals.get('mpn_URL'):
-            raise ValidationError("MPN URL IS  MISSING.!")
-        return super(ProductTemplate, self).create(vals)
-    
+            self.mpn_URL = "MPN-URL-MISSING"
+
+    # @api.model
+    # def create(self, vals):
+    #     res = super(ProductTemplate, self).create(vals)
+    #     if not vals.get('manufacturer_URL'):
+    #         self.manufacturer_URL = "Manufacturer URL IS MISSING"
+    #     elif  not vals.get('mpn_URL'):
+    #         self.mpn_URL = "MPN URL IS  MISSING"
+
     def export_stock_from_odoo_to_bigcommerce(self):
         raise ValidationError("Kindly Export product using product variant menu!")
 
@@ -253,6 +259,10 @@ class ProductTemplate(models.Model):
         else:
             qty_available = product_id.qty_available
 
+        if product_id.product_URL:
+            product_url = product_id.product_URL
+        else:
+            raise ValidationError("PRODUCT-URL-MISSING")
         product_data = {
             "name": product_id.name,
             "price": product_id.list_price,
@@ -265,10 +275,10 @@ class ProductTemplate(models.Model):
             "inventory_tracking":product_id.inventory_tracking,
             "inventory_level":int(qty_available),
             "is_visible":product_id.is_visible,
-            "warranty":product_id.warranty or ''
+            "warranty":product_id.warranty or '',
+            "custom_url": {"url": "{}".format(product_url),"is_customized": False}
         }
         return  product_data
-
 
     def product_variant_request_data(self,product_variant):
         """
@@ -374,7 +384,6 @@ class ProductTemplate(models.Model):
                         product_request_data = self.product_request_data(product_id,warehouse_id)
                     else:
                         product_request_data = self.product_request_data(product_id)
-
                     api_operation="/v3/catalog/products"
                     response_data=bigcommerce_store_id.send_request_from_odoo_to_bigcommerce(product_request_data,api_operation)
                     _logger.info("Status Code of Export Product : {0}".format(response_data.status_code))
@@ -397,6 +406,8 @@ class ProductTemplate(models.Model):
                         process_message = "{0} : {1}".format(product_id.name ,response_data.get('errors'))
                         self.create_bigcommerce_operation_detail('product','export',product_request_data,process_message,operation_id,warehouse_id,True,process_message)
                     self._cr.commit()
+            except ValidationError as e:
+                raise
             except Exception as e:
                 product_process_message = "Process Is Not Completed Yet!  {}".format(e)
                 self.create_bigcommerce_operation_detail('product','export',product_request_data,response_data,operation_id,warehouse_id,True,product_process_message)
