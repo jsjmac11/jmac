@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="product_search_keyword_tree_view" model="ir.ui.view">
+            <field name="name">product.search.keyword.tree</field>
+            <field name="model">product.search.keyword</field>
+            <field name="arch" type="xml">
+                <tree string="Search Keyword" editable="top" delete="0">
+                    <field name="name" required="1"/>
+                    <field name="product_template_id"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <!-- actions opening views on models -->
+        <record id="action_product_search_action" model="ir.actions.act_window">
+            <field name="name">Search Keywords</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.search.keyword</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Click to create a new Search Keyword.
+                </p>
+            </field>
+        </record>
+
+        <!-- actions -->
+
+        <menuitem name="Search Keywords" id="order_service_submenu" parent="sale.menu_sales_config"
+                  action="action_product_search_action" sequence="10"/>
+
+    </data>
+</odoo>

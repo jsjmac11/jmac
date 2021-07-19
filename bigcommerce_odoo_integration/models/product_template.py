@@ -103,7 +103,8 @@ class ProductTemplate(models.Model):
         store=True)
     manufacturer_URL = fields.Char('Manufacturer URL')
     mpn_URL = fields.Char('MPN URL')
-    search_keywords = fields.Char('Search Keywords')
+    search_keywords = fields.Text('Search Keywords',
+                                  compute='_compute_search_keyword')
     sort_order =  fields.Integer('Sort Order')
     track_inventory = fields.Char('Track Inventory')
     product_type = fields.Char('Type')
@@ -137,6 +138,10 @@ class ProductTemplate(models.Model):
 
     product_URL_final = fields.Char('Product URL Final')
     mpn_URL_final = fields.Char('MPN URL Override')
+
+    search_keyword_ids = fields.One2many('product.search.keyword', 
+                    'product_template_id',
+                    string="Search Keywords")
 
     @api.onchange('x_studio_manufacturer')
     def onchange_x_studio_manufacturer(self):
@@ -211,6 +216,18 @@ class ProductTemplate(models.Model):
         elif not self.mpn_URL:
             self.mpn_URL = "MPN-URL-MISSING"
 
+    @api.depends('search_keyword_ids')
+    def _compute_search_keyword(self):
+        for rec in self:
+            str = ''
+            if rec.search_keyword_ids:
+                for keyword in rec.search_keyword_ids:
+                    if not str:
+                        str = keyword.name
+                    else:
+                        str = str +', ' +keyword.name 
+            rec.search_keywords = str
+            
     # @api.model
     # def create(self, vals):
     #     res = super(ProductTemplate, self).create(vals)
@@ -219,6 +236,21 @@ class ProductTemplate(models.Model):
     #     elif  not vals.get('mpn_URL'):
     #         self.mpn_URL = "MPN URL IS  MISSING"
 
+    def write(self, vals):
+        res_write = super(ProductTemplate, self).write(vals)
+        if  vals.get('mpn_URL') and self.vendor_part_number:
+            mpn_url = vals.get('mpn_URL')
+            res = re.sub('[^+A-Za-z0-9]', '', mpn_url)
+            if not res[-1].isalnum():
+               mpn_url = re.sub('[^A-Za-z0-9]', '', mpn_url)[:-1]
+            else:
+                mpn_url = re.sub('[^A-Za-z0-9]', '', mpn_url)
+            v = {'name': mpn_url,
+                     'product_template_id': self.id}
+            self.env['product.search.keyword'].create(v)
+            
+        return res_write
+    
     def export_stock_from_odoo_to_bigcommerce(self):
         raise ValidationError("Kindly Export product using product variant menu!")
 

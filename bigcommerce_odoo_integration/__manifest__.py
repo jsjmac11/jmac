@@ -19,6 +19,7 @@
              'views/bigcommerce_operation_details.xml',
              # 'views/product_category.xml',
              'views/bigcommerce_category_view.xml',
+             'views/product_seach_keyword_view.xml',
              "views/product_template.xml",
              "views/product_attribute.xml",
              "views/res_partner.xml",

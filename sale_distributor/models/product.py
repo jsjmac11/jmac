@@ -79,6 +79,21 @@ class ProductSupplierinfo(models.Model):
     def onchange_ignore_cost(self):
         self.active = False if self.ignore_cost else True
 
+    @api.model
+    def create(self, vals):
+        if vals.get('product_code'):
+            v = {'name': vals.get('product_code'),
+                     'product_template_id': vals.get('product_tmpl_id')}
+            self.env['product.search.keyword'].create(v)
+        return super(ProductSupplierinfo, self).create(vals)
+    
+    def write(self, vals):
+        if vals.get('product_code'):
+            v = {'name': vals.get('product_code'),
+                     'product_template_id': self.product_tmpl_id}
+            self.env['product.search.keyword'].create(v)
+        return super(ProductSupplierinfo, self).write(vals)
+    
 class ProductPackUom(models.Model):
     _name="product.pack.uom"
     _description = "Product Pack Uom"
