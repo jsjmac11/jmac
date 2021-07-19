@@ -237,7 +237,8 @@ class ProductTemplate(models.Model):
     #         self.mpn_URL = "MPN URL IS  MISSING"
 
     def write(self, vals):
-        if  vals.get('mpn_URL'):
+        res_write = super(ProductTemplate, self).write(vals)
+        if  vals.get('mpn_URL') and self.vendor_part_number:
             mpn_url = vals.get('mpn_URL')
             res = re.sub('[^+A-Za-z0-9]', '', mpn_url)
             if not res[-1].isalnum():
@@ -248,7 +249,7 @@ class ProductTemplate(models.Model):
                      'product_template_id': self.id}
             self.env['product.search.keyword'].create(v)
             
-        return super(ProductTemplate, self).write(vals)
+        return res_write
     
     def export_stock_from_odoo_to_bigcommerce(self):
         raise ValidationError("Kindly Export product using product variant menu!")
