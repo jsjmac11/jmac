@@ -246,7 +246,7 @@ class ProductTemplate(models.Model):
             else:
                 mpn_url = re.sub('[^A-Za-z0-9]', '', mpn_url)
             v = {'name': mpn_url,
-                     'product_template_id': self.id}
+                     'product_template_id': res_write and res_write.id}
             self.env['product.search.keyword'].create(v)
             
         return res_write

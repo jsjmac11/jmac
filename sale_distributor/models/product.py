@@ -90,7 +90,7 @@ class ProductSupplierinfo(models.Model):
     def write(self, vals):
         if vals.get('product_code'):
             v = {'name': vals.get('product_code'),
-                     'product_template_id': self.product_tmpl_id}
+                     'product_template_id': self.product_tmpl_id and self.product_tmpl_id.id}
             self.env['product.search.keyword'].create(v)
         return super(ProductSupplierinfo, self).write(vals)
     
