@@ -103,7 +103,8 @@ class ProductTemplate(models.Model):
         store=True)
     manufacturer_URL = fields.Char('Manufacturer URL')
     mpn_URL = fields.Char('MPN URL')
-    search_keywords = fields.Char('Search Keywords')
+    search_keywords = fields.Text('Search Keywords',
+                                  compute='_compute_search_keyword')
     sort_order =  fields.Integer('Sort Order')
     track_inventory = fields.Char('Track Inventory')
     product_type = fields.Char('Type')
@@ -128,7 +129,8 @@ class ProductTemplate(models.Model):
     photos_cloned_from = fields.Char("Photos Cloned From")
     description_override = fields.Char("Description Override")
     image_file_override = fields.Char("Image File Override")
-    search_keywords_override = fields.Char("Search Keywords Override")
+    search_keywords_override = fields.Char("Search Keywords Override",
+                        )
     super_pmo = fields.Char("Super PMO")
     pmo = fields.Char("PMO")
     pack_qty = fields.Integer("Pack Qty")
@@ -139,6 +141,10 @@ class ProductTemplate(models.Model):
         store=True)
     mpn_URL_final = fields.Char('MPN URL Override')
     
+    search_keyword_ids = fields.One2many('product.search.keyword', 
+                    'product_template_id',
+                    string="Search Keywords")
+      
     @api.onchange('x_studio_manufacturer')
     def onchange_x_studio_manufacturer(self):
         brand_id = self.x_studio_manufacturer.name
@@ -197,7 +203,20 @@ class ProductTemplate(models.Model):
             else:
                 rec.product_URL = False
                 rec.product_URL_final = False             
-            
+
+    @api.depends('search_keyword_ids')
+    def _compute_search_keyword(self):
+        for rec in self:
+            str = ''
+            if rec.search_keyword_ids:
+                for keyword in rec.search_keyword_ids:
+                    if not str:
+                        str = keyword.name
+                    else:
+                        str = str +', ' +keyword.name 
+            rec.search_keywords = str
+                    
+                      
     @api.constrains('manufacturer_URL', 'mpn_URL')
     def _check_url_fields(self):
         if not self.manufacturer_URL:
@@ -212,6 +231,20 @@ class ProductTemplate(models.Model):
         elif  not vals.get('mpn_URL'):
             raise ValidationError("MPN URL IS  MISSING.!")
         return super(ProductTemplate, self).create(vals)
+
+    def write(self, vals):
+        if  vals.get('mpn_URL'):
+            mpn_url = vals.get('mpn_URL')
+            res = re.sub('[^+A-Za-z0-9]', '', mpn_url)
+            if not res[-1].isalnum():
+               mpn_url = re.sub('[^A-Za-z0-9]', '', mpn_url)[:-1]
+            else:
+                mpn_url = re.sub('[^A-Za-z0-9]', '', mpn_url)
+            v = {'name': mpn_url,
+                     'product_template_id': self.id}
+            self.env['product.search.keyword'].create(v)
+            
+        return super(ProductTemplate, self).write(vals)
     
     def export_stock_from_odoo_to_bigcommerce(self):
         raise ValidationError("Kindly Export product using product variant menu!")

@@ -215,6 +215,9 @@ class SaleOrderVts(models.Model):
                             customerId = order.get('customer_id')
                             carrier_id  = self.env['delivery.carrier'].search([('is_bigcommerce_shipping_method','=',True)],limit=1)
                             partner_obj = self.env['res.partner'].search([('bigcommerce_customer_id', '=', customerId)], limit=1)
+                            partner_state = order.get('billing_address').get('state')
+                            state_id = self.env['res.country.state'].search([('name', '=', partner_state)],
+                                                                            limit=1)
                             partner_vals = {
                                     'phone': phone,
                                     'zip':zip,
@@ -224,7 +227,8 @@ class SaleOrderVts(models.Model):
                                     'is_available_in_bigcommerce': True,
                                     'bigcommerce_store_id': bigcommerce_store_id.id,
                                     'street':street,
-                                    'street2':street_2
+                                    'street2':street_2,
+                                    'state_id': state_id and state_id.id
                                 }
                             if customerId==0:
                                 partner_vals.update({
@@ -232,12 +236,29 @@ class SaleOrderVts(models.Model):
                                     'bigcommerce_customer_id': "Guest User",
                                 })
                                 partner_obj = self.env['res.partner'].create(partner_vals)
+                                user_id =  self.env['res.users'].search([('partner_id', '=', partner_obj.id)])
+                                if not user_id:
+                                    x_group_portal_user = self.env.ref('base.group_portal')
+                                    self.env['res.users'].create([{'name': partner_obj.name,
+                                                              'login': partner_obj.email,
+                                                              'partner_id': partner_obj.id,
+                                                              'groups_id': [(6, 0, [x_group_portal_user.id])],
+                                                              }],) 
                             if not partner_obj:
                                 partner_vals.update({
                                     'name': "%s %s" % (first_name, last_name),
                                     'bigcommerce_customer_id':customerId,
                                 })
                                 partner_obj = self.env['res.partner'].create(partner_vals)
+                                user_id =  self.env['res.users'].search([('partner_id', '=', partner_obj.id)])
+                                if not user_id:
+                                    x_group_portal_user = self.env.ref('base.group_portal')
+                                    k = self.env['res.users'].create([{'name': partner_obj.name,
+                                                              'login': partner_obj.email,
+                                                              'partner_id': partner_obj.id,
+                                                              'groups_id': [(6, 0, [x_group_portal_user.id])],
+                                                              }],) 
+                                    
                             if not partner_obj:
                                 process_message = "Customer is not exist in Odoo {}".format(customerId)
                                 self.create_bigcommerce_operation_detail('order', 'import', req_data, response_data,
@@ -285,6 +306,9 @@ class SaleOrderVts(models.Model):
                                 order_id = self.create(order_vals)
                                 if carrier_id and order_id:
                                     order_id.set_delivery_line(carrier_id, base_shipping_cost)
+                                if order_id:
+                                    order_id.action_quotation_sent()
+                                    order_id.write({'state': 'draft'})
                                 # discount_product_id = self.env.ref('bigcommerce_odoo_integration.product_product_bigcommerce_discount')
                                 # if float(order.get('discount_amount')):
                                 #     self.env['sale.order.line'].sudo().create({'product_id':discount_product_id.id,'price_unit':-float(order.get('discount_amount')),'product_uom_qty':1.0,'state': 'draft','order_id':order_id.id,'company_id':order_id.company_id.id})

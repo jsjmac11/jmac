@@ -87,7 +87,6 @@
                                 <field name="manufacturer_URL"/>
                                 <field name="mpn_URL_final"/>
                                 <field name="mpn_URL" readonly="1" force_save="1"/>
-                            	<field name="search_keywords"/>
                             	<field name="sort_order"/>
                             	<field name="track_inventory"/>
                             	<field name="product_type"/>
@@ -97,6 +96,16 @@
                             	<field name="super_pmo"/>
                             	<field name="pmo"/>
                             </group>
+                            <group string="Search Keyword">
+	                      	<field name="search_keywords" nolabel="1"/>
+	                      	<newline/>
+	                      	<field name="search_keyword_ids" nolabel="1">
+	                      		<tree string="Search Keyword">
+	                      			<field name="name" required="1"/>
+	                      			<field name="product_template_id" invisible="1"/>
+	                      		</tree>
+	                      	</field>
+                         </group>
                         </group>
                          <button type='object' class="fa fa-arrow-right oe_link" name="export_stock_from_odoo_to_bigcommerce"
                             string="Export Stock From Odoo To Bigcommerce"/>
