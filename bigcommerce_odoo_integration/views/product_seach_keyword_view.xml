@@ -1,33 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <!-- FORM VIEW -->
         <record id="product_search_keyword_tree_view" model="ir.ui.view">
             <field name="name">product.search.keyword.tree</field>
             <field name="model">product.search.keyword</field>
             <field name="arch" type="xml">
-                <tree string="Search Keyword" editable="top" delete="0">
+                <tree string="Search Keyword">
                     <field name="name" required="1"/>
                     <field name="product_template_id"/>
                 </tree>
             </field>
         </record>
 
-
-        <!-- actions opening views on models -->
-        <record id="action_product_search_action" model="ir.actions.act_window">
-            <field name="name">Search Keywords</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">product.search.keyword</field>
-            <field name="view_mode">tree,form</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Click to create a new Search Keyword.
-                </p>
+        <!-- TREE VIEW -->
+        <record id="product_search_keyword_form_view" model="ir.ui.view">
+            <field name="name">product.search.keyword.form</field>
+            <field name="model">product.search.keyword</field>
+            <field name="arch" type="xml">
+                <form string="Search Keyword">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" required="1"/>
+                                <field name="product_template_id"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
             </field>
         </record>
 
-        <!-- actions -->
+        <!-- SEARCH VIEW -->
+        <record id="product_search_keyword_search" model="ir.ui.view">
+            <field name="name">product.search.keyword.search</field>
+            <field name="model">product.search.keyword</field>
+            <field name="arch" type="xml">
+                <search string="Search Keywords">
+                    <field name="name"></field>
+                    <field name="product_template_id"></field>
+                    <group expand="0" string="Group By">
+                        <filter string="Name" name="name" context="{'group_by': 'name'}"></filter>
+                        <filter string="Product" name="product_template_id" context="{'group_by': 'product_template_id'}"></filter>
+                    </group>
+                </search>
+            </field>
+        </record>
 
+        <!-- ACTION -->
+        <record id="action_product_search_action" model="ir.actions.act_window">
+            <field name="name">Search Keywords</field>
+            <field name="res_model">product.search.keyword</field>
+            <field name="view_id" ref="product_search_keyword_tree_view" />
+            <field name="search_view_id" ref="product_search_keyword_search"></field>
+        </record>
+
+        <!-- MENUITEM -->
         <menuitem name="Search Keywords" id="order_service_submenu" parent="sale.menu_sales_config"
                   action="action_product_search_action" sequence="10"/>
 
