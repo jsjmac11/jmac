@@ -100,11 +100,17 @@
 	                      	<field name="search_keywords" nolabel="1"/>
 	                      	<newline/>
 	                      	<field name="search_keyword_ids" nolabel="1">
-	                      		<tree string="Search Keyword">
-	                      			<field name="name" required="1"/>
-	                      			<field name="product_template_id" invisible="1"/>
-	                      		</tree>
-	                      	</field>
+                                <tree string="Search Keyword">
+                                    <field name="name" required="1"/>
+                                    <field name="product_template_id" invisible="1"/>
+                                </tree>
+                                <form editable="Search Keyword">
+                                    <group>
+                                        <field name="name" required="1"/>
+                                        <field name="product_template_id" invisible="1"/>
+                                    </group>
+                                </form>
+                            </field>
                          </group>
                         </group>
                          <button type='object' class="fa fa-arrow-right oe_link" name="export_stock_from_odoo_to_bigcommerce"
