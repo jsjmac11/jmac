@@ -181,15 +181,15 @@ class ProductTemplate(models.Model):
         mpn_URL_final = self.mpn_URL_final
         v_mpn_URL_final =''
         if mpn_URL_final:
-            res = re.sub('[^+A-Za-z0-9]', '-', mpn_URL_final)
-            if not res[-1].isalnum():
-               v_mpn_URL_final = re.sub('[^+A-Za-z0-9]', '-', mpn_URL_final)[:-1]
-            else:
-                v_mpn_URL_final = re.sub('[^+A-Za-z0-9]', '-', mpn_URL_final)
-            
+            v_mpn_URL_final = re.sub('[^+A-Za-z0-9]', '-', mpn_URL_final)
             if v_mpn_URL_final:
                 res_1= re.sub('[+]', '-PLUS-', v_mpn_URL_final)
-                v_mpn_URL_final = res_1
+                res = re.sub('\W+','-', res_1)
+                v_mpn_URL_final = res
+            if not v_mpn_URL_final[-1].isalnum():
+                v_mpn_URL_final  = v_mpn_URL_final[:-1]
+            if not v_mpn_URL_final[0].isalnum():
+                v_mpn_URL_final  = v_mpn_URL_final[1:]
             self.mpn_URL = v_mpn_URL_final
 
     @api.depends('manufacturer_URL', 'mpn_URL')
