@@ -51,6 +51,8 @@ class BigcommerceProductImage(models.Model):
                             'product_template_id': product_id.id,
                         }
                         self.create(values)
+                        product_id.image_1920 = image_data
+                        product_id.bigcommerce_product_image_id = image_id
                         self._cr.commit()
                         _logger.info("Successfully Import Images {}".format(image_id))
                     else:
@@ -64,10 +66,19 @@ class BigcommerceProductImage(models.Model):
                             'product_template_id': product_id.id,
                         }
                         self.write(values)
+                        # product_id.image_1920 = image_data
+                        # product_id.bigcommerce_product_image_id = image_id
+                        product_id.product_image_description_1 = data.get('description')
                         self._cr.commit()
                         _logger.info("Successfully Update Images{}".format(image_id))
                     if not product_id.image_1920:
                         product_id.image_1920 = image_data
+                    if product_id.image_1920:
+
+                        current_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+                        product_image_id = self.env['ir.attachment'].search(
+                            [('res_model', '=', 'product.template'), ('res_id', '=', product_id.id), ('res_field', '=', 'image_1920')], limit=1)
+                        product_id.product_image_file_1 = current_url + product_image_id.local_url
             else:
                 _logger.info("Get Some Error {}".format(response))
         bigcommerce_store_ids.bigcommerce_operation_message =" Import Product Image Process Complete "
@@ -149,6 +160,13 @@ class BigcommerceProductImage(models.Model):
                     self.write(values)
                     _logger.info("Successfully Image Updated : {0}".format(product_id.id))
                 product_id.image_1920 = image_data
+                product_id.bigcommerce_product_image_id = image_id
+                product_id.product_image_description_1 = data.get('description')
+                if product_id.image_1920:
+                    current_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+                    product_image_id = self.env['ir.attachment'].search(
+                        [('res_model', '=', 'product.template'), ('res_id', '=', product_id.id), ('res_field', '=', 'image_1920')], limit=1)
+                    product_id.product_image_file_1 = current_url + product_image_id.local_url
                 self._cr.commit()
                 _logger.info("Successfully Import Images {}".format(image_id))
         else:
