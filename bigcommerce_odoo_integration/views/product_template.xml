@@ -95,26 +95,26 @@
                                 <field name="product_type"/>
                                 <field name="product_custom_fields"/>
                                 <field name="image_file_override"/>
-                                <field name="search_keywords_override"/>
                                 <field name="super_pmo"/>
                                 <field name="pmo"/>
                             </group>
-                            <group string="Search Keyword">
-	                      	<field name="search_keywords" nolabel="1"/>
-	                      	<newline/>
-	                      	<field name="search_keyword_ids" nolabel="1">
-                                <tree string="Search Keyword">
-                                    <field name="name" required="1"/>
-                                    <field name="product_template_id" invisible="1"/>
-                                </tree>
-                                <form editable="Search Keyword">
-                                    <group>
-                                        <field name="name" required="1"/>
-                                        <field name="product_template_id" invisible="1"/>
-                                    </group>
-                                </form>
-                            </field>
-                         </group>
+                            <group string="Search Keyword" col="2"  >
+                            	<field name="search_keywords_override" />
+		                      	<field name="search_keywords" nolabel="1"/>
+		                      	<newline/>
+		                      	<field name="search_keyword_ids" nolabel="1">
+	                                <tree string="Search Keyword">
+	                                    <field name="name" required="1"/>
+	                                    <field name="product_template_id" invisible="1"/>
+	                                </tree>
+	                                <form editable="Search Keyword">
+	                                    <group>
+	                                        <field name="name" required="1"/>
+	                                        <field name="product_template_id" invisible="1"/>
+	                                    </group>
+	                                </form>
+	                            </field>
+                         	</group>
                         </group>
                          <button type='object' class="fa fa-arrow-right oe_link" name="export_stock_from_odoo_to_bigcommerce"
                             string="Export Stock From Odoo To Bigcommerce"/>

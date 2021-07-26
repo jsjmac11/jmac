@@ -268,7 +268,9 @@ class ProductTemplate(models.Model):
     def _compute_search_keyword(self):
         for rec in self:
             str = ''
-            if rec.search_keyword_ids:
+            if rec.search_keywords_override:
+                str = rec.search_keywords_override
+            elif rec.search_keyword_ids:
                 for keyword in rec.search_keyword_ids:
                     if not str:
                         str = keyword.name
