@@ -185,7 +185,8 @@ class ProductTemplate(models.Model):
             product_template_id = self.env['product.template'].search(
                                         [('default_code', '=', self.photos_cloned_from_id.default_code)], limit=1)
             try:
-                self.write({'image_1920':product_template_id.image_1920})
+                product_image_file_1 = 'https://s3.us-east-2.amazonaws.com/jmacimg/' + self.photos_cloned_from_id.default_code +'-2'+'.jpg'
+                self.write({'image_1920':product_template_id.image_1920, 'product_image_file_1': product_image_file_1})
             except Exception as e:
                 raise Warning(_(e))
         else:
@@ -313,6 +314,21 @@ class ProductTemplate(models.Model):
                      'product_template_id': self.id}
             self.env['product.search.keyword'].create(v)
         return res_write
+
+    @api.onchange('product_image_file_1')
+    def onchange_product_image_file_1(self):
+        if self.product_image_file_1:
+            try:
+                img_response = requests.get(self.product_image_file_1, timeout=5)
+                img_response.raise_for_status()
+                if img_response.status_code == 200:
+                    data = base64.b64encode(img_response.content).replace(
+                        b"\n", b"").decode('ascii')
+                    res.write({'image_1920':data})
+            except Exception as e:
+                raise Warning(_(e))
+        else:
+            self.product_image_file_1 = False
 
     @api.onchange('product_image_file_overide')
     def onchange_product_image_file_override(self):
