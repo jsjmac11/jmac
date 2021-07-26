@@ -270,7 +270,13 @@ class ProductTemplate(models.Model):
         for rec in self:
             str = ''
             if rec.search_keywords_override:
-                str = rec.search_keywords_override
+                override_key = rec.search_keywords_override
+                res = re.sub('[^+A-Za-z0-9]', '', override_key)
+                if not res[-1].isalnum():
+                   override_key = re.sub('[^A-Za-z0-9]', '', override_key)[:-1]
+                else:
+                    override_key = re.sub('[^A-Za-z0-9]', '', override_key)
+                str = override_key
             elif rec.search_keyword_ids:
                 for keyword in rec.search_keyword_ids:
                     if not str:
