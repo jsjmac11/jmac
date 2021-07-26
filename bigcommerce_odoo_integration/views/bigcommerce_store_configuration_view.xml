@@ -23,6 +23,7 @@
                             <field name="bigcommerce_x_auth_client" required="1"/>
                             <field name="bigcommerce_x_auth_token" required="1"/>
                             <field name="bigcommerce_api_url" widget="url" required="1"/>
+                            <field name="bigcommerce_image_URL" widget="url"/>
                             <field name="bigcommerce_order_status" required="1"/>
                             <field name="bigcommerce_product_skucode" />
                             <field name="warehouse_id" required="1" />
