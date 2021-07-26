@@ -44,6 +44,7 @@ class BigCommerceStoreConfiguration(models.Model):
     to_product_id = fields.Integer(string='To Product ID')
     bigcommerce_product_import_status = fields.Char(string="Product Import Message", help="show status of import product process", copy=False)
     bigcommerce_product_id = fields.Char(string='Bigcommerce Product ID')
+    bigcommerce_image_URL = fields.Char(string="Bigcommerce Image URL")
 
     def auto_import_bigcommerce_orders(self):
         store_ids = self.sudo().search([('auto_import_orders','!=',False)])
