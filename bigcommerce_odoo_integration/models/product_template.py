@@ -1,4 +1,4 @@
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 from requests import request
 import logging
 import json
@@ -8,6 +8,8 @@ import base64
 from odoo.exceptions import UserError, ValidationError
 import html2text
 import re
+from odoo.exceptions import Warning
+from odoo.osv import expression
 
 _logger = logging.getLogger("BigCommerce")
 
@@ -77,7 +79,6 @@ class ProductTemplate(models.Model):
     item_type = fields.Char('Item Type')
     option_set_align = fields.Char('Option Set')
     discontinued = fields.Boolean('Discontinued')
-    product_image_description_1 = fields.Char('Product Image Description - 1')
     product_tax_class = fields.Selection([('Default Tax Class', 'Default Tax Class'),
                                           ('Non-Taxable Products', 'Non-Taxable Products'),
                                           ('Shipping', 'Shipping'),
@@ -126,15 +127,19 @@ class ProductTemplate(models.Model):
     width = fields.Integer('Width')
     # brand_id = fields.Integer("Brand ID")
     free_shipping_override = fields.Char("Free Shipping Override")
-    photos_cloned_from = fields.Char("Photos Cloned From")
     description_override = fields.Char("Description Override")
     image_file_override = fields.Char("Image File Override")
     search_keywords_override = fields.Char("Search Keywords Override")
     super_pmo = fields.Char("Super PMO")
     pmo = fields.Char("PMO")
     pack_qty = fields.Integer("Pack Qty")
-    image_is_thumbnail = fields.Image("Image Is Thumbnail")
-    image_sort = fields.Image("Image Sort")    
+    product_image_file_1 = fields.Char(string="Product Image File - 1")
+    product_image_file_overide = fields.Char(string="Product Image File - 1(Override)")
+    bigcommerce_product_image_id = fields.Char(related='bigcommerce_product_image_ids.bigcommerce_product_image_id', string="Product Image ID")
+    product_image_description_1 = fields.Char('Product Image Description - 1', compute="_compute_product_image_description", store=True, readonly=False)
+    image_is_thumbnail = fields.Char("Image Is Thumbnail", default="X")
+    image_sort = fields.Char("Image Sort", default=0)
+    photos_cloned_from_id = fields.Many2one('product.template', string="Photos Cloned From")
 
     product_URL_final = fields.Char('Product URL Final')
     mpn_URL_final = fields.Char('MPN URL Override')
@@ -142,6 +147,49 @@ class ProductTemplate(models.Model):
     search_keyword_ids = fields.One2many('product.search.keyword', 
                     'product_template_id',
                     string="Search Keywords")
+
+    def name_get(self):
+        if self._context.get('photos_cloned_from'):
+            res = []
+            for rec in self:
+                if rec.default_code:
+                    res.append((rec.id, _("%s") %
+                                (rec.default_code or '')))
+                else:
+                    res.append((rec.id, _("%s") %
+                                (rec.name or '')))
+            return res
+        else:
+            return super(ProductTemplate, self).name_get()
+
+    @api.constrains('product_image_file_overide')
+    def check_main_img_url(self):
+        if self.env.context.get('from_aws_url'):
+            return
+        if self.product_image_file_overide:
+            try:
+                img_response = requests.get(self.product_image_file_overide, timeout=5)
+                img_response.raise_for_status()
+                if img_response.status_code == 200:
+                    data = base64.b64encode(img_response.content).replace(
+                        b"\n", b"").decode('ascii')
+                    self.write({'image_1920':data})
+            except Exception as e:
+                raise Warning(_(e))
+        else:
+            self.write({'image_1920':False})
+
+    @api.onchange('photos_cloned_from_id')
+    def onchange_photos_cloned_from_id(self):
+        if self.photos_cloned_from_id:
+            product_template_id = self.env['product.template'].search(
+                                        [('default_code', '=', self.photos_cloned_from_id.default_code)], limit=1)
+            try:
+                self.write({'image_1920':product_template_id.image_1920})
+            except Exception as e:
+                raise Warning(_(e))
+        else:
+            self.write({'image_1920':False})
 
     @api.onchange('x_studio_manufacturer')
     def onchange_x_studio_manufacturer(self):
@@ -228,13 +276,21 @@ class ProductTemplate(models.Model):
                         str = str +', ' +keyword.name 
             rec.search_keywords = str
             
-    # @api.model
-    # def create(self, vals):
-    #     res = super(ProductTemplate, self).create(vals)
-    #     if not vals.get('manufacturer_URL'):
-    #         self.manufacturer_URL = "Manufacturer URL IS MISSING"
-    #     elif  not vals.get('mpn_URL'):
-    #         self.mpn_URL = "MPN URL IS  MISSING"
+    @api.model
+    def create(self, vals):
+        res = super(ProductTemplate, self).create(vals)
+        if res.default_code:
+            res.product_image_file_1 = 'https://s3.us-east-2.amazonaws.com/jmacimg/' + res.default_code +'-2'+'.jpg'
+            try:
+                img_response = requests.get(res.product_image_file_1, timeout=5)
+                img_response.raise_for_status()
+                if img_response.status_code == 200:
+                    data = base64.b64encode(img_response.content).replace(
+                        b"\n", b"").decode('ascii')
+                    res.write({'image_1920':data})
+            except Exception as e:
+                raise Warning(_(e))
+        return res
 
     def write(self, vals):
         res_write = super(ProductTemplate, self).write(vals)
@@ -248,9 +304,24 @@ class ProductTemplate(models.Model):
             v = {'name': mpn_url,
                      'product_template_id': self.id}
             self.env['product.search.keyword'].create(v)
-            
         return res_write
+
+    @api.onchange('product_image_file_overide')
+    def onchange_product_image_file_override(self):
+        if self.product_image_file_overide:
+            self.product_image_file_1 = self.product_image_file_overide
+        else:
+            self.product_image_file_1 = False
     
+    @api.depends('x_studio_manufacturer', 'vendor_part_number')
+    def _compute_product_image_description(self):
+        for rec in self:
+            company_id = self.env.company
+            if rec.x_studio_manufacturer and rec.vendor_part_number and company_id:
+                self.product_image_description_1 = rec.vendor_part_number +' by '+ rec.x_studio_manufacturer.name +' | '+ company_id.name
+            else:
+                self.product_image_description_1 = False
+
     def export_stock_from_odoo_to_bigcommerce(self):
         raise ValidationError("Kindly Export product using product variant menu!")
 
@@ -575,7 +646,7 @@ class ProductTemplate(models.Model):
                 "product_weight": record.get('weight'),
                 "show_product_condition": record.get('condition'),
                 "product_type" : record.get('type'),
-                "vendor_part_numbe" : record.get('mpn'),
+                "vendor_part_number" : record.get('mpn'),
                 "track_inventory" : record.get('inventory_tracking'),
                 "sort_order" : record.get('sort_order'),
                 "show_product_condition" : record.get('is_condition_shown'),
@@ -606,7 +677,6 @@ class ProductTemplate(models.Model):
                 "retail_price": record.get('retail_price'),
                 "tax_class_id" : record.get('tax_class_id'),
                 "width" : record.get('width'),
-                "brand_id" : record.get("brand_id")
                 }
         product_template = product_template_obj.with_user(1).create(vals)
         _logger.info("Product Created: {}".format(product_template))
@@ -723,7 +793,7 @@ class ProductTemplate(models.Model):
                                         "product_weight": record.get('weight'),
                                         "show_product_condition": record.get('condition'),
                                         "product_type" : record.get('type'),
-                                        "vendor_part_numbe" : record.get('mpn'),
+                                        "vendor_part_number" : record.get('mpn'),
                                         "track_inventory" : record.get('inventory_tracking'),
                                         "sort_order" : record.get('sort_order'),
                                         "show_product_condition" : record.get('is_condition_shown'),
@@ -754,7 +824,6 @@ class ProductTemplate(models.Model):
                                         "retail_price": record.get('retail_price'),
                                         "tax_class_id" : record.get('tax_class_id'),
                                         "width" : record.get('width'),
-                                        "brand_id" : record.get("brand_id")
                                     })
                                     self.with_user(1).create_bigcommerce_operation_detail('product', 'import', req_data, response_data,operation_id, warehouse_id, False, process_message)
                                     _logger.info("{0}".format(process_message))
@@ -863,7 +932,7 @@ class ProductTemplate(models.Model):
                         "product_weight": record.get('weight'),
                         "show_product_condition": record.get('condition'),
                         "product_type" : record.get('type'),
-                        "vendor_part_numbe" : record.get('mpn'),
+                        "vendor_part_number" : record.get('mpn'),
                         "track_inventory" : record.get('inventory_tracking'),
                         "sort_order" : record.get('sort_order'),
                         "show_product_condition" : record.get('is_condition_shown'),
@@ -894,7 +963,6 @@ class ProductTemplate(models.Model):
                         "retail_price": record.get('retail_price'),
                         "tax_class_id" : record.get('tax_class_id'),
                         "width" : record.get('width'),
-                        "brand_id" : record.get("brand_id")
                     })
                     _logger.info("{0}".format(process_message))
                     self._cr.commit()
