@@ -98,7 +98,6 @@
                                 <field name="super_pmo"/>
                                 <field name="pmo"/>
                             </group>
-
                             <group string="Search Keyword" col="2"  >
                             	<field name="search_keywords_override" />
 		                      	<field name="search_keywords" nolabel="1"/>
