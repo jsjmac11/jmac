@@ -302,12 +302,11 @@ class ProductTemplate(models.Model):
 
     @api.constrains('default_code')
     def check_default_code(self):
-        if self.default_code:
-            self._cr.execute("""select count(*) from product_template where default_code = '%s'""" % (self.default_code))
-            result = self._cr.fetchone()
-            if result and result[0] and result[0] >= 1:
-                raise ValidationError(_("%s default code is already exist...!" % self.default_code))
-    #     if self.env.context.get('from_aws_url'):
+        for record in self:
+            if len(self.search([('default_code', '=', record.default_code),
+                            ('id', '!=', record.id)], limit=1)) == 1 and record.default_code:
+                    raise ValidationError(_("%s default code is already exist...!" % record.default_code))
+        #     if self.env.context.get('from_aws_url'):
     #         return
     #     if self.product_image_file_overide:
     #         try:
