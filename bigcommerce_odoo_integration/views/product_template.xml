@@ -74,6 +74,7 @@
                                 <field name="image_is_thumbnail"/>
                                 <field name="image_sort"/>
                                 <field name="photos_cloned_from_id" context="{'photos_cloned_from': True}"/>
+                                <field name="image_type" widget="radio"/>
                             </group>
                             <group>
                                 <field name="is_free_shipping"/>
@@ -94,7 +95,6 @@
                                 <field name="track_inventory"/>
                                 <field name="product_type"/>
                                 <field name="product_custom_fields"/>
-                                <field name="image_file_override"/>
                                 <field name="super_pmo"/>
                                 <field name="pmo"/>
                             </group>

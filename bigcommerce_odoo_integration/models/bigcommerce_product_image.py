@@ -74,7 +74,6 @@ class BigcommerceProductImage(models.Model):
                     if not product_id.image_1920:
                         product_id.image_1920 = image_data
                     if product_id.image_1920:
-
                         current_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
                         product_image_id = self.env['ir.attachment'].search(
                             [('res_model', '=', 'product.template'), ('res_id', '=', product_id.id), ('res_field', '=', 'image_1920')], limit=1)
@@ -171,3 +170,4 @@ class BigcommerceProductImage(models.Model):
                 _logger.info("Successfully Import Images {}".format(image_id))
         else:
             _logger.info("Get Some Error {}".format(response))
+1
