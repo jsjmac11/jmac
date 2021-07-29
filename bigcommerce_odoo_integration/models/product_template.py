@@ -17,7 +17,7 @@ class ProductProduct(models.Model):
     _inherit = "product.product"
     
     bigcommerce_product_variant_id = fields.Char(string='Bigcommerce Product Variant ID')
-    
+
     def export_stock_from_odoo_to_bigcommerce(self):
         try:
             if not self.bigcommerce_store_id:
@@ -128,7 +128,6 @@ class ProductTemplate(models.Model):
     # brand_id = fields.Integer("Brand ID")
     free_shipping_override = fields.Char("Free Shipping Override")
     description_override = fields.Char("Description Override")
-    image_file_override = fields.Char("Image File Override")
     search_keywords_override = fields.Char("Search Keywords Override")
     super_pmo = fields.Char("Super PMO")
     pmo = fields.Char("PMO")
@@ -140,7 +139,7 @@ class ProductTemplate(models.Model):
     image_is_thumbnail = fields.Char("Image Is Thumbnail", default="X")
     image_sort = fields.Char("Image Sort", default=0)
     photos_cloned_from_id = fields.Many2one('product.template', string="Photos Cloned From")
-
+    image_type = fields.Selection([('real', 'Real'),('box', 'Box'), ('child', 'Child'), ('none', 'None')], 'Photo Type', default='real')
     product_URL_final = fields.Char('Product URL Final')
     mpn_URL_final = fields.Char('MPN URL Override')
 
@@ -161,36 +160,6 @@ class ProductTemplate(models.Model):
             return res
         else:
             return super(ProductTemplate, self).name_get()
-
-    @api.constrains('product_image_file_overide')
-    def check_main_img_url(self):
-        if self.env.context.get('from_aws_url'):
-            return
-        if self.product_image_file_overide:
-            try:
-                img_response = requests.get(self.product_image_file_overide, timeout=5)
-                img_response.raise_for_status()
-                if img_response.status_code == 200:
-                    data = base64.b64encode(img_response.content).replace(
-                        b"\n", b"").decode('ascii')
-                    self.write({'image_1920':data})
-            except Exception as e:
-                raise Warning(_(e))
-        else:
-            self.write({'image_1920':False})
-
-    @api.onchange('photos_cloned_from_id')
-    def onchange_photos_cloned_from_id(self):
-        if self.photos_cloned_from_id:
-            product_template_id = self.env['product.template'].search(
-                                        [('default_code', '=', self.photos_cloned_from_id.default_code)], limit=1)
-            try:
-                product_image_file_1 = 'https://s3.us-east-2.amazonaws.com/jmacimg/' + self.photos_cloned_from_id.default_code +'-2'+'.jpg'
-                self.write({'image_1920':product_template_id.image_1920, 'product_image_file_1': product_image_file_1})
-            except Exception as e:
-                raise Warning(_(e))
-        else:
-            self.write({'image_1920':False})
 
     @api.onchange('x_studio_manufacturer')
     def onchange_x_studio_manufacturer(self):
@@ -288,21 +257,37 @@ class ProductTemplate(models.Model):
     @api.model
     def create(self, vals):
         res = super(ProductTemplate, self).create(vals)
-        if res.default_code:
-            res.product_image_file_1 = 'https://s3.us-east-2.amazonaws.com/jmacimg/' + res.default_code +'-2'+'.jpg'
-            try:
-                img_response = requests.get(res.product_image_file_1, timeout=5)
-                img_response.raise_for_status()
-                if img_response.status_code == 200:
-                    data = base64.b64encode(img_response.content).replace(
-                        b"\n", b"").decode('ascii')
-                    res.write({'image_1920':data})
-            except Exception as e:
-                raise Warning(_(e))
+        product_image_url = ''
+        if res.product_image_file_overide:
+            product_image_url = res.product_image_file_overide
+        elif res.photos_cloned_from_id and res.photos_cloned_from_id.product_image_file_1:
+            product_image_url = res.photos_cloned_from_id.product_image_file_1
+        elif res.default_code:
+            product_image_url = 'https://s3.us-east-2.amazonaws.com/jmacimg/' + res.default_code +'-2'+'.jpg'
+        res.write({'product_image_file_1':product_image_url})
+            # try:
+            #     img_response = requests.get(res.product_image_file_1, timeout=5)
+            #     img_response.raise_for_status()
+            #     if img_response.status_code == 200:
+            #         data = base64.b64encode(img_response.content).replace(
+            #             b"\n", b"").decode('ascii')
+                    # res.write({'image_1920':data})
+            # except Exception as e:
+            #     raise Warning(_("Please dont have image in Amazon S3!."))
         return res
 
     def write(self, vals):
         res_write = super(ProductTemplate, self).write(vals)
+        product_image_url = ''
+        if self.product_image_file_overide:
+            product_image_url = self.product_image_file_overide
+        elif self.photos_cloned_from_id and self.photos_cloned_from_id.product_image_file_1:
+            product_image_url = self.photos_cloned_from_id.product_image_file_1
+        elif self.default_code:
+            product_image_url = 'https://s3.us-east-2.amazonaws.com/jmacimg/' + self.default_code +'-2'+'.jpg'
+        if product_image_url and not self._context.get('url_updated', False):
+            self.with_context(url_updated=True).write({'product_image_file_1':product_image_url})
+
         if  vals.get('mpn_URL') and self.vendor_part_number:
             mpn_url = vals.get('mpn_URL')
             res = re.sub('[^+A-Za-z0-9]', '', mpn_url)
@@ -315,20 +300,42 @@ class ProductTemplate(models.Model):
             self.env['product.search.keyword'].create(v)
         return res_write
 
-    @api.onchange('product_image_file_1')
-    def onchange_product_image_file_1(self):
-        if self.product_image_file_1:
-            try:
-                img_response = requests.get(self.product_image_file_1, timeout=5)
-                img_response.raise_for_status()
-                if img_response.status_code == 200:
-                    data = base64.b64encode(img_response.content).replace(
-                        b"\n", b"").decode('ascii')
-                    res.write({'image_1920':data})
-            except Exception as e:
-                raise Warning(_(e))
-        else:
-            self.product_image_file_1 = False
+    @api.constrains('default_code')
+    def check_default_code(self):
+        if self.default_code:
+            self._cr.execute("""select count(*) from product_template where default_code = '%s'""" % (self.default_code))
+            result = self._cr.fetchone()
+            if result and result[0] and result[0] >= 1:
+                raise ValidationError(_("%s default code is already exist...!" % self.default_code))
+    #     if self.env.context.get('from_aws_url'):
+    #         return
+    #     if self.product_image_file_overide:
+    #         try:
+    #             img_response = requests.get(self.product_image_file_overide, timeout=5)
+    #             img_response.raise_for_status()
+    #             if img_response.status_code == 200:
+    #                 data = base64.b64encode(img_response.content).replace(
+    #                     b"\n", b"").decode('ascii')
+    #                 self.write({'image_1920':data})
+    #         except Exception as e:
+    #             raise Warning(_(e))
+    #     else:
+    #         self.write({'image_1920':False})
+
+    # @api.onchange('product_image_file_1')
+    # def onchange_product_image_file_1(self):
+    #     if self.product_image_file_1:
+    #         try:
+    #             img_response = requests.get(self.product_image_file_1, timeout=5)
+    #             img_response.raise_for_status()
+    #             if img_response.status_code == 200:
+    #                 data = base64.b64encode(img_response.content).replace(
+    #                     b"\n", b"").decode('ascii')
+    #                 res.write({'image_1920':data})
+    #         except Exception as e:
+    #             raise Warning(_(e))
+    #     else:
+    #         self.product_image_file_1 = False
 
     @api.onchange('product_image_file_overide')
     def onchange_product_image_file_override(self):
@@ -337,6 +344,29 @@ class ProductTemplate(models.Model):
         else:
             self.product_image_file_1 = False
     
+    @api.onchange('photos_cloned_from_id')
+    def onchange_photos_cloned_from_id(self):
+        if self.photos_cloned_from_id.product_image_file_1:
+            if not self.product_image_file_overide:
+                self.product_image_file_1 = 'https://s3.us-east-2.amazonaws.com/jmacimg/' + self.photos_cloned_from_id.default_code +'-2'+'.jpg'
+            # else:
+                # raise ValidationError("Product Image File Overide All Ready Exist!")
+            # raise Warning(_("Please dont have image in Amazon S3!."))
+
+            # product_template_id = self.env['product.template'].search(
+            #                             [('default_code', '=', self.photos_cloned_from_id.default_code)], limit=1)
+            # try:
+            #     img_response = requests.get(product_template_id.product_image_file_1, timeout=5)
+            #     img_response.raise_for_status()
+            #     if img_response.status_code == 200:
+            #         data = base64.b64encode(img_response.content).replace(
+            #             b"\n", b"").decode('ascii')
+            #         self.write({'image_1920':product_template_id.image_1920, 'product_image_file_1': product_image_file_1})
+            # except Exception as e:
+            #     raise Warning(_(e))
+        # else:
+        #     self.write({'image_1920':False})
+
     @api.depends('x_studio_manufacturer', 'vendor_part_number')
     def _compute_product_image_description(self):
         for rec in self:
