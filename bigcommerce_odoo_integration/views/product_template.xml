@@ -83,7 +83,8 @@
                                 <field name="is_price_hidden"/>
                                 <field name="meta_description"/>
                                 <field name="meta_keywords"/>
-                                <field name="page_title"/>                            
+                                <field name="page_title"/>
+                                <field name="page_title_override"/>
                                 <field name="product_availability"/>
                                 <field name="product_condition"/>
                                 <field name="manufacturer_URL" readonly="1" force_save="1"/>
@@ -118,6 +119,16 @@
                         </group>
                          <button type='object' class="fa fa-arrow-right oe_link" name="export_stock_from_odoo_to_bigcommerce"
                             string="Export Stock From Odoo To Bigcommerce"/>
+                    </page>
+                    <page string="Mokey Enriched Content">
+                        <group>
+                            <group>
+                                <field name="monkey_activator" widget="radio"/>
+                                <field name="monkey_product_name" attrs="{'required': [('monkey_activator', '!=', 'off')]}"/>
+                                <field name="monkey_product_name_override"/>
+                                <field name="manufacturer_info"/>
+                            </group>
+                        </group>
                     </page>
                 </xpath>
                 <xpath expr="//label[@for='standard_price']" position="replace">
