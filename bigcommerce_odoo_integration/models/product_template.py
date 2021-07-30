@@ -57,6 +57,7 @@ class ProductProduct(models.Model):
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
+    name = fields.Char('Product Name', index=True, required=False, translate=True)
     bigcommerce_product_image_ids = fields.One2many('bigcommerce.product.image', 'product_template_id',
                                                     string="Bigcommerce Product Image Ids")
     bigcommerce_product_id = fields.Char(string='Product ID')
@@ -98,6 +99,7 @@ class ProductTemplate(models.Model):
     
     meta_keywords = fields.Char('Meta Keywords')
     page_title = fields.Char('Page Title')
+    page_title_override = fields.Char('Page Title Override')
     product_availability = fields.Boolean('Availability')
     product_condition = fields.Char('Condition')
     product_URL = fields.Char('Product URL', compute='_compute_product_url',
@@ -146,6 +148,11 @@ class ProductTemplate(models.Model):
     search_keyword_ids = fields.One2many('product.search.keyword', 
                     'product_template_id',
                     string="Search Keywords")
+
+    monkey_activator = fields.Selection([('off', 'Off'), ('on', 'On')], 'Monkey Activator', default='off')
+    monkey_product_name = fields.Char(string="Monkey Product Name")
+    monkey_product_name_override = fields.Char(string="Product Name Override")
+    manufacturer_info = fields.Char(string="Manufacturer Info::Web Name")
 
     def name_get(self):
         if self._context.get('photos_cloned_from'):
@@ -233,6 +240,11 @@ class ProductTemplate(models.Model):
             self.manufacturer_URL = "MFG-URL-MISSING"
         elif not self.mpn_URL:
             self.mpn_URL = "MPN-URL-MISSING"
+        if not self.x_studio_manufacturer or not self.vendor_part_number and not self.page_title_override:
+            self.page_title = False
+        if not self.x_studio_manufacturer or not self.vendor_part_number:
+            self.name = False
+
 
     @api.depends('search_keyword_ids')
     def _compute_search_keyword(self):
@@ -258,13 +270,28 @@ class ProductTemplate(models.Model):
     def create(self, vals):
         res = super(ProductTemplate, self).create(vals)
         product_image_url = ''
+        page_title = ''
+        product_name = ''
         if res.product_image_file_overide:
             product_image_url = res.product_image_file_overide
         elif res.photos_cloned_from_id and res.photos_cloned_from_id.product_image_file_1:
             product_image_url = res.photos_cloned_from_id.product_image_file_1
         elif res.default_code:
             product_image_url = 'https://s3.us-east-2.amazonaws.com/jmacimg/' + res.default_code +'-2'+'.jpg'
-        res.write({'product_image_file_1':product_image_url})
+        if not res.page_title_override:
+            if res.vendor_part_number and res.x_studio_manufacturer:
+                page_title = res.vendor_part_number + ' - ' + res.x_studio_manufacturer.name
+            else:
+                page_title = res.page_title_override
+        if not res.monkey_activator == 'on' and not res.monkey_product_name_override and not res.manufacturer_info and res.vendor_part_number and res.x_studio_manufacturer:
+            product_name = res.x_studio_manufacturer.name + ' ' + res.vendor_part_number
+        elif res.monkey_activator == 'on' and res.monkey_product_name:
+            product_name = res.monkey_product_name
+        elif res.monkey_activator == 'off' and res.monkey_product_name and res.monkey_product_name_override:
+            product_name = res.monkey_product_name_override
+        elif res.monkey_activator == 'off' and not res.monkey_product_name and not res.monkey_product_name_override and res.manufacturer_info:
+            product_name = res.manufacturer_info + ' ' + res.vendor_part_number
+        res.write({'product_image_file_1':product_image_url, 'page_title': page_title, 'name': product_name})
             # try:
             #     img_response = requests.get(res.product_image_file_1, timeout=5)
             #     img_response.raise_for_status()
@@ -279,6 +306,8 @@ class ProductTemplate(models.Model):
     def write(self, vals):
         res_write = super(ProductTemplate, self).write(vals)
         product_image_url = ''
+        page_title = ''
+        product_name = ''
         if self.product_image_file_overide:
             product_image_url = self.product_image_file_overide
         elif self.photos_cloned_from_id and self.photos_cloned_from_id.product_image_file_1:
@@ -287,7 +316,26 @@ class ProductTemplate(models.Model):
             product_image_url = 'https://s3.us-east-2.amazonaws.com/jmacimg/' + self.default_code +'-2'+'.jpg'
         if product_image_url and not self._context.get('url_updated', False):
             self.with_context(url_updated=True).write({'product_image_file_1':product_image_url})
+        if not self.page_title_override:
+            if self.vendor_part_number and self.x_studio_manufacturer:
+                page_title = self.vendor_part_number + ' - ' + self.x_studio_manufacturer.name
+            else:
+                page_title = self.page_title_override
+        if self.page_title_override:
+            page_title = self.page_title_override
+        if page_title and not self._context.get('page_title', False):
+            self.with_context(page_title=True).write({'page_title':page_title})
 
+        if not self.monkey_activator == 'on' and not self.monkey_product_name_override and not self.manufacturer_info and self.vendor_part_number and self.x_studio_manufacturer:
+            product_name = self.x_studio_manufacturer.name + ' ' + self.vendor_part_number
+        elif self.monkey_activator == 'on' and self.monkey_product_name:
+            product_name = self.monkey_product_name
+        elif self.monkey_activator == 'off' and self.monkey_product_name and self.monkey_product_name_override:
+            product_name = self.monkey_product_name_override
+        elif self.monkey_activator == 'off' and not self.monkey_product_name and not self.monkey_product_name_override and self.manufacturer_info:
+            product_name = self.manufacturer_info + ' ' + self.vendor_part_number
+        if product_name and not self._context.get('product_name', False):
+            self.with_context(product_name=True).write({'name':product_name})
         if  vals.get('mpn_URL') and self.vendor_part_number:
             mpn_url = vals.get('mpn_URL')
             res = re.sub('[^+A-Za-z0-9]', '', mpn_url)
