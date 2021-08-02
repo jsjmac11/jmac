@@ -248,7 +248,6 @@ class ProductTemplate(models.Model):
             else:
                 self.name = False
 
-
     @api.depends('search_keyword_ids')
     def _compute_search_keyword(self):
         for rec in self:
