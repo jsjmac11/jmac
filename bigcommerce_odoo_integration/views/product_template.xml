@@ -124,7 +124,7 @@
                         <group>
                             <group>
                                 <field name="monkey_activator" widget="radio"/>
-                                <field name="monkey_product_name" attrs="{'required': [('monkey_activator', '!=', 'off')]}"/>
+                                <field name="monkey_product_name"/>
                                 <field name="monkey_product_name_override"/>
                                 <field name="manufacturer_info"/>
                             </group>

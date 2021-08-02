@@ -243,7 +243,10 @@ class ProductTemplate(models.Model):
         if not self.x_studio_manufacturer or not self.vendor_part_number and not self.page_title_override:
             self.page_title = False
         if not self.x_studio_manufacturer or not self.vendor_part_number:
-            self.name = False
+            if self.default_code:
+                self.name = self.default_code
+            else:
+                self.name = False
 
 
     @api.depends('search_keyword_ids')
