@@ -149,7 +149,7 @@ class ProductTemplate(models.Model):
                     'product_template_id',
                     string="Search Keywords")
 
-    monkey_activator = fields.Selection([('off', 'Off'), ('on', 'On')], 'Monkey Activator', default='off')
+    monkey_activator = fields.Selection([('on', 'On'), ('off', 'Off')], 'Monkey Activator', default='off')
     monkey_product_name = fields.Char(string="Monkey Product Name")
     monkey_product_name_override = fields.Char(string="Product Name Override")
     manufacturer_info = fields.Char(string="Manufacturer Info::Web Name")
@@ -267,46 +267,8 @@ class ProductTemplate(models.Model):
                     else:
                         str = str +', ' +keyword.name 
             rec.search_keywords = str
-            
-    @api.model
-    def create(self, vals):
-        res = super(ProductTemplate, self).create(vals)
-        product_image_url = ''
-        page_title = ''
-        product_name = ''
-        if res.product_image_file_overide:
-            product_image_url = res.product_image_file_overide
-        elif res.photos_cloned_from_id and res.photos_cloned_from_id.product_image_file_1:
-            product_image_url = res.photos_cloned_from_id.product_image_file_1
-        elif res.default_code:
-            product_image_url = 'https://s3.us-east-2.amazonaws.com/jmacimg/' + res.default_code +'-2'+'.jpg'
-        if not res.page_title_override:
-            if res.vendor_part_number and res.x_studio_manufacturer:
-                page_title = res.vendor_part_number + ' - ' + res.x_studio_manufacturer.name
-            else:
-                page_title = res.page_title_override
-        if not res.monkey_activator == 'on' and not res.monkey_product_name_override and not res.manufacturer_info and res.vendor_part_number and res.x_studio_manufacturer:
-            product_name = res.x_studio_manufacturer.name + ' ' + res.vendor_part_number
-        elif res.monkey_activator == 'on' and res.monkey_product_name:
-            product_name = res.monkey_product_name
-        elif res.monkey_activator == 'off' and res.monkey_product_name and res.monkey_product_name_override:
-            product_name = res.monkey_product_name_override
-        elif res.monkey_activator == 'off' and not res.monkey_product_name and not res.monkey_product_name_override and res.manufacturer_info:
-            product_name = res.manufacturer_info + ' ' + res.vendor_part_number
-        res.write({'product_image_file_1':product_image_url, 'page_title': page_title, 'name': product_name})
-            # try:
-            #     img_response = requests.get(res.product_image_file_1, timeout=5)
-            #     img_response.raise_for_status()
-            #     if img_response.status_code == 200:
-            #         data = base64.b64encode(img_response.content).replace(
-            #             b"\n", b"").decode('ascii')
-                    # res.write({'image_1920':data})
-            # except Exception as e:
-            #     raise Warning(_("Please dont have image in Amazon S3!."))
-        return res
 
-    def write(self, vals):
-        res_write = super(ProductTemplate, self).write(vals)
+    def _make_fields_logic(self, vals):
         product_image_url = ''
         page_title = ''
         product_name = ''
@@ -334,8 +296,16 @@ class ProductTemplate(models.Model):
             product_name = self.monkey_product_name
         elif self.monkey_activator == 'off' and self.monkey_product_name and self.monkey_product_name_override:
             product_name = self.monkey_product_name_override
+        elif self.monkey_activator == 'off' and self.monkey_product_name and not self.monkey_product_name_override:
+            if self.manufacturer_info and self.vendor_part_number:
+                product_name = self.manufacturer_info + ' ' + self.vendor_part_number
+            else:
+                product_name = self.default_code
+        elif self.monkey_activator == 'on' and not self.monkey_product_name and self.monkey_product_name_override:
+            product_name = self.monkey_product_name_override
         elif self.monkey_activator == 'off' and not self.monkey_product_name and not self.monkey_product_name_override and self.manufacturer_info:
-            product_name = self.manufacturer_info + ' ' + self.vendor_part_number
+            if self.manufacturer_info and self.vendor_part_number:
+                product_name = self.manufacturer_info + ' ' + self.vendor_part_number
         if product_name and not self._context.get('product_name', False):
             self.with_context(product_name=True).write({'name':product_name})
         if  vals.get('mpn_URL') and self.vendor_part_number:
@@ -348,6 +318,17 @@ class ProductTemplate(models.Model):
             v = {'name': mpn_url,
                      'product_template_id': self.id}
             self.env['product.search.keyword'].create(v)
+
+    @api.model
+    def create(self, vals):
+        res = super(ProductTemplate, self).create(vals)
+        res._make_fields_logic(vals)
+        return res
+
+    def write(self, vals):
+        res_write = super(ProductTemplate, self).write(vals)
+        for res in self:
+            res._make_fields_logic(vals)
         return res_write
 
     @api.constrains('default_code')
@@ -692,6 +673,7 @@ class ProductTemplate(models.Model):
                 self.create_bigcommerce_operation_detail('product_variant','export',"","",operation_id,warehouse_id,True,product_process_message)
             operation_id and operation_id.write({'bigcommerce_message': product_process_message})
             self._cr.commit()
+
     def create_product_template(self,record,store_id):
         product_attribute_obj = self.env['product.attribute']
         product_attribute_value_obj = self.env['product.attribute.value']
