@@ -290,29 +290,51 @@ class ProductTemplate(models.Model):
         if page_title and not self._context.get('page_title', False):
             self.with_context(page_title=True).write({'page_title':page_title})
 
-        if self.monkey_activator == 'off' and not self.monkey_product_name_override and not self.manufacturer_info and self.vendor_part_number and self.x_studio_manufacturer:
-                product_name = self.x_studio_manufacturer.name + ' ' + self.vendor_part_number
-        elif self.monkey_activator == 'on' and self.monkey_product_name:
+        # Client Monkey Filds Login
+        if self.monkey_activator == 'on' and self.monkey_product_name and not self.monkey_product_name_override and not self.manufacturer_info:
             product_name = self.monkey_product_name
-        elif self.monkey_activator == 'on' and not self.monkey_product_name and self.monkey_product_name_override:
+        elif self.monkey_activator == 'on' and self.monkey_product_name and self.monkey_product_name_override and not self.manufacturer_info:
             product_name = self.monkey_product_name_override
-        elif self.monkey_activator == 'on' and self.monkey_product_name and not self.monkey_product_name_override and self.manufacturer_info:
-                product_name = self.manufacturer_info + ' ' + self.vendor_part_number
-        elif self.monkey_activator == 'on' and not self.monkey_product_name and not self.monkey_product_name_override and self.manufacturer_info:
-                product_name = self.manufacturer_info + ' ' + self.vendor_part_number
+        elif self.monkey_activator == 'on' and self.monkey_product_name and self.monkey_product_name_override and self.manufacturer_info:
+            product_name = self.manufacturer_info + ' ' + self.vendor_part_number
+        elif self.monkey_activator == 'off' and self.monkey_product_name and not self.monkey_product_name_override and not self.manufacturer_info and self.x_studio_manufacturer and self.vendor_part_number:
+            product_name = self.x_studio_manufacturer.name + ' ' + self.vendor_part_number
         elif self.monkey_activator == 'off' and self.monkey_product_name and self.monkey_product_name_override and not self.manufacturer_info:
             product_name = self.monkey_product_name_override
-        elif self.monkey_activator == 'off' and not self.monkey_product_name and self.monkey_product_name_override:
-            product_name = self.monkey_product_name_override
-        elif self.monkey_activator == 'off' and self.monkey_product_name and not self.monkey_product_name_override:
-                product_name = self.manufacturer_info + ' ' + self.vendor_part_number
         elif self.monkey_activator == 'off' and self.monkey_product_name and self.monkey_product_name_override and self.manufacturer_info:
-                product_name = self.manufacturer_info + ' ' + self.vendor_part_number
-        elif self.monkey_activator == 'off' and not self.monkey_product_name and not self.monkey_product_name_override and self.manufacturer_info:
-            if self.manufacturer_info and self.vendor_part_number:
-                product_name = self.manufacturer_info + ' ' + self.vendor_part_number
-        elif self.monkey_activator == 'off' and not self.monkey_product_name and not self.monkey_product_name_override and not self.manufacturer_info and not self.x_studio_manufacturer and not self.vendor_part_number:
+            product_name = self.manufacturer_info  + ' ' + self.vendor_part_number
+        elif self.monkey_activator == 'on' and not self.monkey_product_name and not self.monkey_product_name_override and not self.manufacturer_info and self.x_studio_manufacturer and self.vendor_part_number:
+                product_name = self.x_studio_manufacturer.name + ' ' + self.vendor_part_number
+        elif self.monkey_activator == 'off' and not self.monkey_product_name and not self.monkey_product_name_override and not self.manufacturer_info and self.x_studio_manufacturer and self.vendor_part_number:
+            product_name = self.x_studio_manufacturer.name + ' ' + self.vendor_part_number
+        elif self.monkey_activator == 'off' and not self.monkey_product_name and not self.monkey_product_name_override and not self.manufacturer_info and not self.x_studio_manufacturer or not self.vendor_part_number:
             product_name = self.default_code
+        elif self.monkey_activator == 'on' and not self.monkey_product_name and not self.monkey_product_name_override and not self.manufacturer_info and not self.x_studio_manufacturer or not self.vendor_part_number:
+            product_name = self.default_code
+        # Bista Monkey Filds Login
+        # if self.monkey_activator == 'off' and not self.monkey_product_name_override and not self.manufacturer_info and self.vendor_part_number and self.x_studio_manufacturer:
+        #         product_name = self.x_studio_manufacturer.name + ' ' + self.vendor_part_number
+        # elif self.monkey_activator == 'on' and self.monkey_product_name:
+        #     product_name = self.monkey_product_name
+        # elif self.monkey_activator == 'on' and not self.monkey_product_name and self.monkey_product_name_override:
+        #     product_name = self.monkey_product_name_override
+        # elif self.monkey_activator == 'on' and self.monkey_product_name and not self.monkey_product_name_override and self.manufacturer_info:
+        #         product_name = self.manufacturer_info + ' ' + self.vendor_part_number
+        # elif self.monkey_activator == 'on' and not self.monkey_product_name and not self.monkey_product_name_override and self.manufacturer_info:
+        #         product_name = self.manufacturer_info + ' ' + self.vendor_part_number
+        # elif self.monkey_activator == 'off' and self.monkey_product_name and self.monkey_product_name_override and not self.manufacturer_info:
+        #     product_name = self.monkey_product_name_override
+        # elif self.monkey_activator == 'off' and not self.monkey_product_name and self.monkey_product_name_override:
+        #     product_name = self.monkey_product_name_override
+        # elif self.monkey_activator == 'off' and self.monkey_product_name and not self.monkey_product_name_override:
+        #         product_name = self.manufacturer_info + ' ' + self.vendor_part_number
+        # elif self.monkey_activator == 'off' and self.monkey_product_name and self.monkey_product_name_override and self.manufacturer_info:
+        #         product_name = self.manufacturer_info + ' ' + self.vendor_part_number
+        # elif self.monkey_activator == 'off' and not self.monkey_product_name and not self.monkey_product_name_override and self.manufacturer_info:
+        #     if self.manufacturer_info and self.vendor_part_number:
+        #         product_name = self.manufacturer_info + ' ' + self.vendor_part_number
+        # elif self.monkey_activator == 'off' and not self.monkey_product_name and not self.monkey_product_name_override and not self.manufacturer_info and not self.x_studio_manufacturer and not self.vendor_part_number:
+        #     product_name = self.default_code
         if product_name and not self._context.get('product_name', False):
             self.with_context(product_name=True).write({'name':product_name})
         if  vals.get('mpn_URL') and self.vendor_part_number:
