@@ -152,7 +152,7 @@ class ProductTemplate(models.Model):
     monkey_activator = fields.Selection([('on', 'On'), ('off', 'Off')], 'Monkey Activator', default='off')
     monkey_product_name = fields.Char(string="Monkey Product Name")
     monkey_product_name_override = fields.Char(string="Product Name Override")
-    manufacturer_info = fields.Char(string="Web Name")
+    manufacturer_info = fields.Char(string="Manufacturer Info::Web Name")
 
     def name_get(self):
         if self._context.get('photos_cloned_from'):
