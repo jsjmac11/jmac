@@ -38,6 +38,7 @@
                             <field name="dropship_fee"/>
                             <field name="order_min"/>
                             <field name="below_min_fee"/>
+                            <field name="manufacturer_info"/>
                         </group>
                         <group>
                             <field name="free_freight_level"/>
