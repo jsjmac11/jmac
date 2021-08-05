@@ -120,17 +120,18 @@
                          <button type='object' class="fa fa-arrow-right oe_link" name="export_stock_from_odoo_to_bigcommerce"
                             string="Export Stock From Odoo To Bigcommerce"/>
                     </page>
-                </xpath>
-                <xpath expr="//sheet/notebook/page[@name='general_information']//group[1]" position="after">
-                    <group string="Mokey Enriched Content">
+                    <page string="Mokey Enriched Content">
                         <group>
-                            <field name="monkey_activator" widget="radio"/>
-                            <field name="monkey_product_name"/>
-                            <field name="monkey_product_name_override"/>
-                            <field name="manufacturer_info" invisible="1"/>
+                            <group>
+                                <field name="monkey_activator" widget="radio"/>
+                                <field name="monkey_product_name"/>
+                                <field name="monkey_product_name_override"/>
+                                <field name="manufacturer_info" invisible="1"/>
+                            </group>
                         </group>
-                    </group>
+                    </page>
                 </xpath>
+
                 <xpath expr="//label[@for='standard_price']" position="replace">
                     <label for="standard_price"  string="Cost Price"/>
                 </xpath>
