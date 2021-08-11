@@ -37,6 +37,7 @@
         'views/picking_view.xml',
         'views/automation_rule_view.xml',
         'wizard/shipping_rates.xml',
+        'wizard/delivery_package_view.xml',
         'views/sale_order_view.xml',
         'views/picking_batch_view.xml',
         'views/product_template_view.xml',

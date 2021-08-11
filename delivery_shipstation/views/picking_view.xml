@@ -111,11 +111,62 @@
                             </field>
                         </group>
                     </xpath>
+                    <xpath expr="//sheet/notebook/page[@name='extra']" position="after">
+                        <page string="Packages">
+                            <group colspan="4">
+                                <field name="shipping_package_line" nolabel="1" readonly="1">
+                                    <tree editable="top">
+                                        <field name="product_id"/>
+                                        <field name="tracking_ref"/>
+                                        <field name="shipping_date"/>
+                                        <field name="package_id"/>
+                                        <field name="product_qty"/>
+                                        <field name="picking_id" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <!-- <button class="oe_highlight" name="delivery_shipstation.delivery_package_ref_action" type="action" string="Put Packages"/> -->
+                        </page>
+                    </xpath>
+                    <xpath expr="//notebook/page[1]/button[@name='put_in_pack']" position="replace">
+                        <button class="oe_highlight" name="delivery_shipstation.delivery_package_ref_action" type="action" string="Put in Pack" attrs="{'invisible': [('state', 'in', ('draft', 'done', 'cancel'))]}" groups="stock.group_tracking_lot"/>
+                    </xpath>
+                    <xpath expr="//notebook/page[2]/button[@name='put_in_pack']" position="replace">
+                        <button class="oe_highlight" name="delivery_shipstation.delivery_package_ref_action" type="action" string="Put in Pack" attrs="{'invisible': [('state', 'in', ('draft', 'done', 'cancel'))]}" groups="stock.group_tracking_lot"/>
+                    </xpath>
+                    <xpath expr="//notebook/page[3]/button[@name='put_in_pack']" position="replace">
+                        <button class="oe_highlight" name="delivery_shipstation.delivery_package_ref_action" type="action" string="Put in Pack" attrs="{'invisible': [('state', 'in', ('draft', 'done', 'cancel'))]}" groups="stock.group_tracking_lot"/>
+                    </xpath>
                 </data>
             </field>
         </record>
 
-
+        <record id="view_stock_move_line_detailed_operation_tree" model="ir.ui.view">
+            <field name="name">stock.move.line.operations.tree</field>
+            <field name="model">stock.move.line</field>
+            <field name="priority">1000</field>
+            <field name="inherit_id" ref="stock.view_stock_move_line_detailed_operation_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree/field[@name='result_package_id']" position="after">
+                    <field name="tracking_ref"/>
+                    <field name="shipping_date"/>
+                </xpath>
+            </field>
+        </record>
+        <record id="view_quant_package_weight_form_inherit" model="ir.ui.view">
+            <field name="name">stock.quant.package.weight.form</field>
+            <field name="model">stock.quant.package</field>
+            <field name="inherit_id" ref="stock.view_quant_package_form"/>
+            <field name="arch" type="xml">
+                <field name="company_id" position="before">
+                    <field name="tracking_ref"/>
+                    <field name="package_date"/>
+                    <field name="shipstation_carrier_id"/>
+                    <field name="carrier_id"/>
+                    <field name="ship_package_id"/>
+                </field>
+            </field>
+        </record>
     </data>
 </odoo>
 

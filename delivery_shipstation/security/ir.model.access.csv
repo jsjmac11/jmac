@@ -9,3 +9,4 @@ access_automation_rule,access_automation_rule,model_automation_rule,base.group_u
 access_automation_rule_action,access_automation_rule_action,model_automation_rule_action,base.group_user,1,1,1,1
 access_order_tag,access_order_tag,model_order_tag,base.group_user,1,1,1,1
 access_order_service,access_order_service,model_order_service,base.group_user,1,1,1,1
+access_shipping_package,access_shipping_package,model_shipping_package,base.group_user,1,1,1,1
