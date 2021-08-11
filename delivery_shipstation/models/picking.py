@@ -99,6 +99,8 @@ class StockPicking(models.Model):
     shipmentId = fields.Char('Label Shipment ID')
     tag_id = fields.Many2one("order.tag", string="Tags")
     weight_uom_name_oz = fields.Char(string='Weight oz unit of measure', default=_get_default_weight_oz_uom)
+    shipping_package_line = fields.One2many('shipping.package', 'picking_id',
+                                  string="Shipping Package")
 
     @api.onchange('shipping_weight_oz', 'shipping_weight')
     def onchange_shipping_weights(self):
@@ -251,6 +253,33 @@ class StockPicking(models.Model):
             'res_model': self._name,
             'res_id': self.id
         })
+
+
+class StockQuantPackage(models.Model):
+    _inherit = 'stock.quant.package'
+
+    tracking_ref = fields.Char(string="Tracking Reference")
+    package_date = fields.Datetime(string="Date", default=fields.Datetime.now)
+    shipstation_carrier_id = fields.Many2one("shipstation.carrier", string="Shipstation Carrier")
+    carrier_id = fields.Many2one("delivery.carrier", string="Carrier")
+    ship_package_id = fields.Many2one("shipstation.package", string="Package")
+
+class StockMoveLine(models.Model):
+    _inherit = 'stock.move.line'
+
+    tracking_ref = fields.Char(string="Tracking Reference", related="result_package_id.tracking_ref", store=True)
+    shipping_date = fields.Datetime(string="Shipping Date", related="result_package_id.package_date", store=True)
+
+class ShippingPackages(models.Model):
+    _name = "shipping.package"
+    _description = "Shipping Package"
+
+    picking_id = fields.Many2one('stock.picking', string="Picking")
+    product_id = fields.Many2one('product.product', string="Product")
+    tracking_ref = fields.Char(string="Tracking Ref")
+    shipping_date = fields.Datetime(string="Shipping Date")
+    package_id = fields.Many2one('stock.quant.package', string="Package")
+    product_qty = fields.Float(string="Quantity")
 
 
 class ShippingQuoteLine(models.Model):
