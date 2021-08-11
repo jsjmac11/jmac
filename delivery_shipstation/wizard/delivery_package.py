@@ -19,6 +19,7 @@ class DeliveryPackage(models.TransientModel):
     product_line = fields.One2many('delivery.package.plan', 'delivery_ref_id', string="Product Line")
     picking_id = fields.Many2one('stock.picking', string="Picking")
     shipping_weight = fields.Float(string='Shipping Weight', help="Total weight of the package.")
+    is_dropship = fields.Boolean(string="Is Dropship")
 
     def confirm(self):
         package_history = []
@@ -65,8 +66,8 @@ class DeliveryPackage(models.TransientModel):
                 'move_id': line.move_id.id,
                 'move_line_id': line.id,
             }) for line in active_data.move_line_ids_without_package.filtered(lambda x: not x.result_package_id)]
-
-            res.update({'product_line': product_line, 'picking_id': active_id})
+            is_dropship = any([m._is_dropshipped() for m in active_data.move_ids_without_package])
+            res.update({'product_line': product_line, 'picking_id': active_id, 'is_dropship': is_dropship})
         return res
         
 
