@@ -260,8 +260,8 @@ class StockQuantPackage(models.Model):
 
     tracking_ref = fields.Char(string="Tracking Reference")
     package_date = fields.Datetime(string="Date", default=fields.Datetime.now)
-    shipstation_carrier_id = fields.Many2one("shipstation.carrier", string="Shipstation Carrier")
-    carrier_id = fields.Many2one("delivery.carrier", string="Carrier")
+    shipstation_carrier_id = fields.Many2one("shipstation.carrier", string="Carrier")
+    carrier_id = fields.Many2one("delivery.carrier", string="Shipping Method")
     ship_package_id = fields.Many2one("shipstation.package", string="Package")
 
 class StockMoveLine(models.Model):
