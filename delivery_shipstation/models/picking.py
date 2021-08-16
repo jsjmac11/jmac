@@ -13,6 +13,8 @@ import json
 from odoo.exceptions import ValidationError, UserError
 import logging
 from .shipstation_request import ShipstationRequest
+from odoo.tools.float_utils import float_compare, float_is_zero, float_round
+from datetime import datetime
 
 logger = logging.getLogger('Shipstation Log')
 
@@ -243,6 +245,69 @@ class StockPicking(models.Model):
                     pick.get_shipping_rates()
         return res
 
+    def _put_in_pack(self, move_line_ids):
+        package = False
+        for pick in self:
+            move_lines_to_pack = self.env['stock.move.line']
+            package = self.env['stock.quant.package'].create({})
+
+            precision_digits = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+            if float_is_zero(move_line_ids[0].qty_done, precision_digits=precision_digits):
+                for line in move_line_ids:
+                    line.qty_done = line.product_uom_qty
+
+            package_dict = {}
+            item_dict = {}
+            package_history = []
+            for ml in move_line_ids:
+                item_dict = {
+                    'product_id': ml.product_id.id, 'tracking_ref':ml.tracking_ref,
+                    'shipping_date':ml.shipping_date,'package_id': package.id, 'product_qty': ml.qty_done}
+
+                package_dict = {
+                     'tracking_ref':ml.tracking_ref, 'package_date':ml.shipping_date,
+                     'shipstation_carrier_id': ml.shipstation_carrier_id.id, 'carrier_id': ml.carrier_id.id}
+                if float_compare(ml.qty_done, ml.product_uom_qty,
+                                 precision_rounding=ml.product_uom_id.rounding) >= 0:
+                    move_lines_to_pack |= ml
+                else:
+                    quantity_left_todo = float_round(
+                        ml.product_uom_qty - ml.qty_done,
+                        precision_rounding=ml.product_uom_id.rounding,
+                        rounding_method='UP')
+                    done_to_keep = ml.qty_done
+                    new_move_line = ml.copy(
+                        default={'product_uom_qty': 0, 'qty_done': ml.qty_done})
+
+                    vals = {'product_uom_qty': quantity_left_todo, 'qty_done': 0.0,
+                     'tracking_ref':'', 'shipping_date':False,
+                     'shipstation_carrier_id': False, 'carrier_id': False}
+                    if pick.picking_type_id.code == 'incoming':
+                        if ml.lot_id:
+                            vals['lot_id'] = False
+                        if ml.lot_name:
+                            vals['lot_name'] = False
+                    ml.write(vals)
+                    new_move_line.write({'product_uom_qty': done_to_keep})
+                    move_lines_to_pack |= new_move_line
+                package_history.append((0,0,item_dict))
+            if package_dict:
+                package.write(package_dict)
+            self.update({'shipping_package_line': package_history})
+            package_level = self.env['stock.package_level'].create({
+                'package_id': package.id,
+                'picking_id': pick.id,
+                'location_id': False,
+                'location_dest_id': move_line_ids.mapped('location_dest_id').id,
+                'move_line_ids': [(6, 0, move_lines_to_pack.ids)],
+                'company_id': pick.company_id.id,
+            })
+            move_lines_to_pack.write({
+                'result_package_id': package.id,
+            })
+
+        return package
+
     def print_packing_slip(self):
         # Add report in attachments
         pdf_content = self.env.ref('stock.action_report_delivery').sudo().render_qweb_pdf([self.id])[0]
@@ -259,7 +324,7 @@ class StockQuantPackage(models.Model):
     _inherit = 'stock.quant.package'
 
     tracking_ref = fields.Char(string="Tracking Reference")
-    package_date = fields.Datetime(string="Date", default=fields.Datetime.now)
+    package_date = fields.Date(string="Date", default=datetime.today())
     shipstation_carrier_id = fields.Many2one("shipstation.carrier", string="Carrier")
     carrier_id = fields.Many2one("delivery.carrier", string="Shipping Method")
     ship_package_id = fields.Many2one("shipstation.package", string="Package")
@@ -267,8 +332,15 @@ class StockQuantPackage(models.Model):
 class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
-    tracking_ref = fields.Char(string="Tracking Reference", related="result_package_id.tracking_ref", store=True)
-    shipping_date = fields.Datetime(string="Shipping Date", related="result_package_id.package_date", store=True)
+    # tracking_ref = fields.Char(string="Tracking Reference", related="result_package_id.tracking_ref", store=True)
+    # shipping_date = fields.Date(string="Shipping Date", related="result_package_id.package_date", store=True)
+    # shipstation_carrier_id = fields.Many2one("shipstation.carrier", string="Carrier", related="result_package_id.shipstation_carrier_id")
+    # carrier_id = fields.Many2one("delivery.carrier", string="Shipping Method", related="result_package_id.carrier_id")
+
+    tracking_ref = fields.Char(string="Tracking Reference")
+    shipping_date = fields.Date(string="Shipping Date")
+    shipstation_carrier_id = fields.Many2one("shipstation.carrier", string="Carrier")
+    carrier_id = fields.Many2one("delivery.carrier", string="Shipping Method")
 
 class ShippingPackages(models.Model):
     _name = "shipping.package"
@@ -276,7 +348,7 @@ class ShippingPackages(models.Model):
 
     picking_id = fields.Many2one('stock.picking', string="Picking")
     product_id = fields.Many2one('product.product', string="Product")
-    tracking_ref = fields.Char(string="Tracking Ref")
+    tracking_ref = fields.Char(string="Tracking Reference")
     shipping_date = fields.Datetime(string="Shipping Date")
     package_id = fields.Many2one('stock.quant.package', string="Package")
     product_qty = fields.Float(string="Quantity")
