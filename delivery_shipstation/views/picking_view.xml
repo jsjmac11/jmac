@@ -128,14 +128,14 @@
                             <!-- <button class="oe_highlight" name="delivery_shipstation.delivery_package_ref_action" type="action" string="Put Packages"/> -->
                         </page>
                     </xpath>
-                    <xpath expr="//notebook/page[1]/button[@name='put_in_pack']" position="replace">
-                        <button class="oe_highlight" name="delivery_shipstation.delivery_package_ref_action" type="action" string="Put in Pack" attrs="{'invisible': [('state', 'in', ('draft', 'done', 'cancel'))]}" groups="stock.group_tracking_lot"/>
+                    <xpath expr="//notebook/page[1]/button[@name='put_in_pack']" position="after">
+                        <button class="oe_highlight" name="delivery_shipstation.delivery_package_ref_action" type="action" string="Bista Put in Pack" attrs="{'invisible': [('state', 'in', ('draft', 'done', 'cancel'))]}" groups="stock.group_tracking_lot" style="margin-left: 10px;" invisible="1"/>
                     </xpath>
-                    <xpath expr="//notebook/page[2]/button[@name='put_in_pack']" position="replace">
-                        <button class="oe_highlight" name="delivery_shipstation.delivery_package_ref_action" type="action" string="Put in Pack" attrs="{'invisible': [('state', 'in', ('draft', 'done', 'cancel'))]}" groups="stock.group_tracking_lot"/>
+                    <xpath expr="//notebook/page[2]/button[@name='put_in_pack']" position="after">
+                        <button class="oe_highlight" name="delivery_shipstation.delivery_package_ref_action" type="action" string="Bista Put in Pack" attrs="{'invisible': [('state', 'in', ('draft', 'done', 'cancel'))]}" groups="stock.group_tracking_lot" style="margin-left: 10px;" invisible="1"/>
                     </xpath>
-                    <xpath expr="//notebook/page[3]/button[@name='put_in_pack']" position="replace">
-                        <button class="oe_highlight" name="delivery_shipstation.delivery_package_ref_action" type="action" string="Put in Pack" attrs="{'invisible': [('state', 'in', ('draft', 'done', 'cancel'))]}" groups="stock.group_tracking_lot"/>
+                    <xpath expr="//notebook/page[3]/button[@name='put_in_pack']" position="after">
+                        <button class="oe_highlight" name="delivery_shipstation.delivery_package_ref_action" type="action" string="Bista Put in Pack" attrs="{'invisible': [('state', 'in', ('draft', 'done', 'cancel'))]}" groups="stock.group_tracking_lot" style="margin-left: 10px;" invisible="1"/>
                     </xpath>
                 </data>
             </field>
@@ -147,9 +147,18 @@
             <field name="priority">1000</field>
             <field name="inherit_id" ref="stock.view_stock_move_line_detailed_operation_tree"/>
             <field name="arch" type="xml">
+                <xpath expr="//tree/field[@name='package_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//tree/field[@name='result_package_id']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                    <attribute name="string">Package</attribute>
+                </xpath>
                 <xpath expr="//tree/field[@name='result_package_id']" position="after">
                     <field name="tracking_ref"/>
                     <field name="shipping_date"/>
+                    <field name="shipstation_carrier_id"/>
+                    <field name="carrier_id"/>
                 </xpath>
             </field>
         </record>
