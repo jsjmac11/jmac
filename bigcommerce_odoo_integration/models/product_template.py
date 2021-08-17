@@ -277,21 +277,19 @@ class ProductTemplate(models.Model):
                 self.with_context(product_name=True).write({'name':product_name})
                 return True
 
-        if self.monkey_product_name_override:
+        elif self.monkey_product_name_override:
             product_name =  self.monkey_product_name_override
             if product_name and not self._context.get('product_name', False):
                 self.with_context(product_name=True).write({'name':product_name})
                 return True
 
-        if  self.manufacturer_info:
+        elif  self.manufacturer_info:
             product_name = self.manufacturer_info + ' ' + self.vendor_part_number
             if product_name and not self._context.get('product_name', False):
                 self.with_context(product_name=True).write({'name':product_name})
                 return True
 
-        if not self.monkey_product_name and \
-            not self.monkey_product_name_override  and not self.manufacturer_info \
-            and self.vendor_part_number and self.x_studio_manufacturer:
+        else:
             product_name = self.x_studio_manufacturer.name + ' ' + self.vendor_part_number
             if product_name and not self._context.get('product_name', False):
                 self.with_context(product_name=True).write({'name':product_name})
