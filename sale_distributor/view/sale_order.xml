@@ -83,6 +83,63 @@
                 <field name="is_dropship_line"/>
             </xpath>
             <xpath expr="//field[@name='note']" position="before">
+                <field name="hide_button"  invisible="1"/>
+                <div class="o_row" style="float: left !important;">
+                    <button name="action_show_stock_move_line"
+                        attrs="{'invisible': [('hide_button', '=', True)]}"
+                        string="Show Shipment" type="object" class="oe_highlight"/>
+                    <label for="process_single" string="Single Pack" invisible="1"/>
+                    <field name="process_single" invisible="1"/>
+                </div>
+
+                <group string="Shipment Details" name="shipment_qty" colspan="4"
+                        attrs="{'invisible': [('state', 'in', ('new','sent','review'))]}">
+                    <field name="stock_move_line_ids" readonly="0" nolabel="1">
+                        <tree editable="top" create="false" >
+                            <field name="company_id" invisible="1"/>
+                            <field name="package_id" invisible="1"/>
+                            <field name="location_id" invisible="1"/>
+                            <field name="product_id" />
+                            <field name="location_dest_id" invisible="1"/>
+                            <field name="result_package_id" readonly="1" string="Package"/>
+                            <field name="tracking_ref" string="Tracking Ref"/>
+                            <field name="shipping_date" string="Ship Ref"/>
+                            <field name="shipstation_carrier_id"/>
+                            <field name="carrier_id"/>
+                            <field name="product_demand"/>
+                            <field name="qty_done"/>
+                            <!-- <button name="generate_pack" string="Click" type="object"
+                            attrs="{'invisible': [('parent.process_single', '=', True)]}"
+                            /> -->
+                        </tree>
+                        <form>
+                            <group>
+                                <field name="company_id" invisible="1"/>
+                                <field name="package_id" invisible="1"/>
+                                <field name="location_id" invisible="1"/>
+                                <field name="product_id" />
+                                <field name="location_dest_id" invisible="1"/>
+                                <field name="result_package_id" />
+                                <field name="tracking_ref"/>
+                                <field name="shipping_date"/>
+                                <field name="shipstation_carrier_id"/>
+                                <field name="carrier_id"/>
+                                <field name="product_demand"/>
+                                <field name="qty_done"/>
+                            </group>
+                        </form>
+                    </field>
+                </group>
+                <!-- <div class="o_row" style="float: left !important;">
+                    <button name="pripare_single_pack"
+                        attrs="{'invisible': [('process_single', '=', False)]}"
+                        string="Prepare single Pack" type="object" invisible="1"/>
+                </div> -->
+                <div class="o_row" style="float: left !important;">
+                    <button name="pripare_shipment_process" string="Confirm Shipment" type="object" class="oe_highlight"/>
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='note']" position="before">
                 <group string="Process Qty" name="process_qty" colspan="4" attrs="{'invisible': [('state', 'in', ('new','sent','review'))]}">
                     <field name="split_line_ids" readonly="1" nolabel="1" options="{'post_refresh': 'always'}" force_save="1" context="{'split_line_product': True}">
                         <tree>

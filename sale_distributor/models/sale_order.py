@@ -133,6 +133,10 @@ class SaleOrder(models.Model):
     email = fields.Char("Email")
     phone = fields.Char("Phone")
 
+    stock_move_line_ids = fields.One2many('stock.move.line', 'sale_id', 'Shipment')
+    hide_button = fields.Boolean('Hide button', copy=False, default=False)
+    process_single = fields.Boolean('Process In Single Pack', default=False)
+
     def _create_delivery_line(self, carrier, price_unit):
         sol = super(SaleOrder, self)._create_delivery_line(carrier, price_unit)
         pack_product_id = sol.product_id.product_pack_line.filtered(lambda p: p.is_auto_created)
@@ -552,6 +556,43 @@ class SaleOrder(models.Model):
                 except AccessError:  # no write access rights -> just ignore
                     break
 
+    def action_show_stock_move_line(self):
+        for rec in self:
+            picking_id = self.env[
+                    'stock.picking'].search(
+                    [('sale_id', '=', rec.id)])
+
+            if picking_id.move_line_ids_without_package:
+                for move_line_id in picking_id.move_line_ids_without_package:
+                    update_vals = {'sale_id': rec.id}
+                    if not move_line_id.shipping_date:
+                        update_vals.update({'shipping_date': datetime.today()})
+                    if not move_line_id.shipstation_carrier_id:
+                        shipstation_carrier_id = self.env[
+                            'shipstation.carrier'].search(
+                                [], order='id', limit=1)
+                        if shipstation_carrier_id:
+                            update_vals.update({'shipstation_carrier_id':
+                                    shipstation_carrier_id and \
+                                    shipstation_carrier_id.id or False})
+                    if not move_line_id.carrier_id:
+                        carrier_id = self.env['delivery.carrier'].search(
+                                [], order='id', limit=1)
+                        if carrier_id:
+                            update_vals.update({'carrier_id': carrier_id \
+                                    and carrier_id.id or False})
+                    move_line_id.write(update_vals)
+            if picking_id:
+                rec.write({'hide_button': True})
+
+    def pripare_shipment_process(self):
+        for rec in self:
+            picking_id = self.env[
+                    'stock.picking'].search(
+                    [('sale_id', '=', rec.id)])
+            if picking_id:
+                picking_id.action_assign()
+                picking_id._put_in_pack(rec.stock_move_line_ids)
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
@@ -1678,3 +1719,18 @@ class InboundStock(models.Model):
             self.allocate_qty = 0
             result = {'warning': warning}
         return result
+
+class StockMoveLine(models.Model):
+    _inherit = 'stock.move.line'
+
+    sale_id = fields.Many2one('sale.order', 'Sales Order')
+
+    def generate_pack(self):
+        for rec in self:
+            if rec.result_package_id:
+                raise ValidationError(
+                _("Package Already generated to this product."))
+            if rec.tracking_ref and rec.shipstation_carrier_id \
+             and rec.carrier_id and rec.qty_done:
+                rec.picking_id._put_in_pack(rec)
+        return True
