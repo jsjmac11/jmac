@@ -159,6 +159,7 @@
                     <field name="shipping_date"/>
                     <field name="shipstation_carrier_id"/>
                     <field name="carrier_id"/>
+                    <field name="product_demand"/>
                 </xpath>
             </field>
         </record>

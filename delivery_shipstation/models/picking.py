@@ -279,9 +279,16 @@ class StockPicking(models.Model):
                     new_move_line = ml.copy(
                         default={'product_uom_qty': 0, 'qty_done': ml.qty_done})
 
+                    shipstation_carrier_id = self.env[
+                            'shipstation.carrier'].search(
+                                [], order='id', limit=1)
+                    carrier_id = self.env['delivery.carrier'].search(
+                                [], order='id', limit=1)
+
                     vals = {'product_uom_qty': quantity_left_todo, 'qty_done': 0.0,
-                     'tracking_ref':'', 'shipping_date':False,
-                     'shipstation_carrier_id': False, 'carrier_id': False}
+                     'tracking_ref':'', 'shipping_date': datetime.today(),
+                     'shipstation_carrier_id': shipstation_carrier_id.id or False
+                     , 'carrier_id': carrier_id and carrier_id.id or False}
                     if pick.picking_type_id.code == 'incoming':
                         if ml.lot_id:
                             vals['lot_id'] = False
@@ -338,9 +345,12 @@ class StockMoveLine(models.Model):
     # carrier_id = fields.Many2one("delivery.carrier", string="Shipping Method", related="result_package_id.carrier_id")
 
     tracking_ref = fields.Char(string="Tracking Reference")
-    shipping_date = fields.Date(string="Shipping Date")
+    shipping_date = fields.Date(string="Shipping Date", default=lambda self: fields.Datetime.now())
     shipstation_carrier_id = fields.Many2one("shipstation.carrier", string="Carrier")
     carrier_id = fields.Many2one("delivery.carrier", string="Shipping Method")
+    product_demand = fields.Float(related="move_id.product_uom_qty",
+        string='Demand')
+
 
 class ShippingPackages(models.Model):
     _name = "shipping.package"

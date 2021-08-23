@@ -45,6 +45,7 @@ class SaleOrder(models.Model):
     shipping_cost = fields.Float(string="Shipping Cost", compute='_amount_all', store=True,
                                  help="Sum of Requested Service Charge in the sales order lines")
 
+
     @api.onchange('requested_service_id')
     def onchange_requested_service_id(self):
         """
