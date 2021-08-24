@@ -290,7 +290,8 @@ class ProductTemplate(models.Model):
                 return True
 
         else:
-            product_name = self.x_studio_manufacturer.name + ' ' + self.vendor_part_number
+            if self.x_studio_manufacturer and self.vendor_part_number:
+                product_name = self.x_studio_manufacturer.name + ' ' + self.vendor_part_number
             if product_name and not self._context.get('product_name', False):
                 self.with_context(product_name=True).write({'name':product_name})
                 return True

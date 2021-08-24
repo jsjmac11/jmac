@@ -137,6 +137,15 @@
                     <xpath expr="//notebook/page[3]/button[@name='put_in_pack']" position="after">
                         <button class="oe_highlight" name="delivery_shipstation.delivery_package_ref_action" type="action" string="Bista Put in Pack" attrs="{'invisible': [('state', 'in', ('draft', 'done', 'cancel'))]}" groups="stock.group_tracking_lot" style="margin-left: 10px;" invisible="1"/>
                     </xpath>
+                    <xpath expr="//notebook/page[1]/button[@name='put_in_pack']" position="attributes">
+                        <attribute name="string">Confirm Shipment</attribute>
+                    </xpath>
+                    <xpath expr="//notebook/page[2]/button[@name='put_in_pack']" position="attributes">
+                        <attribute name="string">Confirm Shipment</attribute>
+                    </xpath>
+                    <xpath expr="//notebook/page[3]/button[@name='put_in_pack']" position="attributes">
+                        <attribute name="string">Confirm Shipment</attribute>
+                    </xpath>
                 </data>
             </field>
         </record>
@@ -154,11 +163,14 @@
                     <attribute name="readonly">1</attribute>
                     <attribute name="string">Package</attribute>
                 </xpath>
+                <xpath expr="//tree/field[@name='location_dest_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
                 <xpath expr="//tree/field[@name='result_package_id']" position="after">
                     <field name="tracking_ref"/>
                     <field name="shipping_date"/>
                     <field name="shipstation_carrier_id"/>
-                    <field name="carrier_id"/>
+                    <field name="carrier_id" string="Shipping Service"/>
                     <field name="product_demand"/>
                 </xpath>
             </field>

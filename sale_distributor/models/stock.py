@@ -8,11 +8,10 @@
 from odoo import fields, models, api, _, SUPERUSER_ID
 from collections import defaultdict
 from itertools import groupby
-from odoo.exceptions import ValidationError
 from datetime import datetime
 import string
 from dateutil.relativedelta import relativedelta
-
+from odoo.exceptions import AccessError, UserError, ValidationError
 
 class StockRule(models.Model):
     _inherit = 'stock.rule'
