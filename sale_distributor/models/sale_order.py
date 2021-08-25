@@ -11,6 +11,7 @@ from odoo.exceptions import AccessError, UserError, ValidationError
 from datetime import datetime
 import string
 from odoo.osv import expression
+from odoo.tools.float_utils import float_compare, float_is_zero, float_round
 
 ORDER_PRIORITY = [
     ('0', 'Low'),
@@ -49,6 +50,12 @@ class SaleOrder(models.Model):
                                          'done': [('readonly', True)]},
                                  copy=False, auto_join=True,
                                  domain=[('line_split', '=', False)])
+
+    @api.depends('stock_move_line_ids')
+    def _compute_shipment_package_line(self):
+        for order in self:
+            order.shipment_package_ids = order.stock_move_line_ids.filtered(lambda l: l.result_package_id)
+
     # all_order_line = fields.One2many('sale.order.line', 'main_order_id',
     # string='Process Order Lines',
     #     states={'cancel': [('readonly', True)], 'done': [
@@ -133,8 +140,9 @@ class SaleOrder(models.Model):
     email = fields.Char("Email")
     phone = fields.Char("Phone")
 
+    shipment_package_ids = fields.One2many('stock.move.line', string='Confirm Shipment', compute="_compute_shipment_package_line")
     stock_move_line_ids = fields.One2many('stock.move.line', 'sale_id', 'Shipment')
-    hide_button = fields.Boolean('Hide button', copy=False, default=False)
+    hide_button = fields.Boolean(string="Is Show Shipment", copy=False, default=False)
     process_single = fields.Boolean('Process In Single Pack', default=False)
 
     def _create_delivery_line(self, carrier, price_unit):
@@ -591,8 +599,10 @@ class SaleOrder(models.Model):
                     'stock.picking'].search(
                     [('sale_id', '=', rec.id)])
             if picking_id:
-                picking_id.action_assign()
-                picking_id._put_in_pack(rec.stock_move_line_ids)
+                move_line_ids = rec.stock_move_line_ids.filtered(lambda ml:
+                float_compare(ml.qty_done, 0.0, precision_rounding=ml.product_uom_id.rounding) > 0
+                and not ml.result_package_id)
+                picking_id._put_in_pack(move_line_ids)
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
@@ -1724,6 +1734,7 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
     sale_id = fields.Many2one('sale.order', 'Sales Order')
+    color = fields.Integer(string='Color Index', default=0)
 
     def generate_pack(self):
         for rec in self:

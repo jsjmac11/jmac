@@ -171,7 +171,8 @@
                     <field name="shipping_date"/>
                     <field name="shipstation_carrier_id"/>
                     <field name="carrier_id" string="Shipping Service"/>
-                    <field name="product_demand"/>
+                    <field name="product_demand" invisible="1"/>
+                    <field name="product_uom_qty" string='Demand'/>
                 </xpath>
             </field>
         </record>

@@ -95,3 +95,6 @@ button.button-previous-form-dialog {
     font-size: 12px;
     width: 250px !important;
 }
+/*[name="shipment_package_ids"] .o_kanban_view {
+    flex-flow: inherit !important;
+}*/
