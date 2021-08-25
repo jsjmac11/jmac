@@ -83,15 +83,60 @@
                 <field name="is_dropship_line"/>
             </xpath>
             <xpath expr="//field[@name='note']" position="before">
-                <field name="hide_button"  string="Is Show Shipment" invisible="0"/>
-                <div class="o_row" style="float: left !important;">
+                <!-- <field name="hide_button"  string="Is Show Shipment" invisible="0"/> -->
+                <group colspan="2" attrs="{'invisible': [('state', 'in', ('new','sent','review'))]}">
+                    <div class="oe_inline o_td_label">
+                        <label for="hide_button"/>
+                    </div>
+                    <field name="hide_button" nolabel="1"/>
+                </group>
+                <div class="o_row" style="float: left !important;" attrs="{'invisible': [('state', 'in', ('new','sent','review'))]}">
                     <button name="action_show_stock_move_line"
                         attrs="{'invisible': [('hide_button', '=', True)]}"
                         string="Show Shipment" type="object" class="oe_highlight"/>
                     <label for="process_single" string="Single Pack" invisible="1"/>
                     <field name="process_single" invisible="1"/>
                 </div>
-
+                <group string="Confirm Shipment" attrs="{'invisible': [('state', 'in', ('new','sent','review'))]}" colspan="4">
+                    <field name="shipment_package_ids" mode="kanban" readonly="0" nolabel="1">
+                        <kanban class="kanban-box" create="0">
+                            <field name="id"/>
+                            <field name="color"/>
+                            <field name="product_id"/>
+                            <field name="result_package_id"/>
+                            <field name="tracking_ref"/>
+                            <field name="qty_done"/>
+                            <templates >
+                                <t t-name="kanban-box">
+                                    <t t-set="color" t-value="kanban_color(record.color.raw_value)"/>
+                                    <div t-att-class="color + (record.color.raw_value == 1 ? ' oe_kanban_color_alert' : '') + ' oe_kanban_global_click'">
+                                        <div class="o_kanban_image">
+                                            <img t-att-src="kanban_image('product.template', 'image_1920', record.id.image_1920)" alt="Product" class="o_image_64_contain"/>
+                                        </div>
+                                        <div class="oe_kanban_details">
+                                            <div t-if="record.product_id.raw_value">
+                                                <strong>Name: </strong>
+                                                <field name="product_id"/>
+                                            </div>
+                                            <div t-if="record.result_package_id.raw_value">
+                                                <strong>Package: </strong>
+                                                <field name="result_package_id"/>
+                                            </div>
+                                            <div t-if="record.tracking_ref.raw_value">
+                                                <strong>Tracking Ref: </strong>
+                                                <field name="tracking_ref"/>
+                                            </div>
+                                            <div t-if="record.qty_done.raw_value">
+                                                <strong>Qty: </strong>
+                                                <field name="qty_done"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </templates>
+                        </kanban>
+                    </field>
+                </group>
                 <group string="Shipment Details" name="shipment_qty" colspan="4"
                         attrs="{'invisible': [('state', 'in', ('new','sent','review'))]}">
                     <field name="stock_move_line_ids" readonly="0" nolabel="1">
@@ -103,14 +148,12 @@
                             <field name="location_dest_id" invisible="1"/>
                             <field name="result_package_id" readonly="1" string="Package"/>
                             <field name="tracking_ref" string="Tracking Ref"/>
-                            <field name="shipping_date" string="Ship Ref"/>
+                            <field name="shipping_date" string="Ship Date"/>
                             <field name="shipstation_carrier_id"/>
                             <field name="carrier_id" string="Shipping Service"/>
-                            <field name="product_demand"/>
+                            <field name="product_uom_qty" string='Demand'/>
+                            <field name="product_demand" invisible="1"/>
                             <field name="qty_done"/>
-                            <!-- <button name="generate_pack" string="Click" type="object"
-                            attrs="{'invisible': [('parent.process_single', '=', True)]}"
-                            /> -->
                         </tree>
                         <form>
                             <group>
@@ -121,10 +164,11 @@
                                 <field name="location_dest_id" invisible="1"/>
                                 <field name="result_package_id" />
                                 <field name="tracking_ref"/>
-                                <field name="shipping_date"/>
+                                <field name="shipping_date" string="Ship Date"/>
                                 <field name="shipstation_carrier_id"/>
                                 <field name="carrier_id" string="Shipping Service"/>
-                                <field name="product_demand"/>
+                                <field name="product_uom_qty" string='Demand'/>
+                                <field name="product_demand" invisible="1"/>
                                 <field name="qty_done"/>
                             </group>
                         </form>
