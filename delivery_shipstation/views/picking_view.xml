@@ -112,7 +112,7 @@
                         </group>
                     </xpath>
                     <xpath expr="//sheet/notebook/page[@name='extra']" position="after">
-                        <page string="Packages">
+                        <page string="Packages" invisible="1">
                             <group colspan="4">
                                 <field name="shipping_package_line" nolabel="1" readonly="1">
                                     <tree editable="top">

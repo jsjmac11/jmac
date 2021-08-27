@@ -602,7 +602,14 @@ class SaleOrder(models.Model):
                 move_line_ids = rec.stock_move_line_ids.filtered(lambda ml:
                 float_compare(ml.qty_done, 0.0, precision_rounding=ml.product_uom_id.rounding) > 0
                 and not ml.result_package_id)
-                picking_id._put_in_pack(move_line_ids)
+                package_data = {}
+                for line in move_line_ids:
+                    if line.tracking_ref in package_data.keys():
+                        package_data[line.tracking_ref] |= line
+                    else:
+                        package_data.update({line.tracking_ref: line})
+                for tracking,lines in package_data.items():
+                    picking_id._put_in_pack(lines)
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
@@ -1735,6 +1742,15 @@ class StockMoveLine(models.Model):
 
     sale_id = fields.Many2one('sale.order', 'Sales Order')
     color = fields.Integer(string='Color Index', default=0)
+
+    @api.onchange('qty_done')
+    def _onchange_qty_done(self):
+        res = {}
+        if self.qty_done > self.product_uom_qty:
+            self.qty_done = 0.0
+            message = _('Product %s of done quantity should be less than or equal to demand quantity!') % self.product_id.name
+            res['warning'] = {'title': _('Warning'), 'message': message}
+        return res
 
     def generate_pack(self):
         for rec in self:

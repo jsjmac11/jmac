@@ -123,7 +123,10 @@ class NotificationMessage(models.TransientModel):
                 })
                 split_line_id = line.copy(dict)
             self.order_id._genrate_line_sequence()
-            self.order_id.action_confirm()
+            if self._context.get('dropship'):
+                self.order_id.confirm_purchase()
+            else:
+                self.order_id.action_confirm()
         return True
 
     def submit(self):
