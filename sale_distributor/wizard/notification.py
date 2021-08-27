@@ -125,6 +125,7 @@ class NotificationMessage(models.TransientModel):
             self.order_id._genrate_line_sequence()
             if self._context.get('dropship'):
                 self.order_id.confirm_purchase()
+                self.order_id.action_show_stock_move_line()
             else:
                 self.order_id.action_confirm()
         return True
