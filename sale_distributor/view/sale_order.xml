@@ -84,20 +84,20 @@
                 <field name="is_dropship_line"/>
             </xpath>
             <xpath expr="//field[@name='note']" position="before">
-                <!-- <field name="hide_button"  string="Is Show Shipment" invisible="0"/> -->
-                <group colspan="2" attrs="{'invisible': [('state', 'in', ('new','sent','review'))]}">
+                <!-- <group colspan="2" attrs="{'invisible': [('state', 'in', ('new','sent','review'))]}">
                     <div class="oe_inline o_td_label">
-                        <label for="hide_button"/>
+                        <label for="hide_button" invisible="1"/>
                     </div>
                     <field name="hide_button" nolabel="1"/>
-                </group>
-                <div class="o_row" style="float: left !important;" attrs="{'invisible': [('state', 'in', ('new','sent','review'))]}">
+                </group> -->
+                <!-- <div class="o_row" style="float: left !important;" attrs="{'invisible': [('state', 'in', ('new','sent','review'))]}">
                     <button name="action_show_stock_move_line"
                         attrs="{'invisible': [('hide_button', '=', True)]}"
                         string="Show Shipment" type="object" class="oe_highlight"/>
                     <label for="process_single" string="Single Pack" invisible="1"/>
                     <field name="process_single" invisible="1"/>
-                </div>
+                </div> -->
+                <field name="hide_button" invisible="1"/>
                 <group string="Confirm Shipment" attrs="{'invisible': ['|', ('state', 'in', ('new','sent','review')), ('shipment_package_ids', '=', [])]}" colspan="4">
                     <field name="shipment_package_ids" mode="kanban" readonly="0" nolabel="1">
                         <kanban class="kanban-box" create="0">
