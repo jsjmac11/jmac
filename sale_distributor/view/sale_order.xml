@@ -5,6 +5,7 @@
     <record id="view_sale_order_form_inherit" model="ir.ui.view">
         <field name="name">sale.order.form</field>
         <field name="model">sale.order</field>
+        <field name="priority">1000</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//header/button[@id='action_confirm']" position="attributes">
@@ -97,7 +98,7 @@
                     <label for="process_single" string="Single Pack" invisible="1"/>
                     <field name="process_single" invisible="1"/>
                 </div>
-                <group string="Confirm Shipment" attrs="{'invisible': [('state', 'in', ('new','sent','review'))]}" colspan="4">
+                <group string="Confirm Shipment" attrs="{'invisible': ['|', ('state', 'in', ('new','sent','review')), ('shipment_package_ids', '=', [])]}" colspan="4">
                     <field name="shipment_package_ids" mode="kanban" readonly="0" nolabel="1">
                         <kanban class="kanban-box" create="0">
                             <field name="id"/>
@@ -106,6 +107,8 @@
                             <field name="result_package_id"/>
                             <field name="tracking_ref"/>
                             <field name="qty_done"/>
+                            <field name="product_demand"/>
+                            <field name="product_uom_qty"/>
                             <templates >
                                 <t t-name="kanban-box">
                                     <t t-set="color" t-value="kanban_color(record.color.raw_value)"/>
@@ -128,7 +131,11 @@
                                             </div>
                                             <div t-if="record.qty_done.raw_value">
                                                 <strong>Qty: </strong>
-                                                <field name="qty_done"/>
+                                                <field name="qty_done"/> / 
+                                                <t t-if="record.product_demand.raw_value">
+                                                    <strong>Demand: </strong>
+                                                    <field name="product_demand"/>
+                                                </t>
                                             </div>
                                         </div>
                                     </div>
@@ -151,9 +158,9 @@
                             <field name="shipping_date" string="Ship Date"/>
                             <field name="shipstation_carrier_id"/>
                             <field name="carrier_id" string="Shipping Service"/>
-                            <field name="product_uom_qty" string='Demand'/>
+                            <field name="product_uom_qty" string='Demand' readonly="1"/>
                             <field name="product_demand" invisible="1"/>
-                            <field name="qty_done"/>
+                            <field name="qty_done" attrs="{'readonly': [('result_package_id', '!=', False)]}"/>
                         </tree>
                         <form>
                             <group>
@@ -167,9 +174,9 @@
                                 <field name="shipping_date" string="Ship Date"/>
                                 <field name="shipstation_carrier_id"/>
                                 <field name="carrier_id" string="Shipping Service"/>
-                                <field name="product_uom_qty" string='Demand'/>
+                                <field name="product_uom_qty" string='Demand' readonly="1"/>
                                 <field name="product_demand" invisible="1"/>
-                                <field name="qty_done"/>
+                                <field name="qty_done" attrs="{'readonly': [('result_package_id', '!=', False)]}"/>
                             </group>
                         </form>
                     </field>

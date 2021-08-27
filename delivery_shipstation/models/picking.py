@@ -255,7 +255,6 @@ class StockPicking(models.Model):
             if float_is_zero(move_line_ids[0].qty_done, precision_digits=precision_digits):
                 for line in move_line_ids:
                     line.qty_done = line.product_uom_qty
-
             package_dict = {}
             item_dict = {}
             package_history = []
@@ -297,6 +296,8 @@ class StockPicking(models.Model):
                     ml.write(vals)
                     new_move_line.write({'product_uom_qty': done_to_keep})
                     move_lines_to_pack |= new_move_line
+                    move_lines_to_pack.write({'product_demand': ml.move_id.product_uom_qty
+            })
                 package_history.append((0,0,item_dict))
             if package_dict:
                 package.write(package_dict)
@@ -310,7 +311,7 @@ class StockPicking(models.Model):
                 'company_id': pick.company_id.id,
             })
             move_lines_to_pack.write({
-                'result_package_id': package.id,
+                'result_package_id': package.id
             })
 
         return package
