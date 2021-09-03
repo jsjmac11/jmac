@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!--"License URL :<https://store.webkul.com/license.html/>" -->
+<odoo>
+	<data>
+		<record id="multi_channel_view_kanban" model="ir.ui.view">
+			<field name="name">multi.channel.sale.kanban</field>
+			<field name="model">multi.channel.sale</field>
+			<field name="type">kanban</field>
+			<field name="arch" type="xml">
+				<kanban
+					class ="oe_background_grey o_kanban_dashboard o_salesteam_kanban o_project_kanban"
+					create="0"
+				>
+					<field name="color_index"/>
+					<field name="name"/>
+					<field name="channel"/>
+					<field name="channel_products"/>
+					<field name="channel_categories"/>
+					<field name="channel_orders"/>
+					<field name="channel_customers"/>
+					<templates>
+						<t t-name="kanban-box">
+							<div
+								t-attf-class="#{kanban_color(record.color_index.raw_value)} oe_kanban_global_click_edit"
+								style="padding-left:10px; height:300px"
+							>
+								<div class="o_project_kanban_manage">
+									<a
+										class="o_kanban_manage_toggle_button"
+										href ="#"
+										style="margin-top:10px"
+									>
+										More
+										<i class="fa fa-caret-down"/>
+									</a>
+								</div>
+								<div class="o_project_kanban_main wk_o_project_kanban_main">
+									<div
+										class="o_kanban_card_content o_visible oe_kanban_global_click"
+										style="display:block"
+									>
+									</div>
+									<div
+										class="o_project_kanban_boxes"
+										style="text-align:center;display:flex;top:-4px;position:relative"
+									>
+										<a
+											class="o_project_kanban_box m-0"
+											name ="open_record_view"
+											type ="object"
+											style="
+												color           :white;
+												background-color:#555487;
+												text-decoration :none;
+												width           :25%;
+												padding         :15px;
+											"
+											context="{
+												'mapping_model'     :'channel.template.mappings',
+												'odoo_mapping_field':'odoo_template_id',
+											}"
+										>
+											<span class="o_value" style="overflow:visible !important;font-size:18px">
+												<t t-esc="record.channel_products.value"/>
+											</span>
+											<span class="o_label" style="overflow:visible !important;">Products</span>
+										</a>
+
+										<a
+											class="o_project_kanban_box m-0"
+											name ="open_record_view"
+											type ="object"
+											style="
+												color          :white;
+												background     :grey;
+												text-decoration:none;
+												width          :25%;
+												padding        :15px;
+											"
+											context="{
+												'mapping_model'     :'channel.order.mappings',
+												'odoo_mapping_field':'odoo_order_id',
+											}"
+										>
+											<span class="o_value" style="overflow:visible !important;font-size:18px">
+												<t t-esc="record.channel_orders.value"/>
+											</span>
+											<span class="o_label" style="overflow:visible !important">Orders</span>
+										</a>
+
+										<a
+											class="o_project_kanban_box m-0"
+											name ="open_record_view"
+											type ="object"
+											style="
+												color          :white;
+												background     :#555487;
+												text-decoration:none;
+												width          :25%;
+												padding        :15px;
+											"
+											context="{
+												'mapping_model':'channel.category.mappings',
+												'odoo_mapping_field':'odoo_category_id',
+											}"
+										>
+											<span class="o_value" style="overflow:visible !important;font-size:18px">
+												<t t-esc="record.channel_categories.value"/>
+											</span>
+											<span class="o_label" style="overflow:visible !important">Categories</span>
+										</a>
+										<a
+											class="o_project_kanban_box m-0"
+											name ="open_record_view"
+											type ="object"
+											style="
+												color          :white;
+												background     :grey;
+												text-decoration:none;
+												width          :25%;
+												padding        :15px;
+											"
+											context="{
+												'mapping_model':'channel.partner.mappings',
+												'odoo_mapping_field':'odoo_partner_id',
+											}"
+										>
+											<span class="o_value" style="overflow:visible !important;font-size:18px">
+												<t t-esc="record.channel_customers.value"/>
+											</span>
+											<span class="o_label" style="overflow:visible !important">Customers</span>
+										</a>
+									</div>
+									<div class="container o_kanban_card_manage_pane dropdown-menu" role="menu">
+										<t t-call="MultiChannelDashboard"/>
+									</div>
+								</div>
+							</div>
+						</t>
+						<t t-name="MultiChannelDashboard">
+							<div class="row o_kanban_card_settings" >
+								<div>
+									<div class="o_kanban_card_manage_title">
+										<h3>Mappings</h3>
+									</div>
+									<div>
+										<a
+											name="open_mapping_view"
+											type="object"
+											context="{
+												'mapping_model':'channel.template.mappings',
+												'store_field'  :'store_product_id',
+											}"
+										>Products</a>
+									</div>
+									<div>
+										<a
+											name="open_mapping_view"
+											type="object"
+											context="{
+												'mapping_model':'channel.order.mappings',
+												'store_field'  :'store_order_id',
+											}"
+										>Orders</a>
+									</div>
+									<div>
+										<a
+											name="open_mapping_view"
+											type="object"
+											context="{
+												'mapping_model':'channel.category.mappings',
+												'store_field'  :'store_category_id',
+											}"
+										>Categories</a>
+									</div>
+									<div>
+										<a
+											name="open_mapping_view"
+											type="object"
+											context="{
+												'mapping_model':'channel.partner.mappings',
+												'store_field'  :'store_customer_id',
+											}"
+										>Customers</a>
+									</div>
+								</div>
+								<div t-if="widget.editable" class="o_project_kanban_colorpicker">
+									<ul class="oe_kanban_colorpicker" data-field="color_index"/>
+								</div>
+							</div>
+						</t>
+					</templates>
+				</kanban>
+			</field>
+		</record>
+
+		<record id="multi_channel_view_form" model="ir.ui.view">
+			<field name="name">multi.channel.sale.from</field>
+			<field name="model">multi.channel.sale</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Channel Configuration">
+					<header>
+						<button
+							name  ="test_connection"
+							groups="odoo_multi_channel_sale.group_multi_channel_admin"
+							string="Test Connection"
+							title ="Test Connection"
+							type  ="object"
+							class ="oe_highlight"
+							icon  ="fa-circle-o-notch"
+							attrs ="{'invisible':[('state','=','validate')]}"
+						/>
+						<button
+							name  ="set_to_draft"
+							string="Set to Draft"
+							title="Set to Draft"
+							type  ="object" class="oe_highlight"
+							groups="odoo_multi_channel_sale.group_multi_channel_admin"
+							icon  ="fa-circle-o-notch"
+							attrs ="{'invisible':[('state','not in',['validate'])]}"
+						/>
+						<field name="state" widget="statusbar"/>
+					</header>
+					<sheet>
+						<div
+							class ="oe_button_box"
+							name  ="button_box"
+							groups="odoo_multi_channel_sale.group_multi_channel_admin"
+						>
+							<field name="environment" invisible="1"/>
+							<button
+								attrs="{'invisible':[('environment','=','sandbox')]}"
+								class="oe_stat_button"
+								name ="toggle_enviroment_value"
+								type ="object"
+								icon ="fa-play"
+							>
+								<div class="o_stat_info o_form_field">
+									<span class="text-success">Production</span>
+									<span class="o_stat_text">Environment</span>
+								</div>
+							</button>
+
+							<button
+								attrs="{'invisible':[('environment','=','production')]}"
+								class="oe_stat_button"
+								name ="toggle_enviroment_value"
+								type ="object"
+								icon ="fa-stop"
+							>
+								<div class="o_stat_info o_form_field">
+									<span class="o_warning_text">Test</span>
+									<span class="o_stat_text">Environment</span>
+								</div>
+							</button>
+							<field name="debug" invisible="1"/>
+							<button
+								attrs="{'invisible':[('debug','=','disable')]}"
+								class="oe_stat_button"
+								name ="toggle_debug_value"
+								type ="object"
+								icon ="fa-play"
+							>
+								<div class="o_stat_info o_form_field">
+									<span class="text-success">Debug</span>
+									<span class="o_stat_text">Enable</span>
+								</div>
+							</button>
+							<button
+								attrs="{'invisible':[('debug','=','enable')]}"
+								class="oe_stat_button"
+								name ="toggle_debug_value"
+								type ="object"
+								icon ="fa-stop"
+							>
+								<div class="o_stat_info o_form_field">
+									<span class="text-success">Debug</span>
+									<span class="o_stat_text">Disable</span>
+								</div>
+							</button>
+							<field name="active" invisible="1"/>
+							<button
+								attrs="{'invisible':[('active','=',False)]}"
+								class="oe_stat_button"
+								name ="toggle_active_value"
+								type ="object"
+								icon ="fa-play"
+							>
+								<div class="o_stat_info o_form_field">
+									<span class="text-success">Active</span>
+								</div>
+							</button>
+							<button
+								attrs="{'invisible':[('active','=',True)]}"
+								class="oe_stat_button"
+								name ="toggle_active_value"
+								type ="object"
+								icon ="fa-stop"
+							>
+								<div class="o_stat_info o_form_field">
+									<span class="o_warning_text">InActive</span>
+								</div>
+							</button>
+						</div>
+						<field name="image" class="oe_avatar" widget="image"/>
+						<div class="oe_title">
+							<b><label for="name" string="Channel Name :"/></b>
+							<h1>
+								<field
+									name       ="name"
+									placeholder="Channel Name"
+									attrs      ="{'readonly':[('state','=','validate')]}"
+								/>
+							</h1>
+							<div name="channels" groups="base.group_user">
+								<div>
+									<label for="channel" string="Channel Type:"/>
+									<field
+										name ="channel"
+										class="oe_inline"
+										attrs="{'readonly':[('state','=','validate')]}"
+									/>
+								</div>
+							</div>
+						</div>
+						<group name="multi_channel_configuration">
+							<group name="oe_button_box"></group>
+						</group>
+						<notebook>
+							<page
+								name  ="Operation"
+								string="Operation"
+								attrs ="{'invisible':['|',('state','!=','validate')]}"
+							>
+								<field name="use_core_feature" invisible="True"/>
+								<group
+									name ="operation_button_group"
+									attrs="{'invisible':[('use_core_feature','=',False)]}"
+								>
+									<button
+										aria-label="Import"
+										title     ="Import"
+										help      ="Open wizard to import record."
+										type      ="action"
+										name      ="%(odoo_multi_channel_sale.open_import_wizard_action)d"
+										class     ="oe_highlight wk_operation_btn box"
+										icon      ="fa-6x fa-sitemap"
+										style     ="height:120px;width:100%;"
+									><br/>
+										<span>Import</span>
+										<span>
+											<i class="fa fa-fw fa-cloud-download"/>
+										</span>
+									</button>
+
+									<button
+										aria-label="Export"
+										title     ="Export"
+										help      ="Open wizard to export record."
+										type      ="action"
+										name      ="%(odoo_multi_channel_sale.open_export_wizard_action)d"
+										class     ="oe_highlight wk_operation_btn box"
+										icon      ="fa-6x fa-sitemap"
+										style     ="height:120px;width:100%;"
+									><br/>
+										<span>Export</span>
+										<span>
+											<i class="fa fa-fw fa-cloud-upload"/>
+										</span>
+									</button>
+								</group>
+								<!-- For Legacy Bridges -->
+								<group name="import_buttons"/>
+								<group name="export_buttons"/>
+							</page>
+							<page
+								name  ="credentials"
+								string="Credentials"
+								groups="odoo_multi_channel_sale.group_multi_channel_admin"
+							>
+								<group name="credentials">
+									<group name="core_credentials" invisible="True">
+										<field
+											name       ="url"
+											placeholder="http://example.com"
+											attrs      ="{'readonly':[('state','=','validate')]}"
+										/>
+										<field
+											name       ="email"
+											placeholder="admin@example.com"
+											attrs      ="{'readonly':[('state','=','validate')]}"
+										/>
+										<field
+											name    ="api_key"
+											password="True"
+											attrs   ="{'readonly':[('state','=','validate')]}"
+										/>
+									</group>
+								</group>
+							</page>
+							<page name="configuration" string="Configuration">
+								<group name="basic_configuration">
+									<group>
+										<field
+											name ="sku_sequence_id"
+											attrs="{'readonly':[('state','=','validate')]}"
+										/>
+										<field
+											name ="language_id"
+											attrs="{'readonly':[('state','=','validate')]}"
+										/>
+										<field
+											name ="pricelist_name"
+											attrs="{'readonly':[('state','=','validate')]}"
+										/>
+										<field
+											name    ="crm_team_id"
+											required="1"
+											attrs   ="{'readonly':[('state','=','validate')]}"
+										/>
+
+										<field
+											name    ="discount_product_id"
+											required="1"
+											attrs   ="{'readonly':[('state','=','validate')]}"
+										/>
+										<field
+											name    ="delivery_product_id"
+											required="1"
+											attrs   ="{'readonly':[('state','=','validate')]}"
+										/>
+									</group>
+									<group>
+										<field
+											name    ="default_category_id"
+											attrs   ="{'readonly':[('state','=','validate')]}"
+											required="1"
+										/>
+										<field
+											name    ="warehouse_id"
+											attrs   ="{'readonly':[('state','=','validate')]}"
+											required="1"
+										/>
+										<field
+											attrs   ="{'readonly':[('state','=','validate')]}"
+											name    ="location_id"
+											required="1"
+										/>
+										<field
+											attrs   ="{'readonly':[('state','=','validate')]}"
+											name    ="company_id"
+											invisible="1"
+										/>
+										<field
+											name ="auto_evaluate_feed"
+											attrs="{'readonly':[('state','=','validate')]}"
+										/>
+										<field
+											name ="auto_sync_stock"
+											attrs="{'readonly':[('state','=','validate')]}"
+										/>
+										<field
+											name ="channel_stock_action"
+											attrs="{'readonly':[('state','=','validate')]}"
+										/>
+										<field
+											name ="sync_cancel"
+											attrs="{'readonly':[('state','=','validate')]}"
+										/>
+										<field
+											name ="sync_invoice"
+											attrs="{'readonly':[('state','=','validate')]}"
+										/>
+										<field
+											name ="sync_shipment"
+											attrs="{'readonly':[('state','=','validate')]}"
+										/>
+									</group>
+								</group>
+								<group string="Order State Configuration" name="state_configuration">
+									<field
+										name   ="order_state_ids"
+										nolabel="1"
+										attrs  ="{'readonly':[('state','=','validate')]}"
+									>
+										<tree editable="bottom">
+											<field name="channel_state"/>
+											<field name="odoo_order_state"/>
+											<field name="default_order_state"/>
+											<field name="odoo_create_invoice"/>
+											<field
+												name ="odoo_set_invoice_state"
+												attrs="{'required':[('odoo_create_invoice','!=',False)]}"
+											/>
+											<field name="odoo_ship_order" />
+										</tree>
+									</field>
+								</group>
+								<group name="date_info">
+									<group string="Last Import Date" name="import_date_info">
+										<field name="import_order_date" />
+										<field name="import_product_date" />
+										<field name="import_customer_date" />
+									</group>
+									<group string="Last Update Date" name="update_date_info">
+										<field name="update_order_date" />
+										<field name="update_product_date" />
+										<field name="update_customer_date" />
+									</group>
+								</group>
+								<group name="api_info">
+									<group>
+										<field name="api_record_limit" required="1"/>
+									</group>
+								</group>
+								<group name="advanced_configuration" col="4">
+									<field name="color" widget="color"/>
+									<field name="color_index" groups="base.group_no_one"/>
+									<field name="blog_url" groups="base.group_no_one"/>
+									<field name="store_url" groups="base.group_no_one"/>
+								</group>
+							</page>
+							<page name="crons" string = "Crons" attrs="{'invisible':[('use_core_feature','=',False)]}">
+								<group name="cron_group" col="4">
+									<field name="import_category_cron"/>
+									<field name="import_partner_cron"/>
+									<field name="import_product_cron"/>
+									<field name="import_order_cron"/>
+								</group>
+							</page>
+						</notebook>
+					</sheet>
+					<div class="oe_chatter">
+						<field name="message_follower_ids" widget="mail_followers"/>
+						<field name="activity_ids" widget="mail_activity"/>
+						<field name="message_ids" widget="mail_thread"/>
+					</div>
+				</form>
+			</field>
+		</record>
+
+		<record id="multi_channel_view_tree" model="ir.ui.view">
+			<field name="name">multi.channel.sale.tree</field>
+			<field name="model">multi.channel.sale</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Channel Configuration">
+					<field name="active"/>
+					<field name="name"/>
+					<field name="channel"/>
+					<field name="state"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="action_multi_channel_view" model="ir.actions.act_window">
+			<field name="name">Multi Channel Sale</field>
+			<field name="res_model">multi.channel.sale</field>
+			<field name="view_mode">kanban,tree,form</field>
+			<field name="view_id" ref="multi_channel_view_kanban"/>
+		</record>
+
+		<menuitem
+			id      ="sub_menu_id_multi_channel"
+			name    ="Instances"
+			parent  ="menu_multi_channel_configuration"
+			action  ="action_multi_channel_view"
+			sequence="2"
+		/>
+	</data>
+</odoo>

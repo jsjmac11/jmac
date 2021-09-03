@@ -1,0 +1,88 @@
+<odoo>
+	<data noupdate='1'>
+		<!-- Copyright (c) 2017-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+		<!-- See License URL : <https://store.webkul.com/license.html/> for full copyright and licensing details. -->
+		<record forcecreate='True' model="mws.report.fields" id="report_fields_en">
+			<field name="name">EN-Report</field>
+		</record>
+
+		<record forcecreate='True' model="mws.report.header" id="report_header_1">
+			<field name="name">item-name</field>
+			<field name="field">item-name</field>
+			<field name="report_field_id" ref="amazon_odoo_bridge.report_fields_en"/>
+		</record>
+
+		<record forcecreate='True' model="mws.report.header" id="report_header_2">
+			<field name="name">item-description</field>
+			<field name="field">item-description</field>
+			<field name="report_field_id" ref="amazon_odoo_bridge.report_fields_en"/>
+		</record>
+
+		<record forcecreate='True' model="mws.report.header" id="report_header_3">
+			<field name="name">listing-id</field>
+			<field name="field">listing-id</field>
+			<field name="report_field_id" ref="amazon_odoo_bridge.report_fields_en"/>
+		</record>
+
+		<record forcecreate='True' model="mws.report.header" id="report_header_5">
+			<field name="name">seller-sku</field>
+			<field name="field">seller-sku</field>
+			<field name="report_field_id" ref="amazon_odoo_bridge.report_fields_en"/>
+		</record>
+
+		<record forcecreate='True' model="mws.report.header" id="report_header_6">
+			<field name="name">price</field>
+			<field name="field">price</field>
+			<field name="report_field_id" ref="amazon_odoo_bridge.report_fields_en"/>
+		</record>
+
+		<record forcecreate='True' model="mws.report.header" id="report_header_7">
+			<field name="name">asin1</field>
+			<field name="field">asin1</field>
+			<field name="report_field_id" ref="amazon_odoo_bridge.report_fields_en"/>
+		</record>
+
+		<record forcecreate='True' model="mws.report.header" id="report_header_8">
+			<field name="name">asin2</field>
+			<field name="field">asin2</field>
+			<field name="report_field_id" ref="amazon_odoo_bridge.report_fields_en"/>
+		</record>
+
+		<record forcecreate='True' model="mws.report.header" id="report_header_9">
+			<field name="name">asin3</field>
+			<field name="field">asin3</field>
+			<field name="report_field_id" ref="amazon_odoo_bridge.report_fields_en"/>
+		</record>
+
+		<record forcecreate='True' model="mws.report.header" id="report_header_10">
+			<field name="name">product-id-type</field>
+			<field name="field">product-id-type</field>
+			<field name="report_field_id" ref="amazon_odoo_bridge.report_fields_en"/>
+		</record>
+
+		<record forcecreate='True' model="mws.report.header" id="report_header_11">
+			<field name="name">product-id</field>
+			<field name="field">product-id</field>
+			<field name="report_field_id" ref="amazon_odoo_bridge.report_fields_en"/>
+		</record>
+
+		<record forcecreate='True' model="mws.report.header" id="report_header_12">
+			<field name="name">sku</field>
+			<field name="field">sku</field>
+			<field name="report_field_id" ref="amazon_odoo_bridge.report_fields_en"/>
+		</record>
+
+		<record forcecreate='True' model="mws.report.header" id="report_header_13">
+			<field name="name">asin</field>
+			<field name="field">asin</field>
+			<field name="report_field_id" ref="amazon_odoo_bridge.report_fields_en"/>
+		</record>
+
+		<record forcecreate='True' model="mws.report.header" id="report_header_14">
+			<field name="name">quantity</field>
+			<field name="field">quantity</field>
+			<field name="report_field_id" ref="amazon_odoo_bridge.report_fields_en"/>
+		</record>
+
+	</data>
+</odoo>

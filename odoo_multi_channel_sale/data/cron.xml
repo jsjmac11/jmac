@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL : <https://store.webkul.com/license.html/>" -->
+<odoo>
+	<data>
+		<record id="cron_import_order" forcecreate="True" model="ir.cron">
+			<field name="name">Import - Order</field>
+			<field name="active" eval="False"/>
+			<field name="user_id" ref="base.user_root"/>
+			<field name="interval_number">4</field>
+			<field name="interval_type">hours</field>
+			<field name="numbercall">-1</field>
+			<field name="model_id" ref="model_multi_channel_sale"/>
+			<field name="state">code</field>
+			<field name="code">model.cron_import_all("order")</field>
+		</record>
+
+		<record id="cron_import_category" forcecreate='True' model="ir.cron">
+			<field name="name">Import - Category</field>
+			<field name="active" eval="False"/>
+			<field name="user_id" ref="base.user_root"/>
+			<field name="interval_number">4</field>
+			<field name="interval_type">hours</field>
+			<field name="numbercall">-1</field>
+			<field name="model_id" ref="model_multi_channel_sale"/>
+			<field name="state">code</field>
+			<field name="code">model.cron_import_all("category")</field>
+		</record>
+
+		<record id="cron_import_partner" forcecreate='True' model="ir.cron">
+			<field name="name">Import - Partner</field>
+			<field name="active" eval="False"/>
+			<field name="user_id" ref="base.user_root"/>
+			<field name="interval_number">4</field>
+			<field name="interval_type">hours</field>
+			<field name="numbercall">-1</field>
+			<field name="model_id" ref="model_multi_channel_sale"/>
+			<field name="state">code</field>
+			<field name="code">model.cron_import_all("partner")</field>
+		</record>
+
+		<record id="cron_import_product" forcecreate='True' model="ir.cron">
+			<field name="name">Import - Product</field>
+			<field name="active" eval="False"/>
+			<field name="user_id" ref="base.user_root"/>
+			<field name="interval_number">4</field>
+			<field name="interval_type">hours</field>
+			<field name="numbercall">-1</field>
+			<field name="model_id" ref="model_multi_channel_sale"/>
+			<field name="state">code</field>
+			<field name="code">model.cron_import_all("product")</field>
+		</record>
+
+		<record id="cron_evaluation" forcecreate='True' model="ir.cron">
+			<field name="name">Feed Evaluation-Cron</field>
+			<field name="active" eval="False"/>
+			<field name="user_id" ref="base.user_root"/>
+			<field name="interval_number">6</field>
+			<field name="interval_type">hours</field>
+			<field name="numbercall">-1</field>
+			<field name="model_id" ref="model_multi_channel_sale"/>
+			<field name="state">code</field>
+			<field name="code">model.cron_feed_evaluation()</field>
+		</record>
+
+		<record id="cron_clear_history" forcecreate='True' model="ir.cron">
+			<field name="name">Auto-vacuum successful synchronization</field>
+			<field name="active" eval="False"/>
+			<field name="user_id" ref="base.user_root"/>
+			<field name="interval_number">3</field>
+			<field name="interval_type">days</field>
+			<field name="numbercall">-1</field>
+			<field name="model_id" ref="model_channel_synchronization"/>
+			<field name="state">code</field>
+			<field name="code">model.cron_clear_history()</field>
+		</record>
+
+		<record id="cron_update_mapping_status" model="ir.cron">
+			<field name="name">Order Mapping: Update invoice/delivery status</field>
+			<field name="user_id" ref="base.user_root"/>
+			<field name="interval_number">3</field>
+			<field name="interval_type">hours</field>
+			<field name="numbercall">-1</field>
+			<field name="model_id" ref="model_channel_order_mappings"/>
+			<field name="state">code</field>
+			<field name="code">model.update_order_mapping_status()</field>
+		</record>
+	</data>
+</odoo>

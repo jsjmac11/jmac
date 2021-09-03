@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL :<https://store.webkul.com/license.html/>" -->
+<odoo>
+	<data>
+		<record id="odoo_multi_channel_sale.product_normal_form_view" model="ir.ui.view">
+			<field name="name">odoo.multi.channel.sale.product.product.form</field>
+			<field name="model">product.product</field>
+			<field name="inherit_id" ref="product.product_normal_form_view"/>
+			<field name="groups_id" eval="[(4,ref('odoo_multi_channel_sale.group_multi_channel_user'))]"/>
+			<field name="arch" type="xml">
+				<field name="lst_price" position="after">
+					<label for="price_extra" string="Final Variant`s Extra Price"/>
+					<div>
+						<span>
+							<field name="attr_price_extra" nolabel="1" class="oe_inline"/>
+							<label for="id" string="+" class="oe_inline"/>
+							<field name="wk_extra_price" nolabel="1" required="1" class="oe_inline"/>
+							<label for="id" string="=" class="oe_inline"/>
+							<field name="price_extra" nolabel="1" class="oe_inline"/>
+						</span>
+					</div>
+				</field>
+				<field name="barcode" position="after">
+					<field name="wk_product_id_type"/>
+				</field>
+				<xpath expr="//notebook" position="inside">
+					<page name="channel" string="Channel">
+						<group name="mapping" string="Mappings">
+							<field name="channel_mapping_ids" readonly="1" nolabel="1"/>
+						</group>
+						<notebook name="channel"></notebook>
+					</page>
+				</xpath>
+			</field>
+		</record>
+	</data>
+</odoo>

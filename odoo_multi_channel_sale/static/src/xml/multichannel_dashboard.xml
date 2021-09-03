@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL : <https://store.webkul.com/license.html/>" -->
+<templates xml:space="preserve">
+	<t t-name="multichannel_dashboard_template">
+		<header class="container bg-white">
+			<div class="row py-2">
+				<div class="col-md-6 col-sm-12">
+					<img
+						src="/odoo_multi_channel_sale/static/src/img/multichannel.png"
+						alt="Not Found!"
+						class="img-fluid"
+					/>
+				</div>
+				<div class="d-flex flex-column justify-content-center col-md-6 col-sm-12">
+					<div>
+						<h1 class="text-uppercase d-inline-block mt-2 mr-2">Multi Channel Sale</h1>
+						<a
+							class="bg-dark rounded d-inline align-top px-2"
+							href="#"
+							onclick="$('.o_action_manager').animate({
+								scrollTop: $('#instance_container').offset().top
+							});
+							return false;"
+						>
+							<t t-esc="widget.connected_count"/> Connected
+						</a>
+						<p>
+							Now, connect all of your e-commerce as well as marketplace with single Odoo!
+							Managing data in different instances is hectic so
+							what’s better than opting for Odoo Multichannel Sale.
+							It helps you to manage the data of multiple
+							E-commerces and marketplace in a single Odoo instance.
+						</p>
+						<div class="d-flex flex-column flex-md-row mt-4 mb-2">
+							<button
+								class="_action btn_import btn rounded-sm text-white text-uppercase m-2 px-4 py-2"
+								data-action="import"
+							>
+								<i class="fa fa-arrow-circle-down fa-lg"/> Import
+							</button>
+							<button
+								class="_action btn_export btn rounded-sm text-white text-uppercase m-2 px-4 py-2"
+								data-action="export"
+							>
+								<i class="fa fa-arrow-circle-up fa-lg"/> Export
+							</button>
+							<button
+								class="_action btn_connect btn rounded-sm text-white text-uppercase m-2 px-4 py-2"
+								data-action="open"
+							>
+								<i class="fa fa-plus-circle fa-lg"/> Connect
+							</button>
+						</div>
+						<br/>
+						<div class="btn-group">
+							<a
+								class="btn btn-light bg-transparent pr-4 py-1"
+								href="https://webkul.uvdesk.com/en/customer/create-ticket/"
+								style="border-style:none solid none none"
+								target="_blank"
+							>
+								<i class="fa fa-life-ring fa-2x" style="vertical-align:-15%"/>
+								<u>Need Assistance</u>
+							</a>
+							<a
+								class="btn btn-light bg-transparent px-4 py-1"
+								href="https://store.webkul.com/Odoo-Multi-Channel-Sale.html#reviews"
+								style="border-style:none solid"
+								target="_blank"
+							>
+								<span class="fa-stack">
+									<i class="fa fa-circle fa-stack-2x"/>
+									<i class="fa fa-align-left fa-flip-vertical fa-inverse fa-stack-1x"/>
+								</span>
+								<u>Review</u>
+							</a>
+							<a
+								class="btn btn-light bg-transparent px-4 py-1"
+								href="https://store.webkul.com/Odoo/Connectors.html"
+								style="border-style:none none none solid"
+								target="_blank"
+							>
+								<i
+									class="fa fa-arrow-circle-up fa-2x"
+									style="transform:rotate(45deg);vertical-align:-15%;"
+								/>
+								<u>Extensions</u>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</header>
+
+		<main class="container mb-5">
+			<h2 class="text-center font-weight-bold my-4">Statistics</h2>
+			<section class="row">
+				<t t-call="multichannel_dashboard_line_chart_template"/>
+				<t t-call="multichannel_dashboard_pie_chart_template"/>
+			</section>
+		</main>
+
+		<footer class="container bg-white mb-md-5 mb-1 d-flex flex-column">
+			<h2 class="text-center mb-4 font-weight-bold my-4">Extensions</h2>
+			<div class="row" id="instance_container">
+				<t t-call="multichannel_dashboard_instance_template"/>
+			</div>
+		</footer>
+	</t>
+
+	<div t-name="multichannel_dashboard_line_chart_template" class="col-md-6 col-sm-12 px-2 pl-md-4">
+		<div class="card rounded border-0">
+			<div class="card-header font-weight-bold bg-transparent py-3">
+				<div class="row justify-content-between">
+					<div class="col-auto">
+						<span id="line_chart_label">Sales Orders</span>
+					</div>
+					<div class="col-auto">
+						<select class="custom-select w-auto" id="line_obj_change">
+							<option value="order" selected="true">Order</option>
+							<option value="product">Product</option>
+							<option value="category">Category</option>
+							<option value="customer">Customer</option>
+						</select>
+						<select class="custom-select w-auto" id="line_date_change">
+							<option value="7" selected="true">Last 7 days</option>
+							<option value="30">Last 30 Days</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="card-body">
+				<canvas id="line_chart"/>
+			</div>
+		</div>
+	</div>
+
+	<div t-name="multichannel_dashboard_pie_chart_template" class="col-md-6 col-sm-12 px-2 pr-md-4">
+		<div class="card rounded border-0">
+			<div class="card-header font-weight-bold bg-transparent py-3">
+				<div class="row justify-content-between">
+					<div class="col-auto">
+						<span id="pie_chart_label">Sales Orders</span>
+					</div>
+					<div class="col-auto">
+						<select class="custom-select w-auto" id="pie_obj_change">
+							<option value="order" selected="true">Order</option>
+							<option value="product">Product</option>
+							<option value="category">Category</option>
+							<option value="customer">Customer</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="card-body">
+				<canvas id="pie_chart"/>
+			</div>
+		</div>
+	</div>
+
+	<div
+		t-name="multichannel_dashboard_instance_template"
+		t-foreach="widget.instance_data"
+		t-as="instance"
+		class="col-md-4 col-sm-12 p-2"
+	>
+		<div class="card rounded border-0" style="box-shadow:0 0 6px #00000026">
+			<div class="card-header p-0">
+				<div class="d-flex">
+					<button class="_action btn" t-att-data-channel="instance_value.id">
+						<img
+							t-att-src="instance_value.image"
+							t-att-alt="instance_value.name"
+							class="rounded-circle p-1"
+							style="box-shadow:0 0 4px #00000033"
+							width="60"
+							height="60"
+						/>
+						<i
+							t-attf-class="fa fa-circle position-absolute text-{{
+								instance_value.connected ? 'success' : 'danger'
+							}}"
+							style="top:54px;left:60px;font-size:x-small;"
+						/>
+					</button>
+					<div class="d-flex flex-column px-2 py-4">
+						<button
+							class="_action btn p-0"
+							t-att-data-channel="instance_value.id"
+						>
+							<h5 class="card-title text-dark m-0" t-esc="instance"/>
+						</button>
+						<a
+							class="card-link mt-1"
+							t-att-href="instance_value.blog_url"
+							target="_blank"
+						>Blog Link</a>
+					</div>
+				</div>
+			</div>
+			<div class="card-body container px-1 py-2">
+				<div class="row m-0">
+					<t t-call="multichannel_dashboard_product_data_template"/>
+					<t t-call="multichannel_dashboard_order_data_template"/>
+					<t t-call="multichannel_dashboard_category_data_template"/>
+					<t t-call="multichannel_dashboard_customer_data_template"/>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div t-name="multichannel_dashboard_product_data_template" class="col-6 p-1">
+		<button
+			class="_action data_cell btn d-flex justify-content-between w-100 px-4 py-2"
+			data-object="product"
+			t-att-data-channel="instance_value.id"
+			style="background:#EFF1FF;color:#333333;"
+		>
+			<span class="label">Product</span>
+			<span
+				class="badge badge-light font-weight-bold"
+				style="font-size:100%;min-height:1.75em;"
+				t-esc="instance_value.product_count"
+			/>
+		</button>
+	</div>
+
+	<div t-name="multichannel_dashboard_order_data_template" class="col-6 p-1">
+		<button
+			class="_action data_cell btn d-flex justify-content-between w-100 px-4 py-2"
+			data-object="order"
+			t-att-data-channel="instance_value.id"
+			style="background:#EFF1FF;color:#333333;"
+		>
+			<span class="label">Order</span>
+			<span
+				class="badge badge-light font-weight-bold"
+				style="font-size:100%;min-height:1.75em;"
+				t-esc="instance_value.order_count"
+			/>
+		</button>
+	</div>
+
+	<div t-name="multichannel_dashboard_category_data_template" class="col-6 p-1">
+		<button
+			class="_action data_cell btn d-flex justify-content-between w-100 px-4 py-2"
+			data-object="category"
+			t-att-data-channel="instance_value.id"
+			style="background:#EFF1FF;color:#333333;"
+		>
+			<span class="label">Category</span>
+			<span
+				class="badge badge-light font-weight-bold"
+				style="font-size:100%;min-height:1.75em;"
+				t-esc="instance_value.category_count"
+			/>
+		</button>
+	</div>
+
+	<div t-name="multichannel_dashboard_customer_data_template" class="col-6 p-1">
+		<button
+			class="_action data_cell btn d-flex justify-content-between w-100 px-4 py-2"
+			data-object="customer"
+			t-att-data-channel="instance_value.id"
+			style="background:#EFF1FF;color:#333333;"
+		>
+			<span class="label">Customer</span>
+			<span
+				class="badge badge-light font-weight-bold"
+				style="font-size:100%;min-height:1.75em;"
+				t-esc="instance_value.customer_count"
+			/>
+		</button>
+	</div>
+</templates>

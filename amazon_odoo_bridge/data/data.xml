@@ -1,0 +1,94 @@
+<odoo>
+    <data noupdate='1'>
+        <!-- Copyright (c) 2017-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+        <!-- See License URL : <https://store.webkul.com/license.html/> for full copyright and licensing details. -->
+        <record forcecreate='True' model="mws.domain" id="domain_na">
+            <field name="region">NA</field>
+            <field name="name">https://mws.amazonservices.com</field>
+        </record>
+
+        <record forcecreate='True' model="mws.domain" id="domain_eu">
+            <field name="region">EU</field>
+            <field name="name">https://mws-eu.amazonservices.com</field>
+        </record>
+
+        <record forcecreate='True' model="mws.domain" id="domain_in">
+            <field name="region">IN</field>
+            <field name="name">https://mws.amazonservices.in</field>
+        </record>
+
+        <record forcecreate='True' model="mws.domain" id="domain_cn">
+            <field name="region">CN</field>
+            <field name="name">https://mws.amazonservices.com.cn</field>
+        </record>
+
+        <record forcecreate='True' model="mws.domain" id="domain_jp">
+            <field name="region">JP</field>
+            <field name="name">https://mws.amazonservices.jp</field>
+        </record>
+
+        <record model="crm.team" id="team_sales_amazon">
+            <field name="name">Amazon Sales</field>
+            <field name="member_ids" eval="[(4, ref('base.user_root'))]"/>
+        </record>
+
+        <record forcecreate='True' model="ir.sequence" id="feed_sequence">
+            <field name="name">Amazon Feed</field>
+            <field name="code">mws.feed.sequence</field>
+            <field name="prefix">AF</field>
+            <field name="padding">5</field>
+        </record>
+
+        <record forcecreate='True' model="ir.sequence" id="report_sequence">
+            <field name="name">Amazon Report</field>
+            <field name="code">mws.report.sequence</field>
+            <field name="prefix">AR</field>
+            <field name="padding">5</field>
+        </record>
+
+        <record id="amazon_channel" forcecreate='True' model="multi.channel.sale">
+            <field name="name">Amazon</field>
+            <field name="channel">amazon</field>
+            <!-- <field name="sku_sequence_id" ref="odoo_multi_channel_sale.product_sequence_id"/>
+            <field name="discount_product_id" ref='odoo_multi_channel_sale.discount_product'/>
+            <field name="delivery_product_id" ref='odoo_multi_channel_sale.delivery_product'/> -->
+            <field name="crm_team_id" ref='team_sales_amazon'/>
+            <field name="mws_access_key">AKIAJVOUVJJGFSCNMEKA</field>
+            <field name="mws_secret_key">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</field>
+            <field name="mws_merchant_id">A1GY6C7CQ7ZPKU</field>
+            <field name="mws_marketplace_id">A21TJRUUN4KGV</field>
+            <field name="mws_domain_id" ref='domain_in'/>
+            <field name="mws_report_field_id" ref='amazon_odoo_bridge.report_fields_en'/>
+            <field name="order_state_ids" eval="
+            [
+				(0,0,{'channel_state':'Shipped','odoo_create_invoice':True,'odoo_ship_order':True,
+					'odoo_set_invoice_state':'open','odoo_order_state':'done'}),
+				(0,0,{'channel_state':'Canceled','odoo_order_state':'cancelled'}),
+			]
+            "/>
+        </record>
+
+        <record id="amazon_odoo_bridge.action_open_channel" forcecreate='True' model="ir.actions.act_url">
+            <field name="name">Open Amazon Channel</field>
+            <field name="url" eval="'/web#id='+str(ref('amazon_odoo_bridge.amazon_channel'))+'&amp;view_type=form&amp;model=multi.channel.sale&amp;menu_id'+str(ref('odoo_multi_channel_sale.sub_menu_id_multi_channel'))"/>
+            <field name="target">self</field>
+        </record>
+
+        <record id="action_client_open_channel" forcecreate='True' model="ir.actions.client">
+            <field name="name">Open Amazon Menu</field>
+            <field name="tag">reload</field>
+            <field name="params" eval="{'menu_id': ref('odoo_multi_channel_sale.sub_menu_id_multi_channel')}"/>
+        </record>
+
+        <record id="base.open_menu" forcecreate='True' model="ir.actions.todo">
+            <field name="action_id" ref="action_client_open_channel"/>
+            <field name="state">open</field>
+        </record>
+
+        <record id="last_channel_ids" model="ir.config_parameter">
+            <field name="key">ids</field>
+            <field name="value" eval="list()"></field>
+        </record>
+
+    </data>
+</odoo>

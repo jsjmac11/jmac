@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL : <https://store.webkul.com/license.html/>" -->
+<odoo>
+	<data>
+		<record id="product_variant_feed_view_form" model="ir.ui.view">
+			<field name="name">product.variant.feed.form</field>
+			<field name="model">product.variant.feed</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form>
+					<sheet>
+						<group name="primary_info" col="4">
+							<field name="store_id"/>
+							<field name="default_code"/>
+							<field name="list_price"/>
+							<field name="standard_price"/>
+						</group>
+						<notebook>
+							<page string="NameValue List">
+								<group>
+									<p class="oe_grey oe_inline">
+If the price from ecommerce store is attribute based then add price also in the NameValue string of the varinat attributes below. Format  will be [{'name': 'Attribute Name','value': 'Attribute Value','price':'price','attrib_name_id':'Attribute name Id','attrib_value_id':'Atribute Value Id'}] <br/>
+If the price from ecommerce store is variant based then do not add price in the NameValue string of the varinat attributes below. Format will be [{'name': 'Attribute Name','value': 'Attribute Value','attrib_name_id':'Attribute name Id','attrib_value_id':'Atribute Value Id'}].
+									</p>
+									<newline/>
+									<field
+										name       ="name_value"
+										required   ="1"
+										nolabel    ="1"
+										placeholder="[{'name': 'Memory','value': '16 GB','attrib_name_id':'1','attrib_value_id':'9'},{'name': 'Color','value': 'White','attrib_name_id':'2','attrib_value_id':'8'},{'name': 'Wi-Fi','value': '2.4 GHz','price':10.0,'attrib_name_id':'3','attrib_value_id':'7'}]"
+									/>
+								</group>
+							</page>
+							<page name="general" string="General Info">
+								<group>
+									<group>
+										<field name="image" widget='image'/>
+									</group>
+									<group>
+										<field name="image_url"/>
+									</group>
+								</group>
+								<group>
+									<group>
+										<field name="qty_available" />
+										<field name="length"/>
+										<field name="width"/>
+										<field name="height"/>
+									</group>
+									<group>
+										<field name="weight"/>
+										<field name="weight_unit"/>
+										<field name="dimensions_unit"/>
+									</group>
+								</group>
+							</page>
+							<page name="description" string="Description">
+								<group>
+									<field name="description_sale"/>
+									<field name="description_purchase"/>
+								</group>
+							</page>
+							<page name="extra" string='Extra'>
+								<group>
+									<group>
+										<field
+											name       ="wk_product_id_type"
+											placeholder="values can be wk_upc,wk_ean,wk_isbn"
+										/>
+									</group>
+									<group>
+										<field name="barcode"/>
+									</group>
+									<group>
+										<field name="hs_code"/>
+									</group>
+								</group>
+							</page>
+						</notebook>
+					</sheet>
+				</form>
+			</field>
+		</record>
+	</data>
+</odoo>

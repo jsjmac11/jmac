@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL :<https://store.webkul.com/license.html/>" -->
+<odoo>
+	<data>
+		<record id="order_line_feed_view_form" model="ir.ui.view">
+			<field name="name">order.line.feed.form</field>
+			<field name="model">order.line.feed</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form>
+					<sheet>
+						<group name="primary_info">
+							<group>
+								<field name="line_name" required='1'/>
+								<field name="line_product_uom_qty" required='1'/>
+								<field
+									name       ="line_taxes"
+									placeholder="[{'rate':'21','name':'VAT','include_in_price':True,'tax_type':'percent/fixed'}]"
+								/>
+							</group>
+							<group>
+								<field name="line_price_unit"/>
+								<field name="line_product_id"/>
+								<field name="line_product_default_code"/>
+								<field name='line_variant_ids'/>
+								<field name="line_source"/>
+							</group>
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="order_line_feed_view_tree" model="ir.ui.view">
+			<field name="name">order.line.tree</field>
+			<field name="model">order.line.feed</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree>
+					<field name="line_name"/>
+					<field name="line_product_uom_qty"/>
+					<field name="line_price_unit"/>
+					<field name="line_product_id"/>
+					<field name="line_product_default_code"/>
+					<field name="line_source"/>
+				</tree>
+			</field>
+		</record>
+	</data>
+</odoo>

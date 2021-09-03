@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL : <https://store.webkul.com/license.html/>" -->
+<odoo>
+	<data>
+		<record id="channel_order_states_tree" model="ir.ui.view">
+			<field name="name">channel.order.states.tree</field>
+			<field name="model">channel.order.states</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Channel Order States">
+					<field name="channel_state"/>
+					<field name="odoo_order_state"/>
+					<field name="default_order_state"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="channel_order_states_form" model="ir.ui.view">
+			<field name="name">channel.order.states.form</field>
+			<field name="model">channel.order.states</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form>
+					<sheet>
+						<group col="4">
+							<field name="default_order_state"/>
+							<newline/>
+							<field
+								name ="channel_state"
+								attrs="{'invisible':[('default_order_state','=',True)]}"
+							/>
+							<field name="odoo_order_state"/>
+							<field
+								name ="odoo_create_invoice"
+								attrs="{'invisible':[('odoo_order_state','not in',('sale','done'))]}"
+							/>
+							<field
+								name ="odoo_set_invoice_state"
+								attrs="{'invisible':['|',('odoo_create_invoice','=',False),('odoo_order_state','not in',('sale','done'))]}"
+							/>
+							<field
+								name ="odoo_ship_order"
+								attrs="{'invisible':[('odoo_order_state','not in',('sale','done'))]}"
+							/>
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+	</data>
+</odoo>

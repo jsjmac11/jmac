@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL : <https://store.webkul.com/license.html/>" -->
+<odoo>
+	<data>
+		<record id="export_odoo_templates_form" model="ir.ui.view">
+			<field name="name">export.templates.form</field>
+			<field name="model">export.templates</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Export Odoo templates">
+					<sheet>
+						<group name="channel">
+							<group>
+								<field name="operation" required="1" widget="radio"/>
+							</group>
+							<group name="extra_info">
+								<field name="channel_id" widget="selection"/>
+								<field name="channel" invisible="1"/>
+								<field
+									name ="sku_sequence_id"
+									attrs="{
+										'invisible':[('channel','not in',['amazon','magento1x','etsy'])],
+										'required':[('channel','in',['amazon','magento1x','etsy'])]
+									}"
+								/>
+							</group>
+						</group>
+					</sheet>
+					<separator colspan="6"/>
+					<footer>
+						<button special="cancel" name="cancel" string="Cancel"/>
+					</footer>
+				</form>
+			</field>
+		</record>
+<!-- 
+		<record id="action_id_export_odoo_templates_button" model="ir.actions.act_window">
+			<field name="name">Export/Update Templates</field>
+			<field name="res_model">export.templates</field>
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+		</record>
+
+		<record id="action_id_export_odoo_templates" model="ir.actions.act_window">
+			<field name="name">Export/Update Templates</field>
+			<field name="res_model">export.templates</field>
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+		</record> -->
+	</data>
+</odoo>

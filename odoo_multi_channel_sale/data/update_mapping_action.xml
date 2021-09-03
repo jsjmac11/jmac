@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL : <https://store.webkul.com/license.html/>" -->
+<odoo>
+	<data noupdate="1" >
+		<act_window
+			id           ="update_product_mappings"
+			name         ="Update Product Mapping"
+			binding_model="channel.product.mappings"
+			res_model    ="update.mapping.wizard"
+			view_mode    ="form"
+			target       ="new"
+		/>
+
+		<act_window
+			id           ="update_template_mappings"
+			name         ="Update Template Mapping"
+			binding_model="channel.template.mappings"
+			res_model    ="update.mapping.wizard"
+			view_mode    ="form"
+			target       ="new"
+		/>
+
+		<act_window
+			id           ="update_categ_mappings"
+			name         ="Update Category Mapping"
+			binding_model="channel.category.mappings"
+			res_model    ="update.mapping.wizard"
+			view_mode    ="form"
+			target       ="new"
+		/>
+
+		<act_window
+			id           ="update_order_mappings"
+			name         ="Update Order Mapping"
+			binding_model="channel.order.mappings"
+			res_model    ="update.mapping.wizard"
+			view_mode    ="form"
+			target       ="new"
+		/>
+		<act_window
+			id           ="update_partner_mappings"
+			name         ="Update Partner Mapping"
+			binding_model="channel.partner.mappings"
+			res_model    ="update.mapping.wizard"
+			view_mode    ="form"
+			target       ="new"
+		/>
+
+		<act_window
+			id           ="update_account_mappings"
+			name         ="Update Account Mapping"
+			binding_model="channel.account.mappings"
+			res_model    ="update.mapping.wizard"
+			view_mode    ="form"
+			target       ="new"
+		/>
+
+		<act_window
+			id           ="update_account_journal_mappings"
+			name         ="Update Account Journal Mapping"
+			binding_model="channel.account.journal.mappings"
+			res_model    ="update.mapping.wizard"
+			view_mode    ="form"
+			target       ="new"
+		/>
+		<act_window
+			id           ="update_shipping_mappings"
+			name         ="Update Shipping Mapping"
+			binding_model="channel.shipping.mappings"
+			res_model    ="update.mapping.wizard"
+			view_mode    ="form"
+			target       ="new"
+		/>
+		<act_window
+			id           ="update_pricelist_mappings"
+			name         ="Update Pricelist Mapping"
+			binding_model="channel.pricelist.mappings"
+			res_model    ="update.mapping.wizard"
+			view_mode    ="form"
+			target       ="new"
+		/>
+<!-- 
+		<act_window
+			id           ="action_feed_sync"
+			name         ="Update Pricelist Mapping"
+			binding_model="channel.pricelist.mappings"
+			res_model    ="update.mapping.wizard"
+			view_mode    ="form"
+			target       ="new"
+		/> -->
+	</data>
+</odoo>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL : <https://store.webkul.com/license.html/>" -->
+<odoo>
+	<data>
+		<record id="channel_parnter_mappings_search" model="ir.ui.view">
+			<field name="name">channel.partner.mappings.search</field>
+			<field name="model">channel.partner.mappings</field>
+			<field name="arch" type="xml">
+				<search string="Channel Partner Mappings" >
+					<group expand="0" string="Group By...">
+						<field name="odoo_partner"/>
+						<field name="store_customer_id"/>
+
+						<filter
+							string ="Instance"
+							name   ="filter_by_channel_id"
+							context="{'group_by':'channel_id'}"
+						/>
+						<filter
+							string ="Need Update"
+							name   ="need_sync"
+							domain ="[]"
+							context="{'group_by':'need_sync'}"
+						/>
+						<group string='Filters'>
+							<filter
+								icon   ="terp-check"
+								name   ="channel_id"
+								string ="Instance"
+								domain ="[]"
+								help   ="Instance"
+								context="{'group_by':'channel_id'}"
+							/>
+						</group>
+					</group>
+				</search>
+			</field>
+		</record>
+
+		<record id="channel_partner_mapping_form" model="ir.ui.view">
+			<field name="name">channel.partner.mappings.form</field>
+			<field name="model">channel.partner.mappings</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form edit="false">
+					<sheet>
+						<group>
+							<group>
+								<field name="channel_id"/>
+								<field name="ecom_store"/>
+							</group>
+							<group>
+								<field name="type"/>
+								<field name="operation"/>
+								<field name="need_sync"/>
+							</group>
+						</group>
+						<group col="4">
+							<field name="odoo_partner"/>
+							<field name="store_customer_id"/>
+							<field name="odoo_partner_id" invisible="1"/>
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="channel_partner_mapping_tree" model="ir.ui.view">
+			<field name="name">channel.partner.mappings.tree</field>
+			<field name="model">channel.partner.mappings</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Channel Partner Mapping" decoration-danger="need_sync=='yes'">
+					<field name="channel_id"/>
+					<field name="store_customer_id"/>
+					<field name="odoo_partner_id"/>
+					<field name="odoo_partner"/>
+					<field name="type"/>
+					<field name="operation"/>
+					<field name="create_date"/>
+					<field name="write_date"/>
+					<field name="need_sync"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="channel_parnter_mapping_action_id" model="ir.actions.act_window">
+			<field name="name">Channel Partner Mappings</field>
+			<field name="res_model">channel.partner.mappings</field>
+			<field name="view_mode">tree,form</field>
+			<field name="context">
+{
+	"search_default_filter_by_ecom_store":1,
+	"search_default_filter_by_channel_id":1
+}
+			</field>
+			<field name="view_id" ref="channel_partner_mapping_tree"/>
+		</record>
+
+		<menuitem
+			id      ="channel_partner_mapping_menu_id"
+			name    ="Partner"
+			parent  ="menu_id_channel_mappings"
+			action  ="channel_parnter_mapping_action_id"
+			sequence="7"
+		/>
+	</data>
+</odoo>

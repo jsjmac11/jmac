@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL : <https://store.webkul.com/license.html/>" -->
+<odoo>
+	<data>
+		<record id="channel_attribute_mappings_search" model="ir.ui.view">
+			<field name="name">channel.attribute.mappings.search</field>
+			<field name="model">channel.attribute.mappings</field>
+			<field name="arch" type="xml">
+				<search string="Channel Attribute Mappings">
+					<group expand="0" string="Group By...">
+						<field
+							name         ="attribute_name"
+							filter_domain="['|',('attribute_name','ilike',self),('store_attribute_name','ilike',self)]"/>
+						<field name="store_attribute_id"/>
+
+						<filter
+							string ="Instance"
+							name   ="filter_by_channel_id"
+							context="{'group_by':'channel_id'}"
+						/>
+						<filter
+							string ="Need Update"
+							name   ="need_sync"
+							domain ="[]"
+							context="{'group_by':'need_sync'}"
+						/>
+						<group string="Filters">
+							<filter
+								icon   ="terp-check"
+								name   ="channel_id"
+								string ="Instance"
+								domain ="[]"
+								help   ="Instance"
+								context="{'group_by':'channel_id'}"
+							/>
+						</group>
+					</group>
+				</search>
+			</field>
+		</record>
+
+		<record id="channel_attribute_mapping_form" model="ir.ui.view">
+			<field name="name">channel.attribute.mappings.form</field>
+			<field name="model">channel.attribute.mappings</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form edit="false">
+					<sheet>
+						<group>
+							<group>
+								<field name="channel_id"/>
+								<field name="ecom_store"/>
+							</group>
+							<group>
+								<field name="operation"/>
+								<field name="need_sync"/>
+							</group>
+						</group>
+						<group>
+							<group>
+								<field name="attribute_name"/>
+								<field name="odoo_attribute_id" invisible="1"/>
+							</group>
+							<group>
+								<field name="store_attribute_name"/>
+								<field name="store_attribute_id"/>
+							</group>
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="channel_attribute_mapping_tree" model="ir.ui.view">
+			<field name="name">channel.attribute.mappings.tree</field>
+			<field name="model">channel.attribute.mappings</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Channel Attribute Mapping" decoration-danger="need_sync=='yes'">
+					<field name="channel_id"/>
+					<field name="store_attribute_id"/>
+					<field name="odoo_attribute_id"/>
+					<field name="name"/>
+					<field name="attribute_name"/>
+					<field name="operation"/>
+					<field name="create_date"/>
+					<field name="write_date"/>
+					<field name="need_sync"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="channel_attribute_mapping_action_id" model="ir.actions.act_window">
+			<field name="name">Channel Attribute Mappings</field>
+			<field name="res_model">channel.attribute.mappings</field>
+			<field name="view_mode">tree,form</field>
+			<field name="context">
+{
+	"search_default_filter_by_ecom_store":1,
+	"search_default_filter_by_channel_id":1
+}
+			</field>
+			<field name="view_id" ref="channel_attribute_mapping_tree"/>
+		</record>
+
+		<menuitem
+			id      ="channel_attribute_mapping_menu_id"
+			name    ="Attribute"
+			parent  ="menu_id_channel_mappings"
+			action  ="channel_attribute_mapping_action_id"
+			sequence="2"
+		/>
+	</data>
+</odoo>

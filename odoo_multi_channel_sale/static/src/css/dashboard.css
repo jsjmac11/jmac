@@ -1,0 +1,59 @@
+.o_action_manager {
+	overflow: auto !important;
+}
+
+/* .o_web_client {
+	background-color: #f6f7ff;
+} */
+
+main select {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
+
+.data_cell:hover {
+	box-shadow: 0 0 6px 0 #00000026;
+}
+
+.dropdown-menu ._action:hover {
+	background-color: #DEE2E6;
+}
+
+[class*="btn_"] {
+	opacity: 0.9;
+	box-shadow: 0 2px 4px #00000026;
+}
+
+header .btn-light {
+	border-color: #DEE2E6;
+	border-width: 1px;
+}
+
+header .btn-light:hover {
+	color: #3547CE;
+}
+
+.btn_import {
+	background-image: linear-gradient(-90deg, #2C02EF 0%, #3F29C9 100%);
+}
+
+.btn_export {
+	background-image: linear-gradient(-90deg, #FF7731 0%, #F35E12 100%);
+}
+
+.btn_connect {
+	background-image: linear-gradient(-90deg, #29BC2B 0%, #26AC28 100%);
+}
+
+.button-group u {
+	font-size: 13.5px;
+}
+
+main .card-body {
+	height: 300px;
+}
+
+main .badge {
+	font-size: 100%;
+}

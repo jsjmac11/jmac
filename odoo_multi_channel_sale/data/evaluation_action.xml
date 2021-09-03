@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL : <https://store.webkul.com/license.html/>" -->
+<odoo>
+	<data>
+		<record id="sync_product_feed_values" model="ir.actions.server">
+			<field name="name">Evaluate Product Feed</field>
+			<field name="type">ir.actions.server</field>
+			<field name="model_id" ref="model_product_feed"/>
+			<field name="state">code</field>
+			<field name="code">if records:action=records.import_items()</field>
+			<field name="binding_model_id" ref="model_product_feed"/>
+		</record>
+
+		<record id="sync_category_feed_values" model="ir.actions.server">
+			<field name="name">Evaluate Category Feed</field>
+			<field name="type">ir.actions.server</field>
+			<field name="model_id" ref="model_category_feed"/>
+			<field name="state">code</field>
+			<field name="code">if records:action=records.import_items()</field>
+			<field name="binding_model_id" ref="model_category_feed"/>
+		</record>
+
+		<record id="sync_order_feed_values" model="ir.actions.server">
+			<field name="name">Evaluate Order Feed</field>
+			<field name="type">ir.actions.server</field>
+			<field name="model_id" ref="model_order_feed"/>
+			<field name="state">code</field>
+			<field name="code">if records:action=records.import_items()</field>
+			<field name="binding_model_id" ref="model_order_feed"/>
+		</record>
+
+		<record id="sync_partner_feed_values" model="ir.actions.server">
+			<field name="name">Evaluate Partner Feed</field>
+			<field name="type">ir.actions.server</field>
+			<field name="model_id" ref="model_partner_feed"/>
+			<field name="state">code</field>
+			<field name="code">if records:action=records.import_items()</field>
+			<field name="binding_model_id" ref="model_partner_feed"/>
+		</record>
+		
+		<record id="sync_shipping_feed_values" model="ir.actions.server">
+			<field name="name">Evaluate Shipping Feed</field>
+			<field name="type">ir.actions.server</field>
+			<field name="model_id" ref="model_shipping_feed"/>
+			<field name="state">code</field>
+			<field name="code">if records:action=records.import_items()</field>
+			<field name="binding_model_id" ref="model_shipping_feed"/>
+		</record>
+	</data>
+</odoo>
