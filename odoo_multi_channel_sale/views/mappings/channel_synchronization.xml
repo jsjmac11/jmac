@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL : <https://store.webkul.com/license.html/>" -->
+<odoo>
+	<data>
+		<record id="channel_synchronization_search" model="ir.ui.view">
+			<field name="name">channel.synchronization.select</field>
+			<field name="model">channel.synchronization</field>
+			<field name="arch" type="xml">
+				<search string="Synchronization History" >
+					<group string="Group By">
+						<filter
+							string ="Action On"
+							name   ="filter_by_action_on"
+							context="{'group_by':'action_on'}"
+						/>
+						<filter
+							string ="Action Type"
+							name   ="action_type"
+							domain ="[]"
+							context="{'group_by':'action_type'}"
+						/>
+					</group>
+				</search>
+			</field>
+		</record>
+
+		<record id="channel_synchronization_tree" model="ir.ui.view">
+			<field name="name">channel_synchronization_tree.tree</field>
+			<field name="model">channel.synchronization</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Ecom Store Synchronization">
+					<field name="channel_id"/>
+					<field name="create_date"/>
+					<field name="action_on"/>
+					<field name="ecomstore_refrence"/>
+					<field name="odoo_id"/>
+					<field name="action_type"/>
+					<field name="status"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="channel_synchronization_form" model="ir.ui.view">
+			<field name="name">channel_synchronization_form.form</field>
+			<field name="model">channel.synchronization</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form>
+					<sheet>
+						<group col="4">
+							<field name="ecom_store"/>
+							<field name="channel_id" widget='selection'/>
+							<field name="create_date"/>
+							<field name="action_on"/>
+							<field name="ecomstore_refrence"/>
+							<field name="odoo_id"/>
+							<field name="action_type"/>
+							<field name="status"/>
+						</group>
+						<group>
+							<field name="summary" widget='html'/>
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="channel_synchronization_action_id" model="ir.actions.act_window">
+			<field name="name">Synchronization History</field>
+			<field name="res_model">channel.synchronization</field>
+			<field name="view_mode">tree,form</field>
+			<field name="context">
+{
+	"search_default_filter_by_ecom_store":1,
+	"search_default_filter_by_action_on":1,
+	"search_default_filter_by_action_type":1
+}
+			</field>
+			<field name="view_id" ref="channel_synchronization_search"/>
+		</record>
+
+		<menuitem
+			id    ="channel_history_sub_menu_id"
+			name  ="Synchronization History"
+			parent="menu_miscellaneous"
+			action="channel_synchronization_action_id"
+		/>
+	</data>
+</odoo>

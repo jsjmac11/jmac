@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL :<https://store.webkul.com/license.html/>" -->
+<odoo>
+	<data>
+		<record id="odoo_multi_channel_sale.search_product_pricelist_items" model="ir.ui.view">
+			<field name="name">product.pricelist.item.search</field>
+			<field name="model">product.pricelist.item</field>
+			<field name="arch" type="xml">
+				<search string="Pricelist">
+					<field name="product_id" filter_domain="[('product_id','ilike',self)]"/>
+					<field name="product_tmpl_id" filter_domain="[('product_tmpl_id','ilike',self)]"/>
+					<group expand="0" string="Group By...">
+						<filter
+							string ="Pricelist"
+							name   ="filter_by_pricelist_id"
+							context="{'group_by':'pricelist_id'}"
+						/>
+						<group string="Filters">
+							<filter
+								icon   ="terp-check"
+								name   ="pricelist_id"
+								string ="Pricelist"
+								domain ="[]"
+								help   ="Pricelist"
+								context="{'group_by':'pricelist_id'}"
+							/>
+						</group>
+					</group>
+				</search>
+			</field>
+		</record>
+
+		<record id="channel_pricelist_item_tree" model="ir.ui.view">
+			<field name="name">product.pricelist.item.tree</field>
+			<field name="model">product.pricelist.item</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree editable="bottom">
+					<field name="company_id" invisible="True"/>
+					<field name="pricelist_id"/>
+					<field name="name" string="Applicable On"/>
+					<field name="min_quantity"/>
+					<field name="date_start"/>
+					<field name="date_end"/>
+					<field name="price" string="Price"/>
+					<field name="base" invisible="1"/>
+					<field name="product_id" invisible="1"/>
+					<field name="product_tmpl_id" invisible="1"/>
+					<field name="price_discount" invisible="1"/>
+					<field name="applied_on" invisible="1"/>
+					<field name="compute_price" invisible="1"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="product_pricelist_item_action" model="ir.actions.act_window">
+			<field name="name">Pricelists Item</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">product.pricelist.item</field>
+			<field name="view_mode">tree,form</field>
+			<field name="context">{'search_default_filter_by_pricelist_id':1}</field>
+		</record>
+
+		<menuitem
+			id      ="menu_product_pricelist_item_main"
+			name    ="Pricelists Items"
+			parent  ="sale.product_menu_catalog"
+			action  ="product_pricelist_item_action"
+			groups  ="product.group_sale_pricelist"
+			sequence="4"
+		/>
+	</data>
+</odoo>

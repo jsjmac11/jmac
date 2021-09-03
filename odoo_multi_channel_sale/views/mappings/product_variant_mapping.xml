@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL : <https://store.webkul.com/license.html/>" -->
+<odoo>
+	<data>
+		<record id="odoo_multi_channel_sale.search_product_mappings" model="ir.ui.view">
+			<field name="name">channel.product.mappings.search</field>
+			<field name="model">channel.product.mappings</field>
+			<field name="arch" type="xml">
+				<search string="Product Mappings">
+					<field
+						name         ="product_name"
+						filter_domain="['|','|',('product_name','ilike',self),('default_code','ilike',self),('barcode','ilike',self)]"
+					/>
+					<field
+						name         ="store_product_id"
+						filter_domain="[('store_product_id','ilike',self)]"
+					/>
+					<field
+						name         ="store_variant_id"
+						filter_domain="[('store_variant_id','ilike',self)]"
+					/>
+
+					<group expand="0" string="Group By...">
+					<filter
+						string ="Instance"
+						name   ="filter_by_channel_id"
+						context="{'group_by':'channel_id'}"
+					/>
+					<filter
+						string ="Need Update"
+						name   ="need_sync"
+						domain ="[]"
+						context="{'group_by':'need_sync'}"
+					/>
+						<group string='Filters'>
+							<filter
+								icon   ="terp-check"
+								name   ="channel_id"
+								string ="Instance"
+								domain ="[]"
+								help   ="Instance"
+								context="{'group_by':'channel_id'}"
+							/>
+						</group>
+					</group>
+				</search>
+			</field>
+		</record>
+
+		<record id="channel_product_mapping_form" model="ir.ui.view">
+			<field name="name">channel.product.mappings.form</field>
+			<field name="model">channel.product.mappings</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form edit="false">
+					<sheet>
+						<group>
+							<group>
+								<field name="channel_id"/>
+								<field name="ecom_store"/>
+							</group>
+							<group>
+								<field name="operation"/>
+								<field name="need_sync"/>
+							</group>
+						</group>
+
+						<group col="4">
+							<field name="product_name"/>
+							<field name="odoo_template_id"/>
+							<field name='store_product_id'/>
+							<field name="store_variant_id"/>
+							<field name="default_code"/>
+							<field name="barcode"/>
+							<field name="erp_product_id" invisible="1"/>
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+
+		<record id="channel_product_mapping_tree" model="ir.ui.view">
+			<field name="name">channel.product.mappings.tree</field>
+			<field name="model">channel.product.mappings</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Channel Product Variant Mapping" decoration-danger="need_sync=='yes'">
+						<field name="channel_id"/>
+						<field name="store_product_id"/>
+						<field name="store_variant_id"/>
+						<field name="odoo_template_id"/>
+						<field name="product_name"/>
+						<field name="default_code"/>
+						<field name="barcode"/>
+						<field name="operation"/>
+						<field name="create_date"/>
+						<field name="write_date"/>
+						<field name="need_sync"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="channel_product_mapping_action_id" model="ir.actions.act_window">
+			<field name="name">Channel Product Mappings</field>
+			<field name="res_model">channel.product.mappings</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="channel_product_mapping_tree"/>
+			<field name="context">
+{
+	"search_default_filter_by_ecom_store":1,
+	"search_default_filter_by_channel_id":1
+}
+			</field>
+		</record>
+		<menuitem
+			id      ="channel_product_mapping_menu_id"
+			name    ="Product"
+			parent  ="menu_id_channel_mappings"
+			action  ="channel_product_mapping_action_id"
+			sequence="5"
+		/>
+	</data>
+</odoo>

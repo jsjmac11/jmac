@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL :<https://store.webkul.com/license.html/>" -->
+<odoo>
+	<data>
+		<record id="order_feed_view_search" model="ir.ui.view">
+			<field name="name">order.feed</field>
+			<field name="model">order.feed</field>
+			<field name="arch" type="xml">
+			<search string="Feed">
+				<field name="store_id"/>
+					<field name="name"/>
+					<group expand="0" string="Group By...">
+						<filter
+							string ="Instance"
+							name   ="filter_by_channel_id"
+							context="{'group_by':'channel_id'}"
+						/>
+						<filter
+							string ="State"
+							name   ='filter_by_state'
+							domain ="[]"
+							context="{'group_by':'state'}"
+						/>
+						<group string='Filters'>
+							<filter
+								icon   ="terp-check"
+								name   ="channel_id"
+								string ="Channel"
+								domain ="[]"
+								help   ="Instance"
+								context="{'group_by':'channel_id'}"
+							/>
+							<filter
+								icon   ="terp-check"
+								name   ="state"
+								string ="State"
+								domain ="[]"
+								help   ="Instance"
+								context="{'group_by':'state'}"
+							/>
+						</group>
+					</group>
+				</search>
+			</field>
+		</record>
+
+		<record id="order_feed_view_form" model="ir.ui.view">
+			<field name="name">order.feed.form</field>
+			<field name="model">order.feed</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form>
+					<header>
+						<button
+							name  ="import_items"
+							attrs ="{'invisible':[('state','=','done')]}"
+							string="Evaluate Feed"
+							type  ="object"
+							class ="oe_highlight"
+						/>
+						<button
+							name   ="open_mapping_view"
+							type   ="object"
+							string ="Mapping"
+							attrs  ="{'invisible':[('state','not in',('done','update'))]}"
+							context="{
+								'mapping_model':'channel.order.mappings',
+								'store_field'  :'store_order_id',
+							}"
+						/>
+						<field name="state" widget="statusbar"/>
+					</header>
+					<sheet>
+						<group name="primary_info">
+							<group>
+								<field name="name" attrs="{'readonly':[('state','=','done')]}"/>
+								<field
+									name    ="store_id"
+									required="1"
+									attrs   ="{'readonly':[('state','=','done')]}"
+								/>
+
+								<field
+									name    ="partner_id"
+									required="1"
+									attrs   ="{'readonly':[('state','=','done')]}"
+								/>
+								<field
+									name    ="customer_name"
+									required="1"
+									attrs   ="{'readonly':[('state','=','done')]}"
+								/>
+								<field
+									name    ="customer_email"
+									required="1"
+									attrs   ="{'readonly':[('state','=','done')]}"
+								/>
+								<field
+									name ="customer_phone"
+									attrs="{'readonly':[('state','=','done')]}"
+								/>
+								<field
+									name ="customer_mobile"
+									attrs="{'readonly':[('state','=','done')]}"
+								/>
+							</group>
+							<group>
+								<field name="active"/>
+								<field
+									name    ="channel_id"
+									widget  ="selection"
+									required="1"
+									attrs   ="{'readonly':[('state','=','done')]}"
+								/>
+								<field name="channel" readonly="1"/>
+
+								<field
+									name       ="payment_method"
+									placeholder='Wire Tranfer'
+									attrs      ="{'readonly':[('state','=','done')]}"
+								/>
+								<field
+									name       ="carrier_id"
+									placeholder='Normal Delivery'
+									attrs      ="{'readonly':[('state','=','done')]}"
+								/>
+								<field
+									name       ="order_state"
+									placeholder='done'
+									attrs      ="{'readonly':[('state','=','done')]}"
+								/>
+								<field
+									name       ="currency"
+									placeholder='USD'
+									attrs      ="{'readonly':[('state','=','done')]}"
+								/>
+								<field
+									name       ="date_order"
+									placeholder='2018-06-15 19:26:13'
+									attrs      ="{'readonly':[('state','=','done')]}"
+								/>
+								<field
+									name       ="confirmation_date"
+									placeholder='2018-06-15 19:26:13'
+									attrs      ="{'readonly':[('state','=','done')]}"
+								/>
+								<field
+									name       ="date_invoice"
+									placeholder='2018-06-15'
+									attrs      ="{'readonly':[('state','=','done')]}"
+								/>
+							</group>
+						</group>
+						<notebook name='info'>
+							<page name='line_info' string='Order Lines'>
+								<group name='line_type'>
+									<group>
+										<field
+											name    ="line_type"
+											required="1"
+											attrs   ="{'readonly':[('state','=','done')]}"
+										/>
+									</group>
+									<group></group>
+								</group>
+								<group
+									name ="secondary_info"
+									attrs="{'invisible':[('line_type','!=','single')]}"
+								>
+									<group>
+										<field
+											name ="line_name"
+											attrs="{
+												'readonly':[('state','=','done')],
+												'required':[('line_type','=','single')]
+											}"/>
+										<field
+											name ="line_product_uom_qty"
+											attrs="{
+												'readonly':[('state','=','done')],
+												'required':[('line_type','=','single')]
+											}"/>
+										<field
+											name       ="line_taxes"
+											placeholder="[{'rate':'21','name':'VAT','include_in_price':True,'tax_type':'percent/fixed'}]"
+										/>
+									</group>
+									<group>
+										<field
+											name ="line_price_unit"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+										<field
+											name ="line_product_id"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+										<field
+											name ="line_product_default_code"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+										<field
+											name ="line_source"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+										<field
+											name       ="line_variant_ids"
+											placeholder="[{'rate':'21','name':'VAT','include_in_price':True,'tax_type':'percent/fixed'}]"
+										/>
+									</group>
+								</group>
+								<group
+									name ="line_info"
+									attrs="{'invisible':[('line_type','=','single')]}"
+								>
+									<field
+										name   ="line_ids"
+										nolabel="1"
+										attrs  ="{'readonly':[('state','=','done')]}"
+									/>
+								</group>
+							</page>
+							<page name='address_info' string='Address'>
+								<group>
+									<group>
+										<field
+											name ="same_shipping_billing"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+									</group>
+									<group>
+										<field
+											name ="customer_is_guest"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+									</group>
+								</group>
+								<group string='Billing Address'>
+									<group>
+										<field
+											name    ="invoice_partner_id"
+											required="1"
+											attrs   ="{'readonly':[('state','=','done')]}"
+										/>
+										<field
+											name    ="invoice_email"
+											required="1"
+											attrs   ="{'readonly':[('state','=','done')]}"
+										/>
+										<field
+											name ="invoice_name"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+
+										<field
+											name ="invoice_phone"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+										<field
+											name ="invoice_mobile"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+										<field
+											name ="invoice_street"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+										<field
+											name ="invoice_street2"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+									</group>
+									<group>
+										<field
+											name ="invoice_zip"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+										<field
+											name ="invoice_city"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+										<field
+											name ="invoice_state_name"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+										<field
+											name ="invoice_state_id"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+										<field
+											name ="invoice_country_id"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+									</group>
+								</group>
+								<group
+									string='Shipping Address'
+									attrs ="{'invisible':[('same_shipping_billing','=',True)]}"
+								>
+									<group>
+										<field
+											name ="shipping_partner_id"
+											attrs="{
+												'readonly':[('state','=','done')],
+												'required':[('same_shipping_billing','=',False)]
+											}"
+										/>
+										<field
+											name ="shipping_email"
+											attrs="{
+												'readonly':[('state','=','done')],
+												'required':[('same_shipping_billing','=',False)]
+											}"
+										/>
+										<field
+											name ="shipping_name"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+										<field
+											name ="shipping_phone"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+										<field
+											name ="shipping_mobile"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+										<field
+											name ="shipping_street"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+										<field
+											name ="shipping_street2"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+									</group>
+									<group>
+										<field
+											name ="shipping_zip"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+										<field
+											name ="shipping_city"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+										<field
+											name ="shipping_state_name"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+										<field
+											name ="shipping_state_id"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+										<field
+											name ="shipping_country_id"
+											attrs="{'readonly':[('state','=','done')]}"
+										/>
+									</group>
+								</group>
+							</page>
+						</notebook>
+					</sheet>
+					<group class="oe_chatter">
+						<field name="message" string=" " readonly="1"/>
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record id="order_feed_view_tree" model="ir.ui.view">
+			<field name="name">order.feed.tree</field>
+			<field name="model">order.feed</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree>
+					<field name="state"/>
+					<field name="name"/>
+					<field name="channel_id"/>
+					<field name="store_id"/>
+					<field name="partner_id"/>
+					<field name="order_state"/>
+					<field name="payment_method"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="action_order_feed" model="ir.actions.act_window">
+			<field name="name">Order Feeds</field>
+			<field name="res_model">order.feed</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="order_feed_view_tree"/>
+			<field name="context">
+{
+	"search_default_filter_by_state":1,
+	"search_default_filter_by_channel_id":1
+}
+			</field>
+		</record>
+
+		<menuitem
+			id      ="channel_order_feeds_menu_id"
+			name    ="Order"
+			parent  ="menu_channel_feeds"
+			action  ="action_order_feed"
+			sequence="4"
+		/>
+	</data>
+</odoo>

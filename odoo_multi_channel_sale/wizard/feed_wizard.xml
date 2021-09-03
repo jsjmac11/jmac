@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL : <https://store.webkul.com/license.html/>" -->
+<odoo>
+	<data>
+		<record id="form_feed_sync" model="ir.ui.view">
+			<field name="name">Evaluate Feed</field>
+			<field name="model">feed.sync.wizard</field>
+			<field name="arch" type="xml">
+				<form>
+					<group>
+						<group>
+							<field name="channel_id" groups="base.group_no_one"/>
+							<field name='feed_type'/>
+						</group>
+					</group>
+					<footer>
+						<button
+							name="action_sync_feed"
+							string="Evaluate"
+							type="object"
+							class="oe_highlight"
+						/>
+						<button string="Cancel" class="oe_link" special="cancel" />
+					</footer>
+				</form>
+			</field>
+		</record>
+
+		<act_window
+			id="action_feed_sync"
+			name="Evaluate Feed"
+			res_model="feed.sync.wizard"
+			view_mode="form"
+			target="new"
+		/>
+	</data>
+</odoo>

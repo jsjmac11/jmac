@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- Copyright (c) 2017-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+  <!-- See License URL : <https://store.webkul.com/license.html/> for full copyright and licensing details. -->
+    <record id="amazon_odoo_bridge.product_feed_view_form" model="ir.ui.view">
+           <field name="name">product.feed.form.amazon</field>
+           <field name="model">product.feed</field>
+           <field name="inherit_id" ref="odoo_multi_channel_sale.product_feed_view_form"/>
+              <field name="arch" type="xml">
+                 <field name="wk_product_id_type" position='after'>
+                        <field name="wk_asin" attrs= "{'readonly':[('state','=', 'done')]}"/>
+                </field>
+            </field>
+    </record>
+
+        <record model="ir.ui.view"
+          id="amazon_odoo_bridge.product_template_only_form_view">
+           <field name="name">amazon.product.template.form</field>
+           <field name="model">product.template</field>
+           <field name="inherit_id"
+            ref="odoo_multi_channel_sale.product_template_only_form_view"/>
+          <field name="arch" type="xml">
+            <field name="wk_product_id_type" position='after'>
+              <field name="wk_asin"
+                attrs="{'invisible': [('product_variant_count', '>', 1)]}"/>
+              <!-- <field name="mws_product_type_id"
+                attrs="{'invisible': [('product_variant_count', '>', 1)]}"/> -->
+
+            </field>
+            </field>
+        </record>
+        <record model="ir.ui.view"
+          id="amazon_odoo_bridge.product_normal_form_view">
+           <field name="name">amazon.product.product.form</field>
+           <field name="model">product.product</field>
+           <field name="inherit_id"
+            ref="odoo_multi_channel_sale.product_normal_form_view"/>
+          <field name="arch" type="xml">
+            <field name="wk_product_id_type" position='after'>
+              <field name="wk_asin"/>
+              <!-- <field name="mws_product_type_id"/> -->
+            </field>
+            </field>
+        </record>
+
+</odoo>

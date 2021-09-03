@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+      <!-- Copyright (c) 2017-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+  		<!-- See License URL : <https://store.webkul.com/license.html/> for full copyright and licensing details. -->
+         <record id="import_mws_products_form" model="ir.ui.view">
+            <field name="name">import_mws_products.form</field>
+            <field name="model">import.mws.products</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Import Products">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="channel_id" invisible='1'/>
+                                <field name="operation"/>
+                                <field name="report_id" required='1'
+                                  options="{'no_quick_create': True, 'no_create_edit' : True}"
+                                  domain="[
+                                  ('channel_id','=',channel_id),
+                                  ('state','=','receive'),
+                                  ('report_type','in', ['OPEN_LISTINGS_MERCHANT_LISTINGS']),
+                                  ]"/>
+                            </group>
+                              <group>
+
+                              </group>
+                        </group>
+                        <div>
+                          <p><b>NOTE</b>:</p>
+                          <ul>
+                          <li attrs="{
+                            'invisible':[('operation','!=','import')],
+                            }">&#160;Import operation will import  <b>new product</b>
+                             in odoo from amazon.</li>
+                          <li attrs="{
+                            'invisible':[('operation','!=','update')],
+                            }">&#160;Update operation  will <b>update</b>
+                            previously imported product in Odoo.</li>
+                          </ul>
+                        </div>
+
+
+                    </sheet>
+                    <separator colspan="6"/>
+                    <footer>
+                        <button name="import_now" string="Import Now" type="object" class="oe_highlight" />
+                        or
+                        <button special="cancel" string="Cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+
+         <record id="import_mws_orders_form" model="ir.ui.view">
+            <field name="name">import_mws_orders.form</field>
+            <field name="model">import.mws.orders</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Import Orders">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="channel_id" invisible='1'/>
+                                <field name="source"  invisible='1'/>
+                                <field name="report_id" required='1'
+                                  options="{'no_quick_create': True, 'no_create_edit' : True}"
+                                  domain="[
+                                  ('channel_id','=',channel_id),
+                                  ('state','=','receive'),
+                                  ('report_type','in', ['OPEN_LISTINGS_MERCHANT_LISTINGS']),
+                                  ]"/>
+
+                            </group>
+                             <group attrs="{'invisible':[('source','!=','all')]}">
+                                <field name="from_date" attrs="{'required':[('source','==','all')]}"/>
+                                <field name="to_date" attrs="{'required':[('source','==','all')]}"/>
+                            </group>
+                             <!-- <group  attrs="{'invisible':[('source','!=','order_ids')]}">
+                                 <field name="order_ids" placeholder="058-1233752-8214740,058-1233752-8214840" attrs="{'required':[('source','==','order_ids')]}"/>
+                             </group> -->
+                        </group>
+                    </sheet>
+                    <separator colspan="6"/>
+                    <footer>
+                        <button name="import_now" string="Import Now" type="object" class="oe_highlight" />
+                        or
+                        <button special="cancel" string="Cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_import_mws_products" model="ir.actions.act_window">
+            <field name="name">Import Products</field>
+            <field name="res_model">import.mws.products</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <record id="action_import_mws_orders" model="ir.actions.act_window">
+            <field name="name">Import Orders</field>
+            <field name="res_model">import.mws.orders</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</openerp>

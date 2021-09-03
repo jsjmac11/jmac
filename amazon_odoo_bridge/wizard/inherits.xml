@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Copyright (c) 2017-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+        <!-- See License URL : <https://store.webkul.com/license.html/> for full copyright and licensing details. -->
+        <record id="export_odoo_templates_form" model="ir.ui.view">
+            <field name="name">export.amazon.templates.form</field>
+            <field name="model">export.templates</field>
+            <field name="inherit_id" ref="odoo_multi_channel_sale.export_odoo_templates_form" />
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='operation']" position="after">
+                    <field name='feed_type' required='1' attrs="{'invisible':['|',('channel','not in',['amazon']),('operation','!=','update')]}"/>
+                    <field name='feed_type_product' required='1' attrs="{'invisible':['|',('channel','not in',['amazon']),('operation','!=','export')]}" />
+                    <field 
+                        name="amazon_category_id" 
+                        attrs="{'invisible':[('channel','not in',['amazon'])], 'required':[('channel','in',['amazon'])]}"  
+                        options="{'no_create': True, 'no_create_edit': True, 'no_quick_create': True}"
+                    />
+                </xpath>
+                
+                <xpath expr="//button[@name='cancel']" position="before">
+                    <button 
+                        name="mws_submit_create_feed" 
+                        attrs="{'invisible':['|',('channel','not in',['amazon']),('operation','!=','export')]}" 
+                        string="Export Product" type="object" 
+                        class="oe_highlight"/>
+                    <button 
+                        name="mws_submit_update_feed" 
+                        attrs="{'invisible':['|','|',('channel','not in',['amazon']),('feed_type','!=','image'),('operation','!=','update')]}" 
+                        string="Update Image" type="object" 
+                        class="oe_highlight" context= "{'mws_update_image':'1'}"/>
+                    <button 
+                        name="mws_submit_update_feed" 
+                        attrs="{'invisible':['|','|',('channel','not in',['amazon']),('feed_type','!=','relationship'),('operation','!=','update')]}" 
+                        string="Update Childs" type="object" 
+                        class="oe_highlight" context= "{'mws_update_relationship':'1'}"/>
+                    <button 
+                        name="mws_submit_update_feed" 
+                        attrs="{'invisible':['|','|',('channel','not in',['amazon']),('feed_type','!=','price_quantity'),('operation','!=','update')]}" 
+                        string="Update Price/Qty" type="object" 
+                        class="oe_highlight" context= "{'mws_update_price':'1','mws_update_qty':'1'}"/>
+                    <button 
+                        name="mws_submit_update_feed" 
+                        attrs="{'invisible':['|','|',('channel','not in',['amazon']),('feed_type','!=','price_qty_image'),('operation','!=','update')]}" 
+                        string="Update Price/Qty/Image" 
+                        type="object" class="oe_highlight" 
+                        context= "{'mws_update_price':'1','mws_update_qty':'1','mws_update_image':'1'}"/>
+                </xpath>
+
+            </field>
+        </record>
+    </data>
+</odoo>

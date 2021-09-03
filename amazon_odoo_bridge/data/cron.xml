@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data noupdate="1">
+		<!-- Copyright (c) 2017-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+		<!-- See License URL : <https://store.webkul.com/license.html/> for full copyright and licensing details. -->
+		<record id="cron_send_request_mws_report" forcecreate='True' model="ir.cron">
+			<field name="name">Amazon - Send Report Request</field>
+			<field eval="False" name="active"/>
+			<field name="user_id" ref="base.user_root"/>
+			<field name="interval_number">640</field>
+			<field name="interval_type">minutes</field>
+			<field name="numbercall">-1</field>
+			<field name="model_id" ref="model_mws_report"/>
+			<field name="state">code</field>
+			<field name="code">model._cron_send_request()</field>
+		</record>
+
+		<record id="cron_send_generate_mws_report" forcecreate='True' model="ir.cron">
+			<field name="name">Amazon - Generate  Report</field>
+			<field eval="False" name="active"/>
+			<field name="user_id" ref="base.user_root"/>
+			<field name="interval_number">670</field>
+			<field name="interval_type">minutes</field>
+			<field name="numbercall">-1</field>
+			<field name="model_id" ref="model_mws_report"/>
+			<field name="state">code</field>
+			<field name="code">model._cron_generate_report()</field>
+		</record>
+
+		<record id="cron_send_receive_mws_report" forcecreate='True' model="ir.cron">
+			<field name="name">Amazon - Receive Report Data</field>
+			<field eval="False" name="active"/>
+			<field name="user_id" ref="base.user_root"/>
+			<field name="interval_number">680</field>
+			<field name="interval_type">minutes</field>
+			<field name="numbercall">-1</field>
+			<field name="model_id" ref="model_mws_report"/>
+			<field name="state">code</field>
+			<field name="code">model._cron_receive_data()</field>
+		</record>
+		<record id="cron_import_product_from_mws" forcecreate='True' model="ir.cron">
+			<field name="name">Amazon - Import Product</field>
+			<field eval="False" name="active"/>
+			<field name="user_id" ref="base.user_root"/>
+			<field name="interval_number">700</field>
+			<field name="interval_type">minutes</field>
+			<field name="numbercall">-1</field>
+			<field name="model_id" ref="model_import_mws_products"/>
+			<field name="state">code</field>
+			<field name="code">model._cron_mws_import_product()</field>
+		</record>
+
+		<record id="cron_import_order_from_mws" forcecreate='True' model="ir.cron">
+			<field name="name">Amazon - Import Order</field>
+			<field eval="False" name="active"/>
+			<field name="user_id" ref="base.user_root"/>
+			<field name="interval_number">720</field>
+			<field name="interval_type">minutes</field>
+			<field name="numbercall">-1</field>
+			<field name="model_id" ref="model_import_mws_orders"/>
+			<field name="state">code</field>
+			<field name="code">model._cron_mws_import_order()</field>
+		</record>
+
+		<record id="cron_import_order_status_from_mws" forcecreate='True' model="ir.cron">
+			<field name="name">Amazon - Import Order Status</field>
+			<field eval="False" name="active"/>
+			<field name="user_id" ref="base.user_root"/>
+			<field name="interval_number">740</field>
+			<field name="interval_type">minutes</field>
+			<field name="numbercall">-1</field>
+			<field name="model_id" ref="model_import_mws_orders"/>
+			<field name="state">code</field>
+			<field name="code">model._cron_mws_import_order_status()</field>
+		</record>
+
+	</data>
+</odoo>

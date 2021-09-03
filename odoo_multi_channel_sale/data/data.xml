@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL : <https://store.webkul.com/license.html/>" -->
+<odoo>
+	<data>
+		<function
+			model = "ir.default"
+			name  = "set"
+			eval  = "('multi.channel.sale.config','avoid_duplicity',False)"
+		/>
+
+		<record id="product_sequence_id" model="ir.sequence" forcecreate="True">
+			<field name="name">Product</field>
+			<field name="code">product.sequence</field>
+			<field name="prefix">Ecom-</field>
+			<field name="padding">5</field>
+		</record>
+
+		<record id="discount_product" model="product.product" forcecreate="True">
+			<field name="name">Discount Product</field>
+			<field name="type">service</field>
+		</record>
+
+		<record id="delivery_product" model="product.product" forcecreate="True">
+			<field name="name">Delivery Product</field>
+			<field name="type">service</field>
+		</record>
+	</data>
+</odoo>

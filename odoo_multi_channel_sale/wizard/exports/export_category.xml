@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL : <https://store.webkul.com/license.html/>" -->
+<odoo>
+	<data>
+		<record id="export_odoo_categories_form" model="ir.ui.view">
+			<field name="name">export.categories.form</field>
+			<field name="model">export.categories</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Export Odoo Categories">
+					<sheet>
+						<group name="channel">
+							<group>
+								<field name="operation" required="1" widget="radio"/>
+							</group>
+							<group name="extra_info">
+								<field name="channel_id" widget="selection"/>
+								<field name="channel" invisible="1"/>
+							</group>
+						</group>
+					</sheet>
+					<separator colspan="6"/>
+					<footer>
+						<button special="cancel" name="cancel" string="Cancel"/>
+					</footer>
+				</form>
+			</field>
+		</record>
+<!-- 
+		<record id="action_id_export_odoo_categories_button" model="ir.actions.act_window">
+			<field name="name">Export/Update Categories</field>
+			<field name="res_model">export.categories</field>
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+		</record>
+
+		<record id="action_id_export_odoo_categories" model="ir.actions.act_window">
+			<field name="name">Export/Update Categories</field>
+			<field name="res_model">export.categories</field>
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+		</record> -->
+	</data>
+</odoo>

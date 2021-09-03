@@ -1,0 +1,719 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL : <https://store.webkul.com/license.html/>" -->
+<templates xml:space="preserve">
+	<t t-name="instance_dashboard_template">
+		<header class="container bg-white">
+			<div class="row py-2">
+				<div id="dashboard_image_container" class="col-md-6 col-sm-12"/>
+				<div class="d-flex flex-column justify-content-center col-md-6 col-sm-12">
+					<div>
+						<a class="_action" href="#" data-action="open" t-att-data-instance="widget.data.id">
+							<h1 class="text-uppercase d-inline-block mt-2 mr-2" t-esc="widget.data.name"/>
+							<span t-if="widget.data.connected" class="bg-success rounded d-inline align-top px-2">
+								Connected
+							</span>
+							<span t-else="" class="bg-danger rounded d-inline align-top px-2">
+								Disconnected
+							</span>
+						</a>
+						<p>
+							All your sales, accounting, and inventory of any orders of your
+							<t t-esc="widget.data.channel_name"/>
+							E-commerce/ Marketplace can be managed hassle-freely.
+							Odoo Multichannel Sale has come up with its
+							Odoo Multichannel Sale
+							<t t-esc="widget.data.channel_name"/>
+							extension to fulfill your demand.
+						</p>
+						<div class="d-flex flex-column flex-md-row mt-4 mb-2">
+							<button
+								class="_action btn_import btn rounded-sm text-white text-uppercase m-2 px-4 py-2"
+								data-action="import"
+								t-att-data-instance="widget.data.id"
+							>
+								<i class="fa fa-arrow-circle-down fa-lg"/> Import
+							</button>
+							<button
+								class="_action btn_export btn rounded-sm text-white text-uppercase m-2 px-4 py-2"
+								data-action="export"
+								t-att-data-instance="widget.data.id"
+							>
+								<i class="fa fa-arrow-circle-up fa-lg"/> Export
+							</button>
+							<button
+								class="_action btn_connect btn rounded-sm text-white text-uppercase m-2 px-4 py-2"
+								data-action="evaluate"
+								t-att-data-instance="widget.data.id"
+							>
+								<i class="fa fa-tasks fa-lg"/> Evaluate Feeds
+							</button>
+						</div>
+						<br/>
+						<div class="btn-group">
+							<a
+								class="btn btn-light bg-transparent pr-4 py-1"
+								href="https://webkul.uvdesk.com/en/customer/create-ticket/"
+								style="border-style:none solid none none"
+								target="_blank"
+							>
+								<i class="fa fa-life-ring fa-2x" style="vertical-align:-15%"/>
+								<u>Need Assistance</u>
+							</a>
+							<a
+								class="btn btn-light bg-transparent px-4 py-1"
+								href="https://store.webkul.com/Odoo-Multi-Channel-Sale.html#reviews"
+								style="border-style:none solid"
+								target="_blank"
+							>
+								<span class="fa-stack">
+									<i class="fa fa-circle fa-stack-2x"/>
+									<i class="fa fa-align-left fa-flip-vertical fa-inverse fa-stack-1x"/>
+								</span>
+								<u>Review</u>
+							</a>
+							<a
+								class="btn btn-light bg-transparent px-4 py-1"
+								href="https://store.webkul.com/Odoo/Connectors.html"
+								style="border-style:none none none solid"
+								target="_blank"
+							>
+								<i class="fa fa-arrow-circle-up fa-2x" style="transform:rotate(45deg);vertical-align:-15%;"/>
+								<u>Extensions</u>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</header>
+
+		<main class="container mb-md-5 mb-1">
+			<h2 class="text-center font-weight-bold my-4">Statistics</h2>
+			<section class="row">
+				<t t-call="instance_dashboard_product_chart_template"/>
+				<t t-call="instance_dashboard_order_chart_template"/>
+				<t t-call="instance_dashboard_category_chart_template"/>
+				<t t-call="instance_dashboard_customer_chart_template"/>
+			</section>
+		</main>
+	</t>
+
+	<div t-name="instance_dashboard_product_chart_template" class="rounded col-md-6 col-sm-12 p-2 pl-md-4">
+		<div class="card rounded border-0">
+			<div class="card-header bg-transparent">
+				<i class="fa fa-camera" t-attf-style="font-size:2rem;color:{{widget.data.color}};"/>
+				<span class="card-title mx-2 my-0 font-weight-bold">Product</span>
+				<div
+					class="btn-group pull-right mr-3"
+					role="toolbar"
+					aria-label="Change graph"
+				>
+					<button
+						class="_graph_button btn btn-secondary fa fa-line-chart active"
+						aria-label="Line Chart"
+						data-mode="line"
+						data-object="product"
+						data-original-title="Line Chart"
+					/>
+					<button
+						class="_graph_button btn btn-secondary fa fa-pie-chart"
+						aria-label="Pie Chart"
+						data-mode="pie"
+						data-object="product"
+						data-original-title="Pie Chart"
+					/>
+				</div>
+				<div class="position-absolute dropleft" style="right:0;top:0;">
+					<button
+						class="btn o-no-caret fa fa-ellipsis-v"
+						data-toggle="dropdown"
+						aria-haspopup="true"
+						aria-expanded="false"
+					/>
+					<div class="dropdown-menu">
+						<div class="container p-0" style="width:300px">
+							<div class="d-flex justify-content-around py-1">
+								<div>
+									<span class="font-weight-bold border-bottom my-2">View</span>
+									<br/><a
+										href="#"
+										class="_action"
+										data-obj="product"
+										data-type="multi_variant"
+										t-att-data-instance="widget.data.id"
+									>Multi Variant</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-obj="product"
+										data-type="single_variant"
+										t-att-data-instance="widget.data.id"
+									>Simple</a>
+								</div>
+								<div>
+									<span class="font-weight-bold border-bottom my-2">Feeds</span>
+									<br/><a
+										href="#"
+										class="_action"
+										data-feed="product.feed"
+										data-state="draft"
+										t-att-data-instance="widget.data.id"
+									>Draft</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-feed="product.feed"
+										data-state="update"
+										t-att-data-instance="widget.data.id"
+									>Update</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-feed="product.feed"
+										data-state="done"
+										t-att-data-instance="widget.data.id"
+									>Done</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-feed="product.feed"
+										data-state="cancel"
+										t-att-data-instance="widget.data.id"
+									>Cancel</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-feed="product.feed"
+										data-state="error"
+										t-att-data-instance="widget.data.id"
+									>Error</a>
+								</div>
+								<div>
+									<span class="font-weight-bold border-bottom my-2">Reports</span>
+									<br/><a
+										href="#"
+										class="_action"
+										data-obj="template"
+										data-report="success"
+										t-att-data-instance="widget.data.id"
+									>Success</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-obj="template"
+										data-report="error"
+										t-att-data-instance="widget.data.id"
+									>Failure</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="card-header container bg-transparent">
+				<div class="row no-gutters justify-content-between px-2">
+					<span class="col-auto">
+						To Update: <a
+							href="#"
+							class="_action badge badge-light font-weight-bold"
+							data-obj="product"
+							data-count="to_update"
+							t-att-data-instance="widget.data.id"
+							t-attf-style="color:{{widget.data.color}}"
+							t-esc="widget.counts.product.to_update"
+							style="font-size:100%;min-height:1.75em;"
+						/>
+					</span>
+					<span class="col-auto">
+						Mapped: <a
+							href="#"
+							class="_action badge badge-light font-weight-bold"
+							data-obj="product"
+							data-count="mapped"
+							t-att-data-instance="widget.data.id"
+							t-esc="widget.counts.product.mapped"
+							t-attf-style="color:{{widget.data.color}}"
+							style="font-size:100%;min-height:1.75em;"
+						/>
+					</span>
+					<span class="col-auto">
+						To Export: <a
+							href="#"
+							class="_action badge badge-light font-weight-bold"
+							data-obj="product"
+							data-count="to_export"
+							t-att-data-instance="widget.data.id"
+							t-esc="widget.counts.product.to_export"
+							t-attf-style="color:{{widget.data.color}}"
+							style="font-size:100%;min-height:1.75em;"
+						/>
+					</span>
+				</div>
+			</div>
+			<div class="card-body">
+				<canvas id="product_chart"/>
+			</div>
+		</div>
+	</div>
+
+	<div t-name="instance_dashboard_order_chart_template" class="rounded col-md-6 col-sm-12 p-2 pr-md-4">
+		<div class="card rounded border-0">
+			<div class="card-header bg-transparent">
+				<i
+					class="fa fa-shopping-bag"
+					t-attf-style="font-size:2rem;color:{{widget.data.color}};"
+				/>
+				<span class="card-title mx-2 my-0 font-weight-bold">Order</span>
+				<div
+					class="btn-group pull-right mr-5"
+					role="toolbar"
+					aria-label="Change graph"
+				>
+					<button
+						class="_graph_button btn btn-secondary fa fa-line-chart active"
+						aria-label="Line Chart"
+						data-mode="line"
+						data-object="order"
+						data-original-title="Line Chart"
+					/>
+					<button
+						class="_graph_button btn btn-secondary fa fa-pie-chart"
+						aria-label="Pie Chart"
+						data-mode="pie"
+						data-object="order"
+						data-original-title="Pie Chart"
+					/>
+				</div>
+				<div
+					class="position-absolute dropleft d-flex"
+					style="right:0;top:0;"
+				>
+					<button
+						class="_action btn fa fa-refresh px-1 pt-2 pb-0"
+						data-placement="top"
+						data-toggle="tooltip"
+						title="Refresh order delivery/invoice data"
+						data-obj="order"
+						data-reload="true"
+						t-att-data-instance="widget.data.id"
+					/>
+					<button
+						class="btn o-no-caret fa fa-ellipsis-v pb-0"
+						data-toggle="dropdown"
+						aria-haspopup="true"
+						aria-expanded="false"
+					/>
+					<div class="dropdown-menu">
+						<div class="container p-0" style="width:300px">
+							<div class="d-flex justify-content-around py-1">
+								<div>
+									<span class="font-weight-bold border-bottom my-2">View</span>
+									<br/><a
+										href="#"
+										class="_action"
+										data-obj="order"
+										data-type="draft"
+										t-att-data-instance="widget.data.id"
+									>Quotation</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-obj="order"
+										data-type="sent"
+										t-att-data-instance="widget.data.id"
+									>Quotation Sent</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-obj="order"
+										data-type="sale"
+										t-att-data-instance="widget.data.id"
+									>Sales Order</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-obj="order"
+										data-type="done"
+										t-att-data-instance="widget.data.id"
+									>Done</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-obj="order"
+										data-type="cancel"
+										t-att-data-instance="widget.data.id"
+									>Cancelled</a>
+								</div>
+								<div>
+									<span class="font-weight-bold border-bottom my-2">Feeds</span>
+									<br/><a
+										href="#"
+										class="_action"
+										data-feed="order.feed"
+										data-state="draft"
+										t-att-data-instance="widget.data.id"
+									>Draft</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-feed="order.feed"
+										data-state="update"
+										t-att-data-instance="widget.data.id"
+									>Update</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-feed="order.feed"
+										data-state="done"
+										t-att-data-instance="widget.data.id"
+									>Done</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-feed="order.feed"
+										data-state="cancel"
+										t-att-data-instance="widget.data.id"
+									>Cancel</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-feed="order.feed"
+										data-state="error"
+										t-att-data-instance="widget.data.id"
+									>Error</a>
+								</div>
+								<div>
+									<span class="font-weight-bold border-bottom my-2">Reports</span>
+									<br/><a
+										href="#"
+										class="_action"
+										data-obj="order"
+										data-report="success"
+										t-att-data-instance="widget.data.id"
+									>Success</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-obj="order"
+										data-report="error"
+										t-att-data-instance="widget.data.id"
+									>Failure</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="card-header container bg-transparent">
+				<div class="row no-gutters justify-content-between px-2">
+					<span class="col-auto">
+						To Invoice: <a
+							href="#"
+							class="_action badge badge-light font-weight-bold"
+							data-obj="order"
+							data-count="to_invoice"
+							t-att-data-instance="widget.data.id"
+							t-attf-style="color:{{widget.data.color}}"
+							t-esc="widget.counts.order.to_invoice"
+							style="font-size:100%;min-height:1.75em;"
+						/>
+					</span>
+					<span class="col-auto">
+						Mapped: <a
+							href="#"
+							class="_action badge badge-light font-weight-bold"
+							data-obj="order"
+							data-count="mapped"
+							t-att-data-instance="widget.data.id"
+							t-esc="widget.counts.order.mapped"
+							t-attf-style="color:{{widget.data.color}}"
+							style="font-size:100%;min-height:1.75em;"
+						/>
+					</span>
+					<span class="col-auto">
+						To Deliver: <a
+							href="#"
+							class="_action badge badge-light font-weight-bold"
+							data-obj="order"
+							data-count="to_deliver"
+							t-att-data-instance="widget.data.id"
+							t-esc="widget.counts.order.to_deliver"
+							t-attf-style="color:{{widget.data.color}}"
+							style="font-size:100%;min-height:1.75em;"
+						/>
+					</span>
+				</div>
+			</div>
+			<div class="card-body">
+				<canvas id="order_chart"/>
+			</div>
+		</div>
+	</div>
+
+	<div t-name="instance_dashboard_category_chart_template" class="rounded col-md-6 col-sm-12 p-2 pl-md-4">
+		<div class="card rounded border-0">
+			<div class="card-header bg-transparent">
+				<i class="fa fa-tags" t-attf-style="font-size:2rem;color:{{widget.data.color}};"/>
+				<span class="card-title mx-2 my-0 font-weight-bold">Category</span>
+				<div class="position-absolute dropleft" style="right:0;top:0;">
+					<button
+						class="btn o-no-caret fa fa-ellipsis-v"
+						data-toggle="dropdown"
+						aria-haspopup="true"
+						aria-expanded="false"
+					/>
+					<div class="dropdown-menu">
+						<div class="container p-0" style="width:200px">
+							<div class="d-flex justify-content-around py-1">
+								<div>
+									<span class="font-weight-bold border-bottom my-2">Feeds</span>
+									<br/><a
+										href="#"
+										class="_action"
+										data-feed="category.feed"
+										data-state="draft"
+										t-att-data-instance="widget.data.id"
+									>Draft</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-feed="category.feed"
+										data-state="update"
+										t-att-data-instance="widget.data.id"
+									>Update</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-feed="category.feed"
+										data-state="done"
+										t-att-data-instance="widget.data.id"
+									>Done</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-feed="category.feed"
+										data-state="cancel"
+										t-att-data-instance="widget.data.id"
+									>Cancel</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-feed="category.feed"
+										data-state="error"
+										t-att-data-instance="widget.data.id"
+									>Error</a>
+								</div>
+								<div>
+									<span class="font-weight-bold border-bottom my-2">Reports</span>
+									<br/><a
+										href="#"
+										class="_action"
+										data-obj="category"
+										data-report="success"
+										t-att-data-instance="widget.data.id"
+									>Success</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-obj="category"
+										data-report="error"
+										t-att-data-instance="widget.data.id"
+									>Failure</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="card-header container bg-transparent">
+				<div class="row no-gutters justify-content-between px-2">
+					<span class="col-auto">
+						To Update: <a
+							href="#"
+							class="_action badge badge-light font-weight-bold"
+							data-obj="category"
+							data-count="to_update"
+							t-att-data-instance="widget.data.id"
+							t-attf-style="color:{{widget.data.color}}"
+							t-esc="widget.counts.category.to_update"
+							style="font-size:100%;min-height:1.75em;"
+						/>
+					</span>
+					<span class="col-auto">
+						Mapped: <a
+							href="#"
+							class="_action badge badge-light font-weight-bold"
+							data-obj="category"
+							data-count="mapped"
+							t-att-data-instance="widget.data.id"
+							t-esc="widget.counts.category.mapped"
+							t-attf-style="color:{{widget.data.color}}"
+							style="font-size:100%;min-height:1.75em;"
+						/>
+					</span>
+					<span class="col-auto">
+						To Export: <a
+							href="#"
+							class="_action badge badge-light font-weight-bold"
+							data-obj="category"
+							data-count="to_export"
+							t-att-data-instance="widget.data.id"
+							t-esc="widget.counts.category.to_export"
+							t-attf-style="color:{{widget.data.color}}"
+							style="font-size:100%;min-height:1.75em;"
+						/>
+					</span>
+				</div>
+			</div>
+			<div class="card-body">
+				<canvas id="category_chart"/>
+			</div>
+		</div>
+	</div>
+
+	<div t-name="instance_dashboard_customer_chart_template" class="rounded col-md-6 col-sm-12 p-2 pr-md-4">
+		<div class="card rounded border-0">
+			<div class="card-header bg-transparent">
+				<i class="fa fa-user" t-attf-style="font-size:2rem;color:{{widget.data.color}};"/>
+				<span class="card-title mx-2 my-0 font-weight-bold">Customer</span>
+				<div class="position-absolute dropleft" style="right:0;top:0;">
+					<button
+						class="btn o-no-caret fa fa-ellipsis-v"
+						data-toggle="dropdown"
+						aria-haspopup="true"
+						aria-expanded="false"
+					/>
+					<div class="dropdown-menu">
+						<div class="container p-0" style="width:300px">
+							<div class="d-flex justify-content-around py-1">
+								<div>
+									<span class="font-weight-bold border-bottom my-2">View</span>
+									<br/><a
+										href="#"
+										class="_action"
+										data-obj="customer"
+										data-type="invoice"
+										t-att-data-instance="widget.data.id"
+									>Invoice</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-obj="customer"
+										data-type="delivery"
+										t-att-data-instance="widget.data.id"
+									>Delivery</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-obj="customer"
+										data-type="other"
+										t-att-data-instance="widget.data.id"
+									>Other</a>
+								</div>
+								<div>
+									<span class="font-weight-bold border-bottom my-2">Feeds</span>
+									<br/><a
+										href="#"
+										class="_action"
+										data-feed="partner.feed"
+										data-state="draft"
+										t-att-data-instance="widget.data.id"
+									>Draft</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-feed="partner.feed"
+										data-state="update"
+										t-att-data-instance="widget.data.id"
+									>Update</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-feed="partner.feed"
+										data-state="done"
+										t-att-data-instance="widget.data.id"
+									>Done</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-feed="partner.feed"
+										data-state="cancel"
+										t-att-data-instance="widget.data.id"
+									>Cancel</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-feed="partner.feed"
+										data-state="error"
+										t-att-data-instance="widget.data.id"
+									>Error</a>
+								</div>
+								<div>
+									<span class="font-weight-bold border-bottom my-2">Reports</span>
+									<br/><a
+										href="#"
+										class="_action"
+										data-obj="customer"
+										data-report="success"
+										t-att-data-instance="widget.data.id"
+									>Success</a>
+									<br/><a
+										href="#"
+										class="_action"
+										data-obj="customer"
+										data-report="error"
+										t-att-data-instance="widget.data.id"
+									>Failure</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="card-header container bg-transparent">
+				<div class="row no-gutters justify-content-between px-2">
+					<span class="col-auto">
+						To Update: <a
+							href="#"
+							class="_action badge badge-light font-weight-bold"
+							data-obj="customer"
+							data-count="to_update"
+							t-att-data-instance="widget.data.id"
+							t-attf-style="color:{{widget.data.color}}"
+							t-esc="widget.counts.customer.to_update"
+							style="font-size:100%;min-height:1.75em;"
+						/>
+					</span>
+					<span class="col-auto">
+						Mapped: <a
+							href="#"
+							class="_action badge badge-light font-weight-bold"
+							data-obj="customer"
+							data-count="mapped"
+							t-att-data-instance="widget.data.id"
+							t-esc="widget.counts.customer.mapped"
+							t-attf-style="color:{{widget.data.color}}"
+							style="font-size:100%;min-height:1.75em;"
+						/>
+					</span>
+					<span class="col-auto">
+						To Export: <a
+							href="#"
+							class="_action badge badge-light font-weight-bold"
+							data-obj="customer"
+							data-count="to_export"
+							t-att-data-instance="widget.data.id"
+							t-esc="widget.counts.customer.to_export"
+							t-attf-style="color:{{widget.data.color}}"
+							style="font-size:100%;min-height:1.75em;"
+						/>
+					</span>
+				</div>
+			</div>
+			<div class="card-body">
+				<canvas id="customer_chart"/>
+			</div>
+		</div>
+	</div>
+</templates>

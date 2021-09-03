@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2015-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL : <https://store.webkul.com/license.html/>" -->
+<odoo>
+	<data noupdate="1" >
+		<act_window
+			id           ="export_odoo_product_template_action"
+			name         ="Export/Update Templates"
+			binding_model="product.template"
+			res_model    ="export.templates"
+			view_mode    ="form"
+			target       ="new"
+		/>
+
+		<act_window
+			id           ="export_odoo_products_action"
+			name         ="Export/Update Products"
+			binding_model="product.product"
+			res_model    ="export.products"
+			view_mode    ="form"
+			target       ="new"
+		/>
+
+		<act_window
+			id           ="export_odoo_products_category"
+			name         ="Export/Update Categories"
+			binding_model="product.category"
+			res_model    ="export.categories"
+			view_mode    ="form"
+			target       ="new"
+		/>
+
+<!-- Note(Pankaj Kumar): These actions are to be reconsidered to replace old ones -->
+<!--
+		<act_window
+			id           ="export_category"
+			name         ="Export Category"
+			binding_model="product.category"
+			res_model    ="export.operation"
+			view_mode    ="form"
+			target       ="new"
+		/>
+
+		<act_window
+			id           ="export_template"
+			name         ="Export Template"
+			binding_model="product.template"
+			res_model    ="export.operation"
+			view_mode    ="form"
+			target       ="new"
+		/>
+
+		<act_window
+			id           ="export_product"
+			name         ="Export Product"
+			binding_model="product.product"
+			res_model    ="export.operation"
+			view_mode    ="form"
+			target       ="new"
+		/> -->
+	</data>
+</odoo>
