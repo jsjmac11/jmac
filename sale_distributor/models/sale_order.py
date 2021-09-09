@@ -43,6 +43,12 @@ class SaleOrder(models.Model):
             self.is_dropship_line = True
         else:
             self.is_dropship_line = False
+        ship_line_id = self.split_line_ids.filtered(
+            lambda l: l.line_type in ('buy', 'stock'))
+        if ship_line_id:
+            self.is_add_to_buy_line = True
+        else:
+            self.is_add_to_buy_line = False
 
     order_line = fields.One2many('sale.order.line', 'order_id',
                                  string='Order Lines',
@@ -55,12 +61,6 @@ class SaleOrder(models.Model):
     def _compute_shipment_package_line(self):
         for order in self:
             order.shipment_package_ids = order.stock_move_line_ids.filtered(lambda l: l.result_package_id)
-
-    # all_order_line = fields.One2many('sale.order.line', 'main_order_id',
-    # string='Process Order Lines',
-    #     states={'cancel': [('readonly', True)], 'done': [
-    # ('readonly', True)]}, copy=True, auto_join=True,
-    #     domain=[('line_split','=',True)])
 
     split_line_ids = fields.One2many(
         'sale.order.line', compute='_compute_split_lines')
@@ -109,7 +109,9 @@ class SaleOrder(models.Model):
         domain="['|', ('company_id', '=', False), \
                 ('company_id', '=', company_id)]",)
     is_dropship_line = fields.Boolean(string='Is Dropship Line',
-                                      compute='_compute_dropship_line')
+                                      compute='_compute_dropship_line', store=True)
+    is_add_to_buy_line = fields.Boolean(string='Is Add To Buy Line',
+                                      compute='_compute_dropship_line', store=True)
     qty_all = fields.Boolean(string="Qty all")
 
     def _default_validity_date(self):
@@ -141,9 +143,10 @@ class SaleOrder(models.Model):
     phone = fields.Char("Phone")
 
     shipment_package_ids = fields.One2many('stock.move.line', string='Confirm Shipment', compute="_compute_shipment_package_line")
-    stock_move_line_ids = fields.One2many('stock.move.line', 'sale_id', 'Shipment')
     hide_button = fields.Boolean(string="Is Show Shipment", copy=False, default=False)
     process_single = fields.Boolean('Process In Single Pack', default=False)
+    stock_move_line_ids = fields.One2many('stock.move.line', 'sale_id', 'Shipment')
+    picking_line_ids = fields.One2many('stock.picking', 'sale_id', string='Transfers', domain=[('location_id.usage', '!=', 'supplier')])
 
     def _create_delivery_line(self, carrier, price_unit):
         sol = super(SaleOrder, self)._create_delivery_line(carrier, price_unit)
@@ -171,6 +174,11 @@ class SaleOrder(models.Model):
             self._genrate_line_sequence()
         return self.write({'state': 'draft'})
 
+    # def get_shipping_rates(self):
+    #     for picking in self.picking_ids:
+    #         if picking:
+    #             picking.get_shipping_rates()
+
     @api.returns('mail.message', lambda value: value.id)
     def message_post(self, **kwargs):
         if self.env.context.get('mark_so_as_sent'):
@@ -178,6 +186,11 @@ class SaleOrder(models.Model):
                 tracking_disable=True).write({'state': 'sent'})
             # self.env.company.sudo().set_onboarding_step_done('sale_onboarding_sample_quotation_state')
         return super(SaleOrder, self.with_context(mail_post_autofollow=True)).message_post(**kwargs)
+
+    def report_delivery_packing_slip(self):
+        for rec in self.picking_ids:
+            res = self.env.ref('stock.action_report_delivery').report_action(rec)
+        return res
 
     def action_view_purchase(self):
         """Open Linked Purchase Order.
@@ -324,6 +337,14 @@ class SaleOrder(models.Model):
         to the new pick.
         """
         res = super(SaleOrder, self).action_confirm()
+        sol_ids = self.split_line_ids.filtered(
+            lambda l: l.line_type == 'dropship')
+        purchase_lines = self.env['purchase.order.line'].search(
+            [('sale_line_id', 'in', sol_ids.ids)])
+        purchase_order = purchase_lines.mapped('order_id')
+        for po in purchase_order:
+            po.button_confirm()
+            self.action_show_stock_move_line()
         for picking in self.picking_ids.filtered(lambda r: len(r.move_lines) > 1):
             lines_by_type = {type: picking.move_lines.filtered(lambda r: r.sale_line_id.line_type == type)
                              for type in ['stock', 'buy', 'dropship']}
@@ -351,6 +372,8 @@ class SaleOrder(models.Model):
                     ctx).create({})
                 mail.onchange_template_id_wrapper()
                 mail.action_send_mail()
+
+
         return res
 
     def action_cancel(self):
@@ -419,6 +442,7 @@ class SaleOrder(models.Model):
             'order_id').filtered(lambda po: po.dest_address_id)
         if dropship_purchase_ids:
             dropship_purchase_ids.button_confirm()
+            self.action_show_stock_move_line()
         return True
 
     def order_process(self):

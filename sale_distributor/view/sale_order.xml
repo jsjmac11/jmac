@@ -81,7 +81,8 @@
                 </button>
             </xpath>
             <xpath expr="//field[@name='team_id']" position="after">
-                <field name="is_dropship_line"/>
+                <field name="is_dropship_line" invisible="1"/>
+                <field name="is_add_to_buy_line" invisible="1"/>
             </xpath>
             <xpath expr="//field[@name='note']" position="before">
                 <!-- <group colspan="2" attrs="{'invisible': [('state', 'in', ('new','sent','review'))]}">
@@ -144,23 +145,23 @@
                         </kanban>
                     </field>
                 </group>
-                <group string="Shipment Details" name="shipment_qty" colspan="4"
-                        attrs="{'invisible': [('state', 'in', ('new','sent','review'))]}">
+                <group string="Dropship Shipment Details" name="shipment_qty" colspan="4"
+                        attrs="{'invisible': ['|', ('state', 'in', ('new','sent','review')), ('is_dropship_line', '!=', True)]}">
                     <field name="stock_move_line_ids" readonly="0" nolabel="1">
                         <tree editable="top" create="false" >
                             <field name="company_id" invisible="1"/>
                             <field name="package_id" invisible="1"/>
                             <field name="location_id" invisible="1"/>
-                            <field name="product_id" />
+                            <field name="product_id" optional="show"/>
                             <field name="location_dest_id" invisible="1"/>
-                            <field name="result_package_id" readonly="1" string="Package"/>
-                            <field name="tracking_ref" string="Tracking Ref"/>
-                            <field name="shipping_date" string="Ship Date"/>
-                            <field name="shipstation_carrier_id"/>
-                            <field name="carrier_id" string="Shipping Service"/>
-                            <field name="product_uom_qty" string='Demand' readonly="1"/>
+                            <field name="result_package_id" readonly="1" string="Package" optional="show"/>
+                            <field name="tracking_ref" string="Tracking Ref" optional="show"/>
+                            <field name="shipping_date" string="Ship Date" optional="show"/>
+                            <field name="shipstation_carrier_id" optional="show"/>
+                            <field name="carrier_id" string="Shipping Service" optional="show"/>
+                            <field name="product_uom_qty" string='Demand' readonly="1" optional="show"/>
                             <field name="product_demand" invisible="1"/>
-                            <field name="qty_done" attrs="{'readonly': [('result_package_id', '!=', False)]}"/>
+                            <field name="qty_done" attrs="{'readonly': [('result_package_id', '!=', False)]}" optional="show"/>
                         </tree>
                         <form>
                             <group>
@@ -181,14 +182,68 @@
                         </form>
                     </field>
                 </group>
-                <!-- <div class="o_row" style="float: left !important;">
-                    <button name="pripare_single_pack"
-                        attrs="{'invisible': [('process_single', '=', False)]}"
-                        string="Prepare single Pack" type="object" invisible="1"/>
-                </div> -->
+
                 <div class="o_row" style="float: left !important;">
-                    <button name="pripare_shipment_process" string="Confirm Shipment" type="object" class="oe_highlight" attrs="{'invisible': [('hide_button', '!=', True)]}"/>
+                    <button name="pripare_shipment_process" string="Confirm Shipment" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('hide_button', '!=', True), ('is_dropship_line', '!=', True)]}"/>
                 </div>
+
+                <group string="Buy Shipment Details" colspan="4"
+                    attrs="{'invisible': ['|', ('state', 'in', ('new','sent','review')), ('is_add_to_buy_line', '!=', True)]}">
+                    <field name="picking_line_ids" readonly="0" nolabel="1">
+                        <tree editable="top" create="false" >
+                            <field name="company_id" invisible="1"/>
+                            <field name="name" optional="show"/>
+                            <field name="shipstation_carrier_id" optional="hide"/>
+                            <field name="carrier_id" string="Shipping Service" optional="show"/>
+                            <field name="ship_package_id" optional="show"/>
+                            <field name="length" string="L" optional="hide"/>
+                            <field name="width" string="W" optional="hide"/>
+                            <field name="height" string="H" optional="hide"/>
+                            <field name="carrier_tracking_ref" optional="show"/>
+                            <field name="weight" optional="show"/>
+                            <field name="shipping_weight" optional="show"/>
+                            <field name="carrier_price" optional="show"/>
+                            <field name="delivery_type" invisible="1"/>
+                            <field name="state" invisible="1"/>
+                            <button name="get_shipping_rates" type="object" class="oe_highlight fa fa-arrow-right" string="Get rate">
+                            </button>
+                        </tree>
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="company_id" invisible="1"/>
+                                    <field name="name"/>
+                                    <field name="shipstation_carrier_id" />
+                                    <field name="carrier_id"/>
+                                    <field name="ship_package_id" />
+                                    <label for="length" string="Size (in)" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
+                                    <div class="o_row">
+                                        <field name="length" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
+                                        <label for="length" string="L"/>
+                                        <field name="width" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
+                                        <label for="width" string="W"/>
+                                        <field name="height" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
+                                        <label for="height" string="H"/>
+                                    </div>
+                                </group>
+                                <group>
+                                    <field name="carrier_tracking_ref"/>
+                                    <field name="weight" string="Ship Date"/>
+                                    <field name="shipping_weight"/>
+                                    <field name="carrier_price" string="Shipping Service"/>
+                                    <field name="delivery_type" invisible="1"/>
+                                    <field name="state" invisible="1"/>
+                                </group>
+                            </group>
+                        </form>
+                    </field>
+                </group>
+
+                <!-- <group>
+                    <button name="get_shipping_rates" context="{'api_call':True}" colspan="1" type="object" class="oe_highlight">
+                        <i class="fa fa-arrow-right mr-1"/>Get rate
+                    </button>
+                </group> -->
             </xpath>
             <xpath expr="//field[@name='note']" position="before">
                 <group string="Process Qty" name="process_qty" colspan="4" attrs="{'invisible': [('state', 'in', ('new','sent','review'))]}">
@@ -1811,6 +1866,7 @@
         <field name="arch" type="xml">
             <xpath expr="//filter[@name='my_sale_orders_filter']" position="replace">
                 <field name="campaign_id"/>
+                <field name="is_dropship_line"/>
                 <separator/>
                 <!-- <filter string="My Quotations" name="my_quotation" domain="[('user_id', '=', uid)]"/>
                 <separator/>
