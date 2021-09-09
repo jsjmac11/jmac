@@ -18,9 +18,22 @@
                 print_report_name="'Packing Slip - %s - %s' % (object.partner_id.name or '', object.name)"
         />
 
+        <report
+                string="Packing Slip"
+                id="bista_reports.action_report_delivery_packing_slip"
+                model="sale.order"
+                report_type="qweb-pdf"
+                name="bista_reports.sale_delivery_packing_slip"
+                file="bista_reports.sale_delivery_packing_slip"
+                print_report_name="'Packing Slip - %s - %s' % (object.partner_id.name or '', object.name)"
+        />
+
         <template id="stock.report_delivery_document">
             <t t-call="web.html_container">
                 <t t-call="web.external_layout">
+                    <t t-if="doc">
+                        <t t-set="o" t-value="doc"/>
+                    </t>
                     <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)"/>
                     <t t-set="partner"
                        t-value="o.partner_id or (o.move_lines and o.move_lines[0].partner_id) or False"/>
@@ -148,7 +161,31 @@
             </t>
         </template>
 
+        <template id="sale_delivery_packing_slip">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="pl">
+                    <t t-if="pl.picking_ids">
+
+                        <t t-foreach="pl.picking_ids" t-as="doc">
+                            <t t-call="stock.report_delivery_document">
+                            </t>
+                        </t>
+                    </t>
+                    <t t-if="not pl.picking_ids">
+                        <div class="page">
+                            <div class="text-center" style="font-family:Arial;font-size: 24px;">
+                                <strong>No delivery records found in this sale order.</strong>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
         <record id="stock.action_report_delivery" model="ir.actions.report">
+            <field name="paperformat_id" ref="bista_reports.paperformat_packing_slip"/>
+        </record>
+
+        <record id="bista_reports.action_report_delivery_packing_slip" model="ir.actions.report">
             <field name="paperformat_id" ref="bista_reports.paperformat_packing_slip"/>
         </record>
     </data>
