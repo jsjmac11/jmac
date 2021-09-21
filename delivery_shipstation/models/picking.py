@@ -327,6 +327,11 @@ class StockPicking(models.Model):
             'res_id': self.id
         })
 
+    def action_done(self):
+        res = super(StockPicking, self).action_done()
+        sale_ids = self.move_lines.mapped('purchase_line_id').mapped('sale_order_id')
+        sale_ids.action_show_stock_move_line()
+        return res
 
 class StockQuantPackage(models.Model):
     _inherit = 'stock.quant.package'
@@ -345,6 +350,28 @@ class StockMoveLine(models.Model):
     # shipstation_carrier_id = fields.Many2one("shipstation.carrier", string="Carrier", related="result_package_id.shipstation_carrier_id")
     # carrier_id = fields.Many2one("delivery.carrier", string="Shipping Method", related="result_package_id.carrier_id")
 
+    @api.depends('product_id')
+    def _compute_shipping_weight(self):
+        for line in self:
+            length = 0.0
+            width = 0.0
+            height = 0.0
+            dimension_id = False
+            # picking.shipping_weight = sum(move.weight for move in picking.move_lines if move.state != 'cancel')
+            dimension_id = line.product_id.product_tmpl_id.product_dimension_line.filtered(lambda d: d.quantity == line.product_uom_qty)
+            if dimension_id:
+                length = dimension_id.length
+                width = dimension_id.width
+                height = dimension_id.height
+                line.shipping_weight = dimension_id.weight_lbs
+                line.shipping_weight_oz = dimension_id.weight_oz
+            line.length = length
+            line.width = width
+            line.height = height
+
+    def _inverse_shipping_weight(self):
+        pass
+
     tracking_ref = fields.Char(string="Tracking Reference")
     shipping_date = fields.Date(string="Shipping Date", default=lambda self: fields.Datetime.now())
     shipstation_carrier_id = fields.Many2one("shipstation.carrier", string="Carrier")
@@ -352,6 +379,27 @@ class StockMoveLine(models.Model):
     product_demand = fields.Float(related="move_id.product_uom_qty",
         string='Demand')
 
+    carrier_tracking_ref = fields.Char(string='Tracking Reference', copy=False)
+    ship_package_id = fields.Many2one('shipstation.package', 'Package')
+    length = fields.Float('L (in)', copy=False, compute='_compute_shipping_weight',
+                                   inverse='_inverse_shipping_weight',store=True, compute_sudo=True)
+    width = fields.Float('W (in)', copy=False, compute='_compute_shipping_weight',
+                                   inverse='_inverse_shipping_weight', store=True, compute_sudo=True)
+    height = fields.Float('H (in)', copy=False, compute='_compute_shipping_weight',
+                                   inverse='_inverse_shipping_weight', store=True, compute_sudo=True)
+    weight = fields.Float(digits='Stock Weight', help="Total weight of the products in the picking.")
+    shipping_weight = fields.Float("Weight for Shipping(lbs)",
+                                   compute='_compute_shipping_weight',
+                                   inverse='_inverse_shipping_weight',
+                                   digits='Stock Weight', store=True, compute_sudo=True,
+                                   help="Total weight of the packages and products which are not in a package. That's the weight used to compute the cost of the shipping.")
+    shipping_weight_oz = fields.Float("Weight(ozs)", compute='_compute_shipping_weight',
+                                   inverse='_inverse_shipping_weight',
+                                   digits='Stock Weight', store=True, compute_sudo=True)
+    carrier_price = fields.Float(string="Shipping Cost")
+    delivery_type = fields.Selection(related='carrier_id.delivery_type', readonly=True)
+    weight_uom_name = fields.Char(string='lbs')
+    weight_uom_name_oz = fields.Char(string='lbs')
 
 class ShippingPackages(models.Model):
     _name = "shipping.package"
