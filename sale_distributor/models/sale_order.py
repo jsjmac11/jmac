@@ -145,8 +145,8 @@ class SaleOrder(models.Model):
     shipment_package_ids = fields.One2many('stock.move.line', string='Confirm Shipment', compute="_compute_shipment_package_line")
     hide_button = fields.Boolean(string="Is Show Shipment", copy=False, default=False)
     process_single = fields.Boolean('Process In Single Pack', default=False)
-    stock_move_line_ids = fields.One2many('stock.move.line', 'sale_id', 'Shipment')
-    picking_line_ids = fields.One2many('stock.picking', 'sale_id', string='Transfers', domain=[('location_id.usage', '!=', 'supplier')])
+    stock_move_line_ids = fields.One2many('stock.move.line', 'sale_id', 'Shipment', domain=[('picking_code', '=', 'incoming')])
+    picking_line_ids = fields.One2many('stock.move.line', 'sale_id', string='Transfers', domain=[('picking_code', '!=', 'incoming')])
 
     def _create_delivery_line(self, carrier, price_unit):
         sol = super(SaleOrder, self)._create_delivery_line(carrier, price_unit)
@@ -621,9 +621,28 @@ class SaleOrder(models.Model):
         for rec in self:
             picking_id = self.env[
                     'stock.picking'].search(
-                    [('sale_id', '=', rec.id)])
+                    [('sale_id', '=', rec.id), ('location_id.usage', '!=', 'supplier')])
             if picking_id:
                 move_line_ids = rec.stock_move_line_ids.filtered(lambda ml:
+                float_compare(ml.qty_done, 0.0, precision_rounding=ml.product_uom_id.rounding) > 0
+                and not ml.result_package_id)
+                package_data = {}
+                for line in move_line_ids:
+                    if line.tracking_ref in package_data.keys():
+                        package_data[line.tracking_ref] |= line
+                    else:
+                        package_data.update({line.tracking_ref: line})
+                for tracking,lines in package_data.items():
+                    picking_id._put_in_pack(lines)
+
+    def pripare_outgoing_shipment_process(self):
+        for rec in self:
+            picking_id = rec.picking_line_ids.mapped('move_id').mapped('picking_id')
+            # picking_id = self.env[
+            #         'stock.picking'].search(
+            #         [('sale_id', '=', rec.id), ('picking_code', '!=', 'incoming')])
+            if picking_id:
+                move_line_ids = rec.picking_line_ids.filtered(lambda ml:
                 float_compare(ml.qty_done, 0.0, precision_rounding=ml.product_uom_id.rounding) > 0
                 and not ml.result_package_id)
                 package_data = {}
