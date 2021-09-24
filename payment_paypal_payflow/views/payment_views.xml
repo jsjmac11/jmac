@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    @author Chintan Ambaliya <chintan.ambaliya@bistasolutions.com>
+-->
+<odoo>
+    <data>
+        <record id="acquirer_form_payflow" model="ir.ui.view">
+            <field name="name">acquirer.form.payflow</field>
+            <field name="model">payment.acquirer</field>
+            <field name="inherit_id" ref="payment.acquirer_form"/>
+            <field name="arch" type="xml">
+                <xpath expr='//group[@name="acquirer"]' position='inside'>
+                    <group attrs="{'invisible': [('provider', '!=', 'paypal_payflow')]}">
+                        <field name="payflow_partner_id" attrs="{'required':[ ('provider', '=', 'paypal_payflow'), ('state', '!=', 'disabled')]}"/>
+                        <field name="payflow_vendor_id" attrs="{'required':[ ('provider', '=', 'paypal_payflow'), ('state', '!=', 'disabled')]}"/>
+                        <field name="payflow_user_name" attrs="{'required':[ ('provider', '=', 'paypal_payflow'), ('state', '!=', 'disabled')]}"/>
+                        <field name="payflow_password" password="True" attrs="{'required':[ ('provider', '=', 'paypal_payflow'), ('state', '!=', 'disabled')]}"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
