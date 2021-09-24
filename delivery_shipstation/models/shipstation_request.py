@@ -64,7 +64,7 @@ class ShipstationRequest():
         else:
             return False
 
-    def check_required_value(self, recipient, delivery_nature, shipper, order=False, picking=False):
+    def check_required_value(self, recipient, delivery_nature, shipper, order=False, picking=False, move_line=False):
         recipient_required_field = ['city', 'zip', 'country_id']
         if not recipient.street and not recipient.street2:
             recipient_required_field.append('street')
@@ -104,12 +104,17 @@ class ShipstationRequest():
                     return _('The estimated price cannot be computed because the weight of your product is missing.')
             if order.order_weight < 0 or order.weight_oz < 0:
                     return _('Weight of the order should not be negative!')
-        if picking:
-            if not picking.move_lines:
-                return _("Please provide at least one item to ship.")
-            if not picking.shipping_weight and not picking.shipping_weight_oz:
+        # if picking and not move_line:
+        #     if not picking.move_lines:
+        #         return _("Please provide at least one item to ship.")
+        #     if not picking.shipping_weight and not picking.shipping_weight_oz:
+        #             return _('The estimated price cannot be computed because the weight of your product is missing.')
+        #     if picking.shipping_weight < 0 or picking.shipping_weight_oz < 0:
+        #             return _('Weight of the order should not be negative!')
+        if move_line:
+            if not move_line.shipping_weight and not move_line.shipping_weight_oz:
                     return _('The estimated price cannot be computed because the weight of your product is missing.')
-            if picking.shipping_weight < 0 or picking.shipping_weight_oz < 0:
+            if move_line.shipping_weight < 0 or move_line.shipping_weight_oz < 0:
                     return _('Weight of the order should not be negative!')
             # tot_weight = sum([(line.product_id.weight * line.product_qty) for line in order.order_line if
             #                   not line.display_type]) or 0
@@ -188,15 +193,35 @@ class ShipstationRequest():
         }
         return address
 
-    def _shipstation_shipping_data(self, picking, is_return=False):
-        carrier = picking.carrier_id
+    def _shipstation_shipping_data(self, picking, is_return=False, package=False):
+        if package:
+            carrier = package.carrier_id
+            pack_move_line = picking.move_line_ids.filtered(lambda l: l.result_package_id.id == package.id)
+            if pack_move_line:
+                move_line = pack_move_line.mapped('move_id')
+            shipping_weight = package.shipping_weight
+            ship_package_id = package.ship_package_id
+            weight = package.weight
+            length = package.length
+            width = package.width
+            height = package.height
+        else:
+            carrier = picking.carrier_id
+            move_line = picking.move_lines
+            shipping_weight = picking.shipping_weight
+            ship_package_id = picking.ship_package_id
+            weight = picking.weight
+            length = picking.length
+            width = picking.width
+            height = picking.height
+
         itemdetail = []
         order = picking.sale_id
         company = order.company_id or picking.company_id or self.env.company
         shipper_currency = picking.sale_id.currency_id or picking.company_id.currency_id
         USD = carrier.env['res.currency'].search([('name', '=', 'USD')], limit=1)
         quote_currency = picking.env['res.currency'].search([('name', '=', shipper_currency.name)], limit=1)
-        for line in picking.move_lines:
+        for line in move_line:
             if shipper_currency.name == USD.name:
                 price = line.product_id.lst_price * line.product_uom_qty
             else:
@@ -204,19 +229,21 @@ class ShipstationRequest():
                 price = quote_currency._convert(
                     amount, USD, company, order.date_order or fields.Date.today())
         if not is_return:
-            gross_weight = carrier._shipstation_convert_weight(picking.shipping_weight)
+            gross_weight = carrier._shipstation_convert_weight(shipping_weight)
             weight_in_ounces = 16 * gross_weight['pound'] + gross_weight['ounce']
         else:
-            gross_weight = carrier._shipstation_convert_weight(picking.weight)
-            weight_in_ounces = picking.weight * 35.274
-        if not picking.ship_package_id:
-            raise ValidationError(_("Please select package on order %s!" % picking.name))
+            gross_weight = carrier._shipstation_convert_weight(weight)
+            weight_in_ounces = weight * 35.274
+        if package and not package.ship_package_id:
+            raise ValidationError(_("Please select shipstation package on order %s!" % package.name))
+        elif not picking.ship_package_id:
+            raise ValidationError(_("Please select shipstation package on order %s!" % picking.name))
         if not carrier:
             raise ValidationError(_("Please select carrier on order %s!" % picking.name))
         shipping_detail = {
             "carrierCode": carrier.shipstation_carrier_code,
             "serviceCode": carrier.shipstation_service_code,
-            "packageCode": picking.ship_package_id.code,
+            "packageCode": ship_package_id.code,
             "confirmation": picking.confirmation,
             "shipDate": datetime.strftime(picking.scheduled_date.date(), '%Y-%m-%d'),
             "weight": {
@@ -225,9 +252,9 @@ class ShipstationRequest():
             },
             "dimensions": {
                 "units": "inches",
-                "length": picking.length,
-                "width": picking.width,
-                "height": picking.height
+                "length": length,
+                "width": width,
+                "height": height
             },
             "shipFrom": self.prepare_address(picking.picking_type_id.warehouse_id.partner_id),
             "shipTo": self.prepare_address(picking.picking_type_id.warehouse_id.partner_id, type='To'),
@@ -243,8 +270,8 @@ class ShipstationRequest():
 
         return shipping_detail
 
-    def shipstation_request(self, picking, delivery_nature, is_return=False):
-        ship_detail = self._shipstation_shipping_data(picking, is_return)
+    def shipstation_request(self, picking, delivery_nature, is_return=False, package=False):
+        ship_detail = self._shipstation_shipping_data(picking, is_return, package)
         # request_text = picking.env['ir.qweb'].render('delivery_usps.usps_shipping_common', ship_detail)
         # api = self._api_url(delivery_nature, service)
         dict_response = {'tracking_number': 0.0, 'price': '0.0', 'currency': "USD", 'shipmentId': ''}

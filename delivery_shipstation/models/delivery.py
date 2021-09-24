@@ -44,7 +44,7 @@ class ProviderShipstation(models.Model):
             ounces = 1
         return {'pound': pounds, 'ounce': ounces}
 
-    def shipstation_send_shipping(self, pickings):
+    def shipstation_send_shipping(self, pickings, move_line=False):
         res = []
         api_config_obj = self.env['shipstation.config'].search(
             [('active', '=', True)])
@@ -55,11 +55,19 @@ class ProviderShipstation(models.Model):
         if self.international:
             delivery_nature = 'international'
         for picking in pickings:
-            check_result = srm.check_required_value(picking.partner_id, delivery_nature,
+            if move_line:
+                package = move_line.mapped('result_package_id')
+                check_result = srm.check_required_value(picking.partner_id, delivery_nature,
+                                                    picking.picking_type_id.warehouse_id.partner_id, move_line=move_line)
+                carrier_id = package.carrier_id
+            else:
+                check_result = srm.check_required_value(picking.partner_id, delivery_nature,
                                                     picking.picking_type_id.warehouse_id.partner_id, picking=picking)
+                carrier_id = picking.carrier_id
+                package = False
             if check_result:
                 raise UserError(check_result)
-            booking = srm.shipstation_request(picking, delivery_nature, is_return=False)
+            booking = srm.shipstation_request(picking, delivery_nature, is_return=False, package=package)
 
             if booking.get('error_message'):
                 raise UserError(booking['error_message'])
@@ -81,15 +89,18 @@ class ProviderShipstation(models.Model):
             carrier_tracking_ref = booking['tracking_number']
 
             logmessage = (_("Shipment created into %s <br/> <b>Tracking Number : </b>%s") % (
-                picking.carrier_id.name, carrier_tracking_ref))
+                carrier_id.name, carrier_tracking_ref))
             picking.message_post(body=logmessage, attachments=[('Label-%s-%s-%s.%s' % (
-                picking.name.replace('/', ''), picking.carrier_id.shipstation_service_code, carrier_tracking_ref,
+                picking.name.replace('/', ''), carrier_id.shipstation_service_code, carrier_tracking_ref,
                 'PDF'), booking['label'])])
 
             shipping_data = {'exact_price': picking.carrier_price,
                              'tracking_number': carrier_tracking_ref,
                              'shipmentId': booking['shipmentId']}
-            picking.shipmentId = booking['shipmentId']
+            if package:
+                move_line.shipmentId = booking['shipmentId']
+            else:
+                picking.shipmentId = booking['shipmentId']
             res = res + [shipping_data]
             if self.return_label_on_delivery:
                 self.get_return_label(picking)
@@ -121,6 +132,23 @@ class ProviderShipstation(models.Model):
         if old_attachment:
             old_attachment.sudo().unlink()
 
+    def send_shipping(self, pickings, move_line=False):
+        ''' Send the package to the service provider
+
+        :param pickings: A recordset of pickings
+        :return list: A list of dictionaries (one per picking) containing of the form::
+                         { 'exact_price': price,
+                           'tracking_number': number }
+                           # TODO missing labels per package
+                           # TODO missing currency
+                           # TODO missing success, error, warnings
+        '''
+        self.ensure_one()
+        if self.delivery_type == 'shipstationp':
+            if hasattr(self, '%s_send_shipping' % self.delivery_type):
+                return getattr(self, '%s_send_shipping' % self.delivery_type)(pickings, move_line)
+        else:
+            return super(ProviderShipstation, self).send_shipping(pickings)
 
 class ShipstationCarrier(models.Model):
     _name = 'shipstation.carrier'

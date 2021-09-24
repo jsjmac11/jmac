@@ -176,6 +176,7 @@
                 </xpath>
             </field>
         </record>
+
         <record id="view_quant_package_weight_form_inherit" model="ir.ui.view">
             <field name="name">stock.quant.package.weight.form</field>
             <field name="model">stock.quant.package</field>
