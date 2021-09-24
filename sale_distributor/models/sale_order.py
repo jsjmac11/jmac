@@ -647,12 +647,24 @@ class SaleOrder(models.Model):
                 and not ml.result_package_id)
                 package_data = {}
                 for line in move_line_ids:
-                    if line.tracking_ref in package_data.keys():
-                        package_data[line.tracking_ref] |= line
+                    if line.picking_id in package_data.keys():
+                        package_data[line.picking_id] |= line
                     else:
-                        package_data.update({line.tracking_ref: line})
-                for tracking,lines in package_data.items():
-                    picking_id._put_in_pack(lines)
+                        package_data.update({line.picking_id: line})
+                for pick,lines in package_data.items():
+                    pick._put_in_pack(lines)
+                packages = {}
+                mv_lines = picking_id.move_line_ids.filtered(lambda l: l.carrier_id and not l.tracking_ref and l.result_package_id)
+                mv_lines.get_shipping_rates()
+                for line in mv_lines:
+                    if line.result_package_id in packages.keys():
+                        packages[line.result_package_id] |= line
+                    else:
+                        packages.update({line.result_package_id: line})
+                for package,lines in packages.items():
+                    picking = lines.mapped('picking_id')
+                    package.send_to_shipper(picking, move_line=lines)
+
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'

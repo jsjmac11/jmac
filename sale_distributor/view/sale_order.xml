@@ -195,7 +195,9 @@
                             <field name="product_id"/>
                             <field name="shipstation_carrier_id" optional="show"/>
                             <field name="carrier_id" string="Shipping Service" optional="show"/>
-                            <field name="ship_package_id" optional="show"/>
+                            <field name="ship_package_id" optional="hide"/>
+                            <field name="location_dest_id" invisible="1"/>
+                            <field name="result_package_id" readonly="1" string="Package" optional="show"/>
                             <field name="tracking_ref" optional="show"/>
                             <field name="shipping_date" string="Ship Date" optional="show"/>
                             <field name="length" string="Size(L)" optional="hide"/>
@@ -210,8 +212,6 @@
                             <field name="qty_done"/>
                             <field name="delivery_type" invisible="1"/>
                             <field name="state" invisible="1"/>
-                            <!-- <button name="get_shipping_rates" type="object" class="oe_highlight fa fa-arrow-right" string="Get rate">
-                            </button> -->
                         </tree>
                         <form>
                             <group>

@@ -265,7 +265,7 @@ class StockPicking(models.Model):
 
                 package_dict = {
                      'tracking_ref':ml.tracking_ref, 'package_date':ml.shipping_date,
-                     'shipstation_carrier_id': ml.shipstation_carrier_id.id, 'carrier_id': ml.carrier_id.id}
+                     'shipstation_carrier_id': ml.shipstation_carrier_id.id, 'carrier_id': ml.carrier_id.id, 'picking_id': ml.picking_id.id, 'sale_id': ml.sale_id.id}
                 if float_compare(ml.qty_done, ml.product_uom_qty,
                                  precision_rounding=ml.product_uom_id.rounding) >= 0:
                     move_lines_to_pack |= ml
@@ -276,18 +276,20 @@ class StockPicking(models.Model):
                         rounding_method='UP')
                     done_to_keep = ml.qty_done
                     new_move_line = ml.copy(
-                        default={'product_uom_qty': 0, 'qty_done': ml.qty_done})
+                        default={'product_uom_qty': 0, 'qty_done': ml.qty_done, 'shipping_weight': ml.shipping_weight, 'length': ml.length, 'width': ml.width, 'shipping_weight_oz': ml.shipping_weight_oz})
 
-                    shipstation_carrier_id = self.env[
-                            'shipstation.carrier'].search(
-                                [], order='id', limit=1)
-                    carrier_id = self.env['delivery.carrier'].search(
-                                [], order='id', limit=1)
 
                     vals = {'product_uom_qty': quantity_left_todo, 'qty_done': 0.0,
-                     'tracking_ref':'', 'shipping_date': datetime.today(),
-                     'shipstation_carrier_id': shipstation_carrier_id.id or False
-                     , 'carrier_id': carrier_id and carrier_id.id or False}
+                     'tracking_ref':'', 'shipping_date': datetime.today()}
+                    if ml.move_id.sale_line_id.line_type == 'dropship':
+                        shipstation_carrier_id = self.env[
+                                'shipstation.carrier'].search(
+                                    [], order='id', limit=1)
+
+                        carrier_id = self.env['delivery.carrier'].search(
+                                    [], order='id', limit=1)
+                        vals.update({'shipstation_carrier_id': shipstation_carrier_id.id or False
+                     , 'carrier_id': carrier_id and carrier_id.id or False})
                     if pick.picking_type_id.code == 'incoming':
                         if ml.lot_id:
                             vals['lot_id'] = False
@@ -333,6 +335,11 @@ class StockPicking(models.Model):
         sale_ids.action_show_stock_move_line()
         return res
 
+    def action_assign(self):
+        res = super(StockPicking, self).action_assign()
+        self.sale_id.action_show_stock_move_line()
+        return res
+
 class StockQuantPackage(models.Model):
     _inherit = 'stock.quant.package'
 
@@ -341,6 +348,46 @@ class StockQuantPackage(models.Model):
     shipstation_carrier_id = fields.Many2one("shipstation.carrier", string="Carrier")
     carrier_id = fields.Many2one("delivery.carrier", string="Shipping Method")
     ship_package_id = fields.Many2one("shipstation.package", string="Package")
+    sale_id = fields.Many2one('sale.order', string="Sale Order")
+    carrier_price = fields.Float(string="Shipping Cost")
+    picking_id = fields.Many2one('stock.picking', string="Picking")
+    length = fields.Float('L (in)')
+    width = fields.Float('W (in)')
+    height = fields.Float('H (in)')
+
+    def send_to_shipper(self, picking, move_line=False):
+        self.ensure_one()
+        res = self.carrier_id.send_shipping(picking, move_line=move_line)[0]
+        if self.carrier_id.free_over and self.sale_id and self.sale_id._compute_amount_total_without_delivery() >= self.carrier_id.amount:
+            res['exact_price'] = 0.0
+        self.carrier_price = res['exact_price'] * (1.0 + (self.carrier_id.margin / 100.0))
+        if move_line:
+            move_line.carrier_price = res['exact_price'] * (1.0 + (self.carrier_id.margin / 100.0))
+        if res['tracking_number']:
+            self.tracking_ref = res['tracking_number']
+            if move_line:
+                move_line.tracking_ref = res['tracking_number']
+        order_currency = self.sale_id.currency_id or self.company_id.currency_id
+        msg = _("Shipment sent to carrier %s for shipping with tracking number %s<br/>Cost: %.2f %s") % (self.carrier_id.name, self.tracking_ref, self.carrier_price, order_currency.name)
+        self.picking_id.message_post(body=msg)
+        self._add_delivery_cost_to_so()
+
+    def _add_delivery_cost_to_so(self):
+        self.ensure_one()
+        sale_order = self.sale_id
+        if sale_order and self.carrier_id.invoice_policy == 'real' and self.carrier_price:
+            delivery_lines = sale_order.order_line.filtered(lambda l: l.is_delivery and l.currency_id.is_zero(l.price_unit) and l.product_id == self.carrier_id.product_id)
+            carrier_price = self.carrier_price * (1.0 + (float(self.carrier_id.margin) / 100.0))
+            if not delivery_lines:
+                sale_order._create_delivery_line(self.carrier_id, carrier_price)
+            else:
+                delivery_line = delivery_lines[0]
+                delivery_line[0].write({
+                    'price_unit': carrier_price,
+                    # remove the estimated price from the description
+                    'name': sale_order.carrier_id.with_context(lang=self.partner_id.lang).name,
+                })
+
 
 class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
@@ -380,12 +427,12 @@ class StockMoveLine(models.Model):
         string='Demand')
 
     carrier_tracking_ref = fields.Char(string='Tracking Reference', copy=False)
-    ship_package_id = fields.Many2one('shipstation.package', 'Package')
-    length = fields.Float('L (in)', copy=False, compute='_compute_shipping_weight',
+    ship_package_id = fields.Many2one('shipstation.package', 'Package', required="1")
+    length = fields.Float('L (in)', compute='_compute_shipping_weight',
                                    inverse='_inverse_shipping_weight',store=True, compute_sudo=True)
-    width = fields.Float('W (in)', copy=False, compute='_compute_shipping_weight',
+    width = fields.Float('W (in)', compute='_compute_shipping_weight',
                                    inverse='_inverse_shipping_weight', store=True, compute_sudo=True)
-    height = fields.Float('H (in)', copy=False, compute='_compute_shipping_weight',
+    height = fields.Float('H (in)', compute='_compute_shipping_weight',
                                    inverse='_inverse_shipping_weight', store=True, compute_sudo=True)
     weight = fields.Float(digits='Stock Weight', help="Total weight of the products in the picking.")
     shipping_weight = fields.Float("Weight for Shipping(lbs)",
@@ -400,6 +447,102 @@ class StockMoveLine(models.Model):
     delivery_type = fields.Selection(related='carrier_id.delivery_type', readonly=True)
     weight_uom_name = fields.Char(string='lbs')
     weight_uom_name_oz = fields.Char(string='lbs')
+    shipmentId = fields.Char('Label Shipment ID')
+
+    def get_shipping_rates(self):
+        api_config_obj = self.env['shipstation.config'].search(
+            [('active', '=', True)])
+        delivery_obj = self.env['delivery.carrier']
+        if not api_config_obj:
+            return False
+        url = api_config_obj.server_url + '/shipments/getrates'
+        token = api_config_obj.auth_token()
+        headers = {
+            'Host': 'ssapi.shipstation.com',
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic %s' % token
+        }
+        # Check for required fields for all pickings
+        for ml in self:
+            service_id = ml.carrier_id
+            srm = ShipstationRequest(service_id.log_xml, service_id.prod_environment, url, token)
+            delivery_nature = 'domestic'
+            if service_id.international:
+                delivery_nature = 'international'
+            check_result = srm.check_required_value(ml.picking_id.partner_id, delivery_nature,
+                                                    ml.picking_id.picking_type_id.warehouse_id.partner_id,
+                                                    move_line=ml)
+            if check_result:
+                raise UserError(check_result)
+
+        for move_line in self:
+            partner_id = move_line.sale_id.warehouse_id.partner_id
+            if not partner_id:
+                partner_id = move_line.picking_id.picking_type_id.warehouse_id.partner_id
+            to_partner_id = move_line.picking_id.partner_id
+            if move_line.picking_id.weight_uom_name == 'kg':
+                total_weight = move_line.picking_id._convert_to_lbs(move_line.shipping_weight)
+            else:
+                total_weight = move_line.shipping_weight
+            service_id = move_line.carrier_id
+            payload = {
+                "fromPostalCode": partner_id.zip.replace(" ", "") if partner_id.zip else '',
+                "toState": to_partner_id.state_id.code or '',
+                "toCountry": to_partner_id.country_id.code or '',
+                "toPostalCode": to_partner_id.zip.replace(" ", "") if to_partner_id.zip else '',
+                "toCity": to_partner_id.city or '',
+                "weight": {
+                    "value": total_weight,
+                    "units": "pounds"
+                },
+                "dimensions": {
+                    "units": "inches",
+                    "length": move_line.length,
+                    "width": move_line.width,
+                    "height": move_line.height
+                },
+                "confirmation": move_line.picking_id.confirmation,
+                "residential": False
+            }
+            ship_carrier_id = False
+            if move_line.shipstation_carrier_id:
+                ship_carrier_id = move_line.shipstation_carrier_id
+            elif service_id.shipstation_carrier_id:
+                ship_carrier_id = service_id.shipstation_carrier_id
+
+            payload.update({"carrierCode": ship_carrier_id.code})
+            if service_id:
+                payload.update({"serviceCode": service_id.shipstation_service_code})
+            if move_line.ship_package_id:
+                payload.update({"packageCode": move_line.ship_package_id.code})
+            try:
+                logger.info("payload!!!!!! %s" % payload)
+                api_call = requests.request("POST", url, headers=headers, data=json.dumps(payload))
+                logger.info("api_call!!!!!! %s" % api_call)
+                response_data = json.loads(api_call.text)
+            except requests.exceptions.ConnectionError as e:
+                logger.info("Connection ERROR!!!!!! %s" % e)
+                raise ValidationError(_("Failed to establish a connection. Please check internet connection"))
+            except ValidationError as e:
+                logger.info("API ERROR::::::: %s" % e)
+                raise
+            except Exception as e:
+                logger.info("ERROR!!!!!! %s" % e)
+                raise ValidationError(_(e))
+            if not response_data:
+                raise ValidationError(
+                    _("No applicable services were available for the configured Order %s!" % move_line.picking_id.name))
+            logger.info("Response!!!!!! %s" % response_data)
+            if api_call.status_code not in (200, 201):
+                raise ValidationError(_(response_data.get('ExceptionMessage')))
+            data = srm.rate_response_data(response_data, api_config_obj, ship_carrier_id)
+            move_line.with_context(api_call=True).write({
+                                                'carrier_id': data.get('min_service').get('service_id', False),
+                                                'carrier_price': data.get('min_service').get('rate', 0),
+                                                'ship_package_id': data.get('min_service').get('package_id')
+                                                })
+        return False
+
 
 class ShippingPackages(models.Model):
     _name = "shipping.package"
