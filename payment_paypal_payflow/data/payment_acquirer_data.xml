@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    @author Chintan Ambaliya <chintan.ambaliya@bistasolutions.com>
+-->
+<odoo>
+    <data noupdate="1">
+        <record id="payment_acquirer_payflow" model="payment.acquirer">
+            <field name="name">Paypal Payflow</field>
+            <field name="display_as">Paypal Payflow</field>
+            <field name="image_128" type="base64" file="payment_paypal_payflow/static/src/img/paypal_payflow_pro.png"/>
+            <field name="provider">paypal_payflow</field>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="view_template_id" ref="payflow_form"/>
+            <field name="registration_view_template_id" ref="payflow_s2s_form"/>
+            <field name="payment_flow">s2s</field>
+            <field name="description" type="html">
+<p>Payment Acquirer</p>
+<ul class="list-inline">
+    <li class="list-inline-item"><i class="fa fa-check"/>S2S Online Payment</li>
+</ul>
+        </field>
+            <field name="payment_icon_ids" eval='[(6, 0, [ref("payment.payment_icon_cc_ideal"),
+                                                        ref("payment.payment_icon_cc_bancontact"),
+                                                        ref("payment.payment_icon_cc_maestro"),
+                                                        ref("payment.payment_icon_cc_mastercard"),
+                                                        ref("payment.payment_icon_cc_visa")])]'/>
+            <field name="state">test</field>
+        </record>
+    </data>
+</odoo>
