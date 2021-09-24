@@ -44,8 +44,7 @@ class PaymentLinkWizard(models.TransientModel):
         url = record.get_base_url() + record.get_portal_url()
         record.write({'require_signature': False,
                       'state': 'sent'})
-        self.payment_link = url
-        print("==template===template===",template,self.payment_link)
+        record.payment_link = url
         ir_model_data = self.env['ir.model.data']
         template = self.env.ref('sale.email_template_edi_sale', False)
         msg_ids = template.send_mail(res_id, force_send=True)
