@@ -613,34 +613,36 @@ class SaleOrder(models.Model):
                         if carrier_id:
                             update_vals.update({'carrier_id': carrier_id \
                                     and carrier_id.id or False})
+                    if not move_line_id.ship_package_id:
+                        ship_package_id = self.env['shipstation.package'].search(
+                                [], order='id', limit=1)
+                        if ship_package_id:
+                            update_vals.update({'ship_package_id': ship_package_id \
+                                    and ship_package_id.id or False})
                     move_line_id.write(update_vals)
             if picking_id:
                 rec.write({'hide_button': True})
 
-    def pripare_shipment_process(self):
+    def prepare_incomming_shipment_process(self):
         for rec in self:
-            picking_id = self.env[
-                    'stock.picking'].search(
-                    [('sale_id', '=', rec.id), ('location_id.usage', '!=', 'supplier')])
+            picking_id = rec.stock_move_line_ids.mapped('move_id').mapped('picking_id')
             if picking_id:
                 move_line_ids = rec.stock_move_line_ids.filtered(lambda ml:
                 float_compare(ml.qty_done, 0.0, precision_rounding=ml.product_uom_id.rounding) > 0
                 and not ml.result_package_id)
+
                 package_data = {}
                 for line in move_line_ids:
                     if line.tracking_ref in package_data.keys():
-                        package_data[line.tracking_ref] |= line
+                        package_data[(line.tracking_ref,line.picking_id)] |= line
                     else:
-                        package_data.update({line.tracking_ref: line})
+                        package_data.update({(line.tracking_ref,line.picking_id): line})
                 for tracking,lines in package_data.items():
-                    picking_id._put_in_pack(lines)
+                    tracking[1]._put_in_pack(lines)
 
-    def pripare_outgoing_shipment_process(self):
+    def prepare_outgoing_shipment_process(self):
         for rec in self:
             picking_id = rec.picking_line_ids.mapped('move_id').mapped('picking_id')
-            # picking_id = self.env[
-            #         'stock.picking'].search(
-            #         [('sale_id', '=', rec.id), ('picking_code', '!=', 'incoming')])
             if picking_id:
                 move_line_ids = rec.picking_line_ids.filtered(lambda ml:
                 float_compare(ml.qty_done, 0.0, precision_rounding=ml.product_uom_id.rounding) > 0

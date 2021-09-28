@@ -93,6 +93,9 @@ class ProviderShipstation(models.Model):
             picking.message_post(body=logmessage, attachments=[('Label-%s-%s-%s.%s' % (
                 picking.name.replace('/', ''), carrier_id.shipstation_service_code, carrier_tracking_ref,
                 'PDF'), booking['label'])])
+            picking.sale_id.message_post(body=logmessage, attachments=[('Label-%s-%s-%s.%s' % (
+                picking.name.replace('/', ''), carrier_id.shipstation_service_code, carrier_tracking_ref,
+                'PDF'), booking['label'])])
 
             shipping_data = {'exact_price': picking.carrier_price,
                              'tracking_number': carrier_tracking_ref,

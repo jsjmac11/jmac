@@ -156,6 +156,7 @@
                             <field name="location_dest_id" invisible="1"/>
                             <field name="result_package_id" readonly="1" string="Package" optional="show"/>
                             <field name="tracking_ref" string="Tracking Ref" optional="show"/>
+                            <field name="batch_id" string="Batch" optional="show" domain="[('state','=', 'in_progress')]" options="{'no_create': True, 'no_create_edit':True}"/>
                             <field name="shipping_date" string="Ship Date" optional="show"/>
                             <field name="shipstation_carrier_id" optional="show"/>
                             <field name="carrier_id" string="Shipping Service" optional="show"/>
@@ -172,6 +173,7 @@
                                 <field name="location_dest_id" invisible="1"/>
                                 <field name="result_package_id" />
                                 <field name="tracking_ref"/>
+                                <field name="batch_id" string="Batch" domain="[('state','=', 'in_progress')]" options="{'no_create': True, 'no_create_edit':True}"/>
                                 <field name="shipping_date" string="Ship Date"/>
                                 <field name="shipstation_carrier_id"/>
                                 <field name="carrier_id" string="Shipping Service"/>
@@ -184,7 +186,7 @@
                 </group>
 
                 <div class="o_row" style="float: left !important;">
-                    <button name="pripare_shipment_process" string="Confirm Dropship Shipment" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', ('hide_button', '!=', True), ('is_dropship_line', '!=', True), ('stock_move_line_ids', '=', [])]}"/>
+                    <button name="prepare_incomming_shipment_process" string="Confirm Dropship Shipment" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', ('hide_button', '!=', True), ('is_dropship_line', '!=', True), ('stock_move_line_ids', '=', [])]}"/>
                 </div>
 
                 <group string="Buy Shipment Details" colspan="4"
@@ -195,17 +197,18 @@
                             <field name="product_id"/>
                             <field name="shipstation_carrier_id" optional="show"/>
                             <field name="carrier_id" string="Shipping Service" optional="show"/>
-                            <field name="ship_package_id" optional="hide"/>
+                            <field name="ship_package_id" optional="show" string="Ship Package"/>
+                            <field name="batch_id" string="Batch" optional="show" domain="[('state','=', 'in_progress')]" options="{'no_create': True, 'no_create_edit':True}"/>
                             <field name="location_dest_id" invisible="1"/>
                             <field name="result_package_id" readonly="1" string="Package" optional="show"/>
-                            <field name="tracking_ref" optional="show"/>
+                            <field name="tracking_ref" optional="show" readonly="1"/>
                             <field name="shipping_date" string="Ship Date" optional="show"/>
-                            <field name="length" string="Size(L)" optional="hide"/>
-                            <field name="width" string="Size(W)" optional="hide"/>
-                            <field name="height" string="Size(H)" optional="hide"/>
-                            <field name="weight" string="Order Weight" optional="show"/>
+                            <field name="length" string="Size(L)" optional="show"/>
+                            <field name="width" string="Size(W)" optional="show"/>
+                            <field name="height" string="Size(H)" optional="show"/>
+                            <field name="weight" string="Order Weight" optional="hide"/>
                             <field name="shipping_weight" string="Weight for shipping(lbs)" optional="show"/>
-                            <field name="shipping_weight_oz" string="Weight for shipping(ozs)" optional="show"/>
+                            <field name="shipping_weight_oz" string="Weight for shipping(ozs)" optional="hide"/>
                             <field name="carrier_price" string="Shipping Cost" optional="show"/>
                             <field name="product_uom_qty" string='Demand' readonly="1"/>
                             <field name="product_demand" invisible="1"/>
@@ -220,7 +223,7 @@
                                     <field name="product_id"/>
                                     <field name="shipstation_carrier_id" />
                                     <field name="carrier_id"/>
-                                    <field name="ship_package_id" />
+                                    <field name="ship_package_id" string="Ship Package"/>
                                     <label for="length" string="Size (in)" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
                                     <div class="o_row">
                                         <field name="length" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
@@ -232,8 +235,9 @@
                                     </div>
                                 </group>
                                 <group>
-                                    <field name="tracking_ref"/>
+                                    <field name="tracking_ref" readonly="1"/>
                                     <field name="shipping_date"/>
+                                    <field name="batch_id" string="Batch" domain="[('state','=', 'in_progress')]" options="{'no_create': True, 'no_create_edit':True}"/>
                                     <field name="weight"/>
                                      <div class="o_row" name="shipping_weight">
                                         <field name="shipping_weight"/>
@@ -251,7 +255,7 @@
                 </group>
 
                 <div class="o_row" style="float: left !important;">
-                    <button name="pripare_outgoing_shipment_process" string="Confirm Buy Shipment" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', ('state', 'in', ('new','sent','review')), ('is_add_to_buy_line', '!=', True), ('picking_line_ids', '=', [])]}"/>
+                    <button name="prepare_outgoing_shipment_process" string="Confirm Buy Shipment" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', ('state', 'in', ('new','sent','review')), ('is_add_to_buy_line', '!=', True), ('picking_line_ids', '=', [])]}"/>
                 </div>
             </xpath>
             <xpath expr="//field[@name='note']" position="before">
