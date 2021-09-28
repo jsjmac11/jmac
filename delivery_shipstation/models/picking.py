@@ -315,7 +315,6 @@ class StockPicking(models.Model):
             move_lines_to_pack.write({
                 'result_package_id': package.id
             })
-
         return package
 
     def print_packing_slip(self):
@@ -370,6 +369,7 @@ class StockQuantPackage(models.Model):
         order_currency = self.sale_id.currency_id or self.company_id.currency_id
         msg = _("Shipment sent to carrier %s for shipping with tracking number %s<br/>Cost: %.2f %s") % (self.carrier_id.name, self.tracking_ref, self.carrier_price, order_currency.name)
         self.picking_id.message_post(body=msg)
+        self.picking_id.sale_id.message_post(body=msg)
         self._add_delivery_cost_to_so()
 
     def _add_delivery_cost_to_so(self):
@@ -404,7 +404,6 @@ class StockMoveLine(models.Model):
             width = 0.0
             height = 0.0
             dimension_id = False
-            # picking.shipping_weight = sum(move.weight for move in picking.move_lines if move.state != 'cancel')
             dimension_id = line.product_id.product_tmpl_id.product_dimension_line.filtered(lambda d: d.quantity == line.product_uom_qty)
             if dimension_id:
                 length = dimension_id.length
@@ -448,6 +447,15 @@ class StockMoveLine(models.Model):
     weight_uom_name = fields.Char(string='lbs')
     weight_uom_name_oz = fields.Char(string='lbs')
     shipmentId = fields.Char('Label Shipment ID')
+    batch_id = fields.Many2one('stock.picking.batch', string="Batch Transfer")
+
+    @api.onchange('batch_id')
+    def onchange_batch(self):
+        for line in self.picking_id:
+            move_line = line.move_line_ids_without_package.filtered(lambda l: l.picking_id)
+            if move_line:
+                move_line.batch_id = self.batch_id
+                line.batch_id = move_line.batch_id
 
     def get_shipping_rates(self):
         api_config_obj = self.env['shipstation.config'].search(
