@@ -191,67 +191,72 @@
 
                 <group string="Buy Shipment Details" colspan="4"
                     attrs="{'invisible': ['|', '|', ('state', 'in', ('new','sent','review')), ('is_add_to_buy_line', '!=', True), ('picking_line_ids', '=', [])]}">
-                    <field name="picking_line_ids" readonly="0" nolabel="1">
-                        <tree editable="top" create="false" >
-                            <field name="company_id" invisible="1"/>
-                            <field name="product_id"/>
-                            <field name="shipstation_carrier_id" optional="show"/>
-                            <field name="carrier_id" string="Shipping Service" optional="show"/>
-                            <field name="ship_package_id" optional="show" string="Ship Package"/>
-                            <field name="batch_id" string="Batch" optional="show" domain="[('state','=', 'in_progress')]" options="{'no_create': True, 'no_create_edit':True}"/>
-                            <field name="location_dest_id" invisible="1"/>
-                            <field name="result_package_id" readonly="1" string="Package" optional="show"/>
-                            <field name="tracking_ref" optional="show" readonly="1"/>
-                            <field name="shipping_date" string="Ship Date" optional="show"/>
-                            <field name="length" string="Size(L)" optional="show"/>
-                            <field name="width" string="Size(W)" optional="show"/>
-                            <field name="height" string="Size(H)" optional="show"/>
-                            <field name="weight" string="Order Weight" optional="hide"/>
-                            <field name="shipping_weight" string="Weight for shipping(lbs)" optional="show"/>
-                            <field name="shipping_weight_oz" string="Weight for shipping(ozs)" optional="hide"/>
-                            <field name="carrier_price" string="Shipping Cost" optional="show"/>
-                            <field name="product_uom_qty" string='Demand' readonly="1"/>
-                            <field name="product_demand" invisible="1"/>
-                            <field name="qty_done"/>
-                            <field name="delivery_type" invisible="1"/>
-                            <field name="state" invisible="1"/>
-                        </tree>
-                        <form>
-                            <group>
-                                <group>
-                                    <field name="company_id" invisible="1"/>
-                                    <field name="product_id"/>
-                                    <field name="shipstation_carrier_id" />
-                                    <field name="carrier_id"/>
-                                    <field name="ship_package_id" string="Ship Package"/>
-                                    <label for="length" string="Size (in)" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
-                                    <div class="o_row">
-                                        <field name="length" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
-                                        <label for="length" string="L"/>
-                                        <field name="width" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
-                                        <label for="width" string="W"/>
-                                        <field name="height" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
-                                        <label for="height" string="H"/>
-                                    </div>
-                                </group>
-                                <group>
-                                    <field name="tracking_ref" readonly="1"/>
-                                    <field name="shipping_date"/>
-                                    <field name="batch_id" string="Batch" domain="[('state','=', 'in_progress')]" options="{'no_create': True, 'no_create_edit':True}"/>
-                                    <field name="weight"/>
-                                     <div class="o_row" name="shipping_weight">
-                                        <field name="shipping_weight"/>
-                                        <span><field name="weight_uom_name" nolabel="1" /></span>
-                                        <field name="shipping_weight_oz" />
-                                        <span><field name="weight_uom_name_oz" nolabel="1" readonly="1" force_save="1"/></span>
-                                    </div>
-                                    <field name="carrier_price" string="Shipping Service"/>
-                                    <field name="delivery_type" invisible="1"/>
-                                    <field name="state" invisible="1"/>
-                                </group>
-                            </group>
-                        </form>
-                    </field>
+                    <group>
+                    	<field name="ship_overide_tracking_ref" readonly="0"/>
+                    </group>
+                    <group>
+	                    <field name="picking_line_ids" readonly="0" nolabel="1">
+	                        <tree editable="top" create="false" >
+	                            <field name="company_id" invisible="1"/>
+	                            <field name="product_id"/>
+	                            <field name="shipstation_carrier_id" optional="show"/>
+	                            <field name="carrier_id" string="Shipping Service" optional="show"/>
+	                            <field name="ship_package_id" optional="show" string="Ship Package"/>
+	                            <field name="batch_id" string="Batch" optional="show" domain="[('state','=', 'in_progress')]" options="{'no_create': True, 'no_create_edit':True}"/>
+	                            <field name="location_dest_id" invisible="1"/>
+	                            <field name="result_package_id" readonly="1" string="Package" optional="show"/>
+	                            <field name="tracking_ref" optional="show" readonly="1"/>
+	                            <field name="shipping_date" string="Ship Date" optional="show"/>
+	                            <field name="length" string="Size(L)" optional="hide"/>
+	                            <field name="width" string="Size(W)" optional="hide"/>
+	                            <field name="height" string="Size(H)" optional="hide"/>
+	                            <field name="weight" string="Order Weight" optional="hide"/>
+	                            <field name="shipping_weight" string="Weight for shipping(lbs)" optional="hide"/>
+	                            <field name="shipping_weight_oz" string="Weight for shipping(ozs)" optional="hide"/>
+	                            <field name="carrier_price" string="Shipping Cost" optional="show"/>
+	                            <field name="product_uom_qty" string='Demand' readonly="1"/>
+	                            <field name="product_demand" invisible="1"/>
+	                            <field name="qty_done"/>
+	                            <field name="delivery_type" invisible="1"/>
+	                            <field name="state" invisible="1"/>
+	                        </tree>
+	                        <form>
+	                            <group>
+	                                <group>
+	                                    <field name="company_id" invisible="1"/>
+	                                    <field name="product_id"/>
+	                                    <field name="shipstation_carrier_id" />
+	                                    <field name="carrier_id"/>
+	                                    <field name="ship_package_id" string="Ship Package"/>
+	                                    <label for="length" string="Size (in)" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
+	                                    <div class="o_row">
+	                                        <field name="length" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
+	                                        <label for="length" string="L"/>
+	                                        <field name="width" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
+	                                        <label for="width" string="W"/>
+	                                        <field name="height" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
+	                                        <label for="height" string="H"/>
+	                                    </div>
+	                                </group>
+	                                <group>
+	                                    <field name="tracking_ref" readonly="1"/>
+	                                    <field name="shipping_date"/>
+	                                    <field name="batch_id" string="Batch" domain="[('state','=', 'in_progress')]" options="{'no_create': True, 'no_create_edit':True}"/>
+	                                    <field name="weight"/>
+	                                     <div class="o_row" name="shipping_weight">
+	                                        <field name="shipping_weight"/>
+	                                        <span><field name="weight_uom_name" nolabel="1" /></span>
+	                                        <field name="shipping_weight_oz" />
+	                                        <span><field name="weight_uom_name_oz" nolabel="1" readonly="1" force_save="1"/></span>
+	                                    </div>
+	                                    <field name="carrier_price" string="Shipping Service"/>
+	                                    <field name="delivery_type" invisible="1"/>
+	                                    <field name="state" invisible="1"/>
+	                                </group>
+	                            </group>
+	                        </form>
+	                    </field>
+                    </group>
                 </group>
 
                 <div class="o_row" style="float: left !important;">
