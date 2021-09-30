@@ -219,6 +219,10 @@
 	                            <field name="qty_done"/>
 	                            <field name="delivery_type" invisible="1"/>
 	                            <field name="state" invisible="1"/>
+                                <field name="shipmentId" invisible="1"/>
+                                <field name="package_id" invisible="1"/>
+                                <field name="location_id" invisible="1"/>
+                                <button type="object" class="fa fa-arrow-right oe_link" name="cancel_shipment" string="Cancel" attrs="{'invisible':['|','|','|',('tracking_ref','=',False),('delivery_type','in', ['fixed', 'base_on_rule']),('delivery_type','=',False), ('result_package_id', '=', False)]}"/>
 	                        </tree>
 	                        <form>
 	                            <group>
@@ -252,6 +256,9 @@
 	                                    <field name="carrier_price" string="Shipping Service"/>
 	                                    <field name="delivery_type" invisible="1"/>
 	                                    <field name="state" invisible="1"/>
+                                        <field name="shipmentId" invisible="1"/>
+                                        <field name="package_id" invisible="1"/>
+                                        <field name="location_id" invisible="1"/>
 	                                </group>
 	                            </group>
 	                        </form>
