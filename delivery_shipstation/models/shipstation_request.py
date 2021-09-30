@@ -214,7 +214,6 @@ class ShipstationRequest():
             length = picking.length
             width = picking.width
             height = picking.height
-
         itemdetail = []
         order = picking.sale_id
         company = order.company_id or picking.company_id or self.env.company
@@ -234,13 +233,13 @@ class ShipstationRequest():
         else:
             gross_weight = carrier._shipstation_convert_weight(weight)
             weight_in_ounces = weight * 35.274
-        if package and not package.ship_package_id:
-            raise ValidationError(_("Please select shipstation package on order %s!" % package.name))
-        elif not picking.ship_package_id:
-            raise ValidationError(_("Please select shipstation package on order %s!" % picking.name))
+        if package and not ship_package_id:
+            raise ValidationError(_("Please select shipstation package on order11111111 %s!" % package.name))
+        elif not ship_package_id:
+            raise ValidationError(_("Please select shipstation package on order22222222 %s!" % picking.name))
         if not carrier:
             raise ValidationError(_("Please select carrier on order %s!" % picking.name))
-        shipping_detail = {
+        shipping_detail = { 
             "carrierCode": carrier.shipstation_carrier_code,
             "serviceCode": carrier.shipstation_service_code,
             "packageCode": ship_package_id.code,
@@ -297,6 +296,7 @@ class ShipstationRequest():
             logger.info("ERROR!!!!!!")
             raise
         logger.info("response_text!!!!!! %s" % response_text)
+
         if response_text.get('ExceptionMessage'):
             dict_response['error_message'] = response_text.get('ExceptionMessage')
             return dict_response

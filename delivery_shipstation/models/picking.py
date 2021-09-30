@@ -265,7 +265,7 @@ class StockPicking(models.Model):
 
                 package_dict = {
                      'tracking_ref':ml.tracking_ref, 'package_date':ml.shipping_date,
-                     'shipstation_carrier_id': ml.shipstation_carrier_id.id, 'carrier_id': ml.carrier_id.id, 'picking_id': ml.picking_id.id, 'sale_id': ml.sale_id.id}
+                     'shipstation_carrier_id': ml.shipstation_carrier_id.id, 'carrier_id': ml.carrier_id.id, 'picking_id': ml.picking_id.id, 'sale_id': ml.sale_id.id, 'ship_package_id': ml.ship_package_id.id}
                 if float_compare(ml.qty_done, ml.product_uom_qty,
                                  precision_rounding=ml.product_uom_id.rounding) >= 0:
                     move_lines_to_pack |= ml
@@ -315,6 +315,7 @@ class StockPicking(models.Model):
             move_lines_to_pack.write({
                 'result_package_id': package.id
             })
+
         return package
 
     def print_packing_slip(self):
@@ -353,6 +354,8 @@ class StockQuantPackage(models.Model):
     length = fields.Float('L (in)')
     width = fields.Float('W (in)')
     height = fields.Float('H (in)')
+    shipmentId = fields.Char('Label Shipment ID')
+
 
     def send_to_shipper(self, picking, move_line=False):
         self.ensure_one()
@@ -366,6 +369,10 @@ class StockQuantPackage(models.Model):
             self.tracking_ref = res['tracking_number']
             if move_line:
                 move_line.tracking_ref = res['tracking_number']
+        if res['shipmentId']:
+            self.shipmentId = res['shipmentId']
+            if move_line:
+                move_line.shipmentId = res['shipmentId']
         order_currency = self.sale_id.currency_id or self.company_id.currency_id
         msg = _("Shipment sent to carrier %s for shipping with tracking number %s<br/>Cost: %.2f %s") % (self.carrier_id.name, self.tracking_ref, self.carrier_price, order_currency.name)
         self.picking_id.message_post(body=msg)
@@ -550,6 +557,22 @@ class StockMoveLine(models.Model):
                                                 'ship_package_id': data.get('min_service').get('package_id')
                                                 })
         return False
+
+    def cancel_shipment(self):
+        for move_line in self:
+            result_package_id = move_line.result_package_id
+            for package in move_line.picking_id.package_ids:
+                pack = package.filtered(lambda l: move_line.result_package_id)
+                if pack:
+                    pack = False
+            move_line.carrier_id.cancel_shipment(move_line.picking_id, move_line=move_line)
+            msg = "Shipment %s cancelled" % move_line.tracking_ref
+            move_line.picking_id.message_post(body=msg)
+            move_line.tracking_ref = False
+            move_line.result_package_id = False
+            picking_id = move_line.picking_id
+            move_line.move_id._do_unreserve()
+            picking_id.action_assign()
 
 
 class ShippingPackages(models.Model):
