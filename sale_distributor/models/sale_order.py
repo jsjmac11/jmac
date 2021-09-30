@@ -113,7 +113,8 @@ class SaleOrder(models.Model):
     is_add_to_buy_line = fields.Boolean(string='Is Add To Buy Line',
                                       compute='_compute_dropship_line', store=True)
     qty_all = fields.Boolean(string="Qty all")
-
+    ship_overide_tracking_ref = fields.Char(string="Overide Tracking Ref", copy=False)
+    
     def _default_validity_date(self):
         if self.env['ir.config_parameter'].sudo().get_param('sale.use_quotation_validity_days'):
             days = self.env.company.quotation_validity_days
