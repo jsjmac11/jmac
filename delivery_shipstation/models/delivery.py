@@ -112,11 +112,16 @@ class ProviderShipstation(models.Model):
     def shipstation_get_tracking_link(self, picking):
         return False
 
-    def shipstation_cancel_shipment(self, picking):
+    def shipstation_cancel_shipment(self, picking, move_line=False):
         result = {}
-        shipmentId = picking.shipmentId
+        if move_line:
+            shipmentId = move_line.shipmentId
+        else:
+            shipmentId = picking.shipmentId
         old_attachment = self.env['ir.attachment'].search([
             ('res_model', '=', 'stock.picking'), ('res_id', '=', picking.id)])
+        so_old_attachment = self.env['ir.attachment'].search([
+            ('res_model', '=', 'sale.order'), ('res_id', '=', picking.sale_id.id)])
         api_config_obj = self.env['shipstation.config'].search(
             [('active', '=', True)])
         url = api_config_obj.server_url
@@ -128,10 +133,19 @@ class ProviderShipstation(models.Model):
         if result.get('error_message'):
             raise UserError(result['error_message'])
         else:
-            logmessage = (_(u'Shipment N° %s has been cancelled') % (picking.carrier_tracking_ref))
-            picking.message_post(body=logmessage, attachments=[])
-            picking.write({'carrier_tracking_ref': '',
-                           'shipmentId': ''})
+            if move_line:
+                logmessage = (_(u'Shipment N° %s has been cancelled') % (move_line.tracking_ref))
+                picking.message_post(body=logmessage, attachments=[])
+                picking.sale_id.message_post(body=logmessage, attachments=[])
+                move_line.write({'tracking_ref': '',
+                               'shipmentId': ''})
+            else:
+                logmessage = (_(u'Shipment N° %s has been cancelled') % (picking.carrier_tracking_ref))
+                picking.message_post(body=logmessage, attachments=[])
+                picking.write({'carrier_tracking_ref': '',
+                               'shipmentId': ''})
+        if so_old_attachment:
+            old_attachment |= so_old_attachment
         if old_attachment:
             old_attachment.sudo().unlink()
 
@@ -147,12 +161,23 @@ class ProviderShipstation(models.Model):
                            # TODO missing success, error, warnings
         '''
         self.ensure_one()
-        if self.delivery_type == 'shipstationp':
+        if self.delivery_type == 'shipstation':
             if hasattr(self, '%s_send_shipping' % self.delivery_type):
                 return getattr(self, '%s_send_shipping' % self.delivery_type)(pickings, move_line)
         else:
             return super(ProviderShipstation, self).send_shipping(pickings)
 
+    def cancel_shipment(self, pickings, move_line=False):
+        ''' Cancel a shipment
+
+        :param pickings: A recordset of pickings
+        '''
+        self.ensure_one()
+        if self.delivery_type == 'shipstation':
+            if hasattr(self, '%s_cancel_shipment' % self.delivery_type):
+                return getattr(self, '%s_cancel_shipment' % self.delivery_type)(pickings, move_line)
+        else:
+            return super(ProviderShipstation, self).cancel_shipment(pickings)
 class ShipstationCarrier(models.Model):
     _name = 'shipstation.carrier'
     _description = 'Shipstation Carrier'
