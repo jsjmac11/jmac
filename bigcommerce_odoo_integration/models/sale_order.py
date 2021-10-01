@@ -107,6 +107,7 @@ class SaleOrderVts(models.Model):
         order_line.update({
             'order_id': vals.get('order_id'),
             'product_uom_qty': vals.get('order_qty', 0.0),
+            'pack_quantity': vals.get('order_qty', 0.0),
             'price_unit': vals.get('price_unit', 0.0),
             'discount': vals.get('discount', 0.0),
             'state': 'draft',
@@ -382,6 +383,11 @@ class SaleOrderVts(models.Model):
             total_tax = order_line.get('total_tax')
             # pack_product_id = product_id.product_pack_line.filtered(lambda p: p.is_auto_created)
             pack_product_id = self.env['product.pack.uom'].search([('product_tmpl_id', '=', product_id.product_tmpl_id.id), ('is_auto_created', '=', True)], limit=1)
+            if not pack_product_id:
+                pack_auto_line = {
+                     'quantity': 1.0,
+                     'is_auto_created': True}
+                pack_product_id = self.env['pack.product.uom'].create(pack_auto_line)
             vals = {'product_id': product_id.id, 'price_unit': price, 'order_qty': quantity,
                     'order_id': order_id and order_id.id, 'description': product_bigcommerce_id,
                     'company_id': self.env.user.company_id.id,
