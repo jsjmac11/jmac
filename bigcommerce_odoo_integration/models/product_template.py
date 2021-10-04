@@ -805,10 +805,10 @@ class ProductTemplate(models.Model):
                     records = response_data.get('data')
                     location_id = bigcommerce_store_id.warehouse_id.lot_stock_id
                     total_pages= response_data.get('meta').get('pagination').get('total_pages')
-
                     to_page = bigcommerce_store_id.source_of_import_data
-                    total_pages = bigcommerce_store_id.destination_of_import_data
+                    total_pages = 4
 
+                    total_pages_imported = total_pages
                     if total_pages > 1:
                         while (total_pages >= to_page):
                             try:
@@ -820,7 +820,7 @@ class ProductTemplate(models.Model):
                                     page_response_data = page_response_data.json()
                                     _logger.info("Product Response Data : {0}".format(page_response_data))
                                     records = page_response_data.get('data')
-                                    product_response_pages.append(records)
+                                    product_response_pages += records
                             except Exception as e:
                                 product_process_message = "Page is not imported! %s" % (e)
                                 _logger.info("Getting an Error In Import Product Category Response {}".format(e))
@@ -831,124 +831,125 @@ class ProductTemplate(models.Model):
 
                             total_pages = total_pages - 1
                     else:
-                        product_response_pages.append(records)
-                    
-                    for product_response_page in product_response_pages:
-                        for record in product_response_page:
-                            location = []
-                            try:
-                                if bigcommerce_store_id.bigcommerce_product_skucode and record.get('sku'):
-                                    product_template_id = self.env['product.template'].sudo().search(
-                                        [('default_code', '=', record.get('sku'))], limit=1)
-                                else:
-                                    product_template_id = self.env['product.template'].sudo().search([('bigcommerce_product_id','=',record.get('id'))],limit=1)
-                                if not product_template_id:
-                                    status, product_template_id = self.with_user(1).create_product_template(record,bigcommerce_store_id)
-                                    if not status:
-                                        product_process_message = "%s : Product is not imported Yet! %s" % (
-                                        record.get('id'), product_template_id)
-                                        _logger.info("Getting an Error In Import Product Responase :{}".format(product_template_id))
-                                        self.with_user(1).create_bigcommerce_operation_detail('product', 'import', "",
-                                                                                 "", operation_id,
-                                                                                 warehouse_id, True,
-                                                                                 product_process_message)
-                                        continue
-                                    process_message = "Product Created : {}".format(product_template_id.name)
-                                    _logger.info("{0}".format(process_message))
-                                    response_data = record
-                                    self.with_user(1).create_bigcommerce_operation_detail('product','import',req_data,response_data,operation_id,warehouse_id,False,process_message)
-                                    self._cr.commit()
-                                else:
-                                    process_message = "{0} : Product Already Exist In Odoo!".format(product_template_id.name)
-                                    category_id = self.env['bigcommerce.category'].sudo().search([('bigcommerce_product_category_id','in',record.get('categories'))])
-                                    if not category_id:
-                                        message = "Category not found!"
-                                        _logger.info("Category not found: {}".format(category_id))
-                                        return False, message
-                                    brand_id = self.env['bc.product.brand'].sudo().search([('bc_brand_id','=',record.get('brand_id'))],limit=1)
-                                    _logger.info("BRAND : {0}".format(brand_id))
-                                    availability = False
-                                    condition = 'N'
-                                    if record.get('availability', False) == 'available':
-                                        availability = True
-                                    if record.get('is_condition_shown', False):
-                                        condition = 'Y'
-                                    product_template_id.write({
-                                        "list_price": record.get("price"),
-                                        "is_visible": record.get("is_visible"),
-                                        "bigcommerce_product_id": record.get('id'),
-                                        "bigcommerce_category_ids":category_id and [(6,0, category_id.ids)],
-                                        "bigcommerce_store_id": bigcommerce_store_id.id,
-                                        "default_code": record.get("sku"),
-                                        "is_imported_from_bigcommerce": True,
-                                        "is_exported_to_bigcommerce": True,
-                                        "x_studio_manufacturer":brand_id and brand_id.id,
-                                        "name":record.get('name'),
-                                        "allow_purchases": availability,
-                                        "item_type": record.get('type'),
-                                        "product_visible": record.get('is_visible'),
-                                        "product_weight": record.get('weight'),
-                                        "show_product_condition": record.get('condition'),
-                                        "product_type" : record.get('type'),
-                                        "vendor_part_number" : record.get('mpn'),
-                                        "track_inventory" : record.get('inventory_tracking'),
-                                        "sort_order" : record.get('sort_order'),
-                                        "show_product_condition" : record.get('is_condition_shown'),
-                                        "search_keywords" : record.get('search_keywords'),
-                                        "product_visible" : record.get('is_visible'),
-                                        "product_URL" : record.get('custom_url'),
-                                        "product_condition" : record.get('condition'),
-                                        "product_availability" :  record.get('availability'),
-                                        "page_title" : record.get('page_title'),
-                                        "meta_keywords" : record.get('meta_keywords'),
-                                        "meta_description" : record.get('meta_description'),
-                                        "is_free_shipping" : record.get('is_free_shipping'),
-                                        "standard_price": record.get('cost_price'),
-                                        "product_depth": record.get('depth'),
-                                        "gtin": record.get('gtin'),
-                                        "height": record.get('height'),
-                                        "inventory_level": record.get('inventory_level'),
-                                        "is_featured": record.get('is_featured'),
-                                        "option_set_align": record.get('option_set_align'),
-                                        "is_preorder_only": record.get('is_preorder_only'),
-                                        "is_price_hidden": record.get('is_price_hidden'),
-                                        "map_price": record.get("map_price"),
-                                        "option_set_display": record.get('option_set_display'),
-                                        "order_quantity_maximum": record.get('order_quantity_maximum'),
-                                        "order_quantity_minimum": record.get('order_quantity_minimum'),
-                                        "price_hidden_label": record.get('price_hidden_label'),
-                                        "related_products": record.get('related_products'),
-                                        "retail_price": record.get('retail_price'),
-                                        "tax_class_id" : record.get('tax_class_id'),
-                                        "width" : record.get('width'),
-                                    })
-                                    self.with_user(1).create_bigcommerce_operation_detail('product', 'import', req_data, response_data,operation_id, warehouse_id, False, process_message)
-                                    _logger.info("{0}".format(process_message))
-                                    self._cr.commit()
-                                self.env['bigcommerce.product.image'].with_user(1).import_multiple_product_image(bigcommerce_store_id,product_template_id)
-                                location = location_id.ids + location_id.child_ids.ids
-                                quant_id = self.env['stock.quant'].with_user(1).search([('product_tmpl_id','=',product_template_id.id),('location_id','in',location)])
-                                if len(quant_id) > 1:
-                                    stock_quant_id = self.env['stock.quant'].with_user(1).search([('product_tmpl_id','=',product_template_id.id),('location_id','=',location_id.id)])
-                                    _logger.info(" Stock Quant : {0}".format(stock_quant_id))
-                                    stock_quant_id.with_user(1).unlink()
-                                quant_id = self.env['stock.quant'].with_user(1).search([('product_tmpl_id','=',product_template_id.id),('location_id','in',location)])
-                                if not quant_id:
-                                    product_id = self.env['product.product'].sudo().search([('product_tmpl_id','=',product_template_id.id)],limit=1)
-                                    vals = {'product_tmpl_id':product_template_id.id,'location_id':location_id.id,'inventory_quantity':record.get('inventory_level'),'product_id':product_id.id,'quantity':record.get('inventory_level')}
-                                    self.env['stock.quant'].sudo().create(vals)
-                                else:
-                                    quant_id.sudo().write({'inventory_quantity':record.get('inventory_level'),'quantity':record.get('inventory_level')})
+                        product_response_pages += records
+                    for record in product_response_pages:
+                        location = []
+                        try:
+                            if bigcommerce_store_id.bigcommerce_product_skucode and record.get('sku'):
+                                product_template_id = self.env['product.template'].sudo().search(
+                                    [('default_code', '=', record.get('sku'))], limit=1)
+                            else:
+                                product_template_id = self.env['product.template'].sudo().search([('bigcommerce_product_id','=',record.get('id'))],limit=1)
+                            if not product_template_id:
+                                status, product_template_id = self.with_user(1).create_product_template(record,bigcommerce_store_id)
+                                if not status:
+                                    product_process_message = "%s : Product is not imported Yet! %s" % (
+                                    record.get('id'), product_template_id)
+                                    _logger.info("Getting an Error In Import Product Responase :{}".format(product_template_id))
+                                    self.with_user(1).create_bigcommerce_operation_detail('product', 'import', "",
+                                                                             "", operation_id,
+                                                                             warehouse_id, True,
+                                                                             product_process_message)
+                                    continue
+                                process_message = "Product Created : {}".format(product_template_id.name)
+                                _logger.info("{0}".format(process_message))
+                                response_data = record
+                                self.with_user(1).create_bigcommerce_operation_detail('product','import',req_data,response_data,operation_id,warehouse_id,False,process_message)
                                 self._cr.commit()
-                            except Exception as e:
-                                product_process_message = "%s : Product is not imported Yet! %s" % (record.get('id'),e)
-                                _logger.info("Getting an Error In Import Product Responase".format(e))
-                                self.with_user(1).create_bigcommerce_operation_detail('product', 'import', "",
-                                                                         "", operation_id,
-                                                                         warehouse_id, True, product_process_message)
+                            else:
+                                process_message = "{0} : Product Already Exist In Odoo!".format(product_template_id.name)
+                                category_id = self.env['bigcommerce.category'].sudo().search([('bigcommerce_product_category_id','in',record.get('categories'))])
+                                if not category_id:
+                                    message = "Category not found!"
+                                    _logger.info("Category not found: {}".format(category_id))
+                                    return False, message
+                                brand_id = self.env['bc.product.brand'].sudo().search([('bc_brand_id','=',record.get('brand_id'))],limit=1)
+                                _logger.info("BRAND : {0}".format(brand_id))
+                                description_sale = html2text.html2text(record.get('description'))
+                                availability = False
+                                condition = 'N'
+                                if record.get('availability', False) == 'available':
+                                    availability = True
+                                if record.get('is_condition_shown', False):
+                                    condition = 'Y'
+                                product_template_id.write({
+                                    "list_price": record.get("price"),
+                                    "is_visible": record.get("is_visible"),
+                                    "bigcommerce_category_ids":category_id and [(6,0, category_id.ids)],
+                                    "bigcommerce_product_id": record.get('id'),
+                                    "bigcommerce_store_id": bigcommerce_store_id.id,
+                                    "default_code": record.get("sku"),
+                                    "is_imported_from_bigcommerce": True,
+                                    "is_exported_to_bigcommerce": True,
+                                    "name":record.get('name'),
+                                    "x_studio_manufacturer":brand_id and brand_id.id,
+                                    "description_sale":description_sale,
+                                    "allow_purchases": availability,
+                                    "item_type": record.get('type'),
+                                    "product_visible": record.get('is_visible'),
+                                    "product_weight": record.get('weight'),
+                                    "show_product_condition": record.get('condition'),
+                                    "product_type" : record.get('type'),
+                                    "vendor_part_number" : record.get('mpn'),
+                                    "track_inventory" : record.get('inventory_tracking'),
+                                    "sort_order" : record.get('sort_order'),
+                                    "show_product_condition" : record.get('is_condition_shown'),
+                                    "search_keywords" : record.get('search_keywords'),
+                                    "product_visible" : record.get('is_visible'),
+                                    "product_URL" : record.get('custom_url'),
+                                    "product_condition" : record.get('condition'),
+                                    "product_availability" :  record.get('availability'),
+                                    "page_title" : record.get('page_title'),
+                                    "meta_keywords" : record.get('meta_keywords'),
+                                    "meta_description" : record.get('meta_description'),
+                                    "is_free_shipping" : record.get('is_free_shipping'),
+                                    "standard_price": record.get('cost_price'),
+                                    "product_depth": record.get('depth'),
+                                    "gtin": record.get('gtin'),
+                                    "height": record.get('height'),
+                                    "inventory_level": record.get('inventory_level'),
+                                    "is_featured": record.get('is_featured'),
+                                    "option_set_align": record.get('option_set_align'),
+                                    "is_preorder_only": record.get('is_preorder_only'),
+                                    "is_price_hidden": record.get('is_price_hidden'),
+                                    "map_price": record.get("map_price"),
+                                    "option_set_display": record.get('option_set_display'),
+                                    "order_quantity_maximum": record.get('order_quantity_maximum'),
+                                    "order_quantity_minimum": record.get('order_quantity_minimum'),
+                                    "price_hidden_label": record.get('price_hidden_label'),
+                                    "related_products": record.get('related_products'),
+                                    "retail_price": record.get('retail_price'),
+                                    "tax_class_id" : record.get('tax_class_id'),
+                                    "width" : record.get('width'),
+                                })
+                                self.with_user(1).create_bigcommerce_operation_detail('product', 'import', req_data, response_data,operation_id, warehouse_id, False, process_message)
+                                _logger.info("{0}".format(process_message))
+                                self._cr.commit()
+                            self.env['bigcommerce.product.image'].with_user(1).import_multiple_product_image(bigcommerce_store_id,product_template_id)
+                            location = location_id.ids + location_id.child_ids.ids
+                            quant_id = self.env['stock.quant'].with_user(1).search([('product_tmpl_id','=',product_template_id.id),('location_id','in',location)])
+                            if len(quant_id) > 1:
+                                stock_quant_id = self.env['stock.quant'].with_user(1).search([('product_tmpl_id','=',product_template_id.id),('location_id','=',location_id.id)])
+                                _logger.info(" Stock Quant : {0}".format(stock_quant_id))
+                                stock_quant_id.with_user(1).unlink()
+                            quant_id = self.env['stock.quant'].with_user(1).search([('product_tmpl_id','=',product_template_id.id),('location_id','in',location)])
+                            if not quant_id:
+                                product_id = self.env['product.product'].sudo().search([('product_tmpl_id','=',product_template_id.id)],limit=1)
+                                vals = {'product_tmpl_id':product_template_id.id,'location_id':location_id.id,'inventory_quantity':record.get('inventory_level'),'product_id':product_id.id,'quantity':record.get('inventory_level')}
+                                self.env['stock.quant'].sudo().create(vals)
+                            else:
+                                quant_id.sudo().write({'inventory_quantity':record.get('inventory_level'),'quantity':record.get('inventory_level')})
+                            self._cr.commit()
+                        except Exception as e:
+                            product_process_message = "%s : Product is not imported Yet! %s" % (record.get('id'),e)
+                            _logger.info("Getting an Error In Import Product Responase".format(e))
+                            self.with_user(1).create_bigcommerce_operation_detail('product', 'import', "",
+                                                                     "", operation_id,
+                                                                     warehouse_id, True, product_process_message)
 
                     operation_id and operation_id.with_user(1).write({'bigcommerce_message': product_process_message})
-                    _logger.info("Import Product Process Completed ")
+                    bigcommerce_store_id.source_of_import_data = total_pages_imported
+                    _logger.info("Impor product_process_messaget Product Process Completed ")
                 else:
                     process_message="Getting an Error In Import Product Responase : {0}".format(response_data)
                     _logger.info("Getting an Error In Import Product Responase".format(response_data))
