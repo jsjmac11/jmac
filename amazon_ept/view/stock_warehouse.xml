@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="view_ae_stock_waehouse_form_ept" model="ir.ui.view">
+			<field name="name">stock.ae.warehouse.form.ept</field>
+			<field name="model">stock.warehouse</field>
+			<field name="inherit_id" ref="stock.view_warehouse" />
+			<field name="groups_id" eval="[(4, ref('amazon_ept.group_amazon_user_ept'))]"/>
+			<field name="arch" type="xml">
+				<field name="code" position="after">
+					<field name="seller_id" attrs="{'invisible':[('is_fba_warehouse','=',False)]}"/>
+				</field>
+				<field name="partner_id" position="after">
+					<field name="unsellable_location_id" />
+					<field name="is_fba_warehouse" />
+				</field>
+				<xpath expr="//notebook" position="before">
+					<separator string="FBA Fulfillment Centers" attrs="{'invisible':[('is_fba_warehouse','=',False)]}" colspan="4" groups="amazon_ept.group_amazon_manager_ept"/>
+					<field name="fulfillment_center_ids" attrs="{'invisible':[('is_fba_warehouse','=',False)]}" nolabel="1" colspan="4" groups="amazon_ept.group_amazon_manager_ept">
+						<tree editable="top">
+							<field name="center_code" />
+							<field name="seller_id" />
+						</tree>
+					</field>
+				</xpath>				
+			</field>
+		</record>
+	</data>
+</odoo>
+		

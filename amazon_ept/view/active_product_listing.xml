@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Sync products menu and view -->
+        <record id="active_product_listing_tree_view_ept" model="ir.ui.view">
+            <field name="name">Amazon Active Product Tree</field>
+            <field name="model">active.product.listing.report.ept</field>
+            <field name="arch" type="xml">
+                <tree string="Active Products" create="false">
+                    <field name="name"/>
+                    <field name="instance_id"/>
+                    <field name="report_id"/>
+                    <field name="report_request_id"/>
+                    <field name="attachment_id" invisible="1"/>
+                    <button name="download_report" type="object" help="Click Here To download report"
+                            icon="fa-cloud-download fa-lg" aria-label="Download Report" title="Download Report"
+                            attrs="{'invisible':[('attachment_id','=',False)]}"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="active_product_listing_form_view_ept" model="ir.ui.view">
+            <field name="name">Amazon Active Product Form</field>
+            <field name="model">active.product.listing.report.ept</field>
+            <field name="arch" type="xml">
+                <form string="Active Product" create='0'>
+                    <header>
+                        <button name="request_report" string="Request Report" states="draft" class="oe_highlight"
+                                type="object"/>
+                        <button name="get_report_request_list" string="Check Status" states="_SUBMITTED_,_IN_PROGRESS_"
+                                class="oe_highlight" type="object"/>
+                        <button name="get_report" string="Get Report"
+                                attrs="{'invisible':['|',('report_id','=',False),('attachment_id','!=',False)]}"
+                                class="oe_highlight" type="object"/>
+                        <button name="download_report" string="Download Report"
+                                attrs="{'invisible':[('attachment_id','=',False)]}" class="oe_highlight" type="object"/>
+                        <button name="sync_products" string="Sync Products"
+                                attrs="{'invisible':['|',('state','!=','_DONE_'),('attachment_id','=',False)]}"
+                                class="oe_highlight" help="Click Here To Synchronize Products with Amazon."
+                                type="object"/>
+                        <button name="sync_products" string="Re-Process File"
+                                type="object"
+                                attrs="{'invisible':['|',('attachment_id','=',False),('state','not in',['processed', 'partially_processed'])]}"
+                                class="oe_highlight" help="click here to sync the products"/>
+                        <button name="list_of_process_logs" string="Mismatch Details"
+                                attrs="{'invisible':[('log_count','=',0)]}"
+                                class="oe_highlight"
+                                help="Click Here To Check Logs"
+                                type="object"/>
+                        <field name="state" widget="statusbar" statusbar_visible="_SUBMITTED_,_IN_PROGRESS_,_DONE_"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title" style="width: 500px;">
+                            <h1>
+                                <field name="name" class="oe_inline" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="seller_id" attrs="{'readonly':[('state','!=','draft')]}" required="1"/>
+                                <field name="instance_id" attrs="{'readonly':[('state','!=','draft')]}" domain="[('seller_id','=',seller_id)]" required="1"/>
+                                <field name="report_request_id" readonly="1"/>
+                                <field name="user_id" readonly="1" invisible="1"/>
+                                <field name="report_type" readonly="1" invisible="1"/>
+                                <field name="attachment_id" invisible="1"/>
+                                <field name="log_count" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="report_id" readonly="1"/>
+                                <field name="update_price_in_pricelist" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                <field name="auto_create_product" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="active_product_listing_report_search_view_ept"
+            model="ir.ui.view">
+        <field name="name">Active Product Listing Report Search</field>
+        <field name="model">active.product.listing.report.ept</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+            <search string="Active Product Listing">
+                <field name="name"/>
+                <field name="report_request_id"/>
+                <field name="report_id"/>
+                <field name="report_type"/>
+                <field name="state"/>
+                <field name="seller_id"/>
+                <group expand="0" string="Group By...">
+                    <filter name="seller" string="Seller" context="{'group_by':'seller_id'}"/>
+                    <filter name="instance" string="Instance" context="{'group_by':'instance_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+        <record id="action_active_product_listing_ept" model="ir.actions.act_window">
+            <field name="name">Active Product List</field>
+            <field name="res_model">active.product.listing.report.ept</field>
+            <field name="view_id" ref="active_product_listing_tree_view_ept"/>
+            <field name="help" type="html">
+                <div class="oe_empty_amazon_products">
+                    <p>
+                        <b>There is no any Amazon Product Listing created yet.</b>
+                    </p>
+                </div>
+            </field>
+        </record>
+
+        <menuitem id="menu_item_active_products_ept" name="Active Products"
+                  parent="amazon_ept.menu_item_parent_amazon_products_ept" sequence="10"
+                  groups="group_amazon_user_ept"/>
+
+        <menuitem id="menu_item_sync_active_products_ept" name="Sync Active Products"
+                  parent="amazon_ept.menu_item_active_products_ept" sequence="11"
+                  action="action_active_product_listing_ept" groups="group_amazon_user_ept"/>
+    </data>
+    <data noupdate="1">
+        <record id="seq_active_product_list" model="ir.sequence">
+            <field name="name">active_product_list</field>
+            <field name="code">active_product_list_sequence</field>
+            <field name="padding">5</field>
+            <field name="prefix">AP</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

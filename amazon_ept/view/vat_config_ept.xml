@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_vat_config_ept_form" model="ir.ui.view">
+        <field name="name">vat.config.ept.form</field>
+        <field name="model">vat.config.ept</field>
+        <field name="arch" type="xml">
+            <form delete="0" duplicate="0">
+                <sheet>
+                    <group>
+                        <field name="company_id"
+                               options="{'no_create':True,'no_create_edit':True}"/>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="is_union_oss_vat_declaration"
+                                   attrs="{'invisible': [('company_id', '=', False)]}"/>
+                        </group>
+                        <group>
+                            <field name="is_auto_create_taxes"
+                                   attrs="{'invisible': [('company_id', '=', False)]}"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="account_id"
+                                   attrs="{'invisible': [('is_auto_create_taxes', '=', False)],
+                                    'required':[('is_auto_create_taxes', '!=', False)]}"
+                                   domain="[('company_id', '=', company_id)]"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="vat_config_line_ids" nolabel="1">
+                            <tree editable="1">
+                                <field name="country_id" required="1"
+                                       options="{'no_create':True,'no_create_edit':True}"/>
+                                <field name="vat" required="1"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_vat_config_ept_tree" model="ir.ui.view">
+        <field name="name">vat.config.ept.tree</field>
+        <field name="model">vat.config.ept</field>
+        <field name="arch" type="xml">
+            <tree delete="0">
+                <field name="company_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_vat_config_ept" model="ir.actions.act_window">
+        <field name="name">VAT Configuration</field>
+        <field name="res_model">vat.config.ept</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>
