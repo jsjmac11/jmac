@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="unshipped_orders_tree_view_amazon_ept" model="ir.ui.view">
+            <field name="name">unshipped.orders.tree.view.amazon.ept</field>
+            <field name="model">stock.picking</field>
+            <field name="arch" type="xml">
+                <tree create="false" decoration-muted="state=='cancel'" decoration-info="state == 'draft'"
+                      decoration-danger="state not in ('cancel','done') and scheduled_date &lt; current_date"
+                      string="Picking list">
+                    <field name="updated_in_amazon" invisible="1"/>
+                    <field name="picking_type_code" invisible="1"/>
+                    <field name="seller_id" invisible="1"/>
+                    <!--            		<button name="mark_not_sent_amazon" type="object" help="Click Here To Set Picking Updated Into Amazon" icon="fa-level-up fa-lg" aria-label="Not Sent Amazon" title="Not Sent Amazon" attrs="{'invisible':['|',('updated_in_amazon','=',True),('picking_type_code','!=','outgoing')]}"/>            	-->
+                    <!--            		<button name="mark_sent_amazon" type="object" help="Click Here To Set Picking Not Updated Into Amazon" icon="fa-lock fa-lg" aria-label="Sent Amazon" title="Sent Amazon" attrs="{'invisible':['|',('updated_in_amazon','=',False),('picking_type_code','!=','outgoing')]}"/>            	-->
+                    <field name="name"/>
+                    <field name="location_dest_id"/>
+                    <field name="partner_id"/>
+                    <field name="date"/>
+                    <field name="scheduled_date" invisible="1"/>
+                    <field name="origin"/>
+                    <field name="group_id" invisible="1"/>
+                    <field name="backorder_id"/>
+                    <field name="state"/>
+                    <field name="priority" invisible="1"/>
+                    <field name="picking_type_id" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_unshipped_orders_tree_ept" model="ir.actions.act_window">
+            <field name="name">Unshipped Orders</field>
+            <field name="res_model">stock.picking</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('seller_id','!=',False)]</field>
+            <field name="view_id" ref="amazon_ept.unshipped_orders_tree_view_amazon_ept"/>
+            <field name="search_view_id" ref="stock.view_picking_internal_search"/>
+            <field name="help" type="html">
+                <div class="oe_empty_amazon_picking">
+                    <br/>
+                    <br/>
+                    <br/>
+                    <p>
+                        There is no any Delivery Order created for any of Amazon Sale Orders.
+                        If your Amazon Instance's Invoice Policy is set to "Before Delivery", then after Invoice being
+                        totally paid, Delivery order for Amazon will be created automatically and it will be visible
+                        over here.
+                        From here, you can't manually create delivery order for Amazon. It must be created via Sale
+                        Order.
+                    </p>
+
+                </div>
+            </field>
+        </record>
+        <!--Delivery Orders FBM-->
+        <menuitem id="menu_item_amazon_unshipped_orders_ept" name="Delivery Orders"
+                  parent="amazon_ept.menu_amazon_sales_fbm_orders" action="action_unshipped_orders_tree_ept"
+                  sequence="2"
+                  groups="amazon_ept.group_amazon_fbm_ept,amazon_ept.group_amazon_fba_and_fbm_ept"/>
+
+    </data>
+</odoo>

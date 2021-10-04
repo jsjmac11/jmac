@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record model="ir.ui.view" id="common_log_book_ept_attachment">
+        <field name="name">common.log.book.ept.attachment</field>
+        <field name="model">common.log.book.ept</field>
+        <field name="inherit_id"
+               ref="common_connector_library.action_common_log_book_ept_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position='after'>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"
+                           groups="base.group_user"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </xpath>
+            <xpath expr="//sheet" position='inside'>
+                <field name="fbm_sales_order_report_id"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

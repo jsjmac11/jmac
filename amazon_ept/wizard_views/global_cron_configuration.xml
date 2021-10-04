@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--This is a common view for cron configuration wizard -->
+        <record id="amazon_global_cron_configuration_ept_form_view"
+                model="ir.ui.view">
+            <field name="name">global.cron.configuration</field>
+            <field name="model">global.cron.configuration</field>
+            <field name="priority">11</field>
+            <field name="arch" type="xml">
+                <form string="Manual Queue Process">
+                    <field name="amz_seller_id" invisible="1"/>
+                    <field name="amazon_selling" invisible="1"/>
+                    <div name="payment_report" attrs="{'invisible': [('amz_seller_id', '=', False)]}">
+                        <div name="payment_settlement">
+                            <div class="row mt16 o_settings_container">
+                                <div class="col-xs-12 col-md-6 o_setting_box">
+                                    <div class="o_setting_left_pane">
+                                        <field name="amz_settlement_report_auto_create"
+                                               help="If Ticked, System will import settlement report from amazon."/>
+                                    </div>
+                                    <div class="o_setting_right_pane">
+                                        <label for="amz_settlement_report_auto_create"
+                                               string="Auto Request and Process Settlement Report ?"/>
+                                        <div class="text-muted">
+                                            Schedule automized Request and Process Settlement Report
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <field name="amz_settlement_report_create_interval_number"
+                                               attrs="{'required': [('amz_settlement_report_auto_create', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_settlement_report_auto_create', '=', False)]}"
+                                               class="oe_inline"/>
+                                        <field name="amz_settlement_report_create_interval_type"
+                                               attrs="{'required': [('amz_settlement_report_auto_create', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_settlement_report_auto_create', '=', False)]}"
+                                               class="oe_inline"/>
+                                        <field name="amz_settlement_report_create_next_execution"
+                                               attrs="{'required': [('amz_settlement_report_auto_create', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_settlement_report_auto_create', '=', False)]}"
+                                               class="oe_inline"/>
+                                        <field name="amz_settlement_report_create_user_id"
+                                               attrs="{'required': [('amz_settlement_report_auto_create', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_settlement_report_auto_create', '=', False)]}"
+                                               class="oe_inline"/>
+                                    </div>
+                                </div>
+
+                                 <div class="col-xs-12 col-md-6 o_setting_box" invisible="1">
+                                    <div class="o_setting_left_pane">
+                                        <field name="amz_auto_send_invoice"
+                                               help="If Ticked, System will send invoice by email."/>
+                                    </div>
+                                    <div class="o_setting_right_pane">
+                                        <label for="amz_auto_send_invoice"/>
+                                        <div class="text-muted">
+                                            Schedule automized Send Invoice via Email
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <field name="amz_auto_send_invoice_interval_number"
+                                               attrs="{'required': [('amz_auto_send_invoice', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_send_invoice', '=', False)]}"
+                                               class="oe_inline"/>
+                                        <field name="amz_auto_send_invoice_process_interval_type"
+                                               attrs="{'required': [('amz_auto_send_invoice', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_send_invoice', '=', False)]}"
+                                               class="oe_inline"/>
+                                        <field name="amz_auto_send_invoice_next_execution"
+                                               attrs="{'required': [('amz_auto_send_invoice', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_send_invoice', '=', False)]}"
+                                               class="oe_inline"/>
+                                        <field name="amz_auto_send_invoice_user_id"
+                                               attrs="{'required': [('amz_auto_send_invoice', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_send_invoice', '=', False)]}"
+                                               class="oe_inline"/>
+                                    </div>
+                                 </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div name="rating_report" attrs="{'invisible': [('amz_seller_id', '=', False)]}">
+                        <h2>Rating Report</h2>
+                        <div name="rating_report_history">
+                            <div class="row mt16 o_settings_container">
+                                <div class="col-xs-12 col-md-6 o_setting_box">
+                                    <div class="o_setting_left_pane">
+                                        <field name="amz_auto_import_rating_report"
+                                               help="If Ticked, System will import settlement report from amazon."/>
+                                    </div>
+                                    <div class="o_setting_right_pane">
+                                        <label for="amz_auto_import_rating_report"
+                                               string="Request Rating Report ?"/>
+                                        <div class="text-muted">
+
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <field name="amz_rating_report_import_interval_number"
+                                               attrs="{'required': [('amz_auto_import_rating_report', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_import_rating_report', '=', False)]}"
+                                               class="oe_inline"/>
+                                        <field name="amz_rating_report_import_interval_type"
+                                               attrs="{'required': [('amz_auto_import_rating_report', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_import_rating_report', '=', False)]}"
+                                               class="oe_inline"/>
+                                        <field name="amz_rating_report_import_next_execution"
+                                               attrs="{'required': [('amz_auto_import_rating_report', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_import_rating_report', '=', False)]}"
+                                               class="oe_inline"/>
+                                        <field name="amz_rating_report_import_user_id"
+                                               attrs="{'required': [('amz_auto_import_rating_report', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_import_rating_report', '=', False)]}"
+                                               class="oe_inline"/>
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-12 col-md-6 o_setting_box">
+                                    <div class="o_setting_left_pane">
+                                        <field name="amz_auto_process_rating_report"
+                                               help="If Ticked, System will process settlement report from amazon."/>
+                                    </div>
+                                    <div class="o_setting_right_pane">
+                                        <label for="amz_auto_process_rating_report"
+                                               string="Download and Process Rating Report ?"/>
+                                        <div class="text-muted">
+
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <field name="amz_rating_process_report_interval_number"
+                                               attrs="{'required': [('amz_auto_process_rating_report', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_process_rating_report', '=', False)]}"
+                                               class="oe_inline"/>
+                                        <field name="amz_rating_process_report_interval_type"
+                                               attrs="{'required': [('amz_auto_process_rating_report', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_process_rating_report', '=', False)]}"
+                                               class="oe_inline"/>
+                                        <field name="amz_rating_process_report_next_execution"
+                                               attrs="{'required': [('amz_auto_process_rating_report', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_process_rating_report', '=', False)]}"
+                                               class="oe_inline"/>
+                                        <field name="amz_rating_process_report_user_id"
+                                               attrs="{'required': [('amz_auto_process_rating_report', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_process_rating_report', '=', False)]}"
+                                               class="oe_inline"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div name="send_invoice" attrs="{'invisible': [('amz_seller_id', '=', False)]}">
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-xs-12 col-md-6 o_setting_box">
+                                <div class="o_setting_left_pane">
+                                    <field name="amz_auto_send_refund"
+                                           help="If Ticked, System will send invoice by email."/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="amz_auto_send_refund"/>
+                                    <div class="text-muted">
+                                        Schedule automized Send Refund Via Email
+                                    </div>
+                                </div>
+                                <div>
+                                    <field name="amz_auto_send_refund_interval_number"
+                                           attrs="{'required': [('amz_auto_send_refund', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_send_refund', '=', False)]}"
+                                           class="oe_inline"/>
+                                    <field name="amz_auto_send_refund_process_interval_type"
+                                           attrs="{'required': [('amz_auto_send_refund', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_send_refund', '=', False)]}"
+                                           class="oe_inline"/>
+                                    <field name="amz_auto_send_refund_next_execution"
+                                           attrs="{'required': [('amz_auto_send_refund', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_send_refund', '=', False)]}"
+                                           class="oe_inline"/>
+                                    <field name="amz_auto_send_refund_user_id"
+                                           attrs="{'required': [('amz_auto_send_refund', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_send_refund', '=', False)]}"
+                                           class="oe_inline"/>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div name="vcs_tax_report">
+                        <h2>VCS Tax Report</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-xs-12 col-md-6 o_setting_box">
+                                <div class="o_setting_left_pane">
+                                    <field name="amz_auto_import_vcs_tax_report"
+                                           help="If Ticked, System will import vcs tax report if it is activated."/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="amz_auto_import_vcs_tax_report"/>
+                                    <div class="text-muted">
+
+                                    </div>
+                                </div>
+                                <div>
+                                    <field name="amz_vcs_report_import_interval_number"
+                                           attrs="{'required': [('amz_auto_import_vcs_tax_report', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_import_vcs_tax_report', '=', False)]}"
+                                           class="oe_inline"/>
+                                    <field name="amz_vcs_report_import_interval_type"
+                                           attrs="{'required': [('amz_auto_import_vcs_tax_report', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_import_vcs_tax_report', '=', False)]}"
+                                           class="oe_inline"/>
+                                    <field name="amz_vcs_report_import_next_execution"
+                                           attrs="{'required': [('amz_auto_import_vcs_tax_report', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_import_vcs_tax_report', '=', False)]}"
+                                           class="oe_inline"/>
+                                    <field name="amz_vcs_report_import_user_id"
+                                           attrs="{'required': [('amz_auto_import_vcs_tax_report', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_import_vcs_tax_report', '=', False)]}"
+                                           class="oe_inline"/>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12 col-md-6 o_setting_box">
+                                <div class="o_setting_left_pane">
+                                    <field name="amz_auto_process_vcs_tax_report"
+                                           help="If Ticked, System will Process the VCS tax report."/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="amz_auto_process_vcs_tax_report"/>
+                                    <div class="text-muted">
+
+                                    </div>
+                                </div>
+                                <div>
+                                    <field name="amz_vcs_report_process_interval_number"
+                                           attrs="{'required': [('amz_auto_process_vcs_tax_report', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_process_vcs_tax_report', '=', False)]}"
+                                           class="oe_inline"/>
+                                    <field name="amz_vcs_report_process_interval_type"
+                                           attrs="{'required': [('amz_auto_process_vcs_tax_report', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_process_vcs_tax_report', '=', False)]}"
+                                           class="oe_inline"/>
+                                    <field name="amz_vcs_report_process_next_execution"
+                                           attrs="{'required': [('amz_auto_process_vcs_tax_report', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_process_vcs_tax_report', '=', False)]}"
+                                           class="oe_inline"/>
+                                    <field name="amz_vcs_report_process_user_id"
+                                           attrs="{'required': [('amz_auto_process_vcs_tax_report', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_process_vcs_tax_report', '=', False)]}"
+                                           class="oe_inline"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div name="invoice_upload_to_amazon">
+                        <h2>Invoice Upload TO Amazon</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-xs-12 col-md-6 o_setting_box">
+                                <div class="o_setting_left_pane">
+                                    <field name="amz_auto_upload_tax_invoices"
+                                           help="If Ticked, System will Upload tax Invoices to Amazon."/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="amz_auto_upload_tax_invoices"/>
+                                    <div class="text-muted">
+                                        Choose this setting as per your amazon invoices Configuration.
+                                    </div>
+                                </div>
+                                <div>
+                                    <field name="amz_auto_upload_tax_invoices_interval_number"
+                                           attrs="{'required': [('amz_auto_upload_tax_invoices', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_upload_tax_invoices', '=', False)]}"
+                                           class="oe_inline"/>
+                                    <field name="amz_auto_upload_tax_invoices_interval_type"
+                                           attrs="{'required': [('amz_auto_upload_tax_invoices', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_upload_tax_invoices', '=', False)]}"
+                                           class="oe_inline"/>
+                                    <field name="amz_auto_upload_tax_invoices_next_execution"
+                                           attrs="{'required': [('amz_auto_upload_tax_invoices', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_upload_tax_invoices', '=', False)]}"
+                                           class="oe_inline"/>
+                                    <field name="amz_auto_upload_tax_invoices_user_id"
+                                           attrs="{'required': [('amz_auto_upload_tax_invoices', '=', True),('amz_seller_id','!=',False)],'invisible': [('amz_auto_upload_tax_invoices', '=', False)]}"
+                                           class="oe_inline"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <footer>
+                        <button string="Save Cron Configuration"
+                                class="oe_highlight" type="object" name="save_cron_configuration"/>
+                        <button string="Cancel" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_wizard_global_cron_configuration_ept" model="ir.actions.act_window">
+            <field name="name">Global Scheduled Actions Configuration</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">global.cron.configuration</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>
