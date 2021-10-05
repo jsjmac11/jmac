@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="amazon_inbound_shipment_print_shipment_label_wizard_form_view"
+			model="ir.ui.view">
+			<field name="name">Inbound Shipment Labels</field>
+			<field name="model">amazon.shipment.label.wizard</field>
+			<field name="arch" type="xml">
+				<form string="Get Label">
+					<group string='Shipment Packing'>
+						<div>
+							<div>
+								<label for="number_of_box" />
+								<field name="number_of_box" class="oe_inline" readonly="context.get('box_readonly',False)"/>
+								<label for="number_of_package"  invisible="context.get('shipping_type')=='sp'"/>
+								<field name="number_of_package" readonly="1" invisible="context.get('shipping_type')=='sp'" class="oe_inline" />
+								<label for="page_type" />
+								<field name="page_type" class="oe_inline" />
+							</div>
+						</div>
+					</group>
+					<newline />
+					<div invisible="context.get('shipping_type')=='sp'">
+						<p>
+							<ul>
+								<li>Place labels so they don't cover box seams.</li>
+								<li>Stack boxes on standard EPAL pallets (800mm x 1,200 mm).</li>
+								<li>Pallets must not be stacked more than 170 cm high,
+									including the pallet.</li>
+								<li>Total weight of the pallet must not exceed 1,000 kg.</li>
+								<li>Securely stretch-wrap each pallet.</li>
+							</ul>
+						</p>
+					</div>
+
+					<div invisible="context.get('shipping_type')=='ltl'">
+		 				<p>
+							 <h2>Instructions :</h2> <br />
+							 <h3>Packing your Boxes</h3>
+							 <ul>
+								<li><b>Packing slips are no longer required.</b></li>
+								<li>Single cartons must not exceed 30 kg. Cartons weighing between 15 kg and 30 kg must have "Heavy Package" labels prominently displayed.</li>
+								<li>Use only approved packing material</li>
+								<li>Please note that the Partner Carrier Program cannot be used for transporting hazardous (HAZMAT) products</li>
+							</ul>
+							<h3>Labelling your boxes</h3>
+							<ul>
+								<li><b>Print the full set of labels. Each label is unique: do not photocopy, reuse or modify labels for use on additional boxes.</b></li>
+								<li>The shipping label should be affixed to the outside of your sealed box, in addition to the carrier label.</li>
+								<li>Place labels so they don't cover box seams.</li>
+							</ul>
+						</p>
+					</div>
+					<footer>
+						<button name="get_labels" string="Print Box Labels"
+							type="object" class="oe_highlight" />
+						<button string="Cancel" class="oe_highlight" special="cancel" />
+					</footer>
+				</form>
+			</field>
+		</record>
+
+		<record id="amazon_inbound_shipment_print_delivery_label_wizard_form_view"
+			model="ir.ui.view">
+			<field name="name">Inbound Shipment Labels</field>
+			<field name="model">amazon.shipment.label.wizard</field>
+			<field name="arch" type="xml">
+				<form string="Get Label">
+					<group string='Delivery Packing'>
+						<div>
+							<div>
+								<label for="number_of_package" string='Number of Pallets'/>
+								<field name="number_of_package" class="oe_inline" /> <b>* 4</b> 
+								<label for="page_type" />
+								<field name="page_type" class="oe_inline" />
+							</div>
+						</div>
+					</group>
+					<newline />
+					<div>
+						<p>
+							<ul>
+								<li>Pallet labels must be affixed to the top-centre of all four sides of each stretch-wrapped pallet.</li>
+							</ul>
+						</p>
+					</div>
+					<footer>
+						<button name="get_labels" string="Print Pallet Labels"
+							type="object" class="oe_highlight" />
+						<button string="Cancel" class="oe_highlight" special="cancel" />
+					</footer>
+				</form>
+			</field>
+		</record>		
+
+		<record id="amazon_inbound_shipment_print_unique_label_wizard_form_view"
+			model="ir.ui.view">
+			<field name="name">Inbound Shipment Labels</field>
+			<field name="model">amazon.shipment.label.wizard</field>
+			<field name="arch" type="xml">
+				<form string="Get Label">
+					<group string='Delivery Packing'>
+						<div>
+							<div>
+								<label for="page_type" />
+								<field name="page_type" class="oe_inline" />
+							</div>
+						</div>
+					</group>
+					<newline />
+					<div>
+						<p>
+							<ul>
+								<li>GetUniquelabels from amazon, your box-no must be same as carton exported box-no.</li>
+							</ul>
+						</p>
+					</div>
+					<footer>
+						<button name="get_labels" string="Print Unique Labels"
+							type="object" class="oe_highlight" />
+						<button string="Cancel" class="oe_highlight" special="cancel" />
+					</footer>
+				</form>
+			</field>
+		</record>		
+
+	</data>
+</odoo>

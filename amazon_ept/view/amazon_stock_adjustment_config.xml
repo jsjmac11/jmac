@@ -1,0 +1,63 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data>
+        <record id="amazon_stock_adjustment_config_tree_ept" model="ir.ui.view">
+            <field name="name">Amazon Stock Adjustment Config</field>
+            <field name="model">amazon.stock.adjustment.config</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Report Request History" editable="top">
+                    <field name="seller_id" required="1" width="10px"/>
+                    <field name="group_id" required="1" width="10px"/>
+                    <field name="is_send_email" width="10px"/>
+                    <field name="email_template_id"
+                           attrs="{'required':[('is_send_email','=',True)],'invisible':[('is_send_email','!=',True)]}"
+                           width="10px"/>
+                    <field name="location_id"
+                           attrs="{'required':[('is_send_email','!=',True)],'invisible':[('is_send_email','=',True)]}"
+                           width="10px"/>
+                </tree>
+            </field>
+        </record>
+        <!--        <record id="amazon_stock_adjustment_reason_config_form_view_ept" model="ir.ui.view">-->
+        <!--            <field name="name">Amazon Stock Adjustment Config</field>-->
+        <!--            <field name="model">amazon.stock.adjustment.config</field>-->
+        <!--            <field name="type">form</field>-->
+        <!--            <field name="arch" type="xml">-->
+        <!--                <form string="Report Request History">-->
+        <!--                    <sheet>-->
+        <!--                        <group>-->
+        <!--                            <group>-->
+        <!--                                <field name="seller_id" required="1"/>-->
+        <!--                                <field name="group_id" required="1"/>-->
+        <!--                                <field name="is_send_email"/>-->
+        <!--                                <field name="email_template_id"-->
+        <!--                                       attrs="{'required':[('is_send_email','=',True)],'invisible':[('is_send_email','!=',True)]}"/>-->
+        <!--                            </group>-->
+        <!--                            <group>-->
+        <!--                                <field name="location_id"-->
+        <!--                                       attrs="{'required':[('is_send_email','!=',True)],'invisible':[('is_send_email','=',True)]}"/>-->
+        <!--                                <field name="picking_type_id"-->
+        <!--                                       attrs="{'required':[('is_send_email','!=',True)],'invisible':[('is_send_email','=',True)]}"/>-->
+        <!--                            </group>-->
+        <!--                        </group>-->
+        <!--                    </sheet>-->
+        <!--                </form>-->
+        <!--            </field>-->
+        <!--        </record>-->
+        <record id="action_stock_adjustment_config_ept" model="ir.actions.act_window">
+            <field name="name">Amazon Stock Adjustment Configuration</field>
+            <field name="res_model">amazon.stock.adjustment.config</field>
+            <field name="view_id" ref="amazon_stock_adjustment_config_tree_ept"/>
+        </record>
+        <menuitem id="menu_amazon_stock_adjustment_configuration" name="Stock Adjustment Configuration"
+                  parent="amazon_ept.menu_configuration_ept"
+                  groups="amazon_ept.group_amazon_manager_ept"
+                  sequence="101"/>
+        <menuitem id="menu_amazon_stock_adjustment_config_ept" name="Amazon Stock adjustment configuration"
+                  parent="amazon_ept.menu_amazon_stock_adjustment_configuration"
+                  groups="amazon_ept.group_amazon_manager_ept"
+                  sequence="18"
+                  action="action_stock_adjustment_config_ept"/>
+    </data>
+</odoo>

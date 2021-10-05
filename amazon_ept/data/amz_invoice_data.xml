@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <function model="account.move" name="_update_amz_partner_address_detail_in_move"/>
+        <function model="amazon.fulfillment.center" name="_map_amazon_fulfillment_centers_warehouse"/>
+    </data>
+</odoo>

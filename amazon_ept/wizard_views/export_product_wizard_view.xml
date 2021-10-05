@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_amazon_export_products_ept" model="ir.ui.view">
+        <field name="name">Export product</field>
+        <field name="model">amazon.product.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Export Product In Amazon">
+                <footer>
+                    <button name="export_product_in_amazon" string="Export" type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="oe_highlight" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_amazon_update_stock_ept" model="ir.ui.view">
+        <field name="name">Update Stock In Amazon</field>
+        <field name="model">amazon.product.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Update Stock In Amazon">
+                <separator colspan="4" string="Update Stock In Amazon"/>
+                <footer>
+                    <button name="update_stock_ept" string="Update Stock" type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="oe_highlight" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_amazon_update_price_ept" model="ir.ui.view">
+        <field name="name">Update Price In Amazon</field>
+        <field name="model">amazon.product.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Update Price In Amazon">
+                <separator colspan="4" string="Update Price In Amazon"/>
+                <footer>
+                    <button name="update_price" string="Update Price" type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="oe_highlight" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_amazon_update_image_ept" model="ir.ui.view">
+        <field name="name">Update Image In Amazon</field>
+        <field name="model">amazon.product.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Update Image In Amazon">
+                <separator colspan="4" string="Update Image In Amazon"/>
+                <footer>
+                    <button name="update_image" string="Update Image" type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="oe_highlight" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <act_window name="Export/update Products In Amazon"
+                res_model="amazon.product.wizard"
+                binding_model="amazon.product.ept"
+                view_mode="form" target="new"
+                binding_views="list"
+                id="action_export_selective_products_ept"
+                view_id="view_amazon_export_products_ept"
+                context="{'key':'export_selective_products_in_amazon'}"/>
+
+    <act_window name="Update Stock In Amazon"
+                res_model="amazon.product.wizard" binding_model="amazon.product.ept"
+                view_mode="form" target="new"
+                binding_views="list"
+                id="action_update_amazon_selective_stock_ept"
+                view_id="view_amazon_update_stock_ept"
+                context="{'key':'update_selective_stock',}"/>
+
+    <act_window name="Update Price In Amazon"
+                res_model="amazon.product.wizard"
+                binding_model="amazon.product.ept"
+                view_mode="form" target="new"
+                binding_views="list"
+                id="action_update_selective_price_ept"
+                view_id="view_amazon_update_price_ept"
+                context="{'key':'update_selective_price',}"/>
+
+    <act_window name="Update Image In Amazon"
+                res_model="amazon.product.wizard"
+                binding_model="amazon.product.ept"
+                view_mode="form" target="new"
+                binding_views="list"
+                id="action_update_selective_image_ept"
+                view_id="view_amazon_update_image_ept"
+                context="{'key':'update_selective_image',}"/>
+</odoo>

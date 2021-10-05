@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <data>
+        <record id="amazon_common_connector_log_book_list_view" model="ir.ui.view">
+            <field name="name">Amazon Common Book Tree View</field>
+            <field name="model">common.log.book.ept</field>
+            <field name="inherit_id" ref="common_connector_library.action_common_log_book_ept_tree"/>
+            <field name="arch" type="xml">
+                <tree position="attributes">
+                    <attribute name="create">false</attribute>
+                    <attribute name="edit">false</attribute>
+                </tree>
+            </field>
+        </record>
+        <record id="amazon_common_connector_log_book_form_view" model="ir.ui.view">
+            <field name="name">Amazon Common Book Form View</field>
+            <field name="model">common.log.book.ept</field>
+            <field name="inherit_id" ref="common_connector_library.action_common_log_book_ept_form"/>
+            <field name="arch" type="xml">
+                <form position="attributes">
+                    <attribute name="create">false</attribute>
+                    <attribute name="edit">false</attribute>
+                </form>
+                <xpath expr="//sheet/notebook/page/field[@name='log_lines']/tree/field[@name='default_code']"
+                       position="after">
+                    <field name="fulfillment_by" readonly="1"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="action_amz_common_log_book_ept" model="ir.actions.act_window">
+            <field name="name">Common Log Book</field>
+            <field name="res_model">common.log.book.ept</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('module','=','amazon_ept')]</field>
+            <field name="help" type="html">
+                <b>Common Log Book</b>
+            </field>
+        </record>
+
+        <record id="action_amz_common_log_lines_ept" model="ir.actions.act_window">
+            <field name="name">Common Log Lines</field>
+            <field name="res_model">common.log.lines.ept</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('log_line_id.module', '=', 'amazon_ept')]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No mismatch log lines are there!
+                </p>
+                <p>If any import/export/update process has got issue, log lines will be shown here.</p>
+            </field>
+        </record>
+
+        <menuitem id="mainmenu_common_log_books" name="Log History"
+                  parent="amazon_ept.amazon_instance_menu_item" groups="amazon_ept.group_amazon_manager_ept"
+                  sequence="30"/>
+
+        <menuitem id="amz_sub_menu_common_log" name="Mismatch Logs"
+              parent="amazon_ept.mainmenu_common_log_books" groups="amazon_ept.group_amazon_manager_ept"
+              sequence="1"/>
+
+        <menuitem id="common_log_books_menu"
+              name="Log Book"
+              action="action_amz_common_log_book_ept"
+              parent="amazon_ept.amz_sub_menu_common_log"
+              groups="amazon_ept.group_amazon_manager_ept"
+              sequence="1"/>
+
+        <menuitem id="common_log_book_line_menu_ept"
+              name="Log Lines"
+              action="action_amz_common_log_lines_ept"
+              parent="amazon_ept.amz_sub_menu_common_log"
+              groups="amazon_ept.group_amazon_manager_ept"
+              sequence="2"/>
+
+    </data>
+</odoo>

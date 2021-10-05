@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="amazon_prepare_for_export_product_in_amazon_from_view_ept" model="ir.ui.view">
+        <field name="name">Prepare Product for Export</field>
+        <field name="model">amazon.prepare.export.product.ept</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <form string="Prepare for Export Product">
+                <group>
+                    <h5>
+                        Select Seller, Separator, Instance and Fulfillment(FBM, FBA and FBM&amp;FBA) for export
+                        products.
+                    </h5>
+                </group>
+                <group>
+                    <field name="seller_id" required="1"/>
+                    <field name="delimiter"/>
+                    <field name="instance_ids" widget="many2many_tags" required="1"
+                           domain="[('seller_id','=',seller_id)]"/>
+                    <field name="amazon_selling" required="1"/>
+                </group>
+                <footer>
+                    <button string="Prepare Product Export" class="oe_highlight" type="object"
+                            name="prepare_product_for_export"/>
+                    <button string="Cancel" class="oe_highlight" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <act_window name="Prepare Product For Export In Amazon"
+                res_model="amazon.prepare.export.product.ept" binding_model="product.product" binding_views="list"
+                view_mode="form"
+                target="new" id="action_wizard_amazon_prepare_product_for_export"
+                view_id="amazon_prepare_for_export_product_in_amazon_from_view_ept"/>
+
+</odoo>
