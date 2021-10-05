@@ -777,6 +777,14 @@ class ProductTemplate(models.Model):
                 "width" : record.get('width'),
                 }
         product_template = product_template_obj.with_user(1).create(vals)
+        if record.get('search_keywords'):
+            key_word = record.get('search_keywords').split(',')
+            if key_word:
+                for key_lst in key_word:
+                    v = {'name': key_lst,
+                                 'product_template_id': product_template.id}
+                    self.env['product.search.keyword'].create(v)
+                
         _logger.info("Product Created: {}".format(product_template))
         return True, product_template
     
