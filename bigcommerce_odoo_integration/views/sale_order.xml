@@ -8,6 +8,7 @@
             <field name="arch" type="xml">
             	<header>
                  <button name="exportordertobigcommerce" type="object" string="Export Order"  attrs="{'invisible': ['|',('state', '!=','sale')]}" />
+                 <button name="update_order_to_bigcommerce" type="object" string="Update Order"  attrs="{'invisible': ['|',('big_commerce_order_id', '=',False)]}"/>
                   <button name="get_shipped_qty" type="object" string="Shipped Qty"   />
              </header>
                 <xpath expr="//field[@name='payment_term_id']" position="after">
@@ -16,8 +17,13 @@
                 <xpath expr="//page[@name='other_information']" position="after">
                     <page name="bigcommerce_info" string="BigCommerce Info">
                         <group>
-                            <field name="big_commerce_order_id"/>
-                            <field name="bigcommerce_shipment_order_status" />
+                            <group>
+                                <field name="big_commerce_order_id"/>
+                                <field name="bigcommerce_shipment_order_status" />
+                            </group>
+                            <group>
+                                <field name="bigcommerce_order_status_id"/>
+                            </group>
                         </group>
                     </page>
                 </xpath>
@@ -51,5 +57,50 @@
 		<menuitem id="bigcommerce_store_sale_order_menuitem" name="Sale Order"
                   sequence="9" parent="bigcommerce_odoo_integration_store_menuitem"
                   action="bigcommerce_sale_order_action_form"/>
+
+
+        <record id="view_bigcommerce_order_status_tree_view" model="ir.ui.view">
+            <field name="name">BigCommerce Order Status</field>
+            <field name="model">sale.order.status</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="BigCommerce Order Status">
+                    <field name="status_id" />
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_form_bigcommerce_order_status" model="ir.ui.view">
+            <field name="name">BigCommerce Order Status</field>
+            <field name="model">sale.order.status</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="BigCommerce Order Status">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="status_id"></field>
+                                <field name="name"></field>
+                            </group>
+                        </group>
+                        <group string="Description">
+                            <field name="description" nolabel="1" placeholder="This note is only for internal purposes."/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_bigcommerce_order_status" model="ir.actions.act_window">
+            <field name="name">BigCommerce Order Status</field>
+            <field name="res_model">sale.order.status</field>
+            <field name="view_id" ref="view_bigcommerce_order_status_tree_view" />
+        </record>
+
+        <menuitem id="menu_bigcommerce_order_status" name="BigCommerce Order Status"
+            parent="bigcommerce_odoo_integration_store_menuitem" sequence="10"
+            action="action_bigcommerce_order_status" />
     </data>
 </odoo>
+
