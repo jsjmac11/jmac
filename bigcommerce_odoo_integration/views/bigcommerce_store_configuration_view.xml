@@ -59,16 +59,20 @@
                             <table style="margin-top:35px">
                                 <tr>
                                     <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_product_categories_main" string="Import Product Categories" type="object" class="oe_highlight" /></td>
+
                                     <td style="padding-left:60px"><button name="import_product_from_bigcommerce_main" string="Import Products" type="object" class="oe_highlight"/></td>
                                 </tr>
                                 <br/>
                                 <tr>
                                     <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_customers_main" string="Import Customers" type="object" class="oe_highlight" /></td>
+
                                     <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_orders_main" string="Import Orders" type="object" class="oe_highlight" /></td>
                                 </tr>
                                 <br/>
                                 <tr>
                                     <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_product_brands_main" string="Import Product Brand" type="object" class="oe_highlight" /></td>
+
+                                    <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_order_status_main" string="Import Order Statuses" type="object" class="oe_highlight" /></td>
                                 </tr>
                                 <br/>
                             </table>

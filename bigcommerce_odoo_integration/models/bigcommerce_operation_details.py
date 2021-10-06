@@ -14,7 +14,8 @@ class BigCommerceOperation(models.Model):
                                               ('product_variant', 'Product Variant'),
                                               ('order', 'Order'),
                                               ('stock', 'Stock'),
-                                              ('brand','Brand')
+                                              ('brand','Brand'),
+                                              ('order_status','Order Status')
                                     # ('sale', 'Sales'),
                                     # ('delivery_order', 'Delivery Order'),
                                     # ('warehouse', 'Warehouse'),

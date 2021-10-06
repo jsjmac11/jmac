@@ -585,3 +585,55 @@ class SaleOrderStatus(models.Model):
     status_id = fields.Char(string="Status ID")
     name = fields.Char(string="Bigcommerce Order Status")
     description = fields.Text(string="Description")
+    bigcommerce_store_id = fields.Many2one('bigcommerce.store.configuration',string="Bigcommerce Store",copy=False)
+    big_commerce_status_id = fields.Char(string="BigCommerce Status")
+
+    def import_order_status_from_bigcommerce(self, warehouse_id=False, bigcommerce_store_ids=False):
+        for bigcommerce_store_id in bigcommerce_store_ids:
+            headers = {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Auth-Client': '{}'.format(bigcommerce_store_ids.bigcommerce_x_auth_client),
+                'X-Auth-Token': "{}".format(bigcommerce_store_ids.bigcommerce_x_auth_token)
+            }
+            req_data = False
+            bigcommerce_store_id.bigcommerce_product_import_status = "Import Order Statuses Process Running..."
+            product_process_message = "Order Statuses Completed Successfully!"
+            order_status_operation_id = bigcommerce_store_id.create_bigcommerce_operation('order_status','import',bigcommerce_store_id,'Processing...',warehouse_id)
+            self._cr.commit()
+            order_statuses_response_pages=[]
+            try:
+                api_operation="/v2/order_statuses"
+                response_data = bigcommerce_store_id.with_user(1).send_get_request_from_odoo_to_bigcommerce(api_operation)
+                if response_data.status_code in [200, 201]:
+                    response_data = response_data.json()
+                    _logger.info("Order Statusess Response Data : {0}".format(response_data))
+                    for order_statuses in response_data:
+                        big_commerce_status_id = order_statuses.get('id')
+                        sale_order_status = self.env['sale.order.status'].search([('status_id', '=', big_commerce_status_id)])
+                        if not sale_order_status:
+                            vals = {
+                                'status_id': order_statuses.get('id'),
+                                'name': order_statuses.get('name'),
+                                'description': order_statuses.get('system_description'),
+                                'big_commerce_status_id': order_statuses.get('order'),
+                                'bigcommerce_store_id':bigcommerce_store_id.id
+                            }
+                            sale_order_status_obj = self.env['sale.order.status']
+                            order_statuses = sale_order_status_obj.with_user(1).create(vals)
+                            _logger.info("Order Statuses Created: {}".format(order_statuses))
+                        else:
+                            process_message = "Order Statuses Already in Odoo {}".format(sale_order_status and sale_order_status.name)
+                            self._cr.commit()
+                else:
+                    _logger.info("Getting an Error In Import Orders Statuses Response {}".format(response_data))
+                    response_data=response_data.content
+                    process_message="Getting an Error In Import Orders Status Response".format(response_data)
+
+            except Exception as e:
+                _logger.info("Getting an Error In Import Order Statuses Response {}".format(e))
+                process_message="Getting an Error In Import Order Statuses Response {}".format(e)
+                self.create_bigcommerce_operation('order_status','import','','',order_status_operation_id,warehouse_id,True,product_process_message)
+            order_status_operation_id and order_status_operation_id.write({'bigcommerce_message': product_process_message})
+            bigcommerce_store_ids.bigcommerce_operation_message = " Import Sale Order Statuses Process Complete "
+            self._cr.commit()

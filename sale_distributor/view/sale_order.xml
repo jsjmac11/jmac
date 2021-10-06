@@ -207,9 +207,9 @@
 	                            <field name="result_package_id" readonly="1" string="Package" optional="show"/>
 	                            <field name="tracking_ref" optional="show" readonly="1"/>
 	                            <field name="shipping_date" string="Ship Date" optional="show"/>
-	                            <field name="length" string="Size(L)" optional="hide"/>
-	                            <field name="width" string="Size(W)" optional="hide"/>
-	                            <field name="height" string="Size(H)" optional="hide"/>
+	                            <field name="length" string="Size(L)" optional="show"/>
+	                            <field name="width" string="Size(W)" optional="show"/>
+	                            <field name="height" string="Size(H)" optional="show"/>
 	                            <field name="weight" string="Order Weight" optional="hide"/>
 	                            <field name="shipping_weight" string="Weight for shipping(lbs)" optional="hide"/>
 	                            <field name="shipping_weight_oz" string="Weight for shipping(ozs)" optional="hide"/>
