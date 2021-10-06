@@ -227,3 +227,23 @@ class BigCommerceStoreConfiguration(models.Model):
             sale_order_obj = self.env['sale.order']
             import_order = sale_order_obj.with_user(1).bigcommerce_to_odoo_import_orders(self.warehouse_id,self)
             return import_order
+
+    def bigcommerce_to_odoo_import_order_status_main(self):
+        self.bigcommerce_operation_message = "Import Sale Order Statuses Process Running..."
+        self._cr.commit()
+        dbname = self.env.cr.dbname
+        db_registry = registry(dbname)
+        with api.Environment.manage(), db_registry.cursor() as cr:
+            env_thread1 = api.Environment(cr, SUPERUSER_ID, self._context)
+            t = Thread(target=self.bigcommerce_to_odoo_import_order_status, args=())
+            t.start()
+
+
+    def bigcommerce_to_odoo_import_order_status(self):
+        with api.Environment.manage():
+            new_cr = registry(self._cr.dbname).cursor()
+            self = self.with_env(self.env(cr=new_cr))
+            sale_order_status_obj = self.env['sale.order.status']
+            import_order_status = sale_order_status_obj.with_user(1).import_order_status_from_bigcommerce(self.warehouse_id,self)
+            return import_order_status
+

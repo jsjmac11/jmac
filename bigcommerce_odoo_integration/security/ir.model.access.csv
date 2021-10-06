@@ -9,5 +9,5 @@ access_bigcommerce_product_image,access bigcommerce product image,model_bigcomme
 access_bigcommerce_product_brand,access_bigcommerce_product_brand,model_bc_product_brand,sales_team.group_sale_salesman,1,1,1,1
 access_bigcommerce_category,access_bigcommerce_category,model_bigcommerce_category,base.group_user,1,1,1,0
 access_product_search_keyword,access_product_search_keyword,model_product_search_keyword,sales_team.group_sale_salesman,1,1,1,1
-access_sale_order_status,access_sale_order_status,model_sale_order_status,base.group_user,1,1,1,0
+access_sale_order_status,access_sale_order_status,model_sale_order_status,base.group_user,1,1,1,1
 
