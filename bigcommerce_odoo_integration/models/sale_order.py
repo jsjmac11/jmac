@@ -18,6 +18,8 @@ class SaleOrderVts(models.Model):
     bigcommerce_store_id = fields.Many2one('bigcommerce.store.configuration', string="Bigcommerce Store", copy=False)
     bigcommerce_shipment_order_status = fields.Char(string='Bigcommerce Shipment Order Status',readonly=True)
 
+    bigcommerce_order_status_id = fields.Many2one('sale.order.status', string="Bigcommerce Order Status")
+
     def get_shipped_qty(self):
         bigcommerce_store_hash = self.bigcommerce_store_id.bigcommerce_store_hash
         bigcommerce_client_seceret  = self.bigcommerce_store_id.bigcommerce_x_auth_client
@@ -219,6 +221,9 @@ class SaleOrderVts(models.Model):
                             partner_state = order.get('billing_address').get('state')
                             state_id = self.env['res.country.state'].search([('name', '=', partner_state)],
                                                                             limit=1)
+                            bigcommerce_order_status_id= order.get('status_id')
+                            order_status_id = self.env['sale.order.status'].search([('status_id', '=', bigcommerce_order_status_id)], limit=1)
+
                             partner_vals = {
                                     'phone': phone,
                                     'zip':zip,
@@ -288,21 +293,22 @@ class SaleOrderVts(models.Model):
                             base_shipping_cost = order.get('base_shipping_cost', 0.0)
                             currency_id = self.env['res.currency'].search([('name','=',order.get('currency_code'))],limit=1)
                             vals.update({'partner_id': partner_obj.id,
-                                         'partner_invoice_id': partner_obj.id,
-                                         'partner_shipping_id': partner_obj.id,
-                                         'date_order': date_time_str or today_date,
-                                         'carrier_id': carrier_id and carrier_id.id,
-                                         'company_id': warehouse_id.company_id and warehouse_id.company_id.id or self.env.user.company_id.id,
-                                         'warehouse_id': warehouse_id.id,
-                                         'carrierCode': '',
-                                         'serviceCode': '',
-                                         'delivery_price': base_shipping_cost,
-                                         'amount_tax':total_tax,
-                                         'currency_id':currency_id.id
+                                        'partner_invoice_id': partner_obj.id,
+                                        'partner_shipping_id': partner_obj.id,
+                                        'date_order': date_time_str or today_date,
+                                        'carrier_id': carrier_id and carrier_id.id,
+                                        'company_id': warehouse_id.company_id and warehouse_id.company_id.id or self.env.user.company_id.id,
+                                        'warehouse_id': warehouse_id.id,
+                                        'carrierCode': '',
+                                        'serviceCode': '',
+                                        'delivery_price': base_shipping_cost,
+                                        'amount_tax':total_tax,
+                                        'currency_id':currency_id.id,
                                         })
                             order_vals = self.create_sales_order_from_bigcommerce(vals)
                             order_vals.update({'big_commerce_order_id': big_commerce_order_id,
-                                               'bigcommerce_store_id': bigcommerce_store_id.id})
+                                               'bigcommerce_store_id': bigcommerce_store_id.id,
+                                               'bigcommerce_order_status_id' : order_status_id.id})
                             try:
                                 order_id = self.create(order_vals)
                                 if carrier_id and order_id:
@@ -497,6 +503,59 @@ class SaleOrderVts(models.Model):
             }
         }
 
+    def update_order_to_bigcommerce(self):
+        """
+        This Method Is Used Update Order To BigCommerce
+        :return: If Successfully Update Order
+        """
+        if self.big_commerce_order_id:
+            try:
+                if not self.bigcommerce_store_id:
+                    raise ValidationError("Please Select Bigcommerce Store")
+                bigcommerce_store_hash = self.bigcommerce_store_id.bigcommerce_store_hash
+                bigcommerce_order_id = self.big_commerce_order_id
+                api_url = "%s%s/v2/orders/%s"%(self.bigcommerce_store_id.bigcommerce_api_url,bigcommerce_store_hash,  bigcommerce_order_id)
+                bigcommerce_auth_token = self.bigcommerce_store_id.bigcommerce_x_auth_token
+                bigcommerce_auth_client = self.bigcommerce_store_id.bigcommerce_x_auth_client
+
+                headers ={ 'Accept'       : 'application/json',
+                           'Content-Type' : 'application/json',
+                           'X-Auth-Token' : "{}".format(bigcommerce_auth_token),
+                           'X-Auth-Client':  "{}".format(bigcommerce_auth_client)
+                        }
+                bigcommerce_order_status_id = self.bigcommerce_order_status_id.status_id
+                request_data = {
+                    "status_id": bigcommerce_order_status_id
+                }
+
+                data = json.dumps(request_data)
+                url = "{0}".format(api_url)
+                try:
+                    _logger.info("Send PUT Request From odoo to BigCommerce: {0}".format(url))
+                    response_data =  request(method='PUT', url=api_url, data=data, headers=headers)
+                except Exception as e:
+                    _logger.info("Getting an Error in PUT Req odoo to BigCommerce: {0}".format(e))
+                    raise ValidationError(e)
+                if response_data.status_code in [200, 201]:
+                    response_data = response_data.json()
+                    return {
+                        'effect': {
+                            'fadeout': 'slow',
+                            'message': 'Update Order Exported : %s' % (self.name),
+                            'img_url': '/web/static/src/img/smile.svg',
+                            'type': 'rainbow_man',
+                        }
+                    }
+                else:
+                    response_data = response_data.json()
+                    error_msg = "{0} : {1}".format(response_data)
+                    raise ValidationError(error_msg)
+            except Exception as e:
+                raise ValidationError("Process Is Not Completed Yet!  {}".format(e))
+        else:
+            raise ValidationError("Please First Export This Order Then Try To Update Order.!!!!")
+
+
 class SaleOrderLineVts(models.Model):
     _inherit = "sale.order.line"
 
@@ -518,3 +577,11 @@ class SaleOrderLineVts(models.Model):
                 'price_total': taxes['total_included'],
                 'price_subtotal': taxes['total_excluded'],
             })
+
+
+class SaleOrderStatus(models.Model):
+    _name = "sale.order.status"
+
+    status_id = fields.Char(string="Status ID")
+    name = fields.Char(string="Bigcommerce Order Status")
+    description = fields.Text(string="Description")
