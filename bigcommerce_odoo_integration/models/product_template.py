@@ -326,9 +326,12 @@ class ProductTemplate(models.Model):
             else:
                 mpn_url = re.sub('[^A-Za-z0-9]', '', mpn_url)
             if mpn_url != 'MPNURLMISSING':
+                keyword = self.env['product.search.keyword'].search([('name', '=', mpn_url),
+                        ('product_template_id','=', self.id)])
                 v = {'name': mpn_url,
                      'product_template_id': self.id}
-                self.env['product.search.keyword'].create(v)
+                if not keyword:
+                    self.env['product.search.keyword'].create(v)
 
     @api.model
     def create(self, vals):
@@ -520,7 +523,7 @@ class ProductTemplate(models.Model):
                     qty_available = product_id.with_context(warehouse=self.warehouse_id.id).qty_available
                 else:
                     qty_available = product_id.qty_available
-
+                
                 request_data = {
                     "name": product_id.name,
                     "price": product_id.list_price,
@@ -533,7 +536,18 @@ class ProductTemplate(models.Model):
                     "inventory_tracking":product_id.inventory_tracking,
                     "inventory_level":int(qty_available),
                     "is_visible":product_id.is_visible,
-                    "warranty":product_id.warranty or ''
+                    "warranty":product_id.warranty or '',
+                    "brand_id": product_id.x_studio_manufacturer and product_id.x_studio_manufacturer.bc_brand_id or 0,
+                    "weight": product_id.product_weight or 0,
+                    "width": product_id.width or 0,
+                    "height": product_id.height or 0,
+                    "is_free_shipping": product_id.is_free_shipping,
+                    "is_visible": product_id.is_visible,
+                    "is_featured": product_id.is_featured,
+                    "mpn": product_id.product_manufacturer or '',
+                    "gtin": product_id.gtin or '',
+                    "sort_order": product_id.sort_order or 0,
+                    "search_keywords": product_id.search_keywords
                 }
                 headers = {"Accept": "application/json",
                            "X-Auth-Client": "{}".format(bigcommerce_store_id and bigcommerce_store_id.bigcommerce_x_auth_client),
