@@ -326,9 +326,13 @@ class ProductTemplate(models.Model):
             else:
                 mpn_url = re.sub('[^A-Za-z0-9]', '', mpn_url)
             if mpn_url != 'MPNURLMISSING':
+                keyword = self.env['product.search.keyword'].search([('name', '=', mpn_url),
+                        ('product_template_id','=', self.id),
+                         ('id', '!=', self.id)])
                 v = {'name': mpn_url,
                      'product_template_id': self.id}
-                self.env['product.search.keyword'].create(v)
+                if not keyword:
+                    self.env['product.search.keyword'].create(v)
 
     @api.model
     def create(self, vals):
