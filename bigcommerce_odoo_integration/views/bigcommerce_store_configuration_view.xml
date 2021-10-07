@@ -42,19 +42,6 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Odoo To Bigcommerce Export">
-                            <table style="margin-top:35px">
-                                <tr>
-                                    <td style="padding-left:60px"><button name="odoo_to_bigcommerce_export_product_categories_main" string="Export Product Categories" type="object" class="oe_highlight" /></td>
-                                    <td style="padding-left:60px"><button name="export_product_to_bigcommerce_main" string="Export Products" type="object" class="oe_highlight"/></td>
-                                </tr>
-                                <br/>
-                                <!-- <tr>
-                                  <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_customers_main" string="Export Customers" type="object" class="oe_highlight" /></td>
-                                   <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_orders_main" string="Export Orders" type="object" class="oe_highlight" /></td>
-                                </tr> -->
-                            </table>
-                        </page>
                         <page string="Bigcommerce To Odoo Import">
                             <table style="margin-top:35px">
                                 <tr>
@@ -75,6 +62,20 @@
                                     <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_order_status_main" string="Import Order Statuses" type="object" class="oe_highlight" /></td>
                                 </tr>
                                 <br/>
+                            </table>
+                        </page>
+
+                        <page string="Odoo To Bigcommerce Export">
+                            <table style="margin-top:35px">
+                                <tr>
+                                    <td style="padding-left:60px"><button name="odoo_to_bigcommerce_export_product_categories_main" string="Export Product Categories" type="object" class="oe_highlight" /></td>
+                                    <td style="padding-left:60px"><button name="export_product_to_bigcommerce_main" string="Export Products" type="object" class="oe_highlight"/></td>
+                                </tr>
+                                <br/>
+                                <!-- <tr>
+                                  <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_customers_main" string="Export Customers" type="object" class="oe_highlight" /></td>
+                                   <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_orders_main" string="Export Orders" type="object" class="oe_highlight" /></td>
+                                </tr> -->
                             </table>
                         </page>
                     </notebook>

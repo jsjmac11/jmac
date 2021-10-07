@@ -389,12 +389,22 @@ class SaleOrder(models.Model):
 
     def _genrate_line_sequence(self):
         no = 1
-        for l in self.order_line.filtered(lambda l: not l.display_type):
+        for l in self.order_line.filtered(lambda l: not l.display_type and l.product_id.type != 'service'):
             l.sequence_ref = no
+            l.sequence = no
             count = 0
             for sl in l.sale_split_lines:
                 res = string.ascii_uppercase[count]
-                sl.sequence_ref = str(no) + res
+                sl.sequence_ref = ascii_uppercasestr(no) + res
+                count += 1
+            no += 1
+        for l in self.order_line.filtered(lambda l: not l.display_type and l.product_id.type == 'service'):
+            l.sequence_ref = no
+            l.sequence = no
+            count = 0
+            for sl in l.sale_split_lines:
+                res = string.ascii_uppercase[count]
+                sl.sequence_ref = ascii_uppercasestr(no) + res
                 count += 1
             no += 1
         return True
@@ -671,7 +681,7 @@ class SaleOrder(models.Model):
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
-    _order = 'order_id, sequence, id, sequence_ref'
+    _order = 'order_id, sequence, sequence_ref'
     # _rec_name = 'sol_name'
 
     @api.model
