@@ -381,9 +381,11 @@ class SaleOrderVts(models.Model):
                                                             limit=1)
 
             if not product_id:
-                response_msg = "Sale Order : {0} Prouduct Not Found Product SKU And Name : {1}".format(order_id and order_id.name, product_bigcommerce_id)
-                self.create_bigcommerce_operation_detail('order','import','','',operation_id,warehouse_id,True,response_msg)
-                continue
+                product_id = self.env['product.template'].import_product_manually_from_bigcommerce(product_id=product_bigcommerce_id, bigcommerce_store_id=order_id.bigcommerce_store_id)
+                # if not product_id:
+                #     response_msg = "Sale Order : {0} Prouduct Not Found Product SKU And Name : {1}".format(order_id and order_id.name, product_bigcommerce_id)
+                #     self.create_bigcommerce_operation_detail('order','import','','',operation_id,warehouse_id,True,response_msg)
+                #     continue
             quantity = order_line.get('quantity')
             price = order_line.get('base_price')
             total_tax = order_line.get('total_tax')

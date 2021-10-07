@@ -1103,14 +1103,7 @@ class ProductTemplate(models.Model):
                 else:
                     quant_id.sudo().write({'inventory_quantity':record.get('inventory_level'),'quantity':record.get('inventory_level')})
                 self._cr.commit()
-                return {
-                    'effect': {
-                        'fadeout': 'slow',
-                        'message': "Yeah! Successfully Product Imported".format(product_template_id.name),
-                        'img_url': '/web/static/src/img/smile.svg',
-                        'type': 'rainbow_man',
-                    }
-                }
+                return product_id
         except Exception as e:
             _logger.info("Getting an Error In Import Product Responase".format(e))
             raise UserError("Getting an Error In Import Product Responase".format(e))
