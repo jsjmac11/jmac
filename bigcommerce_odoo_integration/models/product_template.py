@@ -479,7 +479,18 @@ class ProductTemplate(models.Model):
             "inventory_level":int(qty_available),
             "is_visible":product_id.is_visible,
             "warranty":product_id.warranty or '',
-            "custom_url": {"url": "{}".format(product_url),"is_customized": False}
+            "custom_url": {"url": "{}".format(product_url),"is_customized": False},
+            "brand_id": product_id.x_studio_manufacturer and product_id.x_studio_manufacturer.bc_brand_id,
+            "weight": product_id.product_weight or 0,
+            "width": product_id.width or 0,
+            "height": product_id.height or 0,
+            "is_free_shipping": product_id.is_free_shipping,
+            "is_visible": product_id.is_visible,
+            "is_featured": product_id.is_featured,
+            "mpn": product_id.product_manufacturer or '',
+            "gtin": product_id.gtin or '',
+            "sort_order": product_id.sort_order or 0,
+            "search_keywords": product_id.search_keywords
         }
         return  product_data
 
