@@ -369,6 +369,10 @@ class StockQuantPackage(models.Model):
             self.tracking_ref = res['tracking_number']
             if move_line:
                 move_line.tracking_ref = res['tracking_number']
+                if not picking.carrier_tracking_ref:
+                    picking.carrier_tracking_ref = res['tracking_number']
+                else:
+                    picking.carrier_tracking_ref = picking.carrier_tracking_ref +','+ res['tracking_number']
         if res['shipmentId']:
             self.shipmentId = res['shipmentId']
             if move_line:
@@ -565,6 +569,11 @@ class StockMoveLine(models.Model):
                 pack = package.filtered(lambda l: move_line.result_package_id)
                 if pack:
                     pack = False
+            picking_id = move_line.picking_id
+            picking_tracking = move_line.picking_id.carrier_tracking_ref.split(',')
+            if move_line.tracking_ref in picking_tracking:
+                picking_tracking.remove(move_line.tracking_ref)
+            picking_id.carrier_tracking_ref = ','.join(map(str, picking_tracking))
             move_line.carrier_id.cancel_shipment(move_line.picking_id, move_line=move_line)
             msg = "Shipment %s cancelled" % move_line.tracking_ref
             move_line.picking_id.message_post(body=msg)

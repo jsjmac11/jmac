@@ -338,6 +338,7 @@ class SaleOrderVts(models.Model):
                                     response_data = response_data.json()
                                     if response_data and order_id:
                                         self.prepare_sale_order_lines(order_id,response_data,operation_id,warehouse_id)
+                                        # order_id._genrate_line_sequence()
                                     else:
                                         product_message="Product Is not available in order : {0}!".format(order_id and order_id.name)
                                         self.create_bigcommerce_operation_detail('order', 'import', req_data, response_data,
@@ -382,10 +383,10 @@ class SaleOrderVts(models.Model):
 
             if not product_id:
                 product_id = self.env['product.template'].import_product_manually_from_bigcommerce(product_id=product_bigcommerce_id, bigcommerce_store_id=order_id.bigcommerce_store_id)
-                # if not product_id:
-                #     response_msg = "Sale Order : {0} Prouduct Not Found Product SKU And Name : {1}".format(order_id and order_id.name, product_bigcommerce_id)
-                #     self.create_bigcommerce_operation_detail('order','import','','',operation_id,warehouse_id,True,response_msg)
-                #     continue
+            # if not product_id:
+            #     response_msg = "Sale Order : {0} Prouduct Not Found Product SKU And Name : {1}".format(order_id and order_id.name, product_bigcommerce_id)
+            #     self.create_bigcommerce_operation_detail('order','import','','',operation_id,warehouse_id,True,response_msg)
+            #     continue
             quantity = order_line.get('quantity')
             price = order_line.get('base_price')
             total_tax = order_line.get('total_tax')
