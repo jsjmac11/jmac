@@ -395,7 +395,7 @@ class SaleOrder(models.Model):
             count = 0
             for sl in l.sale_split_lines:
                 res = string.ascii_uppercase[count]
-                sl.sequence_ref = ascii_uppercasestr(no) + res
+                sl.sequence_ref = str(no) + res
                 count += 1
             no += 1
         for l in self.order_line.filtered(lambda l: not l.display_type and l.product_id.type == 'service'):
@@ -404,7 +404,7 @@ class SaleOrder(models.Model):
             count = 0
             for sl in l.sale_split_lines:
                 res = string.ascii_uppercase[count]
-                sl.sequence_ref = ascii_uppercasestr(no) + res
+                sl.sequence_ref = str(no) + res
                 count += 1
             no += 1
         return True
@@ -1256,8 +1256,8 @@ class SaleOrderLine(models.Model):
     @api.model
     def create(self, vals):
         res = super(SaleOrderLine, self).create(vals)
-        if vals.get('is_delivery'):
-            res.order_id._genrate_line_sequence()
+        # if vals.get('is_delivery'):
+        res.order_id._genrate_line_sequence()
         for line in res:
             if line.state == 'sale':
                 for picking in line.order_id.picking_ids.filtered(lambda r: len(r.move_lines) > 1):
