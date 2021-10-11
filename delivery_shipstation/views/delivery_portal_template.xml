@@ -6,26 +6,30 @@
                 <table class="table table-sm" id="sales_order_table">
                     <thead class="bg-100">
                         <tr>
-                            <th class="text-left">Picking</th>
+                            <!-- <th class="text-left">Picking</th> -->
+                            <th class="text-right">Date</th>
                             <th class="text-left">Product</th>
                             <th class="text-right">Cariier</th>
                             <th class="text-right">Shipping Service</th>
                             <th class="text-right">Package</th>
                             <th class="text-right">Tracking Ref</th>
                             <th class="text-right">Shipping Cost</th>
-                            <th class="text-right">Date</th>
+                            <th class="text-right">Done</th>
                         </tr>
                     </thead>
                     <tbody class="sale_tbody">
                         <tr t-foreach="sale_order.picking_line_ids" t-as="i">
-                            <td><span t-field="i.move_id.picking_id.name"/></td>
+                            <!-- <td><span t-field="i.move_id.picking_id.name"/></td> -->
+                            <td><span t-field="i.shipping_date"/></td>
                             <td><span t-field="i.product_id.default_code"/></td>
                             <td><span t-field="i.shipstation_carrier_id.name"/></td>
                             <td><span t-field="i.carrier_id.name"/></td>
                             <td><span t-field="i.result_package_id.name"/></td>
-                            <td><span t-field="i.tracking_ref"/></td>
+                            <td t-if="i.carrier_tracking_url">
+                                <a t-att-href="i.carrier_tracking_url" target="_blank"><span t-field="i.tracking_ref"/></a>
+                            </td>
                             <td><span t-field="i.carrier_price"/></td>
-                            <td><span t-field="i.shipping_date"/></td>
+                            <td><span t-field="i.qty_done"/></td>
                         </tr>
                     </tbody>
                 </table>
