@@ -459,6 +459,18 @@ class StockMoveLine(models.Model):
     weight_uom_name_oz = fields.Char(string='lbs')
     shipmentId = fields.Char('Label Shipment ID')
     batch_id = fields.Many2one('stock.picking.batch', string="Batch Transfer")
+    carrier_tracking_url = fields.Char(string='Tracking URL', compute='_compute_tracking_url')
+
+    @api.depends('carrier_id', 'tracking_ref')
+    def _compute_tracking_url(self):
+        res = ""
+        for line in self:
+            if line:
+                link = "%s" % (line.carrier_id and line.carrier_id.shipstation_carrier_id and line.carrier_id and line.carrier_id.shipstation_carrier_id.provider_tracking_link)
+            if not link:
+                raise ValidationError("Provider Link Is not available")
+            res = '%s %s' % (link, line.tracking_ref)
+            line.update({'carrier_tracking_url': res})
 
     @api.onchange('batch_id')
     def onchange_batch(self):
@@ -561,6 +573,21 @@ class StockMoveLine(models.Model):
                                                 'ship_package_id': data.get('min_service').get('package_id')
                                                 })
         return False
+
+    def open_shipstation_website_url(self):
+        link = "%s" % (
+                self.carrier_id and self.carrier_id.shipstation_carrier_id and self.carrier_id and self.carrier_id.shipstation_carrier_id.provider_tracking_link)
+        if not link:
+            raise ValidationError("Provider Link Is not available")
+        res = '%s %s' % (link, self.tracking_ref)
+        self.carrier_tracking_url = res
+        client_action = {
+            'type': 'ir.actions.act_url',
+            'name': "Shipment Tracking Page",
+            'target': 'new',
+            'url': res,
+        }
+        return client_action
 
     def cancel_shipment(self):
         for move_line in self:

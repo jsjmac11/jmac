@@ -222,6 +222,8 @@
                                 <field name="shipmentId" invisible="1"/>
                                 <field name="package_id" invisible="1"/>
                                 <field name="location_id" invisible="1"/>
+                                <field name="carrier_tracking_url" widget="url" invisible="1"/>
+                                <button type="object" class="fa fa-truck oe_link" name="open_shipstation_website_url" string="Tracking" attrs="{'invisible':['|','|','|',('tracking_ref','=',False),('delivery_type','in', ['fixed', 'base_on_rule']),('delivery_type','=',False), ('result_package_id', '=', False)]}"/>
                                 <button type="object" class="fa fa-arrow-right oe_link" name="cancel_shipment" string="Cancel" attrs="{'invisible':['|','|','|',('tracking_ref','=',False),('delivery_type','in', ['fixed', 'base_on_rule']),('delivery_type','=',False), ('result_package_id', '=', False)]}"/>
 	                        </tree>
 	                        <form>

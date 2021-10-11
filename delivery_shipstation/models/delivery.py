@@ -109,8 +109,17 @@ class ProviderShipstation(models.Model):
                 self.get_return_label(picking)
         return res
 
-    def shipstation_get_tracking_link(self, picking):
-        return False
+    # def shipstation_get_tracking_link(self, picking):
+    #     return False
+    def shipstation_get_tracking_link(self, pickings):
+        res = ""
+        for picking in pickings:
+            link = "%s" % (
+                        picking.carrier_id and picking.carrier_id.shipstation_carrier_id and picking.carrier_id and picking.carrier_id.shipstation_carrier_id.provider_tracking_link)
+            if not link:
+                raise ValidationError("Provider Link Is not available")
+            res = '%s %s' % (link, picking.carrier_tracking_ref)
+        return res
 
     def shipstation_cancel_shipment(self, picking, move_line=False):
         result = {}
@@ -184,6 +193,7 @@ class ShipstationCarrier(models.Model):
 
     name = fields.Char('Carrier')
     code = fields.Char('Code')
+    provider_tracking_link = fields.Char(string="Provider Tracking Link")
 
 
 class ShipstationPackage(models.Model):
