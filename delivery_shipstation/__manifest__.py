@@ -41,7 +41,7 @@
         'views/sale_order_view.xml',
         'views/picking_batch_view.xml',
         'views/product_template_view.xml',
-        'views/delivery_portal_template.xml',
+        # 'views/delivery_portal_template.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
