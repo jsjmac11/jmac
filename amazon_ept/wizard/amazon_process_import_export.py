@@ -966,7 +966,9 @@ class AmazonProcessImportExport(models.TransientModel):
                 amazon_marketplace = line.get('Marketplace', '')
                 fullfillment_by = line.get('Fulfillment', '')
                 instance = False
-
+                ASIN = line.get('ASIN', '')
+                Latency = line.get('Fulfillment Latency', '') 
+                
                 if amazon_marketplace:
                     instance = instance_dict.get(amazon_marketplace)
                     if not instance:
@@ -1012,7 +1014,7 @@ class AmazonProcessImportExport(models.TransientModel):
                         continue
 
                     self.create_amazon_listing(product_id, amazon_product_name, fullfillment_by,
-                                               seller_sku, instance)
+                                               seller_sku, instance, ASIN, Latency)
                     message = """ Amazon product created for seller sku %s || Instance %s""" % (seller_sku, instance.name)
                     self.prepare_amazon_map_product_log_line_vals(line, message,
                                                                   amz_product_model_id, transaction_log_lines,
@@ -1099,7 +1101,7 @@ class AmazonProcessImportExport(models.TransientModel):
         return transaction_log_lines
 
     def create_amazon_listing(self, product_id, amazon_product_name, fullfillment_by,
-                              seller_sku, instance):
+                              seller_sku, instance, ASIN, Latency):
         """
         This Method relocates if product exist in odoo and product does't exist in amazone create
         amazon product listing.
@@ -1116,11 +1118,14 @@ class AmazonProcessImportExport(models.TransientModel):
         amazon_product_ept_obj = self.env['amazon.product.ept']
         amazon_product_ept_obj.create(
             {'title': amazon_product_name or product_id.name,
+             'name': amazon_product_name or product_id.name,
              'fulfillment_by': fullfillment_by,
              'product_id': product_id.id,
              'seller_sku': seller_sku,
              'instance_id': instance.id,
-             'exported_to_amazon': True}
+             'exported_to_amazon': True,
+             'product_asin': ASIN,
+             'fulfillment_latency': Latency and int(Latency),}
         )
         return True
 
