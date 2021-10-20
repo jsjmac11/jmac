@@ -232,6 +232,7 @@ class PurchaseOrder(models.Model):
     is_note_line = fields.Boolean(string="Is Item Note", compute='_compute_item_note_line', store=True)
     address_mismatch = fields.Boolean(string="Address Mismatch")
     avs_cvv_flag = fields.Boolean(string="AVS/CVV Flag")
+    fob = fields.Char('F.O.B')
 
     @api.constrains('add_to_buy')
     def _create_paurchase_order(self):
