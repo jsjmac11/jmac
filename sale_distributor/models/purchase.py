@@ -188,6 +188,19 @@ class PurchaseOrderLine(models.Model):
             return lines and lines[0] or self.env['purchase.order.line']
         return super(PurchaseOrderLine, lines)._find_candidate(product_id, product_qty, product_uom, location_id, name, origin, company_id, values)
 
+    def show_so(self):
+        form_view_id = self.env.ref('sale.view_order_form').id
+        
+        return {
+            'name': ('Sale Order'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'sale.order',
+            'view_id': form_view_id,
+            'type': 'ir.actions.act_window',
+            'res_id': self.sale_line_id and self.sale_line_id.order_id.id
+        }
+        
 class PurchaseOrder(models.Model):
     """Update customization fileds for process line."""
 

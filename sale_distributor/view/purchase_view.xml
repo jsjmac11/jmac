@@ -28,10 +28,13 @@
                                     <field name="product_id" attrs="{'readonly': [('state', 'in', ('purchase', 'to approve','done','cancel'))], 'required': [('display_type', '=', False)]}" context="{'partner_id':parent.partner_id, 'quantity':product_qty,'uom':product_uom, 'company_id': parent.company_id}" force_save="1" domain="[('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]" invisible="1"/>
                                     <field name="name" widget="section_and_note_text"/>
                                     <field name="sale_line_id" invisible="0"/>
+                                    <button type="object" class="fa fa-arrow-right oe_link" name="show_so" string="View SO" />
                                     <field name="date_planned" optional="hide" attrs="{'required': [('display_type', '=', False)], 'readonly': [('parent.date_planned', '!=', False)]}" invisible="1"/>
                                     <field name="account_analytic_id" optional="hide" context="{'default_partner_id':parent.partner_id}" groups="analytic.group_analytic_accounting" domain="['|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]" invisible="1"/>
                                     <field name="analytic_tag_ids" optional="hide" groups="analytic.group_analytic_tags" widget="many2many_tags" options="{'color_field': 'color'}" domain="['|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]" invisible="1"/>
                                     <field name="product_qty"/>
+                                    <field name="create_uid" string="Initially Added By"/>
+                                    <field name="write_uid" string="Modified By"/>
                                     <field name="qty_received_manual" invisible="1"/>
                                     <field name="qty_received_method" invisible="1"/>
                                     <!-- attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))], 'readonly': [('qty_received_method', '!=', 'manual')]}" -->
@@ -58,7 +61,117 @@
             <xpath expr="//field[@name='order_line']/tree/field[@name='product_qty']" position="after">
                 <field name="allocated_qty" string="Allocated Qty"/>
                 <field name="invetory_qty" string="Invetory Qty"/>
+                <field name="create_uid" string="Initially Added By" optional="hide"/>
+                <field name="write_uid" string="Modified By" optional="hide"/>
             </xpath>
         </field>
     </record>
+    
+	<record id="purchase.purchase_rfq" model="ir.actions.act_window">
+	    <field name="name">Open POs</field>
+	    <field name="type">ir.actions.act_window</field>
+	    <field name="res_model">purchase.order</field>
+	    <field name="view_mode">tree,kanban,form,pivot,graph,calendar,activity</field>
+	    <field name="view_id" ref="purchase.purchase_order_tree"/>
+	    <field name="domain">[]</field>
+	    <field name="context">{}</field>
+	    <field name="search_view_id" ref="purchase.view_purchase_order_filter"/>
+	    <field name="context">{'quotation_only': True}</field>
+	    <field name="help" type="html">
+	      <p class="o_view_nocontent_smiling_face">
+	        Create a request for quotation
+	      </p><p>
+	        The quotation contains the history of the discussion
+	        you had with your vendor.
+	      </p>
+	    </field>
+	</record>
+        
+	<record id="purchase.purchase_form_action" model="ir.actions.act_window">
+	    <field name="name">Submitted POs'</field>
+	    <field name="type">ir.actions.act_window</field>
+	    <field name="res_model">purchase.order</field>
+	    <field name="view_mode">tree,kanban,form,pivot,graph,calendar,activity</field>
+	    <field name="view_id" ref="purchase.purchase_order_view_tree"/>
+	    <field name="domain">[('state','in',('purchase', 'done'))]</field>
+	    <field name="search_view_id" ref="purchase.purchase_order_view_search"/>
+	    <field name="context">{}</field>
+	    <field name="help" type="html">
+	      <p class="o_view_nocontent_smiling_face">
+	        Create a quotation
+	      </p><p>
+	        It will be converted into a purchase order.
+	      </p>
+	    </field>
+	</record>
+
+	<record id="purchase_form_action_all_po" model="ir.actions.act_window">
+	    <field name="name">All POs</field>
+	    <field name="type">ir.actions.act_window</field>
+	    <field name="res_model">purchase.order</field>
+	    <field name="view_mode">tree,kanban,form,pivot,graph,calendar,activity</field>
+	    <field name="view_id" ref="purchase.purchase_order_view_tree"/>
+	    <field name="search_view_id" ref="purchase.purchase_order_view_search"/>
+	    <field name="context">{}</field>
+	    <field name="help" type="html">
+	      <p class="o_view_nocontent_smiling_face">
+	        Create a quotation
+	      </p><p>
+	        It will be converted into a purchase order.
+	      </p>
+	    </field>
+	</record>
+                    
+	<menuitem action="purchase_form_action_all_po" 
+		id="menu_purchase_form_all_po" 
+		parent="purchase.menu_procurement_management" sequence="12"/>   
+
+	<record id="purchase_form_action_completed_po" model="ir.actions.act_window">
+	    <field name="name">Completed POs</field>
+	    <field name="type">ir.actions.act_window</field>
+	    <field name="res_model">purchase.order</field>
+	    <field name="view_mode">tree,kanban,form,pivot,graph,calendar,activity</field>
+	    <field name="view_id" ref="purchase.purchase_order_view_tree"/>
+	    <field name="search_view_id" ref="purchase.purchase_order_view_search"/>
+	    <field name="context">{}</field>
+	    <field name="domain">[('state','=','done')]</field>
+	    <field name="help" type="html">
+	      <p class="o_view_nocontent_smiling_face">
+	        Create a quotation
+	      </p><p>
+	        It will be converted into a purchase order.
+	      </p>
+	    </field>
+	</record>
+
+	<menuitem action="purchase_form_action_completed_po" 
+		id="menu_purchase_form_completed_po" 
+		parent="purchase.menu_procurement_management" sequence="14"/> 
+
+	<record id="purchase_form_action_to_approve_po" model="ir.actions.act_window">
+	    <field name="name">To Approve</field>
+	    <field name="type">ir.actions.act_window</field>
+	    <field name="res_model">purchase.order</field>
+	    <field name="view_mode">tree,kanban,form,pivot,graph,calendar,activity</field>
+	    <field name="view_id" ref="purchase.purchase_order_view_tree"/>
+	    <field name="search_view_id" ref="purchase.purchase_order_view_search"/>
+	    <field name="context">{}</field>
+	    <field name="domain">[('state','=','to approve')]</field>
+	    <field name="help" type="html">
+	      <p class="o_view_nocontent_smiling_face">
+	        Create a quotation
+	      </p><p>
+	        It will be converted into a purchase order.
+	      </p>
+	    </field>
+	</record>
+
+	<menuitem action="purchase_form_action_to_approve_po" 
+		id="menu_purchase_form_to_approve_po" 
+		parent="purchase.menu_procurement_management" sequence="16"/> 
+
+	<menuitem id="purchase.menu_procurement_management_supplier_name" name="Vendors"
+            parent="purchase.menu_purchase_config"
+            action="account.res_partner_action_supplier" sequence="15"/>
+            					         
 </odoo>

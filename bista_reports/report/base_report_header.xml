@@ -10,7 +10,7 @@
                         <div>
                             <strong t-field="company.partner_id.name"/>
                             <span t-field="company.partner_id"
-                                  t-options='{"widget": "contact", "fields": ["address", "phone","email"], "no_marker": True, "phone_icons": True}'/>
+                                  t-options='{"widget": "contact", "fields": ["address", "phone"], "no_marker": True, "phone_icons": True}'/>
                         </div>
                     </div>
                 </t>
@@ -116,6 +116,7 @@
                                 </td>
                                 <td class="text-right">
                                     <span class="pull-right tr_td" t-field="o.date_order"
+                                           t-options='{"format": "MM/dd/yyyy"}'
                                           style="width: 90%;display:block;border-bottom: 1px solid #808080;"/>
                                 </td>
                             </tr>

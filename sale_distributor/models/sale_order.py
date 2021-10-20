@@ -344,8 +344,9 @@ class SaleOrder(models.Model):
             [('sale_line_id', 'in', sol_ids.ids)])
         purchase_order = purchase_lines.mapped('order_id')
         for po in purchase_order:
-            po.button_confirm()
-            self.action_show_stock_move_line()
+            if not self.env.context.get('confirm_purchase'):
+                po.button_confirm()
+                self.action_show_stock_move_line()
         for picking in self.picking_ids.filtered(lambda r: len(r.move_lines) > 1):
             lines_by_type = {type: picking.move_lines.filtered(lambda r: r.sale_line_id.line_type == type)
                              for type in ['stock', 'buy', 'dropship']}
@@ -452,7 +453,7 @@ class SaleOrder(models.Model):
         dropship_purchase_ids = purchase_line_data.mapped(
             'order_id').filtered(lambda po: po.dest_address_id)
         if dropship_purchase_ids:
-            dropship_purchase_ids.button_confirm()
+            # dropship_purchase_ids.button_confirm()
             self.action_show_stock_move_line()
         return True
 
