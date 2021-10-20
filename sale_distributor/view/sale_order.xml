@@ -32,8 +32,8 @@
             <xpath expr="//header/button[@name='action_cancel']" position="before">
                  <button name="set_to_unprocess" string="Set to Sale Order" type="object" class="btn-primary" attrs="{'invisible': ['|', '|',('state', 'not in', ['new','sent','review']),('advance_payment','=',True), ('order_line','!=',[])]}" />
                 <button name="set_to_unprocess" string="Set to Sale Order" type="object" class="btn-primary" attrs="{'invisible': ['|', '|', ('state', 'not in', ['new','sent','review']),('advance_payment','=',True),('order_line','=',[])]}" confirm="Are you sure you want to proceed without payment?"/>
-                <button name="confirm_purchase" string="Submit" type="object"
-                        groups="sale_distributor.group_manager_confirm" context="{'send_by_item_code': True}"
+                <button name="confirm_purchase" string="Draft" type="object"
+                        groups="sale_distributor.group_manager_confirm" context="{'send_by_item_code': False, 'confirm_purchase': True}"
                         attrs="{'invisible': ['|', '|', ('state', 'not in', ['draft']),('is_unprocessed_order','=',True), ('is_dropship_line','!=',True)]}"/>
                 <button name="order_process" string="Dropship" context="{'dropship':True, 'send_by_item_code': True}" type="object" attrs="{'invisible': ['|',('state', 'not in', ['draft']),('is_process_line','=',True)]}"/>
                 <button name="order_process" string="Add to Buy" context="{'add_to_buy':True, 'send_by_item_code': True}" type="object" attrs="{'invisible': ['|',('state', 'not in', ['draft']),('is_process_line','=',True)]}"/>
