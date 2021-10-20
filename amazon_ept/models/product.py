@@ -38,6 +38,7 @@ class amazon_product_ept(models.Model):
     fulfillment_channel_sku = fields.Char('Fulfillment Channel SKU')
     last_feed_submission_id = fields.Char("Last Feed Submission Id", readonly=True, copy=False)
     error_in_export_product = fields.Boolean("Error In Export Product", default=False, copy=False)
+    shipping_template_id = fields.Many2one('amazon.product.shipping.template', string='Shipping Template', copy=False)
     _sql_constraints = [('amazon_instance_seller_sku_unique_constraint',
                          'unique(instance_id,seller_sku,fulfillment_by)',
                          "Seller sku must be unique per instance & Fulfullment By")]
