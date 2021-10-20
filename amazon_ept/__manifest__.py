@@ -36,6 +36,7 @@
         'view/fbm_sale_order_report_ept.xml',
         'view/stock_warehouse.xml',
         'view/delivery.xml',
+        'view/product_shipping_template_view.xml',
 
         'view/product_ul.xml',
 

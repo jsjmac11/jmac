@@ -48,6 +48,7 @@
                                     <group>
                                         <field name="seller_sku" required="1"/>
                                         <field name="product_id" readonly="1"/>
+                                        <field name="shipping_template_id" readonly="1"/>
                                         <field name="fix_stock_type"/>
                                         <field name="fix_stock_value"/>
                                         <field name="fulfillment_latency"/>
@@ -176,11 +177,14 @@
                     <field name="product_asin"/>
                     <field name="fulfillment_by"/>
                     <field name="product_id" string="Product"/>
+                    <field name="shipping_template_id" string="Shipping Template"/>
                     <group expand="0" string="Group By">
                         <filter name="instance" string="Instance" domain="[]"
                                 context="{'group_by':'instance_id'}"/>
                         <filter name="fulfillment_by" string="Fulfillment By" domain="[]"
                                 context="{'group_by':'fulfillment_by'}"/>
+                        <filter name="shipping_template_id" string="Shipping Template" domain="[]"
+                                context="{'group_by':'shipping_template_id'}"/>
                     </group>
                 </search>
             </field>

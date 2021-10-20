@@ -956,6 +956,7 @@ class AmazonProcessImportExport(models.TransientModel):
         log_rec = self.create_amz_product_map_log()
         product_obj = self.env["product.product"]
         amazon_product_ept_obj = self.env['amazon.product.ept']
+        amazon_product_shipping_template_obj = self.env['amazon.product.shipping.template']
         instance_dict = {}
         for line in reader:
             skip_line = self.read_import_csv_file_with_product_list(line, reader, model_id, transaction_log_lines)
@@ -968,6 +969,7 @@ class AmazonProcessImportExport(models.TransientModel):
                 instance = False
                 ASIN = line.get('ASIN', '')
                 Latency = line.get('Fulfillment Latency', '') 
+                shipping_template = line.get('Shipping Template', '')
                 
                 if amazon_marketplace:
                     instance = instance_dict.get(amazon_marketplace)
@@ -981,6 +983,11 @@ class AmazonProcessImportExport(models.TransientModel):
                                                      ("barcode", "=ilike", odoo_default_code)], limit=1)
                     amazon_product_id = amazon_product_ept_obj.search_amazon_product(instance.id, seller_sku,
                                                                                      fulfillment_by=fullfillment_by)
+                    shipping_template_id = amazon_product_shipping_template_obj.search([("name", "=ilike", shipping_template)], limit=1)
+
+                    if shipping_template_id:
+                        message = """ Amazon shipping template %s not found..!""" \
+                                  % (shipping_template)
                     if amazon_product_id:
                         message = """ Amazon product found for seller sku %s and Internal Reference %s""" \
                                   % (seller_sku, odoo_default_code)
@@ -1014,7 +1021,7 @@ class AmazonProcessImportExport(models.TransientModel):
                         continue
 
                     self.create_amazon_listing(product_id, amazon_product_name, fullfillment_by,
-                                               seller_sku, instance, ASIN, Latency)
+                                               seller_sku, instance, ASIN, Latency, shipping_template_id)
                     message = """ Amazon product created for seller sku %s || Instance %s""" % (seller_sku, instance.name)
                     self.prepare_amazon_map_product_log_line_vals(line, message,
                                                                   amz_product_model_id, transaction_log_lines,
@@ -1101,7 +1108,7 @@ class AmazonProcessImportExport(models.TransientModel):
         return transaction_log_lines
 
     def create_amazon_listing(self, product_id, amazon_product_name, fullfillment_by,
-                              seller_sku, instance, ASIN, Latency):
+                              seller_sku, instance, ASIN, Latency, shipping_template_id):
         """
         This Method relocates if product exist in odoo and product does't exist in amazone create
         amazon product listing.
@@ -1125,7 +1132,9 @@ class AmazonProcessImportExport(models.TransientModel):
              'instance_id': instance.id,
              'exported_to_amazon': True,
              'product_asin': ASIN,
-             'fulfillment_latency': Latency and int(Latency),}
+             'fulfillment_latency': Latency and int(Latency),
+             'shipping_template_id': shipping_template_id.id,
+            }
         )
         return True
 
