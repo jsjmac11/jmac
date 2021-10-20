@@ -86,9 +86,14 @@
 	      </p>
 	    </field>
 	</record>
-        
+
+	<menuitem action="purchase.purchase_rfq" id="purchase.menu_purchase_rfq"
+            parent="purchase.menu_procurement_management"
+            name="Open POs"
+            sequence="0"/>
+                    
 	<record id="purchase.purchase_form_action" model="ir.actions.act_window">
-	    <field name="name">Submitted POs'</field>
+	    <field name="name">Submitted POs</field>
 	    <field name="type">ir.actions.act_window</field>
 	    <field name="res_model">purchase.order</field>
 	    <field name="view_mode">tree,kanban,form,pivot,graph,calendar,activity</field>
@@ -105,6 +110,10 @@
 	    </field>
 	</record>
 
+	<menuitem action="purchase.purchase_form_action" id="purchase.menu_purchase_form_action" 
+		name="Submitted POs"
+		parent="purchase.menu_procurement_management" sequence="6"/>
+	
 	<record id="purchase_form_action_all_po" model="ir.actions.act_window">
 	    <field name="name">All POs</field>
 	    <field name="type">ir.actions.act_window</field>
