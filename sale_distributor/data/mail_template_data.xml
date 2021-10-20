@@ -19,17 +19,6 @@
                             with reference: ${object.partner_ref}
                         % endif
                         from ${object.company_id.name}.
-                        <br/><br/>
-                        % if object.is_note_line:
-                            <strong> Note: </strong>
-                        % endif
-                        % for aline in object.order_line:
-                            % if aline.display_type == 'line_note':
-                                % if aline.name:
-                                    ${aline.name} <br/>
-                                % endif
-                            % endif
-                        % endfor
                         <br/>
                         If you have any questions, please do not hesitate to contact us.
                         <br/><br/>
