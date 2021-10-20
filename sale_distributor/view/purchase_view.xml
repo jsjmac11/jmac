@@ -33,8 +33,10 @@
                                     <field name="account_analytic_id" optional="hide" context="{'default_partner_id':parent.partner_id}" groups="analytic.group_analytic_accounting" domain="['|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]" invisible="1"/>
                                     <field name="analytic_tag_ids" optional="hide" groups="analytic.group_analytic_tags" widget="many2many_tags" options="{'color_field': 'color'}" domain="['|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]" invisible="1"/>
                                     <field name="product_qty"/>
-                                    <field name="create_uid" string="Initially Added By"/>
-                                    <field name="write_uid" string="Modified By"/>
+                                    <field name="create_uid" string="Initially Added By" optional="hide"/>
+                                    <field name="write_uid" string="Modified By" optional="hide"/>
+                                    <field name="create_date" optional="hide"/>
+                                    <field name="write_date"  optional="hide"/>
                                     <field name="qty_received_manual" invisible="1"/>
                                     <field name="qty_received_method" invisible="1"/>
                                     <!-- attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))], 'readonly': [('qty_received_method', '!=', 'manual')]}" -->
@@ -46,7 +48,7 @@
                                     <field name="price_unit" attrs="{'readonly': [('invoice_lines', '!=', [])]}" invisible="1"/>
                                     <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','purchase'), ('company_id', '=', parent.company_id)]" context="{'default_type_tax_use': 'purchase', 'search_view_ref': 'account.account_tax_view_search'}" options="{'no_create': True}" optional="show" invisible="1"/>
                                     <field name="price_subtotal" widget="monetary" invisible="1"/>
-                                    <button name="change_sol_qty" class="oe_edit_only oe_highlight" string="Update" type="object"/>
+                                    <button name="change_sol_qty" class="oe_edit_only oe_highlight" string="Allocate" type="object"/>
                                     <button name="action_cancel_pol" type="object" class="fa fa-trash-o oe_edit_only" aria-label="Delete row 1" context="{'purchase_split_line':True}" confirm="Are you sure you want to delete this record?"/>
                                 </tree>
                             </field>
@@ -63,7 +65,13 @@
                 <field name="invetory_qty" string="Invetory Qty"/>
                 <field name="create_uid" string="Initially Added By" optional="hide"/>
                 <field name="write_uid" string="Modified By" optional="hide"/>
+                <field name="create_date" optional="hide"/>
+                <field name="write_date"  optional="hide"/>
             </xpath>
+            <xpath expr="//field[@name='incoterm_id']" position="after">
+                <field name="fob"/>
+            </xpath>
+            
         </field>
     </record>
 
