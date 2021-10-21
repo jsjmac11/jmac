@@ -5,6 +5,18 @@
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="after">
+                <label for="partner_address_id" string="Ship To Address" attrs="{'invisible': [('default_location_dest_id_usage', '=', 'customer')]}"/>
+                <div class="o_row invoice_row">
+                    <field  name="partner_address_id" context="{'show_address_only': True,'address_inline':True}" attrs="{'invisible': [('default_location_dest_id_usage', '=', 'customer')], 'required': [('default_location_dest_id_usage', '=', 'customer')]}"
+                    domain="['|',('id', '=', partner_id), ('parent_id', '=', partner_id)]"
+                    options='{"always_reload": True}'/>
+                </div>
+                <label for="dest_address_id" string="Ship To Address" attrs="{'invisible': [('default_location_dest_id_usage', '!=', 'customer')]}"/>
+                <div class="o_row invoice_row">
+                    <field name="dest_address_id" groups="stock.group_stock_multi_locations" context="{ 'show_address_only': True,'address_inline':True}" attrs="{'invisible': [('default_location_dest_id_usage', '!=', 'customer')], 'required': [('default_location_dest_id_usage', '=', 'customer')]}" options='{"always_reload": True}'/>
+                </div>
+            </xpath>
             <xpath expr="//field[@name='fiscal_position_id']" position="after">
                 <field name="add_to_buy"/>
             </xpath>
@@ -214,6 +226,16 @@
 	      </p>
 	    </field>
 	</record>
+
+    <record id="purchase_order_view_form_inherit_sale_stock" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.split</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase_stock.purchase_order_view_form_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='dest_address_id']" position="replace">
+            </xpath>
+        </field>
+    </record>
 
 	<menuitem action="purchase_form_action_to_approve_po" 
 		id="menu_purchase_form_to_approve_po" 
