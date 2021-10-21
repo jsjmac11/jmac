@@ -247,9 +247,15 @@ class PurchaseOrder(models.Model):
     readonly=True,
     states={'draft': [('readonly', False)], 'sent': [('readonly', False)],
             'to_approve': [('readonly', False)], 'purchase': [('readonly', False)]})
+    phone = fields.Char("Phone")
+    email = fields.Char("Email")
 
     @api.onchange('partner_id', 'picking_type_id')
     def onchange_partner_id(self):
+        if self.partner_id:
+            self.phone = self.partner_id.phone
+            self.email = self.partner_id.email
+            
         if self.default_location_dest_id_usage != 'customer':
             addr = self.company_id.partner_id.address_get(['delivery'])
             values = {

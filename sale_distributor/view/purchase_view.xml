@@ -5,10 +5,16 @@
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
+        	<xpath expr="//field[@name='partner_id']" position="after">
+        		<field name="phone"/>
+        		<field name="email"/>
+        	</xpath>
             <xpath expr="//field[@name='company_id']" position="after">
-                <label for="partner_address_id" string="Ship To Address" attrs="{'invisible': [('default_location_dest_id_usage', '=', 'customer')]}"/>
+                <label for="partner_address_id" string="Ship To Address" 
+                	attrs="{'invisible': [('default_location_dest_id_usage', '=', 'customer')]}"/>
                 <div class="o_row invoice_row">
-                    <field  name="partner_address_id" context="{'show_address_only': True,'address_inline':True}" attrs="{'invisible': [('default_location_dest_id_usage', '=', 'customer')], 'required': [('default_location_dest_id_usage', '=', 'customer')]}"
+                    <field  name="partner_address_id" context="{'show_address_only': True,'address_inline':True}" 
+                    attrs="{'invisible': [('default_location_dest_id_usage', '=', 'customer')],}"
                     domain="['|',('id', '=', partner_id), ('parent_id', '=', partner_id)]"
                     options='{"always_reload": True}'/>
                 </div>
