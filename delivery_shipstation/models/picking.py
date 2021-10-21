@@ -437,7 +437,7 @@ class StockMoveLine(models.Model):
         string='Demand')
 
     carrier_tracking_ref = fields.Char(string='Tracking Reference', copy=False)
-    ship_package_id = fields.Many2one('shipstation.package', 'Package', required="1")
+    ship_package_id = fields.Many2one('shipstation.package', 'Package')
     length = fields.Float('L (in)', compute='_compute_shipping_weight',
                                    inverse='_inverse_shipping_weight',store=True, compute_sudo=True)
     width = fields.Float('W (in)', compute='_compute_shipping_weight',
