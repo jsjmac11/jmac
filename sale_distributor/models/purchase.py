@@ -234,7 +234,7 @@ class PurchaseOrder(models.Model):
     avs_cvv_flag = fields.Boolean(string="AVS/CVV Flag")
     fob = fields.Char('F.O.B')
     phone_number = fields.Char(related='partner_id.phone', string="Phone Number")
-    dropship_selection = fields.Selection([('Yes', 'Yes'), ('No', 'No')], string='Dropships')
+    dropship_selection = fields.Selection(related='partner_id.dropship_selection', string='Dropships')
     dropship_fee = fields.Float(related='partner_id.dropship_fee', string="Dropship Fee")
     order_min = fields.Char(related='partner_id.order_min', string="Order Minimum")
     below_min_fee = fields.Float(related='partner_id.below_min_fee', string="Below Minimum Fee")
