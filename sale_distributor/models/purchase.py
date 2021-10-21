@@ -242,6 +242,26 @@ class PurchaseOrder(models.Model):
     ships_from = fields.Char(related='partner_id.ships_from', string="Ship From")
     ship_cutoff_time = fields.Char(related='partner_id.ship_cutoff_time', string="Shipping Cutoff Time")
     note = fields.Text(related='partner_id.note', string="Note")
+    partner_address_id = fields.Many2one(
+    'res.partner', string='Ship To Address',
+    readonly=True,
+    states={'draft': [('readonly', False)], 'sent': [('readonly', False)],
+            'to_approve': [('readonly', False)], 'purchase': [('readonly', False)]})
+
+    @api.onchange('partner_id', 'picking_type_id')
+    def onchange_partner_id(self):
+        if self.default_location_dest_id_usage != 'customer':
+            addr = self.company_id.partner_id.address_get(['delivery'])
+            values = {
+                'partner_address_id': addr['delivery'],
+            }
+            self.update(values)
+        else:
+            addr = self.partner_id.address_get(['delivery'])
+            values = {
+                'dest_address_id': addr['delivery'],
+            }
+            self.update(values)
 
     @api.constrains('add_to_buy')
     def _create_paurchase_order(self):
