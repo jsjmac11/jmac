@@ -45,6 +45,9 @@
                     </group>
                 </page>
             </xpath>
+            <xpath expr="//page[@name='sales_purchases']//group[@name='purchase']" position="inside">
+                <field name="purchase_delivery_carrier_id" string="Shipping Method"/>
+            </xpath>
         </field>
     </record>
 
