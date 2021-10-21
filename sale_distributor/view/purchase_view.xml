@@ -71,6 +71,26 @@
             <xpath expr="//field[@name='incoterm_id']" position="after">
                 <field name="fob"/>
             </xpath>
+
+            <xpath expr="//page[@name='purchase_delivery_invoice']" position="after">
+                <page name="vendor_partinent_info" string="Vendor/Distributor Pertinent Info">
+                    <group>
+                        <group>
+                            <field name="phone_number"/>
+                            <field name="dropship_selection" widget="radio" options="{'horizontal': true}"/>
+                            <field name="dropship_fee"/>
+                            <field name="order_min"/>
+                            <field name="below_min_fee"/>
+                        </group>
+                        <group>
+                            <field name="free_freight_level"/>
+                            <field name="ships_from"/>
+                            <field name="ship_cutoff_time"/>
+                            <field name="note" string="Notes"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
             
         </field>
     </record>

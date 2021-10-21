@@ -18,6 +18,14 @@ class ResPartner(models.Model):
     sequence_name = fields.Char(string="Unique No.")
     email_cc = fields.Char(string="Email CC")
     email_bcc = fields.Char(string="Email BCC")
+    dropship_selection = fields.Selection([('Yes', 'Yes'), ('No', 'No')], string='Dropships')
+    dropship_fee = fields.Float(string="Dropship Fee")
+    order_min = fields.Char(string="Order Minimum")
+    below_min_fee = fields.Float(string="Below Minimum Fee")
+    free_freight_level = fields.Char(string="Free Freight Level")
+    ships_from = fields.Char(string="Ship From")
+    ship_cutoff_time = fields.Char(string="Shipping Cutoff Time")
+    note = fields.Text(string="Note")
 
     def read(self, fields=None, load='_classic_read'):
         res =  super(ResPartner, self).read(fields=fields, load=load)
