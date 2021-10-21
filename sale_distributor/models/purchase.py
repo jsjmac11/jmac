@@ -249,13 +249,14 @@ class PurchaseOrder(models.Model):
             'to_approve': [('readonly', False)], 'purchase': [('readonly', False)]})
     phone = fields.Char("Phone")
     email = fields.Char("Email")
+    purchase_shipping_method_id = fields.Many2one('purchase.shipping.method', string="Shipping Method", copy=False)
 
     @api.onchange('partner_id', 'picking_type_id')
     def onchange_partner_id(self):
         if self.partner_id:
             self.phone = self.partner_id.phone
             self.email = self.partner_id.email
-            
+            self.purchase_shipping_method_id = self.partner_id.purchase_delivery_carrier_id.id
         if self.default_location_dest_id_usage != 'customer':
             addr = self.company_id.partner_id.address_get(['delivery'])
             values = {
@@ -429,3 +430,9 @@ class PurchaseOrder(models.Model):
         #     [('sale_line_id', 'in', sol_ids.ids)])
         # move_ids._action_cancel()
         # sol_ids.write({'po_cancel_note': '', 'active': False})
+
+class PurchaseShippingMethod(models.Model):
+    _name = "purchase.shipping.method"
+    _description = "Purchase Shipping Method"
+
+    name = fields.Char(string="Shipping Method")

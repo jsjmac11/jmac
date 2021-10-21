@@ -27,7 +27,7 @@
                 <field name="add_to_buy"/>
             </xpath>
             <xpath expr="//field[@name='origin']" position="after">
-                <field name="shipping_method" attrs="{'invisible': [('default_location_dest_id_usage', '!=', 'customer')]}"/>
+                <field name="purchase_shipping_method_id"/>
                 <field name="is_note_line" invisible="1"/>
             </xpath>
             <xpath expr="//field[@name='notes']" position="before">
@@ -243,12 +243,55 @@
         </field>
     </record>
 
+    <!-- Purchase shipping method -->
+    <record id="purchase_shipping_method_tree" model="ir.ui.view">
+        <field name="name">purchase.shipping.method.tree</field>
+        <field name="model">purchase.shipping.method</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    <record id="purchase_shipping_method_form" model="ir.ui.view">
+          <field name="name">purchase.shipping.method.form</field>
+            <field name="model">purchase.shipping.method</field>
+            <field name="arch" type="xml">
+                <form>  
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" required="1"/>
+                        </group>
+                        </group>
+                    </sheet>
+                </form>
+           </field>
+    </record>
+       
+    <record id="action_purchase_shipping_method" model="ir.actions.act_window">
+        <field name="name">Shipping Method</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.shipping.method</field>
+        <field name="view_id" ref="purchase_shipping_method_tree"/>
+    </record>
+
 	<menuitem action="purchase_form_action_to_approve_po" 
 		id="menu_purchase_form_to_approve_po" 
 		parent="purchase.menu_procurement_management" sequence="16"/> 
 
-	<menuitem id="purchase.menu_procurement_management_supplier_name" name="Vendors"
+	<menuitem id="purchase.menu_procurement_management_supplier_name" name="Distributor List"
             parent="purchase.menu_purchase_config"
-            action="account.res_partner_action_supplier" sequence="15"/>
+            action="account.res_partner_action_supplier" sequence="1"/>
+
+    <menuitem
+           action="product.product_supplierinfo_type_action" id="purchase.menu_product_pricelist_action2_purchase"
+           parent="purchase.menu_purchase_config" sequence="2" string="Distributor Pricelists"/>
+
+    <menuitem id="purchase_shipping_method_menu"
+            name="Shipping Methods"
+            parent="purchase.menu_purchase_config"
+            action="action_purchase_shipping_method" 
+            sequence="3"/>
             					         
 </odoo>

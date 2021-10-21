@@ -26,6 +26,7 @@ class ResPartner(models.Model):
     ships_from = fields.Char(string="Ship From")
     ship_cutoff_time = fields.Char(string="Shipping Cutoff Time")
     note = fields.Text(string="Note")
+    purchase_delivery_carrier_id = fields.Many2one('purchase.shipping.method', string="Delivery Method")
 
     def read(self, fields=None, load='_classic_read'):
         res =  super(ResPartner, self).read(fields=fields, load=load)

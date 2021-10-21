@@ -85,8 +85,10 @@
                     </th>
                     <tr style="height:38px;">
                         <td class="text-left"
-                            style="border: 1px solid black; border-top: 0;height: 20px; width: 50%;padding-left: 5px;padding-top: 5px;"><div class="mx-2 tr_td">
-                            confirm</div>
+                            style="border: 1px solid black; border-top: 0;height: 20px; width: 50%;padding-left: 5px;padding-top: 5px;">
+                            <div class="mx-2 tr_td">
+                                <span class="tr_td" t-field="o.purchase_shipping_method_id.name" />
+                            </div>
                         </td>
                     </tr>
                 </table>
