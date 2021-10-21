@@ -20,14 +20,14 @@
     'depends': ['mail'],
     'data': [
         'views/compose_view.xml',
-        'views/templates.xml',
+        # 'views/templates.xml',
     ],
     "images":  ['static/description/icon.png'],
     "application":  True,
     "installable":  True,
     "auto_install":  False,
     "pre_init_hook":  "pre_init_check",
-    'qweb': [
-    'static/src/xml/thread.xml',
-    ],
+    # 'qweb': [
+    # 'static/src/xml/thread.xml',
+    # ],
 }
