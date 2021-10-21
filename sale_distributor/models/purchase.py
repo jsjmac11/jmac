@@ -233,6 +233,15 @@ class PurchaseOrder(models.Model):
     address_mismatch = fields.Boolean(string="Address Mismatch")
     avs_cvv_flag = fields.Boolean(string="AVS/CVV Flag")
     fob = fields.Char('F.O.B')
+    phone_number = fields.Char(related='partner_id.phone', string="Phone Number")
+    dropship_selection = fields.Selection([('Yes', 'Yes'), ('No', 'No')], related='partner_id.dropship_selection', string='Dropships')
+    dropship_fee = fields.Float(related='partner_id.dropship_fee', string="Dropship Fee")
+    order_min = fields.Char(related='partner_id.order_min', string="Order Minimum")
+    below_min_fee = fields.Float(related='partner_id.below_min_fee', string="Below Minimum Fee")
+    free_freight_level = fields.Char(related='partner_id.free_freight_level', string="Free Freight Level")
+    ships_from = fields.Char(related='partner_id.ships_from', string="Ship From")
+    ship_cutoff_time = fields.Char(related='partner_id.ship_cutoff_time', string="Shipping Cutoff Time")
+    note = fields.Text(related='partner_id.note', string="Note")
 
     @api.constrains('add_to_buy')
     def _create_paurchase_order(self):

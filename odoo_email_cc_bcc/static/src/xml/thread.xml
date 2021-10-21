@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-extend="mail.widget.Thread.Message">
+        <t t-jquery=".o_thread_message_content " t-operation="prepend">
+            <small>
+                <t t-if="message.email_cc">
+                    <p><b>CC Emails: </b><t t-esc="message.email_cc"/></p>
+                </t>
+                <t t-if="message.email_bcc">
+                    <p><b>BCC Emails: </b><t t-esc="message.email_bcc"/></p>
+                </t>
+            </small>
+        </t>
+    </t>
+</templates>

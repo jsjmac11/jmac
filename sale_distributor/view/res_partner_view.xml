@@ -27,6 +27,24 @@
                     </field>
                 </page>
             </xpath>
+            <xpath expr="//page[last()]" position="after">
+                <page name="manufacturer" string="Manufacturer Info">
+                    <group>
+                        <group>
+                            <field name="dropship_selection" widget="radio" options="{'horizontal': true}"/>
+                            <field name="dropship_fee"/>
+                            <field name="order_min"/>
+                            <field name="below_min_fee"/>
+                        </group>
+                        <group>
+                            <field name="free_freight_level"/>
+                            <field name="ships_from"/>
+                            <field name="ship_cutoff_time"/>
+                            <field name="note" string="Notes"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
         </field>
     </record>
 
