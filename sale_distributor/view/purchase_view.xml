@@ -6,6 +6,14 @@
         <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
         	<xpath expr="//field[@name='partner_id']" position="after">
+        	
+				<label for="vendor_address_id" string="Address" 
+                	/>
+                <div class="o_row invoice_row">
+                    <field  name="vendor_address_id" context="{'show_address_only': True,'address_inline':True}" 
+                    options='{"always_reload": True}'/>
+                </div>
+                
         		<field name="phone"/>
         		<field name="email"/>
         	</xpath>
