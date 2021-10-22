@@ -345,6 +345,8 @@ class SaleOrder(models.Model):
         purchase_order = purchase_lines.mapped('order_id')
         for po in purchase_order:
             if not self.env.context.get('confirm_purchase'):
+                po.onchange_vendor_address()
+                po.onchange_partner_id()
                 po.button_confirm()
                 self.action_show_stock_move_line()
         for picking in self.picking_ids.filtered(lambda r: len(r.move_lines) > 1):
