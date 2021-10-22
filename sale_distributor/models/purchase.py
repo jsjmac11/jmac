@@ -247,15 +247,30 @@ class PurchaseOrder(models.Model):
     readonly=True,
     states={'draft': [('readonly', False)], 'sent': [('readonly', False)],
             'to_approve': [('readonly', False)], 'purchase': [('readonly', False)]})
+
+    vendor_address_id = fields.Many2one(
+    'res.partner', string='Vendor Address',
+    states={'draft': [('readonly', False)], 'sent': [('readonly', False)],
+            'to_approve': [('readonly', False)], 'purchase': [('readonly', False)]})
+    
     phone = fields.Char("Phone")
     email = fields.Char("Email")
     purchase_shipping_method_id = fields.Many2one('purchase.shipping.method', string="Shipping Method", copy=False)
 
-    @api.onchange('partner_id', 'picking_type_id')
-    def onchange_partner_id(self):
+    @api.onchange('partner_id')
+    def onchange_vendor_address(self):
         if self.partner_id:
             self.phone = self.partner_id.phone
             self.email = self.partner_id.email
+        addr = self.partner_id.address_get(['contact'])
+        values = {
+            'vendor_address_id': addr['contact'],
+        }
+        self.update(values)
+            
+    @api.onchange('partner_id', 'picking_type_id')
+    def onchange_partner_id(self):
+        if self.partner_id:
             self.purchase_shipping_method_id = self.partner_id.purchase_delivery_carrier_id.id
         if self.default_location_dest_id_usage != 'customer':
             addr = self.company_id.partner_id.address_get(['delivery'])

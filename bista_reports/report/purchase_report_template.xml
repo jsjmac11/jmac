@@ -42,7 +42,7 @@
                         <td class="text-left"
                             style="border: 1px solid black;width: 50%;padding-left: 5px;padding-top: 5px;">
                             <t t-if="o.dest_address_id" />
-                            <div class="mx-2 tr_td" t-field="o.company_id.partner_id" style="height: 116px;" t-options='{"widget": "contact", "fields": ["name","address", "phone"], "no_marker": True, "phone_icons": True}'
+                            <div class="mx-2 tr_td" t-field="o.company_id.partner_id" style="height: 116px;" t-options='{"widget": "contact", "fields": ["name","address"], "no_marker": True, }'
                                 name="company_address" />
                         </td>
                     </tr>
