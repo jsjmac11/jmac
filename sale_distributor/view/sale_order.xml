@@ -14,7 +14,7 @@
                 <attribute name="context">{'send_by_item_code': True, 'add_to_buy_merge_po':True}</attribute>
             </xpath>
             <xpath expr="//header/button[@name='action_quotation_send' and @states='sent,sale']" position="attributes">
-                <attribute name="name">Send Order</attribute>
+                <attribute name="string">Send Order</attribute>
                 <attribute name="states">sale</attribute>
                 <attribute name="context">{'send_by_email': True}</attribute>
             </xpath>

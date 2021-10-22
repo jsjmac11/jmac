@@ -3,8 +3,14 @@
     <t t-extend="mail.widget.Thread.Message">
         <t t-jquery=".o_thread_message_content " t-operation="prepend">
             <small>
+                <t t-if="message.cc_partners">
+                    <p><b>CC: </b><t t-esc="message.cc_partners"/></p>
+                </t>
                 <t t-if="message.email_cc">
                     <p><b>CC Emails: </b><t t-esc="message.email_cc"/></p>
+                </t>
+                <t t-if="message.bcc_partners">
+                    <p><b>BCC: </b><t t-esc="message.bcc_partners"/></p>
                 </t>
                 <t t-if="message.email_bcc">
                     <p><b>BCC Emails: </b><t t-esc="message.email_bcc"/></p>

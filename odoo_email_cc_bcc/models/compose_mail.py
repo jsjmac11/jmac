@@ -191,6 +191,30 @@ class Message(models.Model):
                         notfi_list.append(re)
         return res
 
+    def message_format(self):
+        res = super(Message, self).message_format()
+        partners_dict = {}
+        for obj in res:
+            cc_partners = ''
+            bcc_partners = ''
+            cc_partners_list = self.env['res.partner'].browse(
+                obj.get('cc_recipient_ids', [])).read(['name'])
+            for item in cc_partners_list:
+                cc_partners += item.get('name') + ', '
+            bcc_partners_list = self.env['res.partner'].browse(
+                obj.get('bcc_recipient_ids', [])).read(['name'])
+            for item in bcc_partners_list:
+                bcc_partners += item.get('name') + ', '
+            obj['cc_partners'] = cc_partners
+            obj['bcc_partners'] = bcc_partners
+        return res
+
+    def _get_message_format_fields(self):
+        message_values = super(Message, self)._get_message_format_fields()
+        return message_values + [
+            'email_cc', 'cc_recipient_ids',
+            'email_bcc', 'bcc_recipient_ids',
+        ]
 
 class Partners(models.Model):
 
@@ -394,6 +418,47 @@ class Mail(models.Model):
 
 class Thread(models.AbstractModel):
     _inherit = "mail.thread"
+
+
+    def _notify_specific_email_values(self, message):
+        res = super(Thread, self)._notify_specific_email_values(message)
+        res.update({'email_bcc': message.email_bcc, 'email_cc': message.email_cc, 'email_to': message.email_to, 'cc_recipient_ids': message.cc_recipient_ids, 'bcc_recipient_ids': message.bcc_recipient_ids,})
+        return res
+
+    def _message_add_suggested_recipient(self, result, partner=None, email=None, reason=''):
+        """ Called by _message_get_suggested_recipients, to add a suggested
+            recipient in the result dictionary. The form is :
+                partner_id, partner_name<partner_email> or partner_name, reason """
+        self.ensure_one()
+        if email and not partner:
+            # get partner info from email
+            partner_info = self._message_partner_info_from_emails([email])[0]
+            if partner_info.get('partner_id'):
+                partner = self.env['res.partner'].sudo().browse([partner_info['partner_id']])[0]
+        if email and email in [val[1] for val in result[self.ids[0]]]:  # already existing email -> skip
+            return result
+        # if partner and partner in self.message_partner_ids:  # recipient already in the followers -> skip
+        #     return result
+        if partner and partner.id in [val[0] for val in result[self.ids[0]]]:  # already existing partner ID -> skip
+            return result
+        if partner and partner.email:  # complete profile: id, name <email>
+            result[self.ids[0]].append((partner.id, '%s<%s>' % (partner.name, partner.email), reason))
+        elif partner:  # incomplete profile: id, name
+            result[self.ids[0]].append((partner.id, '%s' % (partner.name), reason))
+        else:  # unknown partner, we are probably managing an email address
+            result[self.ids[0]].append((False, email, reason))
+        return result
+
+    def _message_get_suggested_recipients(self):
+        """ Returns suggested recipients for ids. Those are a list of
+        tuple (partner_id, partner_name, reason), to be managed by Chatter. """
+        result = super(Thread, self)._message_get_suggested_recipients()
+        for obj in self.sudo():  # SUPERUSER because of a read on res.users that would crash otherwise
+            if not obj.message_partner_ids:
+                continue
+            for partner in obj.message_partner_ids:
+                obj._message_add_suggested_recipient(result, partner=partner, reason=self._fields['user_id'].string)
+        return result
 
     @api.returns('mail.message', lambda value: value.id)
     def message_post(self, *,
@@ -681,3 +746,64 @@ class Thread(models.AbstractModel):
                 emails.send()
 
         return True
+
+    def _notify_compute_recipients(self, message, msg_vals):
+        """ Compute recipients to notify based on subtype and followers. This
+        method returns data structured as expected for ``_notify_recipients``. """
+        msg_sudo = message.sudo()
+        # get values from msg_vals or from message if msg_vals doen't exists
+        pids = msg_vals.get('partner_ids', []) if msg_vals else msg_sudo.partner_ids.ids
+        cids = msg_vals.get('channel_ids', []) if msg_vals else msg_sudo.channel_ids.ids
+        message_type = msg_vals.get('message_type') if msg_vals else msg_sudo.message_type
+        subtype_id = msg_vals.get('subtype_id') if msg_vals else msg_sudo.subtype_id.id
+        # is it possible to have record but no subtype_id ?
+        recipient_data = {
+            'partners': [],
+            'channels': [],
+        }
+        res = self.env['mail.followers']._get_recipient_data(self, message_type, subtype_id, pids, cids)
+        if not res:
+            return recipient_data
+
+        author_id = msg_vals.get('author_id') or message.author_id.id
+        for pid, cid, active, pshare, ctype, notif, groups in res:
+            if pid and pid == author_id and not self.env.context.get('mail_notify_author'):  # do not notify the author of its own messages
+                continue
+            if pid:
+                if active is False:
+                    continue
+                pdata = {'id': pid, 'active': active, 'share': pshare, 'groups': groups}
+                if notif == 'inbox':
+                    recipient_data['partners'].append(dict(pdata, notif=notif, type='user'))
+                elif not pshare and notif:  # has an user and is not shared, is therefore user
+                    recipient_data['partners'].append(dict(pdata, notif=notif, type='user'))
+                elif pshare and notif:  # has an user but is shared, is therefore portal
+                    recipient_data['partners'].append(dict(pdata, notif=notif, type='portal'))
+                else:  # has no user, is therefore customer
+                    recipient_data['partners'].append(dict(pdata, notif=notif if notif else 'email', type='customer'))
+            elif cid:
+                recipient_data['channels'].append({'id': cid, 'notif': notif, 'type': ctype})
+
+        # add partner ids in email channels
+        email_cids = [r['id'] for r in recipient_data['channels'] if r['notif'] == 'email']
+        if email_cids:
+            # we are doing a similar search in ocn_client
+            # Could be interesting to make everything in a single query.
+            # ocn_client: (searching all partners linked to channels of type chat).
+            # here      : (searching all partners linked to channels with notif email if email is not the author one)
+            # TDE FIXME: use email_sanitized
+            email_from = msg_vals.get('email_from') or message.email_from
+            exept_partner = [r['id'] for r in recipient_data['partners']]
+            if author_id:
+                exept_partner.append(author_id)
+            new_pids = self.env['res.partner'].sudo().search([
+                ('id', 'not in', exept_partner),
+                ('channel_ids', 'in', email_cids),
+                ('email', 'not in', [email_from]),
+            ])
+            for partner in new_pids:
+                # caution: side effect, if user has notif type inbox, will receive en email anyway?
+                # ocn_client: will add partners to recipient recipient_data. more ocn notifications. We neeed to filter them maybe
+                recipient_data['partners'].append({'id': partner.id, 'share': True, 'active': True, 'notif': 'email', 'type': 'channel_email', 'groups': []})
+
+        return recipient_data
