@@ -102,6 +102,11 @@ class MailComposer(models.TransientModel):
             order_id = self.env[self.env.context.get('active_model')].browse(active_id)
             result["email_cc"]= order_id.partner_id.email_cc
             result["email_bcc"]= order_id.partner_id.email_bcc
+        if self.env.context.get('active_model') == 'purchase.order':
+            active_id = self.env.context.get('active_id')
+            order_id = self.env[self.env.context.get('active_model')].browse(active_id)
+            result["email_cc"]= order_id.partner_id.email_cc
+            result["email_bcc"]= order_id.partner_id.email_bcc
         return result
 
 
