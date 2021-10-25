@@ -344,6 +344,9 @@ class SaleOrder(models.Model):
             [('sale_line_id', 'in', sol_ids.ids)])
         purchase_order = purchase_lines.mapped('order_id')
         for po in purchase_order:
+            if self.env.context.get('confirm_purchase'):
+                po.onchange_vendor_address()
+                po.onchange_partner_id()
             if not self.env.context.get('confirm_purchase'):
                 po.onchange_vendor_address()
                 po.onchange_partner_id()
