@@ -682,7 +682,8 @@ class SaleOrder(models.Model):
                         packages.update({line.result_package_id: line})
                 for package,lines in packages.items():
                     picking = lines.mapped('picking_id')
-                    package.send_to_shipper(picking, move_line=lines)
+                    for line in lines:
+                        package.send_to_shipper(picking, move_line=line)
 
 
 class SaleOrderLine(models.Model):
