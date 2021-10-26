@@ -1136,6 +1136,7 @@ class AmazonProcessImportExport(models.TransientModel):
              'shipping_template_id': shipping_template_id.id,
             }
         )
+        product_id.write({'name': amazon_product_name})
         return True
 
     def read_import_csv_file(self):
