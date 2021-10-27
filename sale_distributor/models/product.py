@@ -74,6 +74,15 @@ class ProductSupplierinfo(models.Model):
 
     active = fields.Boolean("Active", default=True)
     ignore_cost = fields.Boolean("Ignore Cost?", default=False)
+    min_qty = fields.Float(
+        'Quantity', default=1.0, required=True,
+        help="The quantity to purchase from this vendor to benefit from the price, expressed in the vendor Product Unit of Measure if not any, in the default unit of measure of the product otherwise.")
+
+    @api.onchange('product_tmpl_id', 'min_qty')
+    def onchange_product_price(self):
+        if self.product_tmpl_id and self.product_tmpl_id.list_price:
+            final_price = self.product_tmpl_id.list_price / self.min_qty
+            self.price = final_price
 
     @api.onchange('ignore_cost')
     def onchange_ignore_cost(self):
