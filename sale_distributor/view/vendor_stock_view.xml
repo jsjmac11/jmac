@@ -43,8 +43,17 @@
                 <field name="ignore_cost"/>
                 <field name="active" invisible="1"/>
             </label>
+            <xpath expr="//group/group[1]/div" position="replace">
+            </xpath>
+            <label for="delay" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </label>
+            <label for="min_qty" position="replace">
+                <label for="min_qty" string="Case Qty"/>
+            </label>
+            <label for="date_start" position="replace">
+                <label for="date_start" string="Sale Date Range"/>
+            </label>
         </field>
     </record>
-
-
 </odoo>

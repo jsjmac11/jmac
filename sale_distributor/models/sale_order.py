@@ -1111,7 +1111,7 @@ class SaleOrderLine(models.Model):
     product_pack_id = fields.Many2one(
         "product.pack.uom", string="Product Pack")
     pack_quantity = fields.Float(
-        string='Pack Quantity', digits='Product Unit of Measure', required=True, default=1.0)
+        string='Pack Quantity', digits='Product Unit of Measure', required=True, default=1.0, copy=True)
     is_pack_product = fields.Boolean("Is Pack Product", default=False)
     active = fields.Boolean("Active", default=True)
     po_cancel_note = fields.Text("PO Cancel Note")
@@ -1194,7 +1194,7 @@ class SaleOrderLine(models.Model):
     def product_pack_id_change(self):
         self.product_id = False
         self.product_uom_qty = 0.0
-        self.pack_quantity = 1.0
+        # self.pack_quantity = 1.0
         self.is_pack_product = False
         if self.product_pack_id:
             self.product_id = self.product_pack_id.product_tmpl_id.product_variant_id.id
@@ -1359,7 +1359,7 @@ class SaleOrderLine(models.Model):
         self.adi_total_stock = self.nv_total_stock = self.jne_total_stock = self.sl_total_stock = 0.0
         self.ss_total_stock = self.bnr_total_stock = self.wr_total_stock = self.dfm_total_stock = self.bks_total_stock = 0.0
         self.sale_split_lines = [(6, 0, [])]
-        self.phone_number = self.order_min = self.free_freight_level = self.ships_from = self.ship_cutoff_time = self.note = ''
+        self.phone_number = self.phone_number
         self.dropship_selection = False
         self.dropship_fee = self.below_min_fee = 0.0
 

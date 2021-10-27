@@ -557,10 +557,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="adi_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="adi_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="adi_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="adi_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="adi_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="adi_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="adi_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="adi_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="adi_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="adi_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="adi_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -598,10 +598,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="adi_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="adi_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="adi_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="adi_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="adi_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="adi_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="adi_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="adi_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="adi_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="adi_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="adi_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -639,10 +639,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="adi_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="adi_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="adi_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="adi_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="adi_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="adi_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="adi_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="adi_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="adi_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="adi_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="adi_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -682,10 +682,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="nv_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="nv_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="nv_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="nv_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="nv_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="nv_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="nv_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="nv_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="nv_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="nv_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="nv_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -722,10 +722,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="nv_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="nv_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="nv_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="nv_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="nv_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="nv_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="nv_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="nv_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="nv_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="nv_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="nv_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -762,10 +762,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="nv_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="nv_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="nv_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="nv_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="nv_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="nv_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="nv_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="nv_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="nv_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="nv_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="nv_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -805,10 +805,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="sl_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="sl_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="sl_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="sl_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="sl_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="sl_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="sl_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="sl_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="sl_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="sl_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="sl_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -845,10 +845,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="sl_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="sl_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="sl_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="sl_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="sl_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="sl_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="sl_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="sl_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="sl_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="sl_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="sl_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -885,10 +885,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="sl_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="sl_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="sl_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="sl_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="sl_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="sl_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="sl_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="sl_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="sl_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="sl_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="sl_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -928,10 +928,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="ss_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="ss_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="ss_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="ss_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="ss_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="ss_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="ss_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="ss_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="ss_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="ss_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="ss_total_stock" string="Total Stock"/>
@@ -968,10 +968,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="ss_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="ss_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="ss_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="ss_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="ss_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="ss_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="ss_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="ss_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="ss_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="ss_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="ss_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -1008,10 +1008,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="ss_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="ss_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="ss_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="ss_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="ss_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="ss_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="ss_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="ss_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="ss_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="ss_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="ss_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -1050,10 +1050,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="jne_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="jne_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="jne_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="jne_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="jne_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="jne_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="jne_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="jne_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="jne_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="jne_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="jne_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -1090,10 +1090,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="jne_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="jne_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="jne_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="jne_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="jne_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="jne_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="jne_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="jne_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="jne_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="jne_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="jne_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -1130,10 +1130,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="jne_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="jne_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="jne_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="jne_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="jne_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="jne_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="jne_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="jne_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="jne_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="jne_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="jne_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -1172,10 +1172,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="bnr_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="bnr_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="bnr_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="bnr_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="bnr_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="bnr_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="bnr_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="bnr_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="bnr_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="bnr_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="bnr_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -1212,10 +1212,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="bnr_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="bnr_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="bnr_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="bnr_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="bnr_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="bnr_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="bnr_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="bnr_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="bnr_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="bnr_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="bnr_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -1252,10 +1252,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="bnr_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="bnr_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="bnr_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="bnr_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="bnr_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="bnr_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="bnr_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="bnr_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="bnr_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="bnr_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="bnr_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -1294,10 +1294,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="wr_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="wr_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="wr_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="wr_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="wr_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="wr_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="wr_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="wr_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="wr_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="wr_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="wr_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -1335,10 +1335,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="wr_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="wr_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="wr_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="wr_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="wr_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="wr_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="wr_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="wr_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="wr_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="wr_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="wr_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -1376,10 +1376,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="wr_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="wr_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="wr_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="wr_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="wr_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="wr_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="wr_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="wr_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="wr_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="wr_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="wr_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -1420,10 +1420,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="dfm_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="dfm_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="dfm_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="dfm_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="dfm_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="dfm_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="dfm_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="dfm_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="dfm_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="dfm_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="dfm_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -1461,10 +1461,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="dfm_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="dfm_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="dfm_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="dfm_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="dfm_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="dfm_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="dfm_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="dfm_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="dfm_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="dfm_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="dfm_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -1501,10 +1501,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="dfm_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="dfm_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="dfm_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="dfm_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="dfm_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="dfm_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="dfm_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="dfm_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="dfm_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="dfm_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="dfm_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -1708,10 +1708,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="bks_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="bks_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="bks_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="bks_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="bks_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="bks_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="bks_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="bks_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="bks_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="bks_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="bks_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -1748,10 +1748,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="bks_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="bks_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="bks_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="bks_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="bks_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="bks_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="bks_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="bks_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="bks_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="bks_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="bks_total_stock" string="Total Stock" readonly="1" force_save="1"/>
@@ -1788,10 +1788,10 @@
                                 </field>
                             </group>
                             <group>
-                                <field name="bks_actual_cost" string="Actual Cost" readonly="1" force_save="1"/>
-                                <field name="bks_standard_cost" string="Standard Cost" readonly="1" force_save="1"/>
-                                <field name="bks_price_match" string="Price Match" readonly="1" force_save="1"/>
-                                <field name="bks_coded_price_flag" string="Coded Price Flag" readonly="1" force_save="1"/>
+                                <field name="bks_actual_cost" string="Final Price" readonly="1" force_save="1"/>
+                                <field name="bks_standard_cost" string="Standard Cost" readonly="1" force_save="1" invisible="1"/>
+                                <field name="bks_price_match" string="Price Match" readonly="0" force_save="1"/>
+                                <field name="bks_coded_price_flag" string="Coded Price Flag" readonly="0" force_save="1"/>
                                 <field name="bks_sale_exp_date" string="Sale Exp Date" readonly="1" force_save="1"/>
                                 <field name="bks_sale_cost" string="Sale Cost" readonly="1" force_save="1"/>
                                 <field name="bks_total_stock" string="Total Stock" readonly="1" force_save="1"/>
