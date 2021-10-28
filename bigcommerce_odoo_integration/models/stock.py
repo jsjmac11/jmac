@@ -29,10 +29,13 @@ class StockPicking(models.Model):
                 response = response.json()
                 _logger.info("BigCommerce Get Shipment  Response : {0}".format(response))
                 for response in response:
+                    order_services = self.env['order.service'].search([('name', '=', response.get('shipping_method'))])
                     tracking_number += response.get('tracking_number')
                     shipping_provider += response.get('shipping_provider')
                     shipping_cost += float(response.get('merchant_shipping_cost'))
                     shipment_id = response.get('id')
+                    if order_services:
+                        self.sale_id.requested_service_id = order_services.id
                 self.with_user(1).write({'carrier_price':shipping_cost,'carrier_tracking_ref':tracking_number,'bc_shipping_provider':shipping_provider,'bigcommerce_shimpment_id':shipment_id})
                 self.sale_id.with_user(1).bigcommerce_shipment_order_status = 'Shipped'
             else:

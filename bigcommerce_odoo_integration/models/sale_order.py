@@ -216,7 +216,6 @@ class SaleOrderVts(models.Model):
 
                             total_tax= order.get('total_tax')
                             customerId = order.get('customer_id')
-                            print("==customerIdcustomerId===",customerId)
                             carrier_id  = self.env['delivery.carrier'].search([('is_bigcommerce_shipping_method','=',True)],limit=1)
                             partner_obj = self.env['res.partner'].search(
                                 ['|',('bigcommerce_customer_id', '=', customerId),
