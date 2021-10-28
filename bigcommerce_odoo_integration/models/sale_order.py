@@ -216,8 +216,11 @@ class SaleOrderVts(models.Model):
 
                             total_tax= order.get('total_tax')
                             customerId = order.get('customer_id')
+                            print("==customerIdcustomerId===",customerId)
                             carrier_id  = self.env['delivery.carrier'].search([('is_bigcommerce_shipping_method','=',True)],limit=1)
-                            partner_obj = self.env['res.partner'].search([('bigcommerce_customer_id', '=', customerId)], limit=1)
+                            partner_obj = self.env['res.partner'].search(
+                                ['|',('bigcommerce_customer_id', '=', customerId),
+                                 ('email','=',customerEmail)], limit=1)
                             partner_state = order.get('billing_address').get('state')
                             state_id = self.env['res.country.state'].search([('name', '=', partner_state)],
                                                                             limit=1)
@@ -311,6 +314,10 @@ class SaleOrderVts(models.Model):
                                                'bigcommerce_order_status_id' : order_status_id.id})
                             try:
                                 order_id = self.create(order_vals)
+                                if partner_obj and not partner_obj.bigcommerce_customer_id:
+                                    partner_obj.write(
+                                        {'bigcommerce_customer_id':customerId,
+                                         'bigcommerce_store_id': bigcommerce_store_id.id})
                                 if carrier_id and order_id:
                                     order_id.set_delivery_line(carrier_id, base_shipping_cost)
                                 if order_id:
