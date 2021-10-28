@@ -85,7 +85,9 @@ class ResPartner(models.Model):
 
                     for customer_response_page in customer_response_pages:
                         for record in customer_response_page:
-                            customer_id = self.env['res.partner'].search([('bigcommerce_customer_id','=',record.get('id'))],limit=1)
+                            customer_id = self.env['res.partner'].search(
+                                ['|', ('bigcommerce_customer_id','=',record.get('id')),
+                                 ('email','=', record.get('email')),],limit=1)
                             if not customer_id:
                                 partner_vals = {
                                     'name': "%s %s" % (record.get('first_name'),record.get('last_name')),
@@ -107,6 +109,9 @@ class ResPartner(models.Model):
                                     # 'bigcommerce_customer_id':record.get('id'),
                                     # 'bigcommerce_store_id':bigcommerce_store_id.id
                                     }
+                                if customer_id and not customer_id.bigcommerce_customer_id:
+                                    vals.update({'bigcommerce_customer_id': record.get('id'),
+                                         'bigcommerce_store_id': bigcommerce_store_id.id})
                                 customer_id.write(vals)
                                 customer_message="Customer Data Updated %s"%(customer_id.name)
                                 _logger.info("Product Category Updated : {0}".format(customer_id.name))
