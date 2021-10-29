@@ -29,7 +29,6 @@
                             <field name="warehouse_id" required="1" />
                             <field name="last_modification_date" />
                             <field name="bigcommerce_operation_message"  readonly="1"/>
-                            <field name="auto_import_orders" />
                         </group>
                         <group>
                             <field name="bigcommerce_product_id" />
@@ -77,6 +76,20 @@
                                    <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_orders_main" string="Export Orders" type="object" class="oe_highlight" /></td>
                                 </tr> -->
                             </table>
+                        </page>
+
+                        <page string="Auto Import">
+                            <group>
+                                <group>
+                                    <field name="auto_import_product_categories" />
+                                    <field name="auto_import_customers" />
+                                    <field name="auto_import_brands" />
+                                </group>
+                                <group>
+                                    <field name="auto_import_products" />
+                                    <field name="auto_import_orders" />
+                                </group>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
