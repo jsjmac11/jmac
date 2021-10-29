@@ -39,18 +39,42 @@ class BigCommerceStoreConfiguration(models.Model):
     bigcommerce_product_skucode = fields.Boolean("Check Bigcommerce Product Skucode")
     source_of_import_data = fields.Integer(string="Source(Page) Of Import Data",default=1)
     destination_of_import_data = fields.Integer(string="Destination(Page) Of Import Data",default=1)
-    auto_import_orders = fields.Boolean("Auto Import Orders",help="If True then automatically import all orders.")
     from_product_id = fields.Integer(string='From Product ID')
     to_product_id = fields.Integer(string='To Product ID')
     bigcommerce_product_import_status = fields.Char(string="Product Import Message", help="show status of import product process", copy=False)
     bigcommerce_product_id = fields.Char(string='Bigcommerce Product ID')
     bigcommerce_image_URL = fields.Char(string="Bigcommerce Image URL")
+    auto_import_product_categories = fields.Boolean("Auto Import Product Categories",help="If True then automatically import all product categories.")
+    auto_import_customers = fields.Boolean("Auto Import Customers",help="If True then automatically import all customers.")
+    auto_import_brands = fields.Boolean("Auto Import Brands",help="If True then automatically import all brands.")
+    auto_import_products = fields.Boolean("Auto Import Products",help="If True then automatically import all products.")
+    auto_import_orders = fields.Boolean("Auto Import Orders",help="If True then automatically import all orders.")
+
+    def auto_import_bigcommerce_product_categories(self):
+        store_ids = self.sudo().search([('auto_import_product_categories','!=',False)])
+        for store_id in store_ids:
+            store_id.bigcommerce_to_odoo_import_product_categories()
+
+    def auto_import_bigcommerce_customers(self):
+        store_ids = self.sudo().search([('auto_import_customers','!=',False)])
+        for store_id in store_ids:
+            store_id.bigcommerce_to_odoo_import_customers()
+
+    def auto_import_bigcommerce_brands(self):
+        store_ids = self.sudo().search([('auto_import_brands','!=',False)])
+        for store_id in store_ids:
+            store_id.bigcommerce_to_odoo_import_product_brands()
+
+    def auto_import_bigcommerce_products(self):
+        store_ids = self.sudo().search([('auto_import_products','!=',False)])
+        for store_id in store_ids:
+            store_id.import_product_from_bigcommerce()
 
     def auto_import_bigcommerce_orders(self):
         store_ids = self.sudo().search([('auto_import_orders','!=',False)])
         for store_id in store_ids:
             store_id.bigcommerce_to_odoo_import_orders()
-    
+
     def create_bigcommerce_operation(self,operation,operation_type,bigcommerce_store_id,log_message,warehouse_id):
         vals = {
                     'bigcommerce_operation': operation,
