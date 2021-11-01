@@ -201,7 +201,6 @@ class SaleOrderVts(models.Model):
                         if not sale_order:
                             date_time_str = order.get('orderDate')
                             customerEmail = order.get('billing_address').get('email')
-
                             city = order.get('billing_address').get('city')
                             first_name = order.get('billing_address').get('first_name')
                             last_name = order.get('billing_address').get('last_name')
@@ -266,7 +265,6 @@ class SaleOrderVts(models.Model):
                                                               'partner_id': partner_obj.id,
                                                               'groups_id': [(6, 0, [x_group_portal_user.id])],
                                                               }],) 
-                                    
                             if not partner_obj:
                                 process_message = "Customer is not exist in Odoo {}".format(customerId)
                                 self.create_bigcommerce_operation_detail('order', 'import', req_data, response_data,
@@ -292,6 +290,12 @@ class SaleOrderVts(models.Model):
                                 'type': 'delivery',
                                 'parent_id': partner_obj.id
                             }
+                            
+                            if order.get('date_created'):
+                                dt_lst = order.get('date_created').split('+')
+                                if dt_lst[0]:
+                                    from dateutil.parser import parse
+                                    date_time_str = parse(dt_lst[0][:-1])
                             base_shipping_cost = order.get('base_shipping_cost', 0.0)
                             currency_id = self.env['res.currency'].search([('name','=',order.get('currency_code'))],limit=1)
                             vals.update({'partner_id': partner_obj.id,
