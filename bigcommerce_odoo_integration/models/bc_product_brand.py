@@ -8,6 +8,7 @@ _logger = logging.getLogger("Bigcommerce")
 
 class BigcommerceProductBrand(models.Model):
     _name = "bc.product.brand"
+    _description = 'BigCommerce Product Brand'
     
     bc_brand_id = fields.Char(string='Brand Id')
     name = fields.Char(string='Brand Name')

@@ -8,6 +8,7 @@ _logger = logging.getLogger("Bigcommerce")
 
 class BigcommerceProductImage(models.Model):
     _name = "bigcommerce.product.image"
+    _description = 'BigCommerce Product Image'
 
     bigcommerce_product_image_id = fields.Char(string="Product Image Id")
     bigcommerce_product_image = fields.Binary(string="Bigcommerce Product Image")
