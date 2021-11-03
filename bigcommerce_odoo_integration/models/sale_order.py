@@ -594,6 +594,7 @@ class SaleOrderLineVts(models.Model):
 
 class SaleOrderStatus(models.Model):
     _name = "sale.order.status"
+    _description = 'BigCommerce Sale Order Status'
 
     status_id = fields.Char(string="Status ID")
     name = fields.Char(string="Bigcommerce Order Status")

@@ -3,6 +3,7 @@ import datetime
 
 class BigCommerceOperation(models.Model):
     _name = "bigcommerce.operation"
+    _description = 'BigCommerce Operation'
     _order = 'id desc'
     _inherit = ['mail.thread']
 
@@ -43,6 +44,7 @@ class BigCommerceOperation(models.Model):
 
 class BigCommerceOperationDetail(models.Model):
     _name = "bigcommerce.operation.details"
+    _description = 'BigCommerce Operation Details'
     _rec_name = 'operation_id'
     _order = 'id desc'
     

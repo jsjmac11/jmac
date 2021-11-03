@@ -10,6 +10,7 @@ _logger = logging.getLogger("BigCommerce")
 
 class BigCommerceCategory(models.Model):
     _name = "bigcommerce.category"
+    _description = 'BigCommerce Product Category'
     _parent_name = "parent_id"
     _rec_name = 'complete_name'
     _order = 'complete_name'
