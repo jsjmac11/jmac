@@ -207,9 +207,9 @@
 	                            <field name="result_package_id" readonly="1" string="Package" optional="show"/>
 	                            <field name="tracking_ref" optional="show" readonly="1"/>
 	                            <field name="shipping_date" string="Ship Date" optional="show"/>
-	                            <field name="length" string="Size(L)" optional="show"/>
-	                            <field name="width" string="Size(W)" optional="show"/>
-	                            <field name="height" string="Size(H)" optional="show"/>
+	                            <field name="length" string="Size(L)" optional="hide"/>
+	                            <field name="width" string="Size(W)" optional="hide"/>
+	                            <field name="height" string="Size(H)" optional="hide"/>
 	                            <field name="weight" string="Order Weight" optional="hide"/>
 	                            <field name="shipping_weight" string="Weight for shipping(lbs)" optional="hide"/>
 	                            <field name="shipping_weight_oz" string="Weight for shipping(ozs)" optional="hide"/>
@@ -220,6 +220,7 @@
 	                            <field name="delivery_type" invisible="1"/>
 	                            <field name="state" invisible="1"/>
                                 <field name="shipmentId" invisible="1"/>
+                                <field name="attachment_id" invisible="1"/>
                                 <field name="package_id" invisible="1"/>
                                 <field name="location_id" invisible="1"/>
                                 <field name="carrier_tracking_url" widget="url" invisible="1"/>
@@ -259,6 +260,7 @@
 	                                    <field name="delivery_type" invisible="1"/>
 	                                    <field name="state" invisible="1"/>
                                         <field name="shipmentId" invisible="1"/>
+                                        <field name="attachment_id" invisible="0"/>
                                         <field name="package_id" invisible="1"/>
                                         <field name="location_id" invisible="1"/>
 	                                </group>
@@ -1922,6 +1924,16 @@
         </field>
     </record>
 
+    <record id="print_delivery_lable_action_form" model="ir.actions.server">
+        <field name="name">Print Lable</field>
+        <field name="type">ir.actions.server</field>
+        <field name="state">code</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="code">
+            records.print_delivery_shipping_lable()
+        </field>
+    </record>
     <record id="view_order_line_tree_custom" model="ir.ui.view">
         <field name="name">sale.order.line.tree</field>
         <field name="model">sale.order.line</field>

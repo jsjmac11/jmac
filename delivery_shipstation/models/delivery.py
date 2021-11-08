@@ -10,6 +10,7 @@ from odoo import models, fields, api, _
 from .shipstation_request import ShipstationRequest
 from odoo.exceptions import UserError
 import math
+import base64, os, tempfile
 
 
 class ProductPackaging(models.Model):
@@ -68,7 +69,6 @@ class ProviderShipstation(models.Model):
             if check_result:
                 raise UserError(check_result)
             booking = srm.shipstation_request(picking, delivery_nature, is_return=False, package=package)
-
             if booking.get('error_message'):
                 raise UserError(booking['error_message'])
 
@@ -96,12 +96,25 @@ class ProviderShipstation(models.Model):
             picking.sale_id.message_post(body=logmessage, attachments=[('Label-%s-%s-%s.%s' % (
                 picking.name.replace('/', ''), carrier_id.shipstation_service_code, carrier_tracking_ref,
                 'PDF'), booking['label'])])
+            attachments = self.env['ir.attachment']
+            batch_file_name = 'Label-%s.pdf' % picking.sale_id.name.replace('/', '-')
+            attachment_dict = {
+                'name': batch_file_name,
+                'datas': base64.encodestring(booking['label']),
+                'res_model': 'stock.move.line',
+                'res_id': '',
+                'type': 'binary'
+            }
 
+            attachment_id = attachments.sudo().create(attachment_dict)
             shipping_data = {'exact_price': picking.carrier_price,
                              'tracking_number': carrier_tracking_ref,
-                             'shipmentId': booking['shipmentId']}
+                             'shipmentId': booking['shipmentId']
+                            }
+
             if package:
                 move_line.shipmentId = booking['shipmentId']
+                move_line.attachment_id = attachment_id
             else:
                 picking.shipmentId = booking['shipmentId']
             res = res + [shipping_data]

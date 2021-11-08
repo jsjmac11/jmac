@@ -112,10 +112,11 @@ class ShipstationRequest():
         #     if picking.shipping_weight < 0 or picking.shipping_weight_oz < 0:
         #             return _('Weight of the order should not be negative!')
         if move_line:
-            if not move_line.shipping_weight and not move_line.shipping_weight_oz:
-                    return _('The estimated price cannot be computed because the weight of your product is missing.')
-            if move_line.shipping_weight < 0 or move_line.shipping_weight_oz < 0:
-                    return _('Weight of the order should not be negative!')
+            for line in move_line:
+                if not line.shipping_weight and not line.shipping_weight_oz:
+                        return _('The estimated price cannot be computed because the weight of your product is missing.')
+                if line.shipping_weight < 0 or line.shipping_weight_oz < 0:
+                        return _('Weight of the order should not be negative!')
             # tot_weight = sum([(line.product_id.weight * line.product_qty) for line in order.order_line if
             #                   not line.display_type]) or 0
             # weight_uom_id = order.env['product.template']._get_weight_uom_id_from_ir_config_parameter()
