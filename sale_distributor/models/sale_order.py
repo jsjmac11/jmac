@@ -12,6 +12,11 @@ from datetime import datetime
 import string
 from odoo.osv import expression
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
+from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
+import base64, os, tempfile
+import logging
+
+logger = logging.getLogger('Order Log')
 
 ORDER_PRIORITY = [
     ('0', 'Low'),
@@ -251,6 +256,7 @@ class SaleOrder(models.Model):
                 record.split_line_ids = record.order_line.sale_split_lines.ids
             else:
                 record.split_line_ids = False
+
     @api.onchange('partner_id')
     def onchange_partner_id(self):
         res = super(SaleOrder, self).onchange_partner_id()
@@ -658,33 +664,111 @@ class SaleOrder(models.Model):
                     tracking[1]._put_in_pack(lines)
 
     def prepare_outgoing_shipment_process(self):
-        for rec in self:
-            picking_id = rec.picking_line_ids.mapped('move_id').mapped('picking_id')
-            if picking_id:
-                move_line_ids = rec.picking_line_ids.filtered(lambda ml:
-                float_compare(ml.qty_done, 0.0, precision_rounding=ml.product_uom_id.rounding) > 0
-                and not ml.result_package_id)
-                package_data = {}
-                for line in move_line_ids:
-                    if line.picking_id in package_data.keys():
-                        package_data[line.picking_id] |= line
-                    else:
-                        package_data.update({line.picking_id: line})
-                for pick,lines in package_data.items():
-                    pick._put_in_pack(lines)
-                packages = {}
-                mv_lines = picking_id.move_line_ids.filtered(lambda l: l.carrier_id and not l.tracking_ref and l.result_package_id)
-                mv_lines.get_shipping_rates()
-                for line in mv_lines:
-                    if line.result_package_id in packages.keys():
-                        packages[line.result_package_id] |= line
-                    else:
-                        packages.update({line.result_package_id: line})
-                for package,lines in packages.items():
-                    picking = lines.mapped('picking_id')
-                    for line in lines:
-                        package.send_to_shipper(picking, move_line=line)
+        picking_id = self.picking_line_ids.mapped('move_id').mapped('picking_id')
+        if picking_id:
+            move_line_ids = self.picking_line_ids.filtered(lambda ml:
+            float_compare(ml.qty_done, 0.0, precision_rounding=ml.product_uom_id.rounding) > 0
+            and not ml.result_package_id)
+            package_data = {}
+            for line in move_line_ids:
+                if line.picking_id in package_data.keys():
+                    package_data[line.picking_id] |= line
+                else:
+                    package_data.update({line.picking_id: line})
+            for pick,lines in package_data.items():
+                pick._put_in_pack(lines)
+            packages = {}
+            mv_lines = picking_id.move_line_ids.filtered(lambda l: l.carrier_id and not l.tracking_ref and l.result_package_id)
+            mv_lines.get_shipping_rates()
+            for line in mv_lines:
+                if line.result_package_id in packages.keys():
+                    packages[line.result_package_id] |= line
+                else:
+                    packages.update({line.result_package_id: line})
+            for package,lines in packages.items():
+                picking = lines.mapped('picking_id')
+                # for line in lines:
+                package.send_to_shipper(picking, move_line=lines)
+        attachment_ids = self.picking_line_ids.mapped('attachment_id')
+        attachment_id, batch_file_name = self.get_attachment_pdf(attachment_ids)
+        # self.label_generated = True
+        logger.info("Label Generation END!!!!!! %s" % fields.Datetime.now())
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/web/binary/download_document?model=%s&field=datas&id=%s&filename=%s' % (
+                'ir.attachment', attachment_id.id, batch_file_name),
+            'target': 'new',
+        }
 
+    def merge_pdfs(self, input_pdfs, output_pdf):
+        """Combine multiple pdfs to single pdf.
+        Args:
+            input_pdfs (list): List of path files.
+            output_pdf (str): Output file.
+
+        """
+        pdf_merger = PdfFileMerger()
+        for path in input_pdfs:
+            pdf_merger.append(path)
+        with open(output_pdf, 'wb') as fileobj:
+            pdf_merger.write(fileobj)
+            pdf_merger.close()
+        return output_pdf
+
+    def get_attachment_pdf(self, attachment_ids):
+        """
+        Create/Update PDF with all picking labels
+        :return:
+        """
+        attachments = self.env['ir.attachment']
+        count = 1
+        f2_name_list = []
+        for rec in attachment_ids:
+            file_name = str(rec.id) + '_' + str(count) + '.pdf'
+            f2_name = os.path.join(tempfile.gettempdir(),
+                                   file_name)
+            f2_name_list.append(f2_name)
+            pre_f = base64.b64decode(
+                rec.datas)
+            with open(f2_name, 'wb') as f1:
+                f1.write(pre_f)
+                f1.close()
+            count += 1
+        # Creating Single pdf
+        batch_file_name = 'Shipping Label-%s.pdf' % self.name.replace('/', '-')
+        f1_name = os.path.join(tempfile.gettempdir(), batch_file_name)
+        with open(f1_name, 'wb') as f:
+            f.write(b'')
+            f.close()
+        output_pdf = self.merge_pdfs(f2_name_list, f1_name)
+        # output_pdf = self.pdf_page_merge(f2_name_list, f1_name)
+        cf = open(output_pdf, 'rb')
+        attachment_dict = {
+            'name': batch_file_name,
+            'datas': base64.encodestring(cf.read()),
+            'res_model': self._name,
+            'res_id': self.id,
+            'type': 'binary'
+        }
+        attachment_id = attachments.sudo().create(attachment_dict)
+        # Remove Temp files form directory
+        if output_pdf:
+            os.remove(os.path.join(tempfile.gettempdir(), output_pdf))
+        for f_name in f2_name_list:
+            os.remove(os.path.join(tempfile.gettempdir(), f_name))
+        return [attachment_id, batch_file_name]
+
+    def print_delivery_shipping_lable(self):
+        attachment_ids = self.picking_line_ids.mapped('attachment_id')
+        if attachment_ids:
+            attachment_id, batch_file_name = self.get_attachment_pdf(attachment_ids)
+            logger.info("Label Generation END!!!!!! %s" % fields.Datetime.now())
+            return {
+                'type': 'ir.actions.act_url',
+                'url': '/web/binary/download_document?model=%s&field=datas&id=%s&filename=%s' % (
+                    'ir.attachment', attachment_id.id, batch_file_name),
+                'target': 'new',
+            }
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'

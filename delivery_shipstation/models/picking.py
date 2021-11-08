@@ -460,6 +460,7 @@ class StockMoveLine(models.Model):
     shipmentId = fields.Char('Label Shipment ID')
     batch_id = fields.Many2one('stock.picking.batch', string="Batch Transfer")
     carrier_tracking_url = fields.Char(string='Tracking URL', compute='_compute_tracking_url')
+    attachment_id = fields.Many2one('ir.attachment', string='Attachment')
 
     @api.depends('carrier_id', 'tracking_ref')
     def _compute_tracking_url(self):
@@ -596,6 +597,12 @@ class StockMoveLine(models.Model):
                 pack = package.filtered(lambda l: move_line.result_package_id)
                 if pack:
                     pack = False
+            lines = move_line.sale_id.picking_line_ids.filtered(lambda x: x.attachment_id == move_line.attachment_id)
+            old_attachement_id = move_line.attachment_id
+            lines.attachment_id = False
+            old_attachement_id.unlink()
+            attachment_ids = move_line.sale_id.picking_line_ids.mapped('attachment_id')
+            attachment_id, batch_file_name = move_line.sale_id.get_attachment_pdf(attachment_ids)
             picking_id = move_line.picking_id
             picking_tracking = move_line.picking_id.carrier_tracking_ref.split(',')
             if move_line.tracking_ref in picking_tracking:
@@ -609,6 +616,13 @@ class StockMoveLine(models.Model):
             picking_id = move_line.picking_id
             move_line.move_id._do_unreserve()
             picking_id.action_assign()
+            logger.info("Label Generation END!!!!!! %s" % fields.Datetime.now())
+            return {
+                'type': 'ir.actions.act_url',
+                'url': '/web/binary/download_document?model=%s&field=datas&id=%s&filename=%s' % (
+                    'ir.attachment', attachment_id.id, batch_file_name),
+                'target': 'new',
+            }
 
 
 class ShippingPackages(models.Model):
