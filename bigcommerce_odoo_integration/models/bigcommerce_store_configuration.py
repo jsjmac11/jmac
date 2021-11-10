@@ -141,6 +141,12 @@ class BigCommerceStoreConfiguration(models.Model):
         export_product =product_obj.export_product_to_bigcommerce(bigcommerce_store_ids=self,new_product_id=product_obj, warehouse_id=self.warehouse_id)
         return export_product
 
+    # EXPORT CUSTOMERS
+    def odoo_to_bigcommerce_export_customers(self):
+        partner_obj = self.env['res.partner']
+        import_customers = partner_obj.odoo_to_bigcommerce_export_customers(bigcommerce_store_ids=self,new_partner_id=partner_obj, warehouse_id=self.warehouse_id)
+        return import_customers
+
     def export_product_attribute_to_bigcommerce_main(self):
         product_attribute_obj = self.env['product.attribute']
         export_attribute =product_attribute_obj.export_product_attribute_to_bigcommerce(self.warehouse_id,self)

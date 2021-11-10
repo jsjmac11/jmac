@@ -1,4 +1,8 @@
 from odoo import fields, models, api
+from odoo.exceptions import ValidationError
+from requests import request
+import requests
+import json
 import logging
 _logger = logging.getLogger("BigCommerce")
 
@@ -35,6 +39,50 @@ class ResPartner(models.Model):
         operation_detail_id = bigcommerce_operation_details_obj.create(vals)
         return operation_detail_id
     
+    def customer_request_data(self, partner_id):
+        partner_name = partner_id.name.split(" ")
+        if partner_name:
+            first_name = partner_name[0]
+            last_name = partner_name[-1]
+        else:
+            first_name = partner_id.name
+            last_name = ""
+        return  {
+            "email": partner_id.email or "",
+            "first_name": first_name or "",
+            "last_name": last_name or "",
+            "phone": partner_id.phone or "",
+        }
+
+    def customer_address_request_data(self, partner_id):
+        country_name = partner_id.country_id.name
+        country_obj = self.env['res.country'].search(
+                [('name', '=', country_name)], limit=1)
+        country_id = country_obj and country_obj.id
+        state_code = partner_id.state_id.code
+        state_obj = self.env['res.country.state'].search([('code', '=', state_code)], limit=1)
+        state_id = state_obj and state_obj.id
+        partner_name = partner_id.name.split(" ")
+        if partner_name:
+            first_name = partner_name[0]
+            last_name = partner_name[-1]
+        else:
+            first_name = partner_id.name
+            last_name = ""
+
+        return  {
+            "first_name": first_name or "",
+            "last_name": last_name or "",
+            "company": partner_id.company_id.name or "",
+            "street_1": partner_id.street or "",
+            "street_2": partner_id.street2 or "",
+            "zip": partner_id.zip or "",
+            "city": partner_id.city or "",
+            "country": "United States" or "",
+            "state": partner_id.state_id and partner_id.state_id.name or "",
+            "phone": partner_id.phone,
+            "address_type": "commercial"
+        }
 
     def bigcommerce_to_odoo_import_customers(self,warehouse_id=False, bigcommerce_store_ids=False):
         for bigcommerce_store_id in bigcommerce_store_ids:
@@ -137,7 +185,6 @@ class ResPartner(models.Model):
             bigcommerce_store_id.bigcommerce_operation_message = "Import Customer Process Completed."
             self._cr.commit()
 
-
     def add_customer_address(self,customer_id=False,bigcommerce_store_id=False,category_operation_id=False,warehouse_id=False):
         req_data = False
         customer_process_message = "Process Completed Successfully!"
@@ -187,3 +234,122 @@ class ResPartner(models.Model):
                                                      category_operation_id, False, False, "For Adderss Import, Not Getting Customer In odoo.")
         category_operation_id and category_operation_id.write({'bigcommerce_message': customer_process_message})
         self._cr.commit()
+
+    def odoo_to_bigcommerce_export_customers(self, warehouse_id=False, bigcommerce_store_ids=False, new_partner_id=False):
+        for bigcommerce_store_id in bigcommerce_store_ids:
+            customer_process_message = "Process Completed Successfully!"
+            customer_operation_id = self.create_bigcommerce_operation('customer','export',bigcommerce_store_id,'Processing...',warehouse_id)
+            self._cr.commit()
+            try:
+                if not new_partner_id:
+                    partner_ids = self.search([('bigcommerce_customer_id', '=', False),('is_available_in_bigcommerce','=',False)])
+                else:
+                    partner_ids = new_partner_id
+                _logger.info("List of Customers Need to Export: {0}".format(partner_ids))
+                if not partner_ids:
+                    customer_process_message="Customers is not exists in odoo for export odoo to bigCommerce!"
+                for partner_id in partner_ids:
+                    customer_request_data = self.customer_request_data(partner_id)
+                    api_operation="/v2/customers"
+                    response_data=bigcommerce_store_id.send_request_from_odoo_to_bigcommerce(customer_request_data,api_operation)
+                    _logger.info("Status Code of Export Customers: {0}".format(response_data.status_code))
+                    if response_data.status_code in [200, 201]:
+                        response_data = response_data.json()
+                        _logger.info("Customers Response Data : %s" % (response_data))
+                        if response_data.get("id"):
+                            bigcommerce_customer_id = response_data.get("id")
+                            partner_id.bigcommerce_customer_id = bigcommerce_customer_id
+                            partner_id.bigcommerce_store_id=bigcommerce_store_id.id
+                            partner_id.is_available_in_bigcommerce = True
+                            process_message="%s : %s Customers Exported Successfully."%(bigcommerce_customer_id,partner_id.name)
+                            self.create_bigcommerce_operation_detail('customer','export',customer_request_data,response_data,customer_operation_id,warehouse_id,False,process_message)
+                        else:
+                            process_message="Customers Id Not Found!"
+                            self.create_bigcommerce_operation_detail('customer','export',customer_request_data,response_data,customer_operation_id,warehouse_id,True,process_message)
+                    else:
+                        response_data = response_data.json()
+                        error_msg = response_data.get('errors')
+                        self.create_bigcommerce_operation_detail('customer','export',customer_request_data,error_msg,customer_operation_id,warehouse_id,True,error_msg)
+                    self._cr.commit()
+                    try :
+                        partner_id.export_customer_address_odoo_to_bigcommerce(warehouse_id, bigcommerce_store_id, partner_id)
+                    except Exception as e:
+                        continue
+            except Exception as e:
+                customer_process_message = "Process Is Not Completed Yet!  {}".format(e)
+                self.create_bigcommerce_operation_detail('customer','export',customer_request_data,response_data,customer_operation_id,warehouse_id,True,customer_process_message)
+            customer_operation_id and customer_operation_id.write({'bigcommerce_message': customer_process_message})
+            self._cr.commit()
+
+    def export_customer_address_odoo_to_bigcommerce(self,warehouse_id=False, bigcommerce_store_ids=False, new_partner_id=False):
+        for bigcommerce_store_id in bigcommerce_store_ids:
+            customer_process_message = "Process Completed Successfully!"
+            customer_operation_id = self.create_bigcommerce_operation('customer_address','export',bigcommerce_store_id,'Processing...',warehouse_id)
+            self._cr.commit()
+            try:
+                _logger.info("List of Customers Address Need to Export: {0}".format(new_partner_id))
+                child_partner_ids = new_partner_id.child_ids.filtered(lambda x: x.type == 'delivery')
+                for child_partner_id in child_partner_ids:
+                    customer_request_data = self.customer_address_request_data(child_partner_id)
+                    api_operation = "/v2/customers/%s/addresses"%(new_partner_id.bigcommerce_customer_id)
+                    response_data=bigcommerce_store_id.send_request_from_odoo_to_bigcommerce(customer_request_data,api_operation)
+                    _logger.info("Status Code of Export Customers Address: {0}".format(response_data.status_code))
+                    if response_data.status_code == 200:
+                        response_data = response_data.json()
+                        _logger.info("Customers Address Response Data : %s" % (response_data))
+                        process_message="%s : Customers Address Exported Successfully."%(child_partner_id.name)
+                        self.create_bigcommerce_operation_detail('customer_address','export',customer_request_data,response_data,customer_operation_id,warehouse_id,False,customer_process_message)
+            except Exception as e:
+                customer_process_message = "Process Is Not Completed Yet!  {}".format(e)
+
+    def export_update_customer_odoo_to_bigcommerce(self):
+        bigcommerce_store_id = self.bigcommerce_store_id
+        bigcommerce_customer_id = self.bigcommerce_customer_id
+        if self.is_available_in_bigcommerce:
+            try:
+                if not bigcommerce_store_id:
+                    raise ValidationError("Big commerce store not found fot this order.")
+                api_url ='%s%s/v2/customers/%s'%(bigcommerce_store_id.bigcommerce_api_url,bigcommerce_store_id.bigcommerce_store_hash, bigcommerce_customer_id)
+                partner_id = self
+                partner_name = partner_id.name.split(" ")
+                if partner_name:
+                    first_name = partner_name[0]
+                    last_name = partner_name[-1]
+                else:
+                    first_name = partner_id.name
+                request_data = {
+                    "first_name": first_name or "",
+                    "last_name": last_name or "",
+                    'phone': partner_id.phone,
+                    'email': partner_id.email
+                }
+                headers = {"Accept": "application/json",
+                           "X-Auth-Client": "{}".format(bigcommerce_store_id and bigcommerce_store_id.bigcommerce_x_auth_client),
+                           "X-Auth-Token": "{}".format(bigcommerce_store_id and bigcommerce_store_id.bigcommerce_x_auth_token),
+                           "Content-Type": "application/json"}
+                data = json.dumps(request_data)
+                url = "{0}".format(api_url)
+                try:
+                    _logger.info("Send PUT Request From odoo to BigCommerce: {0}".format(url))
+                    response_data =  request(method='PUT', url=api_url, data=data, headers=headers)
+                except Exception as e:
+                    _logger.info("Getting an Error in PUT Req odoo to BigCommerce: {0}".format(e))
+                    raise ValidationError(e)
+                if response_data.status_code == 200:
+                    response_data = response_data.json()
+                    return {
+                        'effect': {
+                            'fadeout': 'slow',
+                            'message': 'Update Customer Exported : %s' % (self.name),
+                            'img_url': '/web/static/src/img/smile.svg',
+                            'type': 'rainbow_man',
+                        }
+                    }
+                else:
+                    response_data = response_data.json()
+                    error_msg = "{0} : {1}".format(response_data)
+                    raise ValidationError(error_msg)
+            except Exception as e:
+                raise ValidationError("Process Is Not Completed Yet!  {}".format(e))
+        else:
+            raise ValidationError("Please First Export This Customer Then Try To Update.!!!!")
