@@ -84,6 +84,14 @@ class ResPartner(models.Model):
             "address_type": "commercial"
         }
 
+    # EXPORT CUSTOMER MANUALLY
+    def odoo_to_bigcommerce_export_customer_manually(self):
+        if self._context.get('active_model') == 'res.partner':
+            partner_ids = self.env.context.get('active_ids')
+            partner_objs = self.env['res.partner'].browse(partner_ids)
+            self.odoo_to_bigcommerce_export_customers(bigcommerce_store_ids= partner_objs.bigcommerce_store_id,new_partner_id=partner_objs)
+        return
+
     def bigcommerce_to_odoo_import_customers(self,warehouse_id=False, bigcommerce_store_ids=False):
         for bigcommerce_store_id in bigcommerce_store_ids:
             req_data = False
@@ -235,6 +243,7 @@ class ResPartner(models.Model):
         category_operation_id and category_operation_id.write({'bigcommerce_message': customer_process_message})
         self._cr.commit()
 
+    # EXPORT CUSTOMER ALL
     def odoo_to_bigcommerce_export_customers(self, warehouse_id=False, bigcommerce_store_ids=False, new_partner_id=False):
         for bigcommerce_store_id in bigcommerce_store_ids:
             customer_process_message = "Process Completed Successfully!"
@@ -277,7 +286,6 @@ class ResPartner(models.Model):
                         continue
             except Exception as e:
                 customer_process_message = "Process Is Not Completed Yet!  {}".format(e)
-                self.create_bigcommerce_operation_detail('customer','export',customer_request_data,response_data,customer_operation_id,warehouse_id,True,customer_process_message)
             customer_operation_id and customer_operation_id.write({'bigcommerce_message': customer_process_message})
             self._cr.commit()
 
@@ -287,7 +295,7 @@ class ResPartner(models.Model):
             customer_operation_id = self.create_bigcommerce_operation('customer_address','export',bigcommerce_store_id,'Processing...',warehouse_id)
             self._cr.commit()
             try:
-                _logger.info("List of Customers Address Need to Export: {0}".format(new_partner_id))
+                _logger.info("Customers Address Need to Export: {0}".format(new_partner_id))
                 child_partner_ids = new_partner_id.child_ids.filtered(lambda x: x.type == 'delivery')
                 for child_partner_id in child_partner_ids:
                     customer_request_data = self.customer_address_request_data(child_partner_id)
@@ -302,6 +310,7 @@ class ResPartner(models.Model):
             except Exception as e:
                 customer_process_message = "Process Is Not Completed Yet!  {}".format(e)
 
+    # UPDATE CUSTOMER MANUALLY
     def export_update_customer_odoo_to_bigcommerce(self):
         bigcommerce_store_id = self.bigcommerce_store_id
         bigcommerce_customer_id = self.bigcommerce_customer_id
@@ -317,6 +326,7 @@ class ResPartner(models.Model):
                     last_name = partner_name[-1]
                 else:
                     first_name = partner_id.name
+                    last_name = ""
                 request_data = {
                     "first_name": first_name or "",
                     "last_name": last_name or "",
@@ -353,3 +363,41 @@ class ResPartner(models.Model):
                 raise ValidationError("Process Is Not Completed Yet!  {}".format(e))
         else:
             raise ValidationError("Please First Export This Customer Then Try To Update.!!!!")
+
+    def delete_customer_odoo_to_bigcommerce(self):
+        bigcommerce_store_id = self.bigcommerce_store_id
+        bigcommerce_customer_id = self.bigcommerce_customer_id
+        if self.is_available_in_bigcommerce:
+            try:
+                if not bigcommerce_store_id:
+                    raise ValidationError("Big commerce store not found fot this order.")
+                api_url ='%s%s/v2/customers/%s'%(bigcommerce_store_id.bigcommerce_api_url,bigcommerce_store_id.bigcommerce_store_hash, bigcommerce_customer_id)
+                partner_id = self
+                request_data = {
+                    "customer_id": partner_id.bigcommerce_customer_id
+                }
+                headers = {"Accept": "application/json",
+                           "X-Auth-Client": "{}".format(bigcommerce_store_id and bigcommerce_store_id.bigcommerce_x_auth_client),
+                           "X-Auth-Token": "{}".format(bigcommerce_store_id and bigcommerce_store_id.bigcommerce_x_auth_token),
+                           "Content-Type": "application/json"}
+                data = json.dumps(request_data)
+                url = "{0}".format(api_url)
+                partner_id.bigcommerce_customer_id = False
+                partner_id.is_available_in_bigcommerce = False
+                try:
+                    _logger.info("Send DELETE Request From odoo to BigCommerce: {0}".format(url))
+                    response_data =  request(method='DELETE', url=api_url, data=data, headers=headers)
+                except Exception as e:
+                    _logger.info("Getting an Error in DELETE Req odoo to BigCommerce: {0}".format(e))
+                    raise ValidationError(e)
+                if response_data.status_code == 204:
+                    return {
+                        'effect': {
+                            'fadeout': 'slow',
+                            'message': 'Delete Customer : %s' % (self.name),
+                            'img_url': '/web/static/src/img/smile.svg',
+                            'type': 'rainbow_man',
+                        }
+                    }
+            except Exception as e:
+                raise ValidationError("Process Is Not Completed Yet!  {}".format(e))
