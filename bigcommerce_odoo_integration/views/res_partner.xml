@@ -23,7 +23,7 @@
                 <xpath expr="//page[last()]" position="after">
                     <page name="bigcommerce_info" string="BigCommerce Info">
                         <group>
-                            <field name="bigcommerce_store_id" readonly="1"/>
+                            <field name="bigcommerce_store_id" readonly="0"/>
                             <field name="bigcommerce_customer_id"/>
                             <field name="is_available_in_bigcommerce" readonly="1"/>
                         </group>
