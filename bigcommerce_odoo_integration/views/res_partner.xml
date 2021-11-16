@@ -25,9 +25,12 @@
                         <group>
                             <field name="bigcommerce_store_id" readonly="0"/>
                             <field name="bigcommerce_customer_id"/>
-                            <field name="is_available_in_bigcommerce" readonly="1"/>
+                            <field name="is_available_in_bigcommerce" readonly="0"/>
                         </group>
                     </page>
+                </xpath>
+                <xpath expr="//form/sheet/notebook[1]/page[1]/field[@name='child_ids']/form/sheet/field[@name='type']" position="after">
+                    <field name="bigcommerce_shipping_address_id" invisible="1"/>
                 </xpath>
             </field>
         </record>

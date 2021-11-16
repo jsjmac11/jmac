@@ -70,7 +70,7 @@ class SaleOrderVts(models.Model):
             'company_id': vals.get('company_id'),
             'partner_id': vals.get('partner_id'),
             'partner_invoice_id': vals.get('partner_invoice_id'),
-            'partner_shipping_id': vals.get('partner_shipping_id'),
+            # 'partner_shipping_id': vals.get('partner_shipping_id'),
             'warehouse_id': vals.get('warehouse_id'),
         }
         new_record = sale_order.new(order_vals)
@@ -82,8 +82,6 @@ class SaleOrderVts(models.Model):
         order_vals.update({
             'company_id': vals.get('company_id'),
             'picking_policy': 'direct',
-            'partner_invoice_id': vals.get('partner_invoice_id'),
-            'partner_shipping_id': vals.get('partner_shipping_id'),
             'partner_id': vals.get('partner_id'),
             'date_order': vals.get('date_order', ''),
             'state': 'draft',
@@ -91,6 +89,10 @@ class SaleOrderVts(models.Model):
             'currency_id':vals.get('currency_id',False),
             'discount_type': 'amount',
         })
+        if vals.get('partner_shipping_id', False):
+            order_vals.update({'partner_shipping_id': vals['partner_shipping_id']})
+        if vals.get('partner_invoice_id', False):
+            order_vals.update({'partner_invoice_id': vals['partner_invoice_id']})
         return order_vals
 
     def create_sale_order_line_from_bigcommerce(self, vals):
@@ -198,6 +200,16 @@ class SaleOrderVts(models.Model):
                     for order in response_data:
                         big_commerce_order_id = order.get('id')
                         sale_order = self.env['sale.order'].search([('big_commerce_order_id', '=', big_commerce_order_id)])
+                        partner_address_obj = self.env['res.partner'].search([('bigcommerce_customer_id', '=', order.get('customer_id'))], limit=1)
+                        shipping_customer_id = order.get('id')
+                        shipping_address = "/v2%s"%(order.get('shipping_addresses').get('resource'))
+                        shipping_address_response_data = bigcommerce_store_id.send_get_request_from_odoo_to_bigcommerce(shipping_address)
+                        if shipping_address_response_data.status_code in [200, 201, 204]:
+                            ship_reposnce_data = shipping_address_response_data.json()
+                            for address in ship_reposnce_data:
+                                shipping_customer_address = self.env['res.partner'].search([('parent_id', '=', partner_address_obj.id), ('street', '=', address.get('street_1').strip())], limit=1)
+                                billing_customer_address = self.env['res.partner'].search([('parent_id', '=', partner_address_obj.id), ('street', '=', order.get('billing_address').get('street_1').strip())], limit=1)
+                                delivery_customer_id = shipping_customer_address.id
                         if not sale_order:
                             date_time_str = order.get('orderDate')
                             customerEmail = order.get('billing_address').get('email')
@@ -209,10 +221,8 @@ class SaleOrderVts(models.Model):
                             street_2 = order.get('billing_address').get('street_2','')
                             country_obj = self.env['res.country'].search(
                                 [('code', '=', country_iso2)], limit=1)
-
                             phone = order.get('billing_address').get('phone')
                             zip = order.get('billing_address').get('zip')
-
                             total_tax= order.get('total_tax')
                             customerId = order.get('customer_id')
                             carrier_id  = self.env['delivery.carrier'].search([('is_bigcommerce_shipping_method','=',True)],limit=1)
@@ -299,8 +309,8 @@ class SaleOrderVts(models.Model):
                             base_shipping_cost = order.get('base_shipping_cost', 0.0)
                             currency_id = self.env['res.currency'].search([('name','=',order.get('currency_code'))],limit=1)
                             vals.update({'partner_id': partner_obj.id,
-                                        'partner_invoice_id': partner_obj.id,
-                                        'partner_shipping_id': partner_obj.id,
+                                        'partner_invoice_id': billing_customer_address and billing_customer_address.id or False,
+                                        'partner_shipping_id': delivery_customer_id or False,
                                         'date_order': date_time_str or today_date,
                                         'carrier_id': carrier_id and carrier_id.id,
                                         'company_id': warehouse_id.company_id and warehouse_id.company_id.id or self.env.user.company_id.id,
