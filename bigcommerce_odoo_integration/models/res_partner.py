@@ -12,6 +12,7 @@ class ResPartner(models.Model):
     bigcommerce_store_id = fields.Many2one('bigcommerce.store.configuration',string="Bigcommerce Store",copy=False)
     bigcommerce_customer_id = fields.Char("Bigcommerce Customer ID", copy=False)
     is_available_in_bigcommerce = fields.Boolean(string='Is Exported to BigCommerce',default=False)
+    bigcommerce_shipping_address_id = fields.Char("Bigcommerce Shipping Address ID", copy=False)
 
     def create_bigcommerce_operation(self,operation,operation_type,bigcommerce_store_id,log_message,warehouse_id):
         vals = {
@@ -207,6 +208,28 @@ class ResPartner(models.Model):
                     response_data = response_data.json()
                     _logger.info("Customer Response Data : {0}".format(response_data))
                     for record in response_data:
+                        # CREATE MULTIPLE DELIVERY ADDRESS
+                        if record['id']:
+                            is_exist = self.env['res.partner'].search([('bigcommerce_shipping_address_id', '=', record['id']), ('parent_id.bigcommerce_customer_id', '=', record['customer_id'])],  limit=1)
+                            customer_id = self.env['res.partner'].search([('bigcommerce_customer_id', '=', record['customer_id'])],  limit=1)
+                            if not is_exist:
+                                country_code = record.get("country_iso2","")
+                                state_name = record.get('state',"")
+                                country_obj = self.env['res.country'].search(
+                                        [('code', '=', country_code)], limit=1)
+                                state_obj = self.env['res.country.state'].search([('name', '=', state_name)], limit=1)
+                                vals = {
+                                    'type': 'delivery',
+                                    'bigcommerce_shipping_address_id': record.get("id"),
+                                    'street': record.get('street_1',""),
+                                    'street2': record.get('street_2',""),
+                                    'zip': record.get('zip',""),
+                                    'city': record.get('city',""),
+                                    'country_id': 233,
+                                    'state_id': state_obj and state_obj.id,
+                                    'parent_id': customer_id.id
+                                }
+                                shipping_record = self.env['res.partner'].create(vals)
                         customer_id.street=record.get('street_1',"")
                         customer_id.street1=record.get("street_2","")
                         customer_id.zip=record.get('zip',"")
@@ -218,13 +241,11 @@ class ResPartner(models.Model):
                         state_name=record.get('state',"")
                         state_obj = self.env['res.country.state'].search([('name', '=', state_name)], limit=1)
                         customer_id.state_id=state_obj and state_obj.id
-
                         _logger.info("Customer Address Updated : {0}".format(customer_id.name))
                         response_data = record
                         customer_message="%s Customer Address Updated"%(customer_id.name)
                         self.create_bigcommerce_operation_detail('customer','import',req_data,response_data,category_operation_id,warehouse_id,False,customer_message)
                         self._cr.commit()
-                        break
                     category_operation_id and category_operation_id.write({'bigcommerce_message': customer_process_message})
                     _logger.info("Import Customer Process Completed ")
                 else:
@@ -401,3 +422,4 @@ class ResPartner(models.Model):
                     }
             except Exception as e:
                 raise ValidationError("Process Is Not Completed Yet!  {}".format(e))
+
