@@ -41,10 +41,11 @@ class ResPartner(models.Model):
         return operation_detail_id
     
     def customer_request_data(self, partner_id):
-        partner_name = partner_id.name.split(" ")
-        if partner_name:
-            first_name = partner_name[0]
-            last_name = partner_name[-1]
+        partner_name = partner_id.name
+        name_list = partner_name.split(" ")
+        if name_list:
+            first_name = name_list[0]
+            last_name = name_list[-1]
         else:
             first_name = partner_id.name
             last_name = ""
@@ -63,10 +64,11 @@ class ResPartner(models.Model):
         state_code = partner_id.state_id.code
         state_obj = self.env['res.country.state'].search([('code', '=', state_code)], limit=1)
         state_id = state_obj and state_obj.id
-        partner_name = partner_id.name.split(" ")
-        if partner_name:
-            first_name = partner_name[0]
-            last_name = partner_name[-1]
+        partner_name = partner_id.parent_id.name
+        name_list = partner_name.split(" ")
+        if name_list:
+            first_name = name_list[0]
+            last_name = name_list[-1]
         else:
             first_name = partner_id.name
             last_name = ""
@@ -316,7 +318,7 @@ class ResPartner(models.Model):
             customer_operation_id = self.create_bigcommerce_operation('customer_address','export',bigcommerce_store_id,'Processing...',warehouse_id)
             self._cr.commit()
             try:
-                _logger.info("Customers Address Need to Export: {0}".format(new_partner_id))
+                _logger.info("Customers Address Need to Export: {0}".format(new_partner_id.name))
                 child_partner_ids = new_partner_id.child_ids.filtered(lambda x: x.type == 'delivery')
                 for child_partner_id in child_partner_ids:
                     customer_request_data = self.customer_address_request_data(child_partner_id)
