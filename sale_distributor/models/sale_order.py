@@ -63,9 +63,14 @@ class SaleOrder(models.Model):
                                  domain=[('line_split', '=', False)])
 
     @api.depends('stock_move_line_ids')
-    def _compute_shipment_package_line(self):
+    def _compute_dropship_shipment_package_line(self):
         for order in self:
             order.shipment_package_ids = order.stock_move_line_ids.filtered(lambda l: l.result_package_id)
+
+    @api.depends('picking_line_ids')
+    def _compute_buy_shipment_package_line(self):
+        for order in self:
+            order.buy_shipment_package_ids = order.picking_line_ids.filtered(lambda l: l.result_package_id)
 
     split_line_ids = fields.One2many(
         'sale.order.line', compute='_compute_split_lines')
@@ -148,7 +153,8 @@ class SaleOrder(models.Model):
     email = fields.Char("Email")
     phone = fields.Char("Phone")
 
-    shipment_package_ids = fields.One2many('stock.move.line', string='Confirm Shipment', compute="_compute_shipment_package_line")
+    shipment_package_ids = fields.One2many('stock.move.line', string='Dropship Confirm Shipment', compute="_compute_dropship_shipment_package_line")
+    buy_shipment_package_ids = fields.One2many('stock.move.line', string='Buy Confirm Shipment', compute="_compute_buy_shipment_package_line")
     hide_button = fields.Boolean(string="Is Show Shipment", copy=False, default=False)
     process_single = fields.Boolean('Process In Single Pack', default=False)
     stock_move_line_ids = fields.One2many('stock.move.line', 'sale_id', 'Shipment', domain=[('picking_code', '=', 'incoming')])

@@ -99,7 +99,7 @@
                     <field name="process_single" invisible="1"/>
                 </div> -->
                 <field name="hide_button" invisible="1"/>
-                <group string="Confirm Shipment" attrs="{'invisible': ['|', ('state', 'in', ('new','sent','review')), ('shipment_package_ids', '=', [])]}" colspan="4">
+                <group string="Confirm Dropship Shipment" attrs="{'invisible': ['|', ('state', 'in', ('new','sent','review')), ('shipment_package_ids', '=', [])]}" colspan="4">
                     <field name="shipment_package_ids" mode="kanban" readonly="0" nolabel="1">
                         <kanban class="kanban-box" create="0">
                             <field name="id"/>
@@ -189,6 +189,53 @@
                     <button name="prepare_incomming_shipment_process" string="Confirm Dropship Shipment" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', ('hide_button', '!=', True), ('is_dropship_line', '!=', True), ('stock_move_line_ids', '=', [])]}"/>
                 </div>
 
+
+                <group string="Confirm Buy Shipment" attrs="{'invisible': ['|', ('state', 'in', ('new','sent','review')), ('buy_shipment_package_ids', '=', [])]}" colspan="4">
+                    <field name="buy_shipment_package_ids" mode="kanban" readonly="0" nolabel="1">
+                        <kanban class="kanban-box" create="0">
+                            <field name="id"/>
+                            <field name="color"/>
+                            <field name="product_id"/>
+                            <field name="result_package_id"/>
+                            <field name="tracking_ref"/>
+                            <field name="qty_done"/>
+                            <field name="product_demand"/>
+                            <field name="product_uom_qty"/>
+                            <templates >
+                                <t t-name="kanban-box">
+                                    <t t-set="color" t-value="kanban_color(record.color.raw_value)"/>
+                                    <div t-att-class="color + (record.color.raw_value == 1 ? ' oe_kanban_color_alert' : '') + ' oe_kanban_global_click'">
+                                        <div class="o_kanban_image">
+                                            <img t-att-src="kanban_image('product.template', 'image_1920', record.id.image_1920)" alt="Product" class="o_image_64_contain"/>
+                                        </div>
+                                        <div class="oe_kanban_details">
+                                            <div t-if="record.product_id.raw_value">
+                                                <strong>Name: </strong>
+                                                <field name="product_id"/>
+                                            </div>
+                                            <div t-if="record.result_package_id.raw_value">
+                                                <strong>Package: </strong>
+                                                <field name="result_package_id"/>
+                                            </div>
+                                            <div t-if="record.tracking_ref.raw_value">
+                                                <strong>Tracking Ref: </strong>
+                                                <field name="tracking_ref"/>
+                                            </div>
+                                            <div t-if="record.qty_done.raw_value">
+                                                <strong>Qty: </strong>
+                                                <field name="qty_done"/> / 
+                                                <t t-if="record.product_demand.raw_value">
+                                                    <strong>Demand: </strong>
+                                                    <field name="product_demand"/>
+                                                </t>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </templates>
+                        </kanban>
+                    </field>
+                </group>
                 <group string="Buy Shipment Details" colspan="4"
                     attrs="{'invisible': ['|', '|', ('state', 'in', ('new','sent','review')), ('is_add_to_buy_line', '!=', True), ('picking_line_ids', '=', [])]}">
                     <group>
