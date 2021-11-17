@@ -283,7 +283,7 @@ class ProductTemplate(models.Model):
                 self.with_context(product_name=True).write({'name':product_name})
                 return True
 
-        elif  self.manufacturer_info:
+        elif self.manufacturer_info:
             product_name = self.manufacturer_info + ' ' + self.vendor_part_number
             if product_name and not self._context.get('product_name', False):
                 self.with_context(product_name=True).write({'name':product_name})
