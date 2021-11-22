@@ -85,7 +85,7 @@
                 <field name="is_add_to_buy_line" invisible="1"/>
             </xpath>
             <xpath expr="//field[@name='date_order']" position="after">
-                <field name="po_lst" invisible="1"/>
+                <field name="po_lst_1" invisible="1"/>
                 <field name="do_str_lst_1" invisible="1"/>
             </xpath>
             
@@ -1917,7 +1917,7 @@
                 <field name="note" string="Quotation Note"/>
             </xpath>
             <xpath expr="//field[@name='invoice_status']" position="after">
-                <field name="po_lst" string="PO #"/>
+                <field name="po_lst_1" string="PO #"/>
                 <field name="do_str_lst_1" string="DO #"/>
             </xpath>
             <!-- <xpath expr="//field[@name='tag_ids']" position="after">
@@ -1969,7 +1969,7 @@
 	    <field name="inherit_id" ref="sale.view_sales_order_filter"/>
 	    <field name="arch" type="xml">
 	    	<xpath expr="//field[@name='team_id']" position="after">
-	    		<field name="po_lst" string="PO #"/>
+	    		<field name="po_lst_1" string="PO #"/>
 	    		<field name="do_str_lst_1" string="DO #"/>
 	    	</xpath>
 	    </field>
