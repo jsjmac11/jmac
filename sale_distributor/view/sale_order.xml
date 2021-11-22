@@ -84,6 +84,11 @@
                 <field name="is_dropship_line" invisible="1"/>
                 <field name="is_add_to_buy_line" invisible="1"/>
             </xpath>
+            <xpath expr="//field[@name='date_order']" position="after">
+                <field name="po_lst" invisible="1"/>
+                <field name="do_str_lst_1" invisible="1"/>
+            </xpath>
+            
             <xpath expr="//field[@name='note']" position="before">
                 <!-- <group colspan="2" attrs="{'invisible': [('state', 'in', ('new','sent','review'))]}">
                     <div class="oe_inline o_td_label">
@@ -1911,6 +1916,10 @@
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="note" string="Quotation Note"/>
             </xpath>
+            <xpath expr="//field[@name='invoice_status']" position="after">
+                <field name="po_lst" string="PO #"/>
+                <field name="do_str_lst_1" string="DO #"/>
+            </xpath>
             <!-- <xpath expr="//field[@name='tag_ids']" position="after">
                 <button name="button" string="register" type="object" class="oe_highlight"/>
             </xpath> -->
@@ -1954,6 +1963,19 @@
         </field>
     </record>
 
+	<record id="view_sales_order_filter" model="ir.ui.view">
+	    <field name="name">sale.order.list.select</field>
+	    <field name="model">sale.order</field>
+	    <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+	    <field name="arch" type="xml">
+	    	<xpath expr="//field[@name='team_id']" position="after">
+	    		<field name="po_lst" string="PO #"/>
+	    		<field name="do_str_lst_1" string="DO #"/>
+	    	</xpath>
+	    </field>
+	</record>
+        
+        
     <record id="view_order_form_with_carrier_inht" model="ir.ui.view">
         <field name="name">delivery.sale.order.form.view.with_carrier_inht</field>
         <field name="model">sale.order</field>
@@ -1981,6 +2003,7 @@
             records.print_delivery_shipping_lable()
         </field>
     </record>
+    
     <record id="view_order_line_tree_custom" model="ir.ui.view">
         <field name="name">sale.order.line.tree</field>
         <field name="model">sale.order.line</field>

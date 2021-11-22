@@ -159,7 +159,32 @@ class SaleOrder(models.Model):
     process_single = fields.Boolean('Process In Single Pack', default=False)
     stock_move_line_ids = fields.One2many('stock.move.line', 'sale_id', 'Shipment', domain=[('picking_code', '=', 'incoming')])
     picking_line_ids = fields.One2many('stock.move.line', 'sale_id', string='Transfers', domain=[('picking_code', '!=', 'incoming')])
+    po_lst = fields.Char('PO#', compute='_compute_po_lst', store=True)
+    do_str_lst_1 = fields.Char('DO#', compute='_compute_do_lst', store=True)
 
+    @api.depends('picking_ids')
+    def _compute_do_lst(self):
+        for order in self:
+            do_lst = ''
+            if order.picking_ids:
+                do_list_ids = order.picking_ids
+                if do_list_ids:
+                    do_lst = ','.join(e.name for e in do_list_ids)
+            order.do_str_lst_1 = do_lst
+                
+    @api.depends('split_line_ids', 'stock_move_line_ids', 'picking_line_ids')
+    def _compute_po_lst(self):
+        po_lst = ''
+        pol_obj = self.env['purchase.order.line']
+        for order in self:
+            sol_ids = order.split_line_ids.filtered(
+                lambda l: l.line_type in ('buy', 'dropship', 'allocate_po'))
+            po_line_ids = pol_obj.search([('sale_line_id', 'in', sol_ids.ids)])
+            po_count = po_line_ids.mapped('order_id')
+            if po_count:
+                po_lst = ','.join(e.name for e in po_count)
+            order.po_lst = po_lst
+            
     def _create_delivery_line(self, carrier, price_unit):
         sol = super(SaleOrder, self)._create_delivery_line(carrier, price_unit)
         pack_product_id = sol.product_id.product_pack_line.filtered(lambda p: p.is_auto_created)
