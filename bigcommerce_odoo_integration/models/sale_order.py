@@ -21,18 +21,19 @@ class SaleOrderVts(models.Model):
     bigcommerce_order_status_id = fields.Many2one('sale.order.status', string="Bigcommerce Order Status", track_visibility='onchange')
     exp_bigcommerce_order_status_id = fields.Many2one('sale.order.status', string="Export Bigcommerce Order Status", track_visibility='onchange')
     
-    # fields.Many2one('sale.order.status', 
-    #                       string="Export Bigcommerce Order Status",
-    #                       compute='_order_status_compute')
+    @api.onchange('exp_bigcommerce_order_status_id')
+    def onchange_exp_bigcommerce_order_status(self):
+        if self.exp_bigcommerce_order_status_id:
+            self.update_order_to_bigcommerce()
 
-    # def _order_status_compute(self):
-    #     for order in self:
-    #         exp_bigcommerce_order_status_id = self.env['sale.order.status']
-    #         if order.big_commerce_order_id:
-    #             exp_bigcommerce_order_status_id = self.env['sale.order.status'].search(
-    #                     [('odoo_state', '=', order.state)], limit=1)
-    #         order.exp_bigcommerce_order_status_id = exp_bigcommerce_order_status_id
-
+    def action_done(self):
+        for order in self:
+            context = dict(self._context) or {}
+            context.update({'done_order': True})
+            order.with_context(context).update_order_to_bigcommerce()
+        res = super(SaleOrderVts, self).action_done()
+        return res
+    
     def get_shipped_qty(self):
         bigcommerce_store_hash = self.bigcommerce_store_id.bigcommerce_store_hash
         bigcommerce_client_seceret  = self.bigcommerce_store_id.bigcommerce_x_auth_client
@@ -560,6 +561,9 @@ class SaleOrderVts(models.Model):
                            'X-Auth-Client':  "{}".format(bigcommerce_auth_client)
                         }
                 bigcommerce_order_status_id = self.exp_bigcommerce_order_status_id.status_id
+                if self._context.get('done_order'):
+                    bigcommerce_order_status_id = self.env['sale.order.status'
+                                       ].search([('odoo_state', '=', 'done')])
                 request_data = {
                     "status_id": bigcommerce_order_status_id
                 }
