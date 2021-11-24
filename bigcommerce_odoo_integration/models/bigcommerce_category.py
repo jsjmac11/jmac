@@ -15,18 +15,18 @@ class BigCommerceCategory(models.Model):
     _rec_name = 'complete_name'
     _order = 'complete_name'
 
-    name = fields.Char(string="Product Category")
+    name = fields.Char(string="Product Category", track_visibility='onchange')
     complete_name = fields.Char(
         'Complete Name', compute='_compute_complete_name',
         store=True)
-    description = fields.Char(string="Description")
-    bigcommerce_store_id = fields.Many2one('bigcommerce.store.configuration',string="Bigcommerce Store",copy=False)
-    bigcommerce_product_category_id = fields.Char("Bigcommerce Category ID", copy=False)
+    description = fields.Char(string="Description", track_visibility='onchange')
+    bigcommerce_store_id = fields.Many2one('bigcommerce.store.configuration',string="Bigcommerce Store",copy=False, track_visibility='onchange')
+    bigcommerce_product_category_id = fields.Char("Bigcommerce Category ID", copy=False, track_visibility='onchange')
     custom_url = fields.Char(string="Custom Url", copy=False)
     is_visible = fields.Boolean(string="Is Visible", copy=False)
-    bigcommerce_parent_category_id = fields.Char("Bigcommerce Parent Category ID", copy=False)
+    bigcommerce_parent_category_id = fields.Char("Bigcommerce Parent Category ID", copy=False, track_visibility='onchange')
     is_exported_to_bigcommerce = fields.Boolean(string='Is Exported to BigCommerce',default=False)
-    parent_id = fields.Many2one('bigcommerce.category', string="Parent Category")
+    parent_id = fields.Many2one('bigcommerce.category', string="Parent Category", track_visibility='onchange')
 
     @api.depends('name', 'parent_id.complete_name')
     def _compute_complete_name(self):

@@ -9,8 +9,8 @@ _logger = logging.getLogger("BigCommerce")
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
     
-    bc_shipping_provider = fields.Char(string='Shipping Provider')
-    bigcommerce_shimpment_id = fields.Char(string="Bigcommerce Shipment Numebr")
+    bc_shipping_provider = fields.Char(string='Shipping Provider', track_visibility='onchange')
+    bigcommerce_shimpment_id = fields.Char(string="Bigcommerce Shipment Numebr", track_visibility='onchange')
 
     def get_order_shipment(self):
         tracking_number = shipping_provider = ''
