@@ -824,8 +824,8 @@ class SaleOrderLine(models.Model):
             'sale_distributor.res_partner_bnr_address', raise_if_not_found=False)
         wr_partner_id = self.env.ref(
             'sale_distributor.res_partner_wr_address', raise_if_not_found=False)
-        dfm_partner_id = self.env.ref(
-            'sale_distributor.res_partner_dfm_address', raise_if_not_found=False)
+        # dfm_partner_id = self.env.ref(
+        #     'sale_distributor.res_partner_dfm_address', raise_if_not_found=False)
         bks_partner_id = self.env.ref(
             'sale_distributor.res_partner_bks_address', raise_if_not_found=False)
         result.update({
@@ -836,7 +836,7 @@ class SaleOrderLine(models.Model):
             'jne_partner_id': jne_partner_id.id,
             'bnr_partner_id': bnr_partner_id.id,
             'wr_partner_id': wr_partner_id.id,
-            'dfm_partner_id': dfm_partner_id.id,
+            # 'dfm_partner_id': dfm_partner_id.id,
             'bks_partner_id': bks_partner_id.id
         })
         return result
@@ -1582,9 +1582,10 @@ class SaleOrderLine(models.Model):
                 vendor_cost.update(price_stock_list[1])
                 all_total_stock += price_stock_list[2]
 
+            self.dfm_partner_id = self.product_id.product_manufacturer_id
             if self.dfm_partner_id:
                 price_stock_list = self.vendor_price_stock(
-                    self.dfm_partner_id, self.product_uom_qty, params, 'dfm')
+                    self.product_id.product_manufacturer_id, self.product_uom_qty, params, 'dfm')
                 result['value'].update(price_stock_list[0])
                 vendor_cost.update(price_stock_list[1])
                 all_total_stock += price_stock_list[2]
