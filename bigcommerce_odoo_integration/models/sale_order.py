@@ -18,9 +18,8 @@ class SaleOrderVts(models.Model):
     bigcommerce_store_id = fields.Many2one('bigcommerce.store.configuration', string="Bigcommerce Store", copy=False, track_visibility='onchange')
     bigcommerce_shipment_order_status = fields.Char(string='Bigcommerce Shipment Order Status',readonly=True, track_visibility='onchange')
 
-    bigcommerce_order_status_id = fields.Many2one('sale.order.status', string="Bigcommerce Order Status")
-    exp_bigcommerce_order_status_id = fields.Many2one('sale.order.status', 
-                    string="Export Bigcommerce Order Status")
+    bigcommerce_order_status_id = fields.Many2one('sale.order.status', string="Bigcommerce Order Status", track_visibility='onchange')
+    exp_bigcommerce_order_status_id = fields.Many2one('sale.order.status', string="Export Bigcommerce Order Status", track_visibility='onchange')
     
     @api.onchange('exp_bigcommerce_order_status_id')
     def onchange_exp_bigcommerce_order_status(self):
