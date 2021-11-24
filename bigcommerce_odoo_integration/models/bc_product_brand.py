@@ -11,8 +11,8 @@ class BigcommerceProductBrand(models.Model):
     _description = 'BigCommerce Product Brand'
     
     bc_brand_id = fields.Char(string='Brand Id')
-    name = fields.Char(string='Brand Name')
-    bigcommerce_store_id = fields.Many2one('bigcommerce.store.configuration',string='Bigcommerce Store')
+    name = fields.Char(string='Brand Name', track_visibility='onchange')
+    bigcommerce_store_id = fields.Many2one('bigcommerce.store.configuration',string='Bigcommerce Store', track_visibility='onchange')
     
     def bigcommerce_to_odoo_import_product_brands(self,warehouse_id=False, bigcommerce_store_ids=False):
         for bigcommerce_store_id in bigcommerce_store_ids:

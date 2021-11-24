@@ -57,7 +57,7 @@ class ProductProduct(models.Model):
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
-    name = fields.Char('Product Name', index=True, required=False, translate=True)
+    name = fields.Char('Product Name', index=True, required=False, translate=True, track_visibility='onchange')
     bigcommerce_product_image_ids = fields.One2many('bigcommerce.product.image', 'product_template_id',
                                                     string="Bigcommerce Product Image Ids")
     bigcommerce_product_id = fields.Char(string='Product ID')
@@ -67,14 +67,14 @@ class ProductTemplate(models.Model):
         ('none', 'Inventory Level will not be tracked'),
         ('product', 'Inventory Level Tracked using the Inventory Level'),
         ('variant', 'Inventory Level Tracked Based on variant')
-    ], "Inventory Tracking", default="none")
+    ], "Inventory Tracking", default="none", track_visibility='onchange')
     inventory_warning_level = fields.Integer(string="Inventory Warning Level")
     inventory_level = fields.Integer(string="Inventory Level")
-    is_visible = fields.Boolean(string="Is Visible",default=True)
-    warranty = fields.Char(string="Warranty")
+    is_visible = fields.Boolean(string="Is Visible", default=True, track_visibility='onchange')
+    warranty = fields.Char(string="Warranty", track_visibility='onchange')
     is_imported_from_bigcommerce = fields.Boolean(string="Is Imported From Big Commerce ?")
-    x_studio_manufacturer = fields.Many2one('bc.product.brand',string='Brand Name')
-    bigcommerce_category_ids = fields.Many2many('bigcommerce.category', 'product_big_categ_rel', 'product_id', 'category_id', string="Bigcommerce Category")
+    x_studio_manufacturer = fields.Many2one('bc.product.brand',string='Brand Name', track_visibility='onchange')
+    bigcommerce_category_ids = fields.Many2many('bigcommerce.category', 'product_big_categ_rel', 'product_id', 'category_id', string="Bigcommerce Category", track_visibility='onchange')
     #Added new fields related to big commerce
     allow_purchases = fields.Boolean('Allow Purchases?')
     item_type = fields.Char('Item Type')
@@ -85,7 +85,7 @@ class ProductTemplate(models.Model):
                                           ('Shipping', 'Shipping'),
                                           ('Gift Wrapping', 'Gift Wrapping')], 'Product Tax Class')
     product_visible = fields.Boolean('Product Visible?')
-    product_weight = fields.Float('Weight', default=1.0)
+    product_weight = fields.Float('Weight', track_visibility='onchange', default=1.0)
     show_product_condition = fields.Boolean('Is Condition Shown?',
                                             default=False)
     stop_processing_rules = fields.Selection([('Y', 'Y'),
@@ -93,7 +93,7 @@ class ProductTemplate(models.Model):
                                             default='N')
     vendor_part_number = fields.Char('Vendor Part Number')
     
-    is_free_shipping = fields.Boolean('Free Shipping')
+    is_free_shipping = fields.Boolean('Free Shipping', track_visibility='onchange')
     
     meta_description = fields.Text('Meta Description')
     
@@ -104,18 +104,18 @@ class ProductTemplate(models.Model):
     product_condition = fields.Char('Condition')
     product_URL = fields.Char('Product URL', compute='_compute_product_url',
         store=True)
-    manufacturer_URL = fields.Char('Manufacturer URL')
+    manufacturer_URL = fields.Char('Manufacturer URL', track_visibility='onchange')
     mpn_URL = fields.Char('MPN URL')
     search_keywords = fields.Text('Search Keywords',
                                   compute='_compute_search_keyword')
-    sort_order =  fields.Integer('Sort Order')
+    sort_order =  fields.Integer('Sort Order', track_visibility='onchange')
     track_inventory = fields.Char('Track Inventory')
     product_type = fields.Char('Type')
     product_custom_fields = fields.Char('Product Custom Fields')
     product_depth = fields.Integer('Depth')
-    gtin = fields.Char('GTIN')
-    height = fields.Integer("Height")
-    is_featured = fields.Boolean('Is Featured')
+    gtin = fields.Char('GTIN', track_visibility='onchange')
+    height = fields.Integer("Height", track_visibility='onchange')
+    is_featured = fields.Boolean('Is Featured', track_visibility='onchange')
     is_preorder_only = fields.Boolean('Is Preorder Only')
     is_price_hidden = fields.Boolean('Is Price Hidden')
     map_price = fields.Integer("MAP Price")
@@ -126,7 +126,7 @@ class ProductTemplate(models.Model):
     related_products = fields.Char('Related Products')
     retail_price = fields.Float('Retail Price')
     tax_class_id = fields.Integer('Tax Class ID')
-    width = fields.Integer('Width')
+    width = fields.Integer('Width', track_visibility='onchange')
     # brand_id = fields.Integer("Brand ID")
     free_shipping_override = fields.Char("Free Shipping Override")
     description_override = fields.Char("Description Override")
@@ -147,7 +147,7 @@ class ProductTemplate(models.Model):
 
     search_keyword_ids = fields.One2many('product.search.keyword', 
                     'product_template_id',
-                    string="Search Keywords")
+                    string="Search Keywords", track_visibility='onchange')
 
     monkey_activator = fields.Selection([('on', 'On'), ('off', 'Off')], 'Monkey Activator', default='off')
     monkey_product_name = fields.Char(string="Monkey Product Name")

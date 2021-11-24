@@ -14,12 +14,12 @@ _logger = logging.getLogger("BigCommerce")
 class SaleOrderVts(models.Model):
     _inherit = "sale.order"
 
-    big_commerce_order_id = fields.Char(string="BigCommerce Order ID", readonly=True,copy=False)
-    bigcommerce_store_id = fields.Many2one('bigcommerce.store.configuration', string="Bigcommerce Store", copy=False)
-    bigcommerce_shipment_order_status = fields.Char(string='Bigcommerce Shipment Order Status',readonly=True)
+    big_commerce_order_id = fields.Char(string="BigCommerce Order ID", readonly=True,copy=False, track_visibility='onchange')
+    bigcommerce_store_id = fields.Many2one('bigcommerce.store.configuration', string="Bigcommerce Store", copy=False, track_visibility='onchange')
+    bigcommerce_shipment_order_status = fields.Char(string='Bigcommerce Shipment Order Status',readonly=True, track_visibility='onchange')
 
-    bigcommerce_order_status_id = fields.Many2one('sale.order.status', string="Bigcommerce Order Status")
-    exp_bigcommerce_order_status_id = fields.Many2one('sale.order.status', string="Export Bigcommerce Order Status")
+    bigcommerce_order_status_id = fields.Many2one('sale.order.status', string="Bigcommerce Order Status", track_visibility='onchange')
+    exp_bigcommerce_order_status_id = fields.Many2one('sale.order.status', string="Export Bigcommerce Order Status", track_visibility='onchange')
     
     # fields.Many2one('sale.order.status', 
     #                       string="Export Bigcommerce Order Status",
@@ -595,9 +595,9 @@ class SaleOrderVts(models.Model):
 class SaleOrderLineVts(models.Model):
     _inherit = "sale.order.line"
 
-    quantity_shipped = fields.Float(string='Shipped Products',copy=False)
+    quantity_shipped = fields.Float(string='Shipped Products',copy=False, track_visibility='onchange')
     #x_studio_manufacturer = fields.Many2one('bc.product.brand',string='Manufacturer')
-    big_commerce_tax = fields.Float(string="BigCommerce Tax", copy=False)
+    big_commerce_tax = fields.Float(string="BigCommerce Tax", copy=False, track_visibility='onchange')
 
     @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id')
     def _compute_amount(self):
@@ -619,9 +619,9 @@ class SaleOrderStatus(models.Model):
     _name = "sale.order.status"
     _description = 'BigCommerce Sale Order Status'
 
-    status_id = fields.Char(string="Status ID")
-    name = fields.Char(string="Bigcommerce Order Status")
-    description = fields.Text(string="Description")
+    status_id = fields.Char(string="Status ID", track_visibility='onchange')
+    name = fields.Char(string="Bigcommerce Order Status", track_visibility='onchange')
+    description = fields.Text(string="Description", track_visibility='onchange')
     bigcommerce_store_id = fields.Many2one('bigcommerce.store.configuration',string="Bigcommerce Store",copy=False)
     big_commerce_status_id = fields.Char(string="BigCommerce Status")
     odoo_state = fields.Selection([('new', 'Quotation'),
@@ -633,7 +633,7 @@ class SaleOrderStatus(models.Model):
                                             ('approved', 'Quotation Approved'),
                                             ('done', 'Locked'),
                                             ('cancel', 'Cancelled')],
-                             string='Odoo Status', default='new')
+                             string='Odoo Status', default='new', track_visibility='onchange')
     
     def import_order_status_from_bigcommerce(self, warehouse_id=False, bigcommerce_store_ids=False):
         for bigcommerce_store_id in bigcommerce_store_ids:

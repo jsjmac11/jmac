@@ -9,7 +9,7 @@ _logger = logging.getLogger("BigCommerce")
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
-    bigcommerce_store_id = fields.Many2one('bigcommerce.store.configuration',string="Bigcommerce Store",copy=False)
+    bigcommerce_store_id = fields.Many2one('bigcommerce.store.configuration',string="Bigcommerce Store",copy=False, track_visibility='onchange')
     bigcommerce_customer_id = fields.Char("Bigcommerce Customer ID", copy=False)
     is_available_in_bigcommerce = fields.Boolean(string='Is Exported to BigCommerce',default=False)
     bigcommerce_shipping_address_id = fields.Char("Bigcommerce Shipping Address ID", copy=False)
