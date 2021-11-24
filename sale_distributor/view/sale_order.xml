@@ -436,7 +436,7 @@
                 <attribute name="context">{'res_partner_search_mode': 'customer'}</attribute>
             </xpath>
             <xpath expr="//field[@name='partner_invoice_id']" position="replace">
-                <label for="partner_invoice_id" string="Invoice Address"/>
+                <label for="partner_invoice_id" string="Billing Address"/>
                 <div class="o_row invoice_row">
                     <field  name="partner_invoice_id"
                     context="{'default_type':'invoice', 'show_address_only': True,'address_inline':True}"
@@ -446,7 +446,7 @@
                 </div>
             </xpath>
             <xpath expr="//field[@name='partner_shipping_id']" position="replace">
-                <label for="partner_shipping_id" string="Delivery Address"/>
+                <label for="partner_shipping_id" string="Shipping Address"/>
                 <div class="o_row shipping_row">
                     <field  name="partner_shipping_id"
                     context="{'default_type':'delivery', 'show_address_only': True, 'address_inline':True}"

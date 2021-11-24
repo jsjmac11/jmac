@@ -42,8 +42,8 @@
                                 class="fa fa-arrow-right oe_link">Set Price
                         </button>
                     </div>
-                    <field name="tag_id" string="Tag"
-                           options="{'no_open': True, 'no_create': True}"/>
+                    <!-- <field name="tag_id" string="Tag"
+                           options="{'no_open': True, 'no_create': True}"/> -->
                 </xpath>
                 <!-- Shipping Cost Adding-->
                 <xpath expr="//group[@name='note_group']/group/field[@name='amount_tax']" position="before">
