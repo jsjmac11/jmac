@@ -23,6 +23,7 @@
                             </group>
                             <group>
                                 <field name="bigcommerce_order_status_id"/>
+                                <field name="exp_bigcommerce_order_status_id" />
                             </group>
                         </group>
                     </page>
@@ -52,7 +53,9 @@
             <field name="search_view_id" ref="sale.sale_order_view_search_inherit_sale"/>
             <field name="domain">[('big_commerce_order_id','!=',False)]
             </field>
-            <field name="context">{'big_commerce_order_id':True}</field>
+            <field name="context">{'big_commerce_order_id':True,
+	            'search_default_group_bigcommerce_store_id':1,
+	            'search_default_group_bigcommerce_order_status_id':1}</field>
         </record>
 		<menuitem id="bigcommerce_store_sale_order_menuitem" name="Sale Order"
                   sequence="9" parent="bigcommerce_odoo_integration_store_menuitem"
@@ -68,6 +71,7 @@
                     <field name="status_id" />
                     <field name="name" />
                     <field name="bigcommerce_store_id"/>
+                    <field name="odoo_state"/>
                 </tree>
             </field>
         </record>
@@ -87,6 +91,7 @@
                             </group>
                             <group>
                                 <field name="big_commerce_status_id"/>
+                                <field name="odoo_state"/>
                             </group>
                         </group>
                         <group string="Description">
@@ -106,6 +111,23 @@
         <menuitem id="menu_bigcommerce_order_status" name="BigCommerce Order Status"
             parent="bigcommerce_odoo_integration_store_menuitem" sequence="10"
             action="action_bigcommerce_order_status" />
+            
+        <record id="bigcommerce_sale_order_search_view_ept" model="ir.ui.view">
+            <field name="name">bigcommerce Sale Order Search View</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+            <field name="arch" type="xml">
+                <filter name="customer" position="after">
+	                <filter name="group_bigcommerce_store_id" string="Bigcommerce Store" domain="[]"
+	                        icon="terp-personal"
+	                        context="{'group_by':'bigcommerce_store_id'}"/>
+	                <filter name="group_bigcommerce_order_status_id" string="Bigcommerce Status" domain="[]"
+	                        icon="terp-personal"
+	                        context="{'group_by':'bigcommerce_order_status_id'}"/>
+                </filter>
+            </field>
+        </record>
+        
     </data>
 </odoo>
 

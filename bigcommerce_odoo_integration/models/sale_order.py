@@ -19,6 +19,19 @@ class SaleOrderVts(models.Model):
     bigcommerce_shipment_order_status = fields.Char(string='Bigcommerce Shipment Order Status',readonly=True)
 
     bigcommerce_order_status_id = fields.Many2one('sale.order.status', string="Bigcommerce Order Status")
+    exp_bigcommerce_order_status_id = fields.Many2one('sale.order.status', string="Export Bigcommerce Order Status")
+    
+    # fields.Many2one('sale.order.status', 
+    #                       string="Export Bigcommerce Order Status",
+    #                       compute='_order_status_compute')
+
+    # def _order_status_compute(self):
+    #     for order in self:
+    #         exp_bigcommerce_order_status_id = self.env['sale.order.status']
+    #         if order.big_commerce_order_id:
+    #             exp_bigcommerce_order_status_id = self.env['sale.order.status'].search(
+    #                     [('odoo_state', '=', order.state)], limit=1)
+    #         order.exp_bigcommerce_order_status_id = exp_bigcommerce_order_status_id
 
     def get_shipped_qty(self):
         bigcommerce_store_hash = self.bigcommerce_store_id.bigcommerce_store_hash
@@ -546,7 +559,7 @@ class SaleOrderVts(models.Model):
                            'X-Auth-Token' : "{}".format(bigcommerce_auth_token),
                            'X-Auth-Client':  "{}".format(bigcommerce_auth_client)
                         }
-                bigcommerce_order_status_id = self.bigcommerce_order_status_id.status_id
+                bigcommerce_order_status_id = self.exp_bigcommerce_order_status_id.status_id
                 request_data = {
                     "status_id": bigcommerce_order_status_id
                 }
@@ -611,7 +624,17 @@ class SaleOrderStatus(models.Model):
     description = fields.Text(string="Description")
     bigcommerce_store_id = fields.Many2one('bigcommerce.store.configuration',string="Bigcommerce Store",copy=False)
     big_commerce_status_id = fields.Char(string="BigCommerce Status")
-
+    odoo_state = fields.Selection([('new', 'Quotation'),
+                                            ('sent', 'Quotation Sent'),
+                                            ('review', 'Review'),
+                                            ('draft', 'Sales Order'),
+                                            ('sale', 'Processed Order'),
+                                            ('waiting', 'Waiting Approval'), 
+                                            ('approved', 'Quotation Approved'),
+                                            ('done', 'Locked'),
+                                            ('cancel', 'Cancelled')],
+                             string='Odoo Status', default='new')
+    
     def import_order_status_from_bigcommerce(self, warehouse_id=False, bigcommerce_store_ids=False):
         for bigcommerce_store_id in bigcommerce_store_ids:
             headers = {
