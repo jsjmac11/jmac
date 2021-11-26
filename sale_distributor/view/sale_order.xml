@@ -511,7 +511,13 @@
                 
                 <label for="substitute_product_id"/>
                 <div>
-                    <field name="substitute_product_id" options="{'no_open': True,'no_create': True}" domain="[('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', company_id), ('id', '!=', product_id)]" attrs="{'readonly': [('product_pack_id', '=', False)]}"/>
+                	<field name="substitute_ids" invisible="1"/>
+                    <field name="substitute_product_id" 
+                    	options="{'no_open': True,'no_create': True}" 
+                    	domain="[('sale_ok', '=', True), '|', ('company_id', '=', False), 
+                    	('company_id', '=', company_id), 
+                    	('id', 'in', substitute_ids)]" 
+                    	attrs="{'readonly': [('product_pack_id', '=', False)]}"/>
                     <field name="substitute_product_template_id" invisible="1"/>
                     <field name="is_pack_product" invisible="1"/>
                 </div>
@@ -2022,5 +2028,44 @@
         </field>
     </record>
 
+        <record id="view_substitute_product_tree_view" model="ir.ui.view">
+            <field name="name">substitute.product</field>
+            <field name="model">substitute.product</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Substitute Product">
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
 
+        <record id="view_form_substitute_product" model="ir.ui.view">
+            <field name="name">Substitute Product</field>
+            <field name="model">substitute.product</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Substitute Product">
+                    <sheet>
+                        <group>
+                         	<field name="name"></field>
+                        </group>
+                        <group string="Substitute Product List">
+                            <field name="substitute_ids" 
+                            	nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_substitute_product" model="ir.actions.act_window">
+            <field name="name">Substitute Product</field>
+            <field name="res_model">substitute.product</field>
+            <field name="view_id" ref="view_substitute_product_tree_view" />
+        </record>
+
+        <menuitem id="menu_substitute_product" name="Substitute Product"
+            parent="sale.menu_sales_config" sequence="60"
+            action="action_substitute_product" />
+            
 </odoo>

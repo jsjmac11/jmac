@@ -4,3 +4,5 @@ access_inbound_stock,inbound.stock,model_inbound_stock,,1,1,1,1
 access_product_pack_uom,access_product_pack_uom,model_product_pack_uom,,1,1,1,1
 access_product_dimension_line,access_product_dimension_line,model_product_dimension_line,base.group_user,1,1,1,1
 access_purchase_shipping_method,access_purchase_shipping_method,model_purchase_shipping_method,base.group_user,1,1,1,1
+access_substitute_product,substitute.product,model_substitute_product,base.group_user,1,1,1,1
+

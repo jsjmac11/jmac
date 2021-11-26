@@ -1221,6 +1221,8 @@ class SaleOrderLine(models.Model):
     sequence_ref = fields.Char('No.', store=True)
     substitute_product_id = fields.Many2one(
         'product.product', string='Substitute Product', change_default=True, ondelete='restrict', check_company=True)  # Unrequired company
+    substitute_ids = fields.Many2many(
+        'product.product', compute='_set_substitute_lst')
     substitute_product_template_id = fields.Many2one(
         'product.template', string='Substitute Product Template',
         related="substitute_product_id.product_tmpl_id", domain=[('sale_ok', '=', True)])
@@ -1235,6 +1237,16 @@ class SaleOrderLine(models.Model):
                                  compute="_compute_unprocess_qty",
                                  store=False, default=0.0)
 
+    def _set_substitute_lst(self):
+        lst = []
+        for line in self:
+            substitute_id = self.env['substitute.product'].search(
+                    [('name' ,'=', line.product_pack_id.product_tmpl_id.id)])
+            if substitute_id:
+                for sub_id in substitute_id:
+                    lst+=sub_id.substitute_ids.ids
+            line.substitute_ids = lst
+        
     @api.depends('sale_split_lines', 'pack_quantity', 'order_id.is_unprocessed_order')
     def _compute_unprocess_qty(self):
         for record in self:
@@ -1953,3 +1965,15 @@ class StockMoveLine(models.Model):
              and rec.carrier_id and rec.qty_done:
                 rec.picking_id._put_in_pack(rec)
         return True
+
+class SubstituteProduct(models.Model):
+    _name = 'substitute.product'
+    _desription = 'Substitute Product'
+
+    name = fields.Many2one('product.template', 'Products')
+    substitute_ids = fields.Many2many('product.product', 
+                    'product_pro_substitute_rel', 
+                    'sub_id', 
+                    'product_id',
+                    'Substitute Product list')
+    
