@@ -1237,6 +1237,7 @@ class SaleOrderLine(models.Model):
                                  compute="_compute_unprocess_qty",
                                  store=False, default=0.0)
 
+    @api.depends('product_pack_id')
     def _set_substitute_lst(self):
         lst = []
         for line in self:
