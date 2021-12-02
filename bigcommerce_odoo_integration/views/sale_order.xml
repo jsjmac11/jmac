@@ -12,21 +12,11 @@
                   <button name="get_shipped_qty" type="object" string="Shipped Qty"   />
              </header>
                 <xpath expr="//field[@name='payment_term_id']" position="after">
-                        <field name="bigcommerce_store_id" />
-                </xpath>
-                <xpath expr="//page[@name='other_information']" position="after">
-                    <page name="bigcommerce_info" string="BigCommerce Info">
-                        <group>
-                            <group>
-                                <field name="big_commerce_order_id"/>
-                                <field name="bigcommerce_shipment_order_status" />
-                            </group>
-                            <group>
-                                <field name="bigcommerce_order_status_id"/>
-                                <field name="exp_bigcommerce_order_status_id" />
-                            </group>
-                        </group>
-                    </page>
+	                <field name="bigcommerce_store_id" />
+	                <field name="big_commerce_order_id"/>
+	                <field name="bigcommerce_shipment_order_status" />
+	                <field name="bigcommerce_order_status_id"/>
+	                <field name="exp_bigcommerce_order_status_id" />
                 </xpath>
                 <xpath expr="//form/sheet/notebook/page[@name='order_lines']/field[@name='order_line']/tree/field[@name='product_uom_qty']" position="before">
                     <field name="quantity_shipped"/>
