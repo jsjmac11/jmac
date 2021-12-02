@@ -1132,7 +1132,7 @@ class SaleOrderLine(models.Model):
     jmac_stock_ids = fields.Many2many('stock.quant', 'jmac_sol_vendor_stock_rel',
                                       'line_id', 'vendor_stock_id', string="Jmac Stock")
     inbound_stock_lines = fields.One2many(
-        "inbound.stock", 'sale_line_id', string="Inbound Stock")
+        "inbound.stock", 'sale_line_id', string="Inbound Stock", domain=[('po_sale_line_id', '=', False)])
     jmac_tab_color = fields.Char(
         string="JMAC Tab Color", compute='_compute_jmac_tab_color')
     allocated_pol_id = fields.Many2one(
