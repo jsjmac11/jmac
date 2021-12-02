@@ -17,7 +17,36 @@
 				<xpath expr="//field[@name='payment_term_id']" position="attributes">
 					<attribute name="required">1</attribute>
 				</xpath>
-				<xpath expr="//page[1]" position="after">
+				<xpath expr="//field[@name='note']" position="before">
+					<group string="Advance Payment" colspan="4">
+						<field name='payment_line' readonly="1" nolabel="1">
+							<tree>
+								<field name="state" invisible="1" />
+								<field name="currency_id" invisible="1" />
+								<field name="payment_date" />
+								<field name="partner_id" />
+								<field name="name" />
+								<field name="journal_id" />
+								<field name="payment_method_id" />
+								<field name="amount" widget="monetary"/>
+							</tree>
+							<form>
+								<group>
+									<field name="state" invisible="1" />
+									<field name="currency_id" invisible="1" />
+									<field name="payment_date" />
+									<field name="partner_id" />
+									<field name="name" />
+									<field name="journal_id" />
+									<field name="payment_date" />
+									<field name="payment_method_id" />
+									<field name="amount" widget="monetary"/>
+								</group>
+							</form>
+						</field>
+					</group>
+				</xpath>
+				<!-- <xpath expr="//page[1]" position="after">
 					<page name='advance_payment' string="Advance Payment">
 						<field name='payment_line' readonly="1">
 							<tree>
@@ -57,7 +86,7 @@
 						</group>
 
 					</page>
-				</xpath>
+				</xpath> -->
 			</field>
 		</record>
 
