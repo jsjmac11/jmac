@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="distributor_pricelist_import_wiz_view" model="ir.ui.view">
+            <field name="name">Distributor Pricelist Import</field>
+            <field name="model">product.supplierinfo.import</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Distributor Data">
+                <p style="font-size:14px;" class="text-muted">
+                    Please select csv file of distributor data as per given format.
+                </p>
+                    <group>
+                        <group>
+                            <field name="import_type"/>
+                        </group>
+                        <group>
+                            <field name="file_upload" filename="name"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="action_import_distributor_pricelist" string="Import Distributor Pricelist" type="object" class="oe_highlight" attrs="{'invisible':[('import_type', '!=', 'dis_price')]}"/>
+                        <button name="action_import_distributor_stock" string="Import Distributor Stock" type="object" class="oe_highlight" attrs="{'invisible':[('import_type', '!=', 'dis_stock')]}"/>
+                        or
+                        <button special="cancel" class="oe_link" string="Cancel"/>
+                    </footer>
+                </form>
+           </field>
+        </record>
+
+       <record id="action_distributor_pricelist_wiz_view" model="ir.actions.act_window">
+            <field name="name">Distributor Data</field>
+            <field name="res_model">product.supplierinfo.import</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="distributor_pricelist_import_wiz_view"/>
+        </record>
+
+        <menuitem id="import_distributor_data_menu" name="Import Distributor Data" sequence="101"
+                parent="sale.menu_sale_config" action="action_distributor_pricelist_wiz_view"/>
+</odoo>
