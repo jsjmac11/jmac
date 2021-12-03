@@ -526,7 +526,10 @@ class ProductTemplate(models.Model):
         if self._context.get('active_model') == 'product.template':
             product_ids = self.env.context.get('active_ids')
             product_objs = self.env['product.template'].browse(product_ids)
-            self.export_product_to_bigcommerce(bigcommerce_store_ids= product_objs.bigcommerce_store_id,new_product_id=product_objs, warehouse_id=product_objs.bigcommerce_store_id.warehouse_id)
+            if not product_objs.bigcommerce_store_id:
+                raise ValidationError("Big commerce store not found fot this product.")
+            else:
+                self.export_product_to_bigcommerce(bigcommerce_store_ids= product_objs.bigcommerce_store_id,new_product_id=product_objs, warehouse_id=product_objs.bigcommerce_store_id.warehouse_id)
             # product_objs.write({'is_exported_to_bigcommerce':True})
         return
 
@@ -615,32 +618,35 @@ class ProductTemplate(models.Model):
                     product_ids = new_product_id
                 _logger.info("List of Products Need to Export: {0}".format(product_ids))
                 for product_id in product_ids:
-                    if warehouse_id:
-                        product_request_data = self.product_request_data(product_id,warehouse_id)
+                    if not product_id.bigcommerce_store_id:
+                        raise ValidationError(_("Big commerce store not found fot this %s product....!" % product_id.name))
                     else:
-                        product_request_data = self.product_request_data(product_id)
-                    api_operation="/v3/catalog/products"
-                    response_data=bigcommerce_store_id.send_request_from_odoo_to_bigcommerce(product_request_data,api_operation)
-                    _logger.info("Status Code of Export Product : {0}".format(response_data.status_code))
-                    if response_data.status_code in [200, 201]:
-                        response_data = response_data.json()
-                        _logger.info("Product Response Data : %s" % (response_data))
-                        if response_data.get('data') and response_data.get('data').get("id"):
-                            bigcommerce_product_id = response_data.get('data').get("id")
-                            product_id.bigcommerce_product_id=bigcommerce_product_id
-                            product_id.bigcommerce_store_id=bigcommerce_store_id.id
-                            product_id.is_exported_to_bigcommerce = True
-                            process_message="{0} : Product Operation Sucessfully Completed".format(product_id.name)
-                            self.create_bigcommerce_operation_detail('product','export',product_request_data,response_data,operation_id,warehouse_id,False,process_message)
-                            product_variant_option = "/v3/catalog/products/{}/variants".format(product_id.bigcommerce_product_id)
+                        if warehouse_id:
+                            product_request_data = self.product_request_data(product_id,warehouse_id)
                         else:
-                            process_message="{0} : {1}".format(product_id.name, response_data)
-                            self.create_bigcommerce_operation_detail('product','export',product_request_data,response_data,operation_id,warehouse_id,True,response_data)
-                    else:
-                        response_data = response_data.json()
-                        process_message = "{0} : {1}".format(product_id.name ,response_data.get('errors'))
-                        self.create_bigcommerce_operation_detail('product','export',product_request_data,process_message,operation_id,warehouse_id,True,process_message)
-                    self._cr.commit()
+                            product_request_data = self.product_request_data(product_id)
+                        api_operation="/v3/catalog/products"
+                        response_data=bigcommerce_store_id.send_request_from_odoo_to_bigcommerce(product_request_data,api_operation)
+                        _logger.info("Status Code of Export Product : {0}".format(response_data.status_code))
+                        if response_data.status_code in [200, 201]:
+                            response_data = response_data.json()
+                            _logger.info("Product Response Data : %s" % (response_data))
+                            if response_data.get('data') and response_data.get('data').get("id"):
+                                bigcommerce_product_id = response_data.get('data').get("id")
+                                product_id.bigcommerce_product_id=bigcommerce_product_id
+                                product_id.bigcommerce_store_id=bigcommerce_store_id.id
+                                product_id.is_exported_to_bigcommerce = True
+                                process_message="{0} : Product Operation Sucessfully Completed".format(product_id.name)
+                                self.create_bigcommerce_operation_detail('product','export',product_request_data,response_data,operation_id,warehouse_id,False,process_message)
+                                product_variant_option = "/v3/catalog/products/{}/variants".format(product_id.bigcommerce_product_id)
+                            else:
+                                process_message="{0} : {1}".format(product_id.name, response_data)
+                                self.create_bigcommerce_operation_detail('product','export',product_request_data,response_data,operation_id,warehouse_id,True,response_data)
+                        else:
+                            response_data = response_data.json()
+                            process_message = "{0} : {1}".format(product_id.name ,response_data.get('errors'))
+                            self.create_bigcommerce_operation_detail('product','export',product_request_data,process_message,operation_id,warehouse_id,True,process_message)
+                        self._cr.commit()
             except ValidationError as e:
                 raise
             except Exception as e:
