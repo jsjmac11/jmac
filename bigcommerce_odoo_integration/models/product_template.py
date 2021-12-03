@@ -347,6 +347,16 @@ class ProductTemplate(models.Model):
             res._make_monkey_fields_logic(vals)
         return res_write
 
+    def unlink(self):
+        for rec in self:
+            keyword_ids = self.env['product.search.keyword'].search(
+                    [('product_template_id', '=', rec.id)])
+            if keyword_ids:
+                keyword_ids.unlink()
+        res_unlink = super(ProductTemplate, self).unlink()
+
+        return res_unlink
+    
     @api.constrains('default_code')
     def check_default_code(self):
         for record in self:
@@ -805,11 +815,12 @@ class ProductTemplate(models.Model):
         if record.get('search_keywords'):
             key_word = record.get('search_keywords').split(',')
             if key_word:
+                context = dict(self._context) or {}
+                context.update({'big_commerce': True})
                 for key_lst in key_word:
                     v = {'name': key_lst,
                                  'product_template_id': product_template.id}
-                    self.env['product.search.keyword'].create(v)
-                
+                    self.env['product.search.keyword'].with_context(context).create(v)
         _logger.info("Product Created: {}".format(product_template))
         return True, product_template
     

@@ -35,6 +35,6 @@ class ProductSearchKeyword(models.Model):
             keyword = self.search([('name', '=', rec.name),
                         ('product_template_id','=', rec.product_template_id.id),
                          ('id', '!=', rec.id)])
-            if keyword:
+            if keyword and not self._context.get('big_commerce'):
                 raise ValidationError("Same Keyword already Exists.!")
         
