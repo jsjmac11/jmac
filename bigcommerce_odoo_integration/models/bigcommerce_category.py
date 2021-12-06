@@ -1,4 +1,4 @@
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from requests import request
 import requests
@@ -47,7 +47,10 @@ class BigCommerceCategory(models.Model):
         if self._context.get('active_model') == 'bigcommerce.category':
             category_ids = self.env.context.get('active_ids')
             category_objs = self.env['bigcommerce.category'].browse(category_ids)
-            self.odoo_to_bigcommerce_export_product_categories(bigcommerce_store_ids= category_objs.bigcommerce_store_id,new_category_id=category_objs)
+            if not category_objs.bigcommerce_store_id:
+                raise ValidationError("Big commerce store not found fot this category.")
+            else:
+                self.odoo_to_bigcommerce_export_product_categories(bigcommerce_store_ids= category_objs.bigcommerce_store_id,new_category_id=category_objs)
             # category_objs.write({'is_exported_to_bigcommerce':True})
         return
 
@@ -98,7 +101,7 @@ class BigCommerceCategory(models.Model):
         if self.is_exported_to_bigcommerce:
             try:
                 if not bigcommerce_store_id:
-                    raise ValidationError("Big commerce store not found fot this order.")
+                    raise ValidationError("Big commerce store not found fot this category.")
                 api_url ='%s%s/v3/catalog/categories/%s'%(bigcommerce_store_id.bigcommerce_api_url,bigcommerce_store_id.bigcommerce_store_hash, bigcommerce_product_category_id)
                 category_id = self
                 request_data = {
@@ -154,31 +157,33 @@ class BigCommerceCategory(models.Model):
                 if not category_ids:
                     category_process_message="Product is not exists in odoo for export odoo to bigCommerce!"
                 for category_id in category_ids:
-                    category_request_data = self.category_request_data(category_id)
-                    api_operation="/v3/catalog/categories"
-                    response_data=bigcommerce_store_id.send_request_from_odoo_to_bigcommerce(category_request_data,api_operation)
-                    _logger.info("Status Code of Export Product Category: {0}".format(response_data.status_code))
-                    if response_data.status_code in [200, 201]:
-                        response_data = response_data.json()
-                        _logger.info("Category Response Data : %s" % (response_data))
-                        if response_data.get('data') and response_data.get('data').get("id"):
-                            bigcommerce_category_id = response_data.get('data').get("id")
-                            category_id.bigcommerce_product_category_id=bigcommerce_category_id
-                            category_id.bigcommerce_store_id=bigcommerce_store_id.id
-                            category_id.is_exported_to_bigcommerce = True
-                            process_message="%s : %s Product Category Exported Successfully."%(bigcommerce_category_id,category_id.name)
-                            self.create_bigcommerce_operation_detail('product_category','export',category_request_data,response_data,category_operation_id,warehouse_id,False,process_message)
-                        else:
-                            process_message="Product Id Not Found!"
-                            self.create_bigcommerce_operation_detail('product_category','export',category_request_data,response_data,category_operation_id,warehouse_id,True,process_message)
+                    if not category_id.bigcommerce_store_id:
+                        raise ValidationError(_("Big commerce store not found fot this %s categories....!" % category_id.name))
                     else:
-                        response_data = response_data.json()
-                        error_msg = response_data.get('errors')
-                        self.create_bigcommerce_operation_detail('product_category','export',category_request_data,error_msg,category_operation_id,warehouse_id,True,error_msg)
+                        category_request_data = self.category_request_data(category_id)
+                        api_operation="/v3/catalog/categories"
+                        response_data=bigcommerce_store_id.send_request_from_odoo_to_bigcommerce(category_request_data,api_operation)
+                        _logger.info("Status Code of Export Product Category: {0}".format(response_data.status_code))
+                        if response_data.status_code in [200, 201]:
+                            response_data = response_data.json()
+                            _logger.info("Category Response Data : %s" % (response_data))
+                            if response_data.get('data') and response_data.get('data').get("id"):
+                                bigcommerce_category_id = response_data.get('data').get("id")
+                                category_id.bigcommerce_product_category_id=bigcommerce_category_id
+                                category_id.bigcommerce_store_id=bigcommerce_store_id.id
+                                category_id.is_exported_to_bigcommerce = True
+                                process_message="%s : %s Product Category Exported Successfully."%(bigcommerce_category_id,category_id.name)
+                                self.create_bigcommerce_operation_detail('product_category','export',category_request_data,response_data,category_operation_id,warehouse_id,False,process_message)
+                            else:
+                                process_message="Product Id Not Found!"
+                                self.create_bigcommerce_operation_detail('product_category','export',category_request_data,response_data,category_operation_id,warehouse_id,True,process_message)
+                        else:
+                            response_data = response_data.json()
+                            error_msg = response_data.get('errors')
+                            self.create_bigcommerce_operation_detail('product_category','export',category_request_data,error_msg,category_operation_id,warehouse_id,True,error_msg)
                     self._cr.commit()
             except Exception as e:
                 category_process_message = "Process Is Not Completed Yet!  {}".format(e)
-                self.create_bigcommerce_operation_detail('product_category','export',category_request_data,response_data,category_operation_id,warehouse_id,True,category_process_message)
             category_operation_id and category_operation_id.write({'bigcommerce_message': category_process_message})
             self._cr.commit()
 
