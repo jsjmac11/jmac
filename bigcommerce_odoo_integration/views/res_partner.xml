@@ -49,6 +49,5 @@
         <menuitem id="bigcommerce_store_customer_menuitem" name="Customer"
                   sequence="9" parent="bigcommerce_odoo_integration_store_menuitem"
                   action="bigcommerce_customer_action_form"/>
-
     </data>
 </odoo>

@@ -13,6 +13,7 @@ from odoo.osv import expression
 
 _logger = logging.getLogger("BigCommerce")
 
+
 class ProductProduct(models.Model):
     _inherit = "product.product"
     
@@ -54,6 +55,7 @@ class ProductProduct(models.Model):
         except Exception as e:
             raise ValidationError("Process Is Not Completed Yet!  {}".format(e))
 
+
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
@@ -92,11 +94,8 @@ class ProductTemplate(models.Model):
                                                 ('N', 'N')], 'Stop Processing Rules',
                                             default='N')
     vendor_part_number = fields.Char('Vendor Part Number')
-    
     is_free_shipping = fields.Boolean('Free Shipping', track_visibility='onchange')
-    
     meta_description = fields.Text('Meta Description')
-    
     meta_keywords = fields.Char('Meta Keywords')
     page_title = fields.Char('Page Title')
     page_title_override = fields.Char('Page Title Override')
@@ -356,7 +355,7 @@ class ProductTemplate(models.Model):
         res_unlink = super(ProductTemplate, self).unlink()
 
         return res_unlink
-    
+
     @api.constrains('default_code')
     def check_default_code(self):
         for record in self:
@@ -829,7 +828,7 @@ class ProductTemplate(models.Model):
                     self.env['product.search.keyword'].with_context(context).create(v)
         _logger.info("Product Created: {}".format(product_template))
         return True, product_template
-    
+
     def import_product_from_bigcommerce(self, warehouse_id=False, bigcommerce_store_ids=False):
         for bigcommerce_store_id in bigcommerce_store_ids:
             headers = {
@@ -1000,7 +999,7 @@ class ProductTemplate(models.Model):
 
                     operation_id and operation_id.with_user(1).write({'bigcommerce_message': product_process_message})
                     bigcommerce_store_id.source_of_import_data = total_pages_imported
-                    _logger.info("Impor product_process_messaget Product Process Completed ")
+                    _logger.info("Import Product Process Completed ")
                 else:
                     process_message="Getting an Error In Import Product Responase : {0}".format(response_data)
                     _logger.info("Getting an Error In Import Product Responase".format(response_data))
@@ -1013,7 +1012,7 @@ class ProductTemplate(models.Model):
             #product_process_message = product_process_message + "From :" + to_page +"To :" + total_pages
             operation_id and operation_id.with_user(1).write({'bigcommerce_message': product_process_message})
             self._cr.commit()
-    
+
     def import_product_manually_from_bigcommerce(self, warehouse_id=False, bigcommerce_store_id=False,product_id=False):
         headers = {
                 'Accept': 'application/json',

@@ -8,6 +8,7 @@ _logger = logging.getLogger("Bigcommerce")
 
 _logger = logging.getLogger("BigCommerce")
 
+
 class BigCommerceCategory(models.Model):
     _name = "bigcommerce.category"
     _description = 'BigCommerce Product Category'

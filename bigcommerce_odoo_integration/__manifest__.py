@@ -31,7 +31,6 @@
              "views/bc_product_brand.xml",
              ],
 
-    
     'images': ['static/description/bigcommerce_cover_image.png'],
     'maintainer': 'Vraja Technologies',
     'website':'www.vrajatechnologies.com',
@@ -44,5 +43,4 @@
     'price': '299',
     'currency': 'EUR',
     'license': 'OPL-1',
-
 }

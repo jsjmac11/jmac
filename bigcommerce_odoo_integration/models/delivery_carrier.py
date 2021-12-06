@@ -1,6 +1,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
+
 class DeliveryCarrier(models.Model):
     _inherit = "delivery.carrier"
 

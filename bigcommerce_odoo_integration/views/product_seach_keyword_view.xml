@@ -58,6 +58,5 @@
         <!-- MENUITEM -->
         <menuitem name="Search Keywords" id="order_service_submenu" parent="sale.menu_sales_config"
                   action="action_product_search_action" sequence="10"/>
-
     </data>
 </odoo>

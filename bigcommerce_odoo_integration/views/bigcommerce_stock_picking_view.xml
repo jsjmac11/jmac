@@ -15,7 +15,6 @@
                         <field name="bigcommerce_shimpment_id" readonly="1"/>
                         <field name="bc_shipping_provider"  readonly="1"/>
                     </group>
-
                 </xpath>
             </field>
         </record>

@@ -8,6 +8,7 @@ from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger("BigCommerce")
 
+
 class BigCommerceStoreConfiguration(models.Model):
     _name = "bigcommerce.store.configuration"
     _description = 'BigCommerce Store Configuration'
@@ -85,7 +86,7 @@ class BigCommerceStoreConfiguration(models.Model):
                    }
         operation_id = self.env['bigcommerce.operation'].create(vals)
         return  operation_id
-            
+
     def create_bigcommerce_operation_detail(self,operation,operation_type,req_data,response_data,operation_id,warehouse_id=False,fault_operation=False,process_message=False):
         bigcommerce_operation_details_obj = self.env['bigcommerce.operation.details']
         vals = {
@@ -268,7 +269,6 @@ class BigCommerceStoreConfiguration(models.Model):
             t = Thread(target=self.bigcommerce_to_odoo_import_order_status, args=())
             t.start()
 
-
     def bigcommerce_to_odoo_import_order_status(self):
         with api.Environment.manage():
             new_cr = registry(self._cr.dbname).cursor()
@@ -276,4 +276,3 @@ class BigCommerceStoreConfiguration(models.Model):
             sale_order_status_obj = self.env['sale.order.status']
             import_order_status = sale_order_status_obj.with_user(1).import_order_status_from_bigcommerce(self.warehouse_id,self)
             return import_order_status
-

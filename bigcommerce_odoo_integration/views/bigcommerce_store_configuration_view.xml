@@ -13,9 +13,7 @@
                         </button>
                      </div>
                     <div class="oe_title">
-                        <h1>
-                            <field name="name" placeholder="e.g. Store Name.."/>
-                        </h1>
+                        <h1><field name="name" placeholder="e.g. Store Name.."/></h1>
                     </div>
                     <group>
                         <group>
@@ -47,20 +45,17 @@
                                     <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_product_categories_main" string="Import Product Categories" type="object" class="oe_highlight" /></td>
 
                                     <td style="padding-left:60px"><button name="import_product_from_bigcommerce_main" string="Import Products" type="object" class="oe_highlight"/></td>
-                                </tr>
-                                <br/>
+                                </tr><br/>
                                 <tr>
                                     <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_customers_main" string="Import Customers" type="object" class="oe_highlight" /></td>
 
                                     <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_orders_main" string="Import Orders" type="object" class="oe_highlight" /></td>
-                                </tr>
-                                <br/>
+                                </tr><br/>
                                 <tr>
                                     <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_product_brands_main" string="Import Product Brand" type="object" class="oe_highlight" /></td>
 
                                     <td style="padding-left:60px"><button name="bigcommerce_to_odoo_import_order_status_main" string="Import Order Statuses" type="object" class="oe_highlight" /></td>
-                                </tr>
-                                <br/>
+                                </tr><br/>
                             </table>
                         </page>
 
@@ -95,6 +90,7 @@
             </form>
         </field>
     </record>
+
     <record id="bigcommerce_store_configuraion_tree_view" model="ir.ui.view">
         <field name="name">Bigcommerce Store Configuration</field>
         <field name="model">bigcommerce.store.configuration</field>
@@ -106,16 +102,16 @@
             </tree>
         </field>
     </record>
-    
+
     <record id="bigcommerce_store_configuration_action" model="ir.actions.act_window">
         <field name="name">Bigcommerce Store Configuration</field>
         <field name="res_model">bigcommerce.store.configuration</field>
         <field name='view_mode'>tree,form</field>
         <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">Configure Store.
-            </p>
+            <p class="o_view_nocontent_smiling_face">Configure Store.</p>
         </field>
     </record>
+
     <menuitem name="Bigcommerce Configuration" id="bigcommerce_store_configuration"
               parent="bigcommerce_odoo_integration_menu" sequence="25"/>
 

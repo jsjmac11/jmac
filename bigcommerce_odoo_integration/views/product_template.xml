@@ -100,22 +100,22 @@
                                 <field name="pmo"/>
                             </group>
                             <group string="Search Keyword" col="2"  >
-                            	<field name="search_keywords_override" />
-		                      	<field name="search_keywords" nolabel="1"/>
-		                      	<newline/>
-		                      	<field name="search_keyword_ids" nolabel="1">
-	                                <tree string="Search Keyword">
-	                                    <field name="name" required="1"/>
-	                                    <field name="product_template_id" invisible="1"/>
-	                                </tree>
-	                                <form editable="Search Keyword">
-	                                    <group>
-	                                        <field name="name" required="1"/>
-	                                        <field name="product_template_id" invisible="1"/>
-	                                    </group>
-	                                </form>
-	                            </field>
-                         	</group>
+                                <field name="search_keywords_override" />
+                                <field name="search_keywords" nolabel="1"/>
+                                <newline/>
+                                <field name="search_keyword_ids" nolabel="1">
+                                    <tree string="Search Keyword">
+                                        <field name="name" required="1"/>
+                                        <field name="product_template_id" invisible="1"/>
+                                    </tree>
+                                    <form editable="Search Keyword">
+                                        <group>
+                                            <field name="name" required="1"/>
+                                            <field name="product_template_id" invisible="1"/>
+                                        </group>
+                                    </form>
+                                </field>
+                            </group>
                         </group>
                          <button type='object' class="fa fa-arrow-right oe_link" name="export_stock_from_odoo_to_bigcommerce"
                             string="Export Stock From Odoo To Bigcommerce"/>
@@ -140,6 +140,7 @@
                 </xpath>
             </field>
         </record>
+
         <record id="view_form_product_product_bigcommerce_info" model="ir.ui.view">
             <field name="name">view.form.product.product.bigcommerce.info</field>
             <field name="model">product.product</field>
@@ -157,6 +158,7 @@
                 </xpath>
             </field>
         </record>
+
         <menuitem id="bigcommerce_store_product_menuitem" name="Product"
                   sequence="9" parent="bigcommerce_odoo_integration_store_menuitem"
                   action="bigcommerce_product_template_action_form"/>

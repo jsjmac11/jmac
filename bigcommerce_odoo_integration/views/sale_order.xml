@@ -6,17 +6,17 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
-            	<header>
-                 <button name="exportordertobigcommerce" type="object" string="Export Order"  attrs="{'invisible': ['|',('state', '!=','sale'), ('big_commerce_order_id', '!=',False)]}" />
-                 <button name="update_order_to_bigcommerce" type="object" string="Update Order"  attrs="{'invisible': ['|',('big_commerce_order_id', '=',False)]}"/>
+                <header>
+                    <button name="exportordertobigcommerce" type="object" string="Export Order"  attrs="{'invisible': ['|',('state', '!=','sale'), ('big_commerce_order_id', '!=',False)]}" />
+                    <button name="update_order_to_bigcommerce" type="object" string="Update Order"  attrs="{'invisible': ['|',('big_commerce_order_id', '=',False)]}"/>
                   <button name="get_shipped_qty" type="object" string="Shipped Qty"   />
-             </header>
+                </header>
                 <xpath expr="//field[@name='payment_term_id']" position="after">
-	                <field name="bigcommerce_store_id" />
-	                <field name="big_commerce_order_id"/>
-	                <field name="bigcommerce_shipment_order_status" />
-	                <field name="bigcommerce_order_status_id"/>
-	                <field name="exp_bigcommerce_order_status_id" />
+                    <field name="bigcommerce_store_id" />
+                    <field name="big_commerce_order_id"/>
+                    <field name="bigcommerce_shipment_order_status" />
+                    <field name="bigcommerce_order_status_id"/>
+                    <field name="exp_bigcommerce_order_status_id" />
                 </xpath>
                 <xpath expr="//form/sheet/notebook/page[@name='order_lines']/field[@name='order_line']/tree/field[@name='product_uom_qty']" position="before">
                     <field name="quantity_shipped"/>
@@ -34,7 +34,8 @@
                 </xpath>
             </field>
         </record>
-		<record id="bigcommerce_sale_order_action_form" model="ir.actions.act_window">
+
+        <record id="bigcommerce_sale_order_action_form" model="ir.actions.act_window">
             <field name="name">Bigcommerce SaleOrder</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">sale.order</field>
@@ -44,13 +45,13 @@
             <field name="domain">[('big_commerce_order_id','!=',False)]
             </field>
             <field name="context">{'big_commerce_order_id':True,
-	            'search_default_group_bigcommerce_store_id':1,
-	            'search_default_group_bigcommerce_order_status_id':1}</field>
+                'search_default_group_bigcommerce_store_id':1,
+                'search_default_group_bigcommerce_order_status_id':1}</field>
         </record>
-		<menuitem id="bigcommerce_store_sale_order_menuitem" name="Sale Order"
+
+        <menuitem id="bigcommerce_store_sale_order_menuitem" name="Sale Order"
                   sequence="9" parent="bigcommerce_odoo_integration_store_menuitem"
                   action="bigcommerce_sale_order_action_form"/>
-
 
         <record id="view_bigcommerce_order_status_tree_view" model="ir.ui.view">
             <field name="name">BigCommerce Order Status</field>
@@ -108,16 +109,14 @@
             <field name="inherit_id" ref="sale.view_sales_order_filter"/>
             <field name="arch" type="xml">
                 <filter name="customer" position="after">
-	                <filter name="group_bigcommerce_store_id" string="Bigcommerce Store" domain="[]"
-	                        icon="terp-personal"
-	                        context="{'group_by':'bigcommerce_store_id'}"/>
-	                <filter name="group_bigcommerce_order_status_id" string="Bigcommerce Status" domain="[]"
-	                        icon="terp-personal"
-	                        context="{'group_by':'bigcommerce_order_status_id'}"/>
+                    <filter name="group_bigcommerce_store_id" string="Bigcommerce Store" domain="[]"
+                            icon="terp-personal"
+                            context="{'group_by':'bigcommerce_store_id'}"/>
+                    <filter name="group_bigcommerce_order_status_id" string="Bigcommerce Status" domain="[]"
+                            icon="terp-personal"
+                            context="{'group_by':'bigcommerce_order_status_id'}"/>
                 </filter>
             </field>
         </record>
-        
     </data>
 </odoo>
-

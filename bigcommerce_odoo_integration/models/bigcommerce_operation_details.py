@@ -1,6 +1,7 @@
 from odoo import models, fields, api
 import datetime
 
+
 class BigCommerceOperation(models.Model):
     _name = "bigcommerce.operation"
     _description = 'BigCommerce Operation'
@@ -48,7 +49,7 @@ class BigCommerceOperationDetail(models.Model):
     _description = 'BigCommerce Operation Details'
     _rec_name = 'operation_id'
     _order = 'id desc'
-    
+
     operation_id = fields.Many2one("bigcommerce.operation", string="BigCommerce Operation")
     bigcommerce_operation = fields.Selection([('product_category', 'Product Category'),
                                               ('product','Product'),
@@ -73,7 +74,7 @@ class BigCommerceOperationDetail(models.Model):
     bigcommerce_response_message = fields.Char("Response Message")
     fault_operation = fields.Boolean("Fault Operation", default=False)
     process_message=fields.Char("Message")    
-    
+
     @api.model
     def create(self, vals):
         if type(vals) == dict:

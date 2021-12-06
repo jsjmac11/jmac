@@ -90,4 +90,3 @@ class CustomerPortal(CustomerPortal):
             'sortby': sortby,
         })
         return request.render("sale.portal_my_quotations", values)
-    

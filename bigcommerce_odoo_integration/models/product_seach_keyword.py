@@ -9,6 +9,7 @@ import re
 
 _logger = logging.getLogger("BigCommerce")
 
+
 class ProductSearchKeyword(models.Model):
     _name = "product.search.keyword"
     _description = "Product Search Keyword"
@@ -16,7 +17,7 @@ class ProductSearchKeyword(models.Model):
     name = fields.Char('Keyword')
     product_template_id = fields.Many2one(
             'product.template','Product')
-    
+
     @api.model
     def create(self, vals):
         if vals.get('name'):
@@ -28,7 +29,7 @@ class ProductSearchKeyword(models.Model):
                 name_url = re.sub('[^A-Za-z0-9]', '', name_url)
             vals.update({'name': name_url})
         return super(ProductSearchKeyword, self).create(vals)
-    
+
     @api.constrains('name', 'product_template_id')
     def _check_url_fields(self):
         for rec in self:
@@ -37,4 +38,3 @@ class ProductSearchKeyword(models.Model):
                          ('id', '!=', rec.id)])
             if keyword and not self._context.get('big_commerce'):
                 raise ValidationError("Same Keyword already Exists.!")
-        

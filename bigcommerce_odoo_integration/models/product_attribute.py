@@ -8,11 +8,12 @@ import time
 
 _logger = logging.getLogger("BigCommerce")
 
+
 class product_attribute(models.Model):
     _inherit = "product.attribute"
-    
+
     bigcommerce_attribute_id = fields.Char(string='BigCommerce Attribute Id')
-    
+
     def create_bigcommerce_operation(self,operation,operation_type,bigcommerce_store_id,log_message,warehouse_id):
         vals = {
                     'bigcommerce_operation': operation,
@@ -23,7 +24,7 @@ class product_attribute(models.Model):
                    }
         operation_id = self.env['bigcommerce.operation'].create(vals)
         return  operation_id
-            
+
     def create_bigcommerce_operation_detail(self,operation,operation_type,req_data,response_data,operation_id,warehouse_id=False,fault_operation=False,process_message=False):
         bigcommerce_operation_details_obj = self.env['bigcommerce.operation.details']
         vals = {
@@ -38,14 +39,14 @@ class product_attribute(models.Model):
                    }
         operation_detail_id = bigcommerce_operation_details_obj.create(vals)
         return operation_detail_id
-    
+
     def get_product_attribute(self,attribute_string,type='radio',create_variant='always'):
         attributes=self.search([('name','=ilike',attribute_string),('create_variant','=',create_variant)])
         if not attributes:
                 return self.create(({'name':attribute_string,'create_variant':create_variant,'type':type}))
         else:
             return attributes
-    
+
     def attribute_request_data(self,bigcommerce_product_id,attribute_line):
         """
         Description : Prepare Product Attribute and Attribute Value Request Data For Generate/Create Product Attribute and Attribute Value in Bigcommerce.
@@ -186,7 +187,7 @@ class product_attribute(models.Model):
                                 vals = {"attribute_id":attribute_id.id,"value_ids":[(6,0,attribute_value_ids)],"product_tmpl_id":product.id}
                                 attribute_line = self.env['product.template.attribute.line'].with_user(1).create(vals)
                                 self._cr.commit()
-                        
+
                         product.with_user(1)._create_variant_ids()
                         self._cr.commit()
                         api_operation_variant = "/v3/catalog/products/{}/variants".format(product.bigcommerce_product_id)
@@ -247,10 +248,11 @@ class product_attribute(models.Model):
                 operation_id and operation_id.write({'bigcommerce_message': product_process_message})
                 bigcommerce_store_id.bigcommerce_operation_message = "Import Product Attribute Process Completed."
             self._cr.commit()        
-        
+
+
 class product_attribute_value(models.Model):
     _inherit = "product.attribute.value"
-    
+
     bigcommerce_value_id = fields.Char(string="BigCommerce Value Id")
     
     def get_product_attribute_values(self,name,attribute_id):
