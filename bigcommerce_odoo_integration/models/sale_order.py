@@ -11,16 +11,16 @@ from threading import Thread
 import logging
 _logger = logging.getLogger("BigCommerce")
 
+
 class SaleOrderVts(models.Model):
     _inherit = "sale.order"
 
     big_commerce_order_id = fields.Char(string="BigCommerce Order ID", readonly=True,copy=False, track_visibility='onchange')
     bigcommerce_store_id = fields.Many2one('bigcommerce.store.configuration', string="Bigcommerce Store", copy=False, track_visibility='onchange')
     bigcommerce_shipment_order_status = fields.Char(string='Bigcommerce Shipment Order Status',readonly=True, track_visibility='onchange')
-
     bigcommerce_order_status_id = fields.Many2one('sale.order.status', string="Bigcommerce Order Status", track_visibility='onchange')
     exp_bigcommerce_order_status_id = fields.Many2one('sale.order.status', string="Export Bigcommerce Order Status", track_visibility='onchange')
-    
+
     @api.onchange('exp_bigcommerce_order_status_id')
     def onchange_exp_bigcommerce_order_status(self):
         if self.exp_bigcommerce_order_status_id:
@@ -33,7 +33,7 @@ class SaleOrderVts(models.Model):
             order.with_context(context).update_order_to_bigcommerce()
         res = super(SaleOrderVts, self).action_done()
         return res
-    
+
     def get_shipped_qty(self):
         bigcommerce_store_hash = self.bigcommerce_store_id.bigcommerce_store_hash
         bigcommerce_client_seceret  = self.bigcommerce_store_id.bigcommerce_x_auth_client
@@ -42,7 +42,6 @@ class SaleOrderVts(models.Model):
                    "X-Auth-Client": "{}".format(bigcommerce_client_seceret),
                    "X-Auth-Token": "{}".format(bigcommerce_x_auth_token),
                    "Content-Type": "application/json"}
-
 
         url = "%s%s/v2/orders/%s/products"%(self.bigcommerce_store_id.bigcommerce_api_url,bigcommerce_store_hash,self.big_commerce_order_id)
         try:
@@ -314,7 +313,7 @@ class SaleOrderVts(models.Model):
                                 'type': 'delivery',
                                 'parent_id': partner_obj.id
                             }
-                            
+
                             if order.get('date_created'):
                                 dt_lst = order.get('date_created').split('+')
                                 if dt_lst[0]:
@@ -404,7 +403,7 @@ class SaleOrderVts(models.Model):
             operation_id and operation_id.write({'bigcommerce_message': process_message})
             bigcommerce_store_ids.bigcommerce_operation_message = " Import Sale Order Process Complete "
             self._cr.commit()
-    
+
     def prepare_sale_order_lines(self,order_id=False,product_details=False,operation_id=False,warehouse_id=False):
         for order_line in product_details:
             product_bigcommerce_id = order_line.get('product_id')
@@ -638,7 +637,7 @@ class SaleOrderStatus(models.Model):
                                             ('done', 'Locked'),
                                             ('cancel', 'Cancelled')],
                              string='Odoo Status', default='new', track_visibility='onchange')
-    
+
     def import_order_status_from_bigcommerce(self, warehouse_id=False, bigcommerce_store_ids=False):
         for bigcommerce_store_id in bigcommerce_store_ids:
             headers = {

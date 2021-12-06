@@ -14,5 +14,3 @@ from . import delivery_carrier
 from . import stock
 from . import bigcommerce_product_image
 from . import bigcommerce_stock_picking
-
-

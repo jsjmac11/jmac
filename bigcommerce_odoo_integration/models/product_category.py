@@ -3,6 +3,7 @@ import logging
 
 _logger = logging.getLogger("BigCommerce")
 
+
 class ProductCategory(models.Model):
     _inherit = "product.category"
 
@@ -12,14 +13,14 @@ class ProductCategory(models.Model):
     is_visible = fields.Boolean(string="Is Visible", copy=False)
     bigcommerce_parent_category_id = fields.Char("Bigcommerce Parent Category ID", copy=False)
     is_exported_to_bigcommerce = fields.Boolean(string='Is Exported to BigCommerce',default=False)
-    
+
     def export_product_category_to_bigcommerce(self):
         if self._context.get('active_model') == 'product.category':
             category_ids = self.env.context.get('active_ids')
             category_objs = self.env['product.category'].browse(category_ids)
             category_objs.write({'is_exported_to_bigcommerce':True})
         return
-    
+
     def create_bigcommerce_operation(self,operation,operation_type,bigcommerce_store_id,log_message,warehouse_id):
         vals = {
                     'bigcommerce_operation': operation,
@@ -30,7 +31,7 @@ class ProductCategory(models.Model):
                    }
         operation_id = self.env['bigcommerce.operation'].create(vals)
         return  operation_id
-            
+
     def create_bigcommerce_operation_detail(self,operation,operation_type,req_data,response_data,operation_id,warehouse_id=False,fault_operation=False,process_message=False):
         bigcommerce_operation_details_obj = self.env['bigcommerce.operation.details']
         vals = {
@@ -45,7 +46,7 @@ class ProductCategory(models.Model):
                    }
         operation_detail_id = bigcommerce_operation_details_obj.create(vals)
         return operation_detail_id
-    
+
     def category_request_data(self, category_id):
         category_name = category_id and category_id.name
         if " " in category_name:

@@ -6,9 +6,10 @@ import logging
 
 _logger = logging.getLogger("BigCommerce")
 
+
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
-    
+
     bc_shipping_provider = fields.Char(string='Shipping Provider', track_visibility='onchange')
     bigcommerce_shimpment_id = fields.Char(string="Bigcommerce Shipment Numebr", track_visibility='onchange')
 
@@ -42,6 +43,7 @@ class StockPicking(models.Model):
                 self.with_user(1).message_post(body="Getting an Error in Import Shipment Information : {0}".format(response.content))
         except Exception as e:
             self.with_user(1).message_post(body="Getting an Error in Import Shipment Information : {0}".format(e))
+
 
 class StockInventory(models.Model):
     _inherit = 'stock.inventory'
@@ -180,4 +182,3 @@ class StockInventory(models.Model):
             if warehouse_id.bigcommerce_store_ids:
                 self.bigcommerce_to_odoo_import_inventory(warehouse_id,warehouse_id.bigcommerce_store_ids)
         return True
-

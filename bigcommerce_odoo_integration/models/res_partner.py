@@ -6,6 +6,7 @@ import json
 import logging
 _logger = logging.getLogger("BigCommerce")
 
+
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
@@ -24,7 +25,7 @@ class ResPartner(models.Model):
                    }
         operation_id = self.env['bigcommerce.operation'].create(vals)
         return  operation_id
-            
+
     def create_bigcommerce_operation_detail(self,operation,operation_type,req_data,response_data,operation_id,warehouse_id=False,fault_operation=False,customer_message=False):
         bigcommerce_operation_details_obj = self.env['bigcommerce.operation.details']
         vals = {
@@ -39,7 +40,7 @@ class ResPartner(models.Model):
                    }
         operation_detail_id = bigcommerce_operation_details_obj.create(vals)
         return operation_detail_id
-    
+
     def customer_request_data(self, partner_id):
         partner_name = partner_id.name
         name_list = partner_name.split(" ")
@@ -137,7 +138,6 @@ class ResPartner(models.Model):
                                                                          category_operation_id, warehouse_id, True,
                                                                          process_message)
                             total_pages = total_pages - 1
-
 
                     else:
                         customer_response_pages.append(records)
@@ -424,4 +424,3 @@ class ResPartner(models.Model):
                     }
             except Exception as e:
                 raise ValidationError("Process Is Not Completed Yet!  {}".format(e))
-

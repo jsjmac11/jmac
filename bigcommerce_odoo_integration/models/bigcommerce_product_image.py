@@ -6,6 +6,7 @@ import base64
 import logging
 _logger = logging.getLogger("Bigcommerce")
 
+
 class BigcommerceProductImage(models.Model):
     _name = "bigcommerce.product.image"
     _description = 'BigCommerce Product Image'
@@ -93,7 +94,6 @@ class BigcommerceProductImage(models.Model):
             }
         }
 
-
     def bigcommerce_to_odoo_import_variant_product_image(self,warehouse_id=False, bigcommerce_store_ids=False):
         bigcommerce_products_ids = self.env['product.template'].search([('bigcommerce_product_id', '!=', False),('bigcommerce_store_id','=',bigcommerce_store_ids.id)])
         headers = {
@@ -126,7 +126,7 @@ class BigcommerceProductImage(models.Model):
                 raise ValidationError(e)
         bigcommerce_store_ids.bigcommerce_operation_message = " Import Product Variant Image Process Complete "
         self._cr.commit()
-    
+
     def import_multiple_product_image(self,bigcommerce_store_ids,product_id):
         headers = {
             'Accept': 'application/json',
@@ -171,4 +171,3 @@ class BigcommerceProductImage(models.Model):
                 _logger.info("Successfully Import Images {}".format(image_id))
         else:
             _logger.info("Get Some Error {}".format(response))
-1
