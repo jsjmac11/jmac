@@ -11,6 +11,8 @@ from datetime import datetime
 
 from odoo.tools import float_compare
 from odoo.osv import expression
+from odoo.exceptions import AccessError, UserError, ValidationError
+
 
 class ProductProduct(models.Model):
     _inherit = "product.product"
@@ -78,6 +80,14 @@ class ProductSupplierinfo(models.Model):
         'Quantity', default=1.0, required=True,
         help="The quantity to purchase from this vendor to benefit from the price, expressed in the vendor Product Unit of Measure if not any, in the default unit of measure of the product otherwise.")
 
+
+    @api.constrains('product_code')
+    def check_default_code(self):
+        for record in self:
+            if len(self.search([('product_code', '=', record.product_code),
+                            ('id', '!=', record.id)], limit=1)) == 1 and record.product_code:
+                    raise ValidationError(_("%s product code is already exist...!" % record.product_code))
+                
     @api.onchange('product_tmpl_id', 'min_qty')
     def onchange_product_price(self):
         if self.product_tmpl_id and self.product_tmpl_id.list_price:
