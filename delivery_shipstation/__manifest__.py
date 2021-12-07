@@ -24,10 +24,10 @@
     # Check https://github.com/odoo/odoo/blob/13.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Inventory',
-    'version': "13.0.1.0.2",
+    'version': "13.0.1.0.0",
     'application': True,
     # any module necessary for this one to work correctly
-    'depends': ['base', 'delivery', 'stock', 'sale', 'stock_picking_batch'],
+    'depends': ['base', 'delivery', 'stock', 'sale', 'stock_picking_batch', 'sale_distributor'],
 
     # always loaded
     'data': [

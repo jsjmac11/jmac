@@ -4,7 +4,7 @@
         <!-- Carrier -->
         <record id="product_product_bigcommerce_delivery_fixed" model="product.product">
             <field name="name">Bigcommerce Shipping Service</field>
-            <field name="default_code">Delivery_010</field>
+            <field name="default_code">Delivery_009</field>
             <field name="type">service</field>
             <field name="categ_id" ref="delivery.product_category_deliveries"/>
             <field name="sale_ok" eval="False"/>
