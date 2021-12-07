@@ -86,7 +86,7 @@ class ProductSupplierinfo(models.Model):
         for record in self:
             if len(self.search([('product_code', '=', record.product_code),
                             ('id', '!=', record.id)], limit=1)) == 1 and record.product_code:
-                    raise ValidationError(_("%s product code is already exist...!" % record.product_code))
+                raise ValidationError(_("%s product code is already exist...!" % record.product_code))
                 
     @api.onchange('product_tmpl_id', 'min_qty')
     def onchange_product_price(self):
