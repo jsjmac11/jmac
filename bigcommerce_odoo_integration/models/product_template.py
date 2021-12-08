@@ -396,6 +396,15 @@ class ProductTemplate(models.Model):
     def onchange_product_image_file_override(self):
         if self.product_image_file_overide:
             self.product_image_file_1 = self.product_image_file_overide
+            try:
+                img_response = requests.get(self.product_image_file_1, timeout=5)
+                img_response.raise_for_status()
+                if img_response.status_code == 200:
+                    data = base64.b64encode(img_response.content).replace(
+                        b"\n", b"").decode('ascii')
+                    self.write({'image_1920':data})
+            except Exception as e:
+                raise Warning(_(e))
         else:
             self.product_image_file_1 = False
     
