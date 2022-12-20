@@ -11,7 +11,7 @@
     'name': 'ODOO Email CC and BCC',
     'summary': 'Add CC and BCC feature in mail',
     'category': 'Marketing',
-    'version': '13.0.1.0.3',
+    'version': '13.0.1.0.4',
     'sequence': 1,
     'author': "Bista Solutions Pvt. Ltd.",
     'website': 'https://www.bistasolutions.com',
